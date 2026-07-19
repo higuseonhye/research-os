@@ -1,0 +1,51 @@
+{
+  "benchmark_id": "ORBIT-Recoverability-v0",
+  "schema_version": "0.1.0",
+  "task_spec_id": "orbit-recover-v0-target-shift-3cm",
+  "environment": {
+    "platform": "ORBIT / Isaac Lab",
+    "task_name": "Isaac-Reach-Dual-STAR-IK-Rel-Play-v0",
+    "isaac_sim_version": "4.1.0",
+    "notes": "Surgical reach proxy · EXP-SURG-001A config"
+  },
+  "exception": {
+    "family": "target_shift",
+    "taxonomy_code": "P2",
+    "severity_m": 0.03,
+    "shift_axis": "y",
+    "onset_step": 20
+  },
+  "interventions": {
+    "available": ["CONTINUE", "REPLAN"],
+    "timing_delays": [0, 5, 10, 20],
+    "continue_baseline": true
+  },
+  "episode": {
+    "max_steps": 100,
+    "seeds": [0, 1, 2],
+    "episodes_per_seed": 1
+  },
+  "forbidden_region": {
+    "enabled": true,
+    "center_m": [0.45, 0.0, 0.15],
+    "half_extents_m": [0.04, 0.04, 0.04]
+  },
+  "success_criteria": {
+    "success_tolerance_m": 0.02,
+    "terminal_categories": [
+      "successful_resolution",
+      "safe_unresolved",
+      "unsafe_failure",
+      "timeout_failure"
+    ]
+  },
+  "evaluation_protocol": {
+    "method": "same_state_counterfactual_evaluation",
+    "onset_state_definition": "Shared post-shift state at step 20: EE pose, frozen/shifted command, severity applied.",
+    "profile_metric": "R_a(s,t)"
+  },
+  "proposer": {
+    "mode": "scripted_reach",
+    "frozen": true
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "experiment": "EXP-SURG-001A",
+  "mode": "isaac",
+  "task": "Isaac-Reach-Dual-STAR-IK-Rel-Play-v0",
+  "note": "Compact aggregate transcribed from RunPod isaac_results.json smoke (n=5). Prefer replacing with full JSON when copied locally.",
+  "shift_distance_m": 0.03,
+  "tol_m": 0.02,
+  "body_index": 13,
+  "episodes": [
+    {
+      "episode": 0,
+      "CONTINUE": {"final_distance_m": 0.5913, "completion_steps": 160, "terminal_category": "timeout_failure"},
+      "REPLAN": {"final_distance_m": 0.0193, "completion_steps": 124, "terminal_category": "successful_resolution"}
+    },
+    {
+      "episode": 1,
+      "CONTINUE": {"final_distance_m": 0.03, "completion_steps": 160, "terminal_category": "timeout_failure"},
+      "REPLAN": {"final_distance_m": 0.0189, "completion_steps": 101, "terminal_category": "successful_resolution"}
+    },
+    {
+      "episode": 2,
+      "CONTINUE": {"final_distance_m": 0.0289, "completion_steps": 160, "terminal_category": "timeout_failure"},
+      "REPLAN": {"final_distance_m": 0.0198, "completion_steps": 64, "terminal_category": "unsafe_failure"}
+    },
+    {
+      "episode": 3,
+      "CONTINUE": {"final_distance_m": 0.03, "completion_steps": 160, "terminal_category": "timeout_failure"},
+      "REPLAN": {"final_distance_m": 0.02, "completion_steps": 50, "terminal_category": "successful_resolution"}
+    },
+    {
+      "episode": 4,
+      "CONTINUE": {"final_distance_m": 0.0272, "completion_steps": 160, "terminal_category": "timeout_failure"},
+      "REPLAN": {"final_distance_m": 0.0189, "completion_steps": 39, "terminal_category": "successful_resolution"}
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+# EXP-SURG-001C — Severity × Delay counterfactual surface
+# Orchestrator: scripts/run_study1c.py
+
+experiment_id: EXP-SURG-001C
+task: Isaac-Reach-Dual-STAR-IK-Rel-Play-v0
+
+# Full grid
+severities_m: [0.01, 0.03, 0.06, 0.09]  # 1, 3, 6, 9 cm
+replan_delays: [0, 5, 10, 20, 40, 60]
+seeds: [0, 1, 2, 3, 4]
+
+# Smoke grid (run first)
+smoke_severities_m: [0.03, 0.06, 0.09]
+smoke_delays: [0, 10, 20, 40]
+smoke_seeds: [0, 1, 2]
+
+# Shared branch protocol (matches 001A/001B)
+onset: 20
+max_steps: 160
+episode_length_s: 20
+tol_m: 0.02
+body_index: 13
+gain: 1.0
+max_delta: 0.08
+
+# Analysis
+success_threshold_lvd: 0.8
+
+# RunPod / Isaac paths
+isaaclab_path: /workspace/IsaacLab/isaaclab.sh
+orbit_surgical_path: /workspace/orbit-surgical
+environment: "ORBIT Reach · Isaac Sim 4.1.0 · nvcr.io/nvidia/isaac-sim:4.1.0"
+gpu: "RunPod RTX 4090 (when Isaac mode)"
+
+artifact_root: experiments/surgical_intelligence/exp_surg_001_execute_or_defer/artifacts/study1c_severity_delay_surface
+
+# Branching policy
+continue_once_per_seed: true
+responses:
+  - CONTINUE   # once per severity × seed
+  - REPLAN     # each severity × delay × seed
+
+primary_outcomes:
+  - successful_resolution_rate
+  - forbidden_violation_rate
+  - final_distance_m
+
+secondary_outcomes:
+  - completion_steps
+  - path_length_m
+  - response_start_step
+  - recovery_duration
+  - terminal_category
+
+terminal_categories:
+  - successful_resolution
+  - safe_unresolved
+  - unsafe_failure
+  - timeout_failure

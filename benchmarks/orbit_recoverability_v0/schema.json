@@ -1,0 +1,371 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/higuseonhye/research-os/benchmarks/orbit_recoverability_v0/schema.json",
+  "title": "ORBIT-Recoverability-v0",
+  "description": "JSON Schema for ORBIT-Recoverability-v0 benchmark: task specification, same-state counterfactual episode results, and leaderboard submissions.",
+  "version": "0.1.0",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/task_spec" },
+    { "$ref": "#/$defs/episode_result" },
+    { "$ref": "#/$defs/submission" }
+  ],
+  "$defs": {
+    "benchmark_id": {
+      "type": "string",
+      "const": "ORBIT-Recoverability-v0"
+    },
+    "intervention_id": {
+      "type": "string",
+      "description": "Intervention mode at branch onset.",
+      "enum": ["CONTINUE", "REPLAN", "REPLAN_d0", "REPLAN_d5", "REPLAN_d10", "REPLAN_d20", "REPLAN_d40", "REPLAN_d60", "RESHAPE", "HANDOFF", "WAIT", "ASK"]
+    },
+    "terminal_category": {
+      "type": "string",
+      "enum": [
+        "successful_resolution",
+        "safe_unresolved",
+        "unsafe_failure",
+        "timeout_failure"
+      ]
+    },
+    "exception_family": {
+      "type": "string",
+      "enum": ["target_shift", "occlusion", "forbidden_entry", "nominal"],
+      "description": "Mismatch family at onset (v0 primary: target_shift)."
+    },
+    "task_spec": {
+      "type": "object",
+      "title": "ORBIT-Recoverability-v0 Task Specification",
+      "required": [
+        "benchmark_id",
+        "schema_version",
+        "task_spec_id",
+        "environment",
+        "exception",
+        "interventions",
+        "episode",
+        "success_criteria",
+        "evaluation_protocol"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_id": { "$ref": "#/$defs/benchmark_id" },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^0\\.\\d+\\.\\d+$",
+          "default": "0.1.0"
+        },
+        "task_spec_id": {
+          "type": "string",
+          "description": "Unique spec identifier, e.g. orbit-recover-v0-target-shift-3cm."
+        },
+        "environment": {
+          "type": "object",
+          "required": ["platform", "task_name"],
+          "additionalProperties": false,
+          "properties": {
+            "platform": { "type": "string", "examples": ["ORBIT / Isaac Lab"] },
+            "task_name": { "type": "string", "examples": ["Isaac-Reach-Dual-STAR-IK-Rel-Play-v0"] },
+            "isaac_sim_version": { "type": "string" },
+            "notes": { "type": "string" }
+          }
+        },
+        "exception": {
+          "type": "object",
+          "required": ["family", "onset_step"],
+          "additionalProperties": false,
+          "properties": {
+            "family": { "$ref": "#/$defs/exception_family" },
+            "taxonomy_code": { "type": "string", "examples": ["P2"] },
+            "severity_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Target shift magnitude in meters (v0 primary axis)."
+            },
+            "shift_axis": { "type": "string", "enum": ["x", "y", "z"] },
+            "onset_step": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Simulation step at which mismatch is applied and CF branches fork."
+            }
+          }
+        },
+        "interventions": {
+          "type": "object",
+          "required": ["available", "timing_delays"],
+          "additionalProperties": false,
+          "properties": {
+            "available": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/intervention_id" },
+              "description": "Intervention set for Profile(s)."
+            },
+            "timing_delays": {
+              "type": "array",
+              "items": { "type": "integer", "minimum": 0 },
+              "description": "REPLAN start delays (steps after onset). Empty if timing not swept."
+            },
+            "continue_baseline": {
+              "type": "boolean",
+              "default": true,
+              "description": "Include CONTINUE (freeze pre-shift command) branch."
+            }
+          }
+        },
+        "episode": {
+          "type": "object",
+          "required": ["max_steps", "seeds"],
+          "additionalProperties": false,
+          "properties": {
+            "max_steps": { "type": "integer", "minimum": 1 },
+            "seeds": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "integer", "minimum": 0 }
+            },
+            "episodes_per_seed": { "type": "integer", "minimum": 1, "default": 1 }
+          }
+        },
+        "forbidden_region": {
+          "type": "object",
+          "required": ["enabled"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "center_m": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "half_extents_m": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          }
+        },
+        "success_criteria": {
+          "type": "object",
+          "required": ["success_tolerance_m", "terminal_categories"],
+          "additionalProperties": false,
+          "properties": {
+            "success_tolerance_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "EE distance threshold for successful_resolution."
+            },
+            "terminal_categories": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/terminal_category" },
+              "minItems": 1
+            }
+          }
+        },
+        "evaluation_protocol": {
+          "type": "object",
+          "required": ["method", "onset_state_definition"],
+          "additionalProperties": false,
+          "properties": {
+            "method": {
+              "type": "string",
+              "const": "same_state_counterfactual_evaluation"
+            },
+            "onset_state_definition": {
+              "type": "string",
+              "description": "What is held constant across branches at fork (pose, command, shift applied)."
+            },
+            "profile_metric": {
+              "type": "string",
+              "const": "R_a(s,t)",
+              "description": "Intervention-conditioned recoverability profile."
+            }
+          }
+        },
+        "proposer": {
+          "type": "object",
+          "properties": {
+            "mode": { "type": "string", "examples": ["scripted_reach", "bc_ensemble", "learned_selector"] },
+            "frozen": { "type": "boolean", "default": true }
+          }
+        }
+      }
+    },
+    "episode_result": {
+      "type": "object",
+      "title": "ORBIT-Recoverability-v0 Episode Branch Result",
+      "required": [
+        "benchmark_id",
+        "schema_version",
+        "task_spec_id",
+        "episode_id",
+        "seed",
+        "exception",
+        "intervention",
+        "onset_step",
+        "response_start_step",
+        "successful_resolution",
+        "terminal_category",
+        "final_distance_m",
+        "forbidden_violation",
+        "completion_steps"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_id": { "$ref": "#/$defs/benchmark_id" },
+        "schema_version": { "type": "string", "pattern": "^0\\.\\d+\\.\\d+$" },
+        "task_spec_id": { "type": "string" },
+        "episode_id": {
+          "type": "string",
+          "description": "Unique branch id, e.g. seed0_sev0.03_REPLAN_d5."
+        },
+        "seed": { "type": "integer", "minimum": 0 },
+        "onset_state_hash": {
+          "type": "string",
+          "description": "Optional hash of shared onset state s for CF audit."
+        },
+        "exception": {
+          "type": "object",
+          "required": ["family", "severity_m", "onset_step"],
+          "properties": {
+            "family": { "$ref": "#/$defs/exception_family" },
+            "severity_m": { "type": "number", "minimum": 0 },
+            "onset_step": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "intervention": {
+          "type": "object",
+          "required": ["mode"],
+          "properties": {
+            "mode": { "$ref": "#/$defs/intervention_id" },
+            "replan_delay_steps": {
+              "type": ["integer", "null"],
+              "minimum": 0,
+              "description": "Null for CONTINUE."
+            }
+          }
+        },
+        "onset_step": { "type": "integer", "minimum": 0 },
+        "response_start_step": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Step when intervention a actually starts."
+        },
+        "successful_resolution": { "type": "boolean" },
+        "terminal_category": { "$ref": "#/$defs/terminal_category" },
+        "final_distance_m": { "type": "number", "minimum": 0 },
+        "forbidden_violation": { "type": "boolean" },
+        "completion_steps": { "type": "integer", "minimum": 0 },
+        "path_length_m": { "type": "number", "minimum": 0 },
+        "recovery_duration_steps": { "type": "integer", "minimum": 0 },
+        "R_a_point_estimate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Point estimate 1.0/0.0 for deterministic branch; aggregate for stochastic."
+        },
+        "method_name": {
+          "type": "string",
+          "description": "Submitting method / baseline id."
+        },
+        "git_commit": { "type": "string" },
+        "timestamp_utc": { "type": "string", "format": "date-time" }
+      }
+    },
+    "submission": {
+      "type": "object",
+      "title": "ORBIT-Recoverability-v0 Leaderboard Submission",
+      "required": [
+        "benchmark_id",
+        "schema_version",
+        "task_spec_id",
+        "method_name",
+        "git_commit",
+        "n_episodes",
+        "aggregate_metrics"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_id": { "$ref": "#/$defs/benchmark_id" },
+        "schema_version": { "type": "string", "pattern": "^0\\.\\d+\\.\\d+$" },
+        "task_spec_id": { "type": "string" },
+        "method_name": { "type": "string" },
+        "git_commit": { "type": "string" },
+        "contact": { "type": "string" },
+        "timestamp_utc": { "type": "string", "format": "date-time" },
+        "n_episodes": { "type": "integer", "minimum": 1 },
+        "n_seeds": { "type": "integer", "minimum": 1 },
+        "intervention_set": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/intervention_id" }
+        },
+        "aggregate_metrics": {
+          "type": "object",
+          "required": [
+            "mean_max_recoverability",
+            "mode_gap",
+            "successful_resolution_rate",
+            "forbidden_violation_rate"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "mean_max_recoverability": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "E_s[max_a R_a(s,t*)] over episodes."
+            },
+            "mode_gap": {
+              "type": "number",
+              "description": "max_a R_a - R_continue (average over episodes)."
+            },
+            "timing_slope": {
+              "type": ["number", "null"],
+              "description": "Sensitivity dR/dt for primary intervention; null if flat."
+            },
+            "successful_resolution_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "forbidden_violation_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "mean_completion_steps": { "type": "number", "minimum": 0 },
+            "profile_entropy": {
+              "type": ["number", "null"],
+              "description": "Optional spread over Profile(s)."
+            },
+            "recoverability_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Primary leaderboard column (v0: mean_max_recoverability)."
+            }
+          }
+        },
+        "per_intervention": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["mode", "successful_resolution_rate"],
+            "properties": {
+              "mode": { "$ref": "#/$defs/intervention_id" },
+              "replan_delay_steps": { "type": ["integer", "null"] },
+              "successful_resolution_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+              "n": { "type": "integer", "minimum": 1 }
+            }
+          }
+        },
+        "episode_results_uri": {
+          "type": "string",
+          "description": "URL or path to full episode_result array."
+        }
+      }
+    }
+  }
+}

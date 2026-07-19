@@ -1,0 +1,47 @@
+{
+  "rows": [
+    {
+      "response": "CONTINUE",
+      "replan_delay": null,
+      "n": 3,
+      "success_rate": 0.0,
+      "mean_final_distance_m": 0.21696666666666667,
+      "mean_completion_steps": 160.0
+    },
+    {
+      "response": "REPLAN_d0",
+      "replan_delay": 0,
+      "n": 3,
+      "success_rate": 1.0,
+      "mean_final_distance_m": 0.018866666666666667,
+      "mean_completion_steps": 86.0
+    },
+    {
+      "response": "REPLAN_d10",
+      "replan_delay": 10,
+      "n": 3,
+      "success_rate": 1.0,
+      "mean_final_distance_m": 0.019633333333333332,
+      "mean_completion_steps": 96.66666666666667
+    },
+    {
+      "response": "REPLAN_d20",
+      "replan_delay": 20,
+      "n": 3,
+      "success_rate": 1.0,
+      "mean_final_distance_m": 0.019,
+      "mean_completion_steps": 90.0
+    },
+    {
+      "response": "REPLAN_d5",
+      "replan_delay": 5,
+      "n": 3,
+      "success_rate": 1.0,
+      "mean_final_distance_m": 0.0195,
+      "mean_completion_steps": 87.0
+    }
+  ],
+  "figures": [
+    "C:\\projects\\research-os\\experiments\\surgical_intelligence\\exp_surg_001_execute_or_defer\\results\\study1b_isaac\\figures\\recoverability_vs_delay.png"
+  ]
+}

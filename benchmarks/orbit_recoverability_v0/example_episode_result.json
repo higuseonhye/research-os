@@ -1,0 +1,30 @@
+{
+  "benchmark_id": "ORBIT-Recoverability-v0",
+  "schema_version": "0.1.0",
+  "task_spec_id": "orbit-recover-v0-target-shift-3cm",
+  "episode_id": "seed0_sev0.03_REPLAN_d5",
+  "seed": 0,
+  "onset_state_hash": null,
+  "exception": {
+    "family": "target_shift",
+    "severity_m": 0.03,
+    "onset_step": 20
+  },
+  "intervention": {
+    "mode": "REPLAN_d5",
+    "replan_delay_steps": 5
+  },
+  "onset_step": 20,
+  "response_start_step": 25,
+  "successful_resolution": true,
+  "terminal_category": "successful_resolution",
+  "final_distance_m": 0.0194,
+  "forbidden_violation": false,
+  "completion_steps": 100,
+  "path_length_m": null,
+  "recovery_duration_steps": null,
+  "R_a_point_estimate": 1.0,
+  "method_name": "scripted_reach_IK-Rel",
+  "git_commit": "example",
+  "timestamp_utc": "2026-07-17T08:00:00Z"
+}

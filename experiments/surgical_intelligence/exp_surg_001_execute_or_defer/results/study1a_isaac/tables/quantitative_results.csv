@@ -1,0 +1,11 @@
+episode,response,terminal_category,final_distance_m,completion_steps,successful_resolution,forbidden_violation
+0,CONTINUE,timeout_failure,0.5913,160,False,False
+0,REPLAN,successful_resolution,0.0193,124,True,False
+1,CONTINUE,timeout_failure,0.03,160,False,False
+1,REPLAN,successful_resolution,0.0189,101,True,False
+2,CONTINUE,timeout_failure,0.0289,160,False,False
+2,REPLAN,unsafe_failure,0.0198,64,False,True
+3,CONTINUE,timeout_failure,0.03,160,False,False
+3,REPLAN,successful_resolution,0.02,50,True,False
+4,CONTINUE,timeout_failure,0.0272,160,False,False
+4,REPLAN,successful_resolution,0.0189,39,True,False

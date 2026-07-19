@@ -1,0 +1,145 @@
+# EXP-SURG-001 Study 1 — proportionate response selection (WP4)
+# RQ: docs/mechanism_atlas/paper1_research_question.md (v0.2)
+# Pre-reg: study1_pre_registration.md (v0.2)
+# Version: 0.5 · 2026-07-16 (v0.3 pre-reg: property ablations)
+
+experiment: EXP-SURG-001
+study: study1_execute_or_defer
+platform: ORBIT Reach
+status: design
+pre_registration: study1_pre_registration.md
+pre_registration_version: "0.3"
+
+paper1_deep_q: >
+  Which properties of a task-relevant mismatch are necessary to select
+  the least disruptive safe response?
+
+paper1_rq: >
+  In constrained surgical reaching with injected task-relevant mismatches,
+  does a learned response selector conditioned on response-relevant characterization
+  improve the safety-task-disruption-human-assistance Pareto frontier over
+  scalar uncertainty gating — and which characterization properties are necessary?
+
+six_month_question: >
+  Does exception characterization enable safer and less disruptive response
+  selection than scalar uncertainty gating under a shared safety-assistance trade-off?
+
+task:
+  name: constrained_surgical_reach_with_forbidden_region
+  description: Target reaching with dynamic target and forbidden regions
+  language_role: exploratory_p5_only  # not Paper 1 title claim
+  language_commands:
+    - "approach the needle entry point"
+    - "move to the suture target"
+  forbidden_region:
+    type: axis_aligned_box
+    penalty: catastrophic_proxy
+  proposer:
+    preferred_mode: frozen_bc_ensemble  # Option A — honest ensemble_variance for B2
+    smoke_mode: scripted_or_zero        # Option B — then B2 = scalar risk gate (not "policy UQ")
+    train_in_this_study: false          # BC ensemble may be trained once then frozen
+
+baselines:
+  B0_always_continue:
+    gate: null
+  B1_always_handover_after_alarm:
+    policy: handover_on_any_mismatch_alarm
+  B2_scalar_uncertainty_or_risk_threshold:
+    uncertainty_metric: ensemble_variance  # Option A
+    risk_metric: trajectory_deviation_or_kinematic_risk  # Option B
+    threshold: tunable_on_val
+    primary_competitor: true
+  B3_oracle_characterization:
+    role: sanity_upper_bound_only
+    positive_result_eligible: false
+    gate: utility_optimal_from_oracle_characterization
+  B4_learned_binary_execute_handover:
+    model: mlp_or_small_gru
+    outputs: [continue, handover]
+  B5_learned_multi_no_characterization:
+    model: mlp_or_small_gru
+    inputs: [proposal_features, obs_embedding, kinematic_risk]
+    outputs: [continue, reobserve, replan, handover]
+  B5a_multi_plus_type:
+    inputs: [proposal_features, obs_embedding, kinematic_risk, exception_type]
+    outputs: [continue, reobserve, replan, handover]
+  B5b_plus_severity:
+    inputs: [proposal_features, obs_embedding, kinematic_risk, exception_type, severity]
+    outputs: [continue, reobserve, replan, handover]
+  B5c_plus_consequence:
+    inputs: [proposal_features, obs_embedding, kinematic_risk, exception_type, severity, predicted_consequence]
+    outputs: [continue, reobserve, replan, handover]
+  B5d_plus_recoverability_feasibility:
+    inputs: [proposal_features, obs_embedding, kinematic_risk, exception_type, severity, predicted_consequence, recoverability, information_deficit, alternative_feasibility]
+    outputs: [continue, reobserve, replan, handover]
+  B6_learned_multi_with_characterization:
+    model: mlp_or_small_gru
+    inputs: [proposal_features, obs_embedding, kinematic_risk, characterization_vector]
+    outputs: [continue, reobserve, replan, handover]
+    primary_system: true
+
+feasibility_flags:
+  - safe_alternative_path_exists
+  - visibility_recoverable
+  - target_reachable
+  - current_path_intersects_forbidden
+
+primary_comparisons:
+  - [B6, B2]
+  - [B6, B5]
+  - [B6, B4]
+  - [B5a, B5]
+  - [B5b, B5a]
+  - [B5c, B5b]
+  - [B5d, B5c]
+  - [B6, B5d]
+  - [B3, B2]  # sanity only
+
+perturbations:
+  paper1_minimum: [P0_nominal, P1a_obs_delay, P2_target_shift, P3_obs_dropout, P4_forbidden_path]
+  optional: [P1b_action_noise, P1c_latency, P5_ambiguous_language]
+  require_within_type_severity_branching: true
+
+data_targets:
+  nominal_episodes: 500
+  exception_episodes: 1500
+  note: adjust for compute and rollout length
+
+episodes:
+  per_condition: 200
+  seeds: [0, 1, 2, 3, 4]
+
+metrics_primary:
+  - catastrophic_violation_rate
+  - max_penetration_depth
+  - mean_integrated_penetration
+  - task_success_at_matched_safety
+  - full_handover_rate_at_matched_safety
+  - task_disruption_cost
+  - safety_assistance_pareto_hypervolume
+
+metrics_secondary:
+  - reobserve_rate
+  - replan_rate
+  - handover_rate
+  - non_continue_rate
+  - completion_time
+  - early_warning_time
+  - response_label_agreement
+  - least_disruptive_score_sensitivity
+
+matched_safety:
+  prefer: [catastrophic_violation_rate, mean_integrated_penetration]
+  avoid_as_sole: binary_penetration_episode_rate
+
+success_gate:
+  description: >
+    B6 beats B2 on primary endpoints at matched safety;
+    B3 vs B2 is sanity only (not a positive claim);
+    OR clean H0 / oracle-only with pre-registered interpretation.
+  go_no_go_ref: docs/mechanism_atlas/research_program.md
+
+utility_weight_schemes:
+  safety_dominant: {task_success: 1.0, physical_risk: -2.0, human_assistance: -0.3, delay: -0.1}
+  balanced: {task_success: 1.0, physical_risk: -1.0, human_assistance: -0.5, delay: -0.2}
+  burden_dominant: {task_success: 1.0, physical_risk: -0.5, human_assistance: -1.0, delay: -0.3}

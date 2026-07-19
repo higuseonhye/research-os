@@ -1,0 +1,53 @@
+# S-ODD — Surgical Operational Design Domain (Study 1 proxy)
+# Version: 0.1 · 2026-07-15
+# Conceptual doc: docs/mechanism_atlas/s_odd_and_semantic_abstention.md
+
+skill: needle_reaching
+platform: ORBIT Reach
+version: "0.1"
+
+# Conditions under which autonomous execution of this skill is permitted.
+# Violation → gate should NOT execute (fallback chain below).
+allowed_conditions:
+  target_visibility:
+    operator: ">"
+    threshold: 0.85
+    sim_proxy: rgb_target_in_fov_fraction
+  bleeding_state:
+    allowed: [none]
+    sim_proxy: perturbation_flag  # P0 only in Study 1 v0.1
+  tissue_motion:
+    operator: "<"
+    threshold: low
+    sim_proxy: target_shift_rate  # P2 triggers violation
+  camera_quality:
+    allowed: [sufficient]
+    sim_proxy: obs_dropout_rate  # P3 triggers violation
+  instrument_tracking:
+    required: stable
+    sim_proxy: action_noise_below_threshold
+  surgeon_instruction:
+    required: unambiguous
+    sim_proxy: language_conflict_flag  # P5 triggers violation
+
+# Anatomical / kinematic envelope (AV "safety envelope" analog)
+safety_envelope:
+  forbidden_region:
+    type: axis_aligned_box
+    violation_action: defer
+  max_end_effector_speed: null  # TBD from ORBIT limits
+  min_clearance_to_forbidden: 0.01  # meters, sim proxy
+
+# Minimal-risk / hold states when normal execution cannot continue (MRC analog)
+fallback_chain:
+  - hold_position
+  - retract_2mm
+  - reobserve
+  - request_confirmation  # → Study 3 / EXP-SAFE-004
+
+# Maps to execution gate outputs in study1_execute_or_defer.yaml
+gate_mapping:
+  hold_position: execute_hold
+  retract_2mm: replan
+  reobserve: reobserve
+  request_confirmation: defer_to_human

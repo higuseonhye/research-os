@@ -1,0 +1,58 @@
+# EXP-SURG-001B — Timing / golden-time curve (Fig 5)
+# Parent: EXP-SURG-001 · same target-shift as 001A
+# Doc: study1b_report.md
+
+experiment: EXP-SURG-001B
+study: study1b_timing_curve
+status: ready_to_run
+paper_target: paper1
+figure_targets:
+  - fig5_recoverability
+  - table_quantitative
+
+task:
+  name: Isaac-Reach-Dual-STAR-IK-Rel-Play-v0
+  platform: ORBIT / Isaac Lab
+  role: surgical_reach_proxy
+
+proposer:
+  mode: scripted_reach
+  body_index: 13
+  gain: 1.0
+  max_delta: 0.08
+
+exception:
+  family: target_shift
+  taxonomy_code: P2
+  shift_distance_m: 0.03
+  shift_axis: y
+  onset_step: 20
+
+# After onset: CONTINUE forever on frozen target, or REPLAN after delay steps.
+responses:
+  - CONTINUE
+  - REPLAN_d0
+  - REPLAN_d5
+  - REPLAN_d10
+  - REPLAN_d20
+
+timing:
+  replan_delays: [0, 5, 10, 20]
+  include_continue: true
+
+episode:
+  max_steps: 160
+  episode_length_s: 20
+  success_tolerance_m: 0.02
+  # Smoke: 3 episodes × 5 branches = 15 rollouts
+  seeds: [0]
+  episodes_per_seed: 3
+
+primary_metrics:
+  - successful_resolution_rate_by_delay
+  - mean_final_distance_by_delay
+  - empirical_recoverability_curve
+
+artifacts:
+  root: experiments/surgical_intelligence/exp_surg_001_execute_or_defer/artifacts/study1b_timing_curve
+  committed_results: experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1b_isaac

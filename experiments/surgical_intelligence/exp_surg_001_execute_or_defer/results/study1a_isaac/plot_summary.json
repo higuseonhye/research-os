@@ -1,0 +1,26 @@
+{
+  "experiment": "EXP-SURG-001A",
+  "mode": "isaac",
+  "source": "C:\\projects\\research-os\\experiments\\surgical_intelligence\\exp_surg_001_execute_or_defer\\results\\study1a_isaac\\isaac_aggregate.json",
+  "aggregate": {
+    "CONTINUE": {
+      "n": 5.0,
+      "successful_resolution_rate": 0.0,
+      "forbidden_violation_rate": 0.0,
+      "mean_final_distance_m": 0.14148,
+      "mean_completion_steps": 160.0
+    },
+    "REPLAN": {
+      "n": 5.0,
+      "successful_resolution_rate": 0.8,
+      "forbidden_violation_rate": 0.2,
+      "mean_final_distance_m": 0.01938,
+      "mean_completion_steps": 75.6
+    }
+  },
+  "figures": [
+    "C:\\projects\\research-os\\experiments\\surgical_intelligence\\exp_surg_001_execute_or_defer\\results\\study1a_isaac\\figures\\result_table.png",
+    "C:\\projects\\research-os\\experiments\\surgical_intelligence\\exp_surg_001_execute_or_defer\\results\\study1a_isaac\\figures\\counterfactual_grid.png",
+    "C:\\projects\\research-os\\experiments\\surgical_intelligence\\exp_surg_001_execute_or_defer\\results\\study1a_isaac\\figures\\final_distance_by_episode.png"
+  ]
+}

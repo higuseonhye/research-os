@@ -1,0 +1,245 @@
+# EXP-SURG-001 — exception taxonomy + perturbation crosswalk (WP1/WP2)
+# Docs: docs/mechanism_atlas/exception_taxonomy_v0.1.md
+# Anti-circularity: same type must admit ≥2 preferred outcomes by severity/feasibility
+# Version: 0.6 · 2026-07-16 — RESHAPE first-class + environment modifiability flags
+
+version: "0.6"
+experiment: EXP-SURG-001
+study: study1_execute_or_defer
+design_note: >
+  Preferred outcomes from feasibility + **environment modifiability** flags, not type alone.
+  expected_outcome_by_severity is for oracle B3 / diagnostics only.
+  RESHAPE is first-class (not under replan). Paper 1: one reshape skill only.
+
+exception_types:
+  perceptual:
+    description: Sensing, tracking, or visibility degraded
+    response_candidates: [continue, reobserve, reshape, handover]
+  state:
+    description: World state differs from expected
+    response_candidates: [continue, replan, reshape, handover]
+  dynamics:
+    description: Control, force, friction, or timing differ from model
+    response_candidates: [continue, reobserve, replan, handover]
+  task:
+    description: Task goal or surgical phase changed
+    response_candidates: [replan, handover]
+  intent:
+    description: Human instruction ambiguous, conflicting, or false premise
+    response_candidates: [reobserve, handover]
+  capability:
+    description: Current skill cannot execute safely
+    response_candidates: [handover]
+  safety:
+    description: Physical harm or forbidden-region risk elevated
+    response_candidates: [continue, replan, reshape, handover]
+  social_collaborative:
+    description: Human action or role differs from robot expectation
+    response_candidates: [reobserve, handover]
+
+characterization_fields:
+  - exception_present
+  - exception_type
+  - severity
+  - timing
+  - predicted_consequence
+  - missing_information
+  - recoverability
+  - alternative_feasibility
+  - environment_modifiability
+
+feasibility_flags:
+  - safe_alternative_path_exists
+  - camera_viewpoint_can_recover_visibility
+  - obstacle_movable
+  - target_exposable
+  - tool_changeable
+  - human_available
+  - information_recoverable_same_viewpoint
+  - visibility_recoverable
+  - target_reachable
+  - current_path_intersects_forbidden
+
+generator_families:
+  observation_delay:
+    exception_type: perceptual
+    perturbation_ref: P1a_obs_delay
+    severity_levels: [short, mid, persistent]
+  action_noise:
+    exception_type: dynamics
+    perturbation_ref: P1b_action_noise
+    severity_levels: [low, mid, high]
+    paper1: optional
+  actuation_latency:
+    exception_type: dynamics
+    perturbation_ref: P1c_latency
+    severity_levels: [low, mid, high]
+    paper1: optional
+  target_shift:
+    exception_type: state
+    perturbation_ref: P2_target_shift
+    severity_levels: [small, mid, unreachable]
+  visual_occlusion:
+    exception_type: perceptual
+    perturbation_ref: P3_obs_dropout
+    severity_levels: [mild_blur, partial, persistent_full]
+  forbidden_region:
+    exception_type: safety
+    perturbation_ref: P4_forbidden_path
+    severity_levels: [near_non_intersect, alt_path_exists, no_safe_path]
+  instruction_scene_mismatch:
+    exception_type: intent
+    perturbation_ref: P5_ambiguous_language
+    severity_levels: [ambiguous, conflicting, false_premise]
+    paper1: exploratory
+
+perturbations:
+  P0_nominal:
+    description: No perturbation; nominal reach
+    exception_type: null
+    expected_outcome_by_severity:
+      default: continue
+
+  P1a_obs_delay:
+    description: Observation / state-estimation delay
+    exception_type: perceptual
+    expected_outcome_by_severity:
+      short: reobserve
+      mid: reobserve
+      persistent: handover
+      mild_with_safe_margin: continue
+    feasibility_typical:
+      visibility_recoverable: [true, true, false]
+
+  P1b_action_noise:
+    description: Action / control noise
+    exception_type: dynamics
+    paper1: optional
+    expected_outcome_by_severity:
+      low: continue
+      mid: reobserve
+      high: handover
+
+  P1c_latency:
+    description: Actuation / control latency
+    exception_type: dynamics
+    paper1: optional
+    expected_outcome_by_severity:
+      low: continue
+      mid: reobserve
+      high: replan
+
+  P2_target_shift:
+    description: Shift target mid-episode
+    exception_type: state
+    expected_outcome_by_severity:
+      small: replan
+      mid: replan
+      unreachable: handover
+      after_goal_reached: continue
+    feasibility_typical:
+      target_reachable: [true, true, false]
+
+  P3_obs_dropout:
+    description: Occlusion or observation dropout
+    exception_type: perceptual
+    expected_outcome_by_severity:
+      mild_blur: continue
+      partial: reobserve
+      persistent_full: handover
+    feasibility_typical:
+      visibility_recoverable: [true, true, false]
+
+  P4_forbidden_path:
+    description: Proposer path vs forbidden region
+    exception_type: safety
+    expected_outcome_by_severity:
+      near_non_intersect: continue
+      alt_path_exists: replan
+      no_safe_path: handover
+    feasibility_typical:
+      current_path_intersects_forbidden: [false, true, true]
+      safe_alternative_path_exists: [true, true, false]
+
+  P5_ambiguous_language:
+    description: Conflicting / underspecified / false-premise command
+    exception_type: intent
+    paper1: exploratory
+    expected_outcome_by_severity:
+      ambiguous: handover
+      conflicting: reobserve
+      false_premise: handover
+
+response_actions_v1:
+  - continue
+  - reobserve
+  - replan
+  - handover
+
+baselines_v03:
+  B0: always_continue
+  B1: always_handover_after_alarm
+  B2: scalar_uncertainty_or_risk_threshold
+  B3: oracle_characterization_utility_optimal
+  B4: learned_binary_execute_handover
+  B5: learned_multi_no_characterization
+  B5a: multi_plus_type
+  B5b: plus_severity
+  B5c: plus_consequence
+  B5d: plus_recoverability_feasibility
+  B6: full_characterization
+
+primary_comparisons:
+  - [B6, B2]
+  - [B6, B5]
+  - [B6, B4]
+  - [B5a, B5]
+  - [B5b, B5a]
+  - [B5c, B5b]
+  - [B5d, B5c]
+  - [B6, B5d]
+  - [B3, B2]
+
+metrics:
+  primary:
+    - catastrophic_violation_rate
+    - max_penetration_depth
+    - mean_integrated_penetration
+    - task_success_at_matched_safety
+    - full_handover_rate_at_matched_safety
+    - task_disruption_cost
+    - safety_assistance_pareto_hypervolume
+  secondary:
+    - reobserve_rate
+    - replan_rate
+    - handover_rate
+    - non_continue_rate
+    - completion_time
+    - early_warning_time
+    - response_label_agreement
+    - least_disruptive_score_sensitivity
+
+utility_weight_schemes:
+  safety_dominant:
+    task_success: 1.0
+    physical_risk: -2.0
+    human_assistance: -0.3
+    delay: -0.1
+  balanced:
+    task_success: 1.0
+    physical_risk: -1.0
+    human_assistance: -0.5
+    delay: -0.2
+  burden_dominant:
+    task_success: 1.0
+    physical_risk: -0.5
+    human_assistance: -1.0
+    delay: -0.3
+
+risk_proxies:
+  - forbidden_region_penetration
+  - max_penetration_depth
+  - time_integrated_penetration
+  - min_safety_margin
+  - collision_proxy
+  - max_joint_violation

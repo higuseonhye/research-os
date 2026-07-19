@@ -1,0 +1,26 @@
+# EXP-SURG-001E — Mixed Mismatch / Diagnosis Trap (planned)
+
+> **Status:** planned · after 001C/001D design freeze  
+> **Role:** break fixed diagnosis→response maps (VAP-TAMP-style B-VAP)  
+> **Parent:** [`vap_tamp_deep_read.md`](../../../docs/mechanism_atlas/vap_tamp_deep_read.md)
+
+## Question
+
+When the **apparent** mismatch type disagrees with the **true** recoverable cause, do rule-based handlers choose worse interventions than counterfactual recoverability profiles?
+
+## Trap conditions (minimum)
+
+| Apparent | True | Rule trap |
+| --- | --- | --- |
+| Visual ambiguity | Target shift | Prefer camera move when replan needed |
+| State / predicate mismatch | Sensor dropout / brief occlusion | Prefer replan when reobserve suffices |
+| (optional) Plan fail | Needs human assist | Prefer replan forever vs handover |
+
+## Responses
+
+CONTINUE · REOBSERVE · CAMERA · REPLAN · HANDOVER proxy  
+Compare **B-VAP** (rule) vs **oracle/profile** selection on same branch states.
+
+## Success metric
+
+Successful resolution rate + regret vs oracle intervention (outcome-derived).

@@ -1,0 +1,52 @@
+collection: surg_data_lake_v0.1
+description: ORBIT Reach reference rollouts from Week 1 embodied evidence
+created: 2026-07-08
+
+assets:
+  - asset_id: orbit:rollout:reach_zero_20260708
+    source: orbit_rollout
+    provenance:
+      uri: experiments/srfm_quick_prototype/demo_artifacts/orbit_surgical_reach_rollout_zero_summary.json
+      license: research-internal
+    modality: [proprio, action, reward]
+    robotic_context:
+      is_robotic_assisted: true
+      platform: star_dual
+    task_contract:
+      sib_task_id: sib.reach.dual_star.v0
+      observation_space: "Dict('policy': Box(1, 58))"
+      action_space: "Box(1, 12)"
+    experiment_links:
+      - experiment_id: EXP-SRFM-002
+      - experiment_id: EXP-SI-ACT-001
+
+  - asset_id: orbit:rollout:reach_random_20260708
+    source: orbit_rollout
+    provenance:
+      uri: experiments/srfm_quick_prototype/demo_artifacts/orbit_surgical_reach_rollout_random_summary.json
+      license: research-internal
+    modality: [proprio, action, reward]
+    robotic_context:
+      is_robotic_assisted: true
+      platform: star_dual
+    task_contract:
+      sib_task_id: sib.reach.dual_star.v0
+      observation_space: "Dict('policy': Box(1, 58))"
+      action_space: "Box(1, 12)"
+    experiment_links:
+      - experiment_id: EXP-SRFM-002
+      - experiment_id: EXP-SI-ACT-001
+
+  - asset_id: orbit:smoke:reach_20260708
+    source: orbit_rollout
+    provenance:
+      uri: experiments/srfm_quick_prototype/demo_artifacts/orbit_surgical_reach_smoke_summary.json
+      license: research-internal
+    modality: [proprio, action]
+    robotic_context:
+      is_robotic_assisted: true
+      platform: star_dual
+    task_contract:
+      sib_task_id: sib.reach.dual_star.v0
+    experiment_links:
+      - experiment_id: EXP-SRFM-003

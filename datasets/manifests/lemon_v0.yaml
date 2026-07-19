@@ -1,0 +1,294 @@
+collection: surg_data_lake_v0.1
+description: LEMON surgical video metadata — first manifest subset (no blobs in git)
+created: '2026-07-10'
+source_dataset: visurg/LEMON
+labels_source: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+total_catalog_videos: 4194
+manifest_subset_size: 10
+selection_policy: Diverse procedure coverage with robotic/non-robotic balance; HF
+  URI only — download on demand.
+assets:
+- asset_id: lemon:video:80czDESoMiQ
+  source: lemon
+  provenance:
+    uri: hf://datasets/visurg/LEMON/80czDESoMiQ.mp4
+    labels_uri: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+    license: CC-BY-4.0
+    access_date: '2026-07-10'
+  modality:
+  - video
+  robotic_context:
+    is_robotic_assisted: false
+    platform: laparoscopic
+  procedure_tags:
+  - splenectomy
+  - pancreatectomy
+  quality:
+    resolution:
+    - 1280
+    - 720
+  metadata:
+    title: Laparoscopic Distal  Pancreaticosplenectomy for Mucinous Neoplasm Pancreas
+    md5: bfcb3fb859a36ac69c2b98ebd00b8aef
+    informative: true
+    youtube_id: 80czDESoMiQ
+  rq_mapping:
+  - RQ1
+  experiment_links:
+  - experiment_id: EXP-SPIKE-LEMON-001
+  manifest_index: 1
+- asset_id: lemon:video:K0G8UgS7DYs
+  source: lemon
+  provenance:
+    uri: hf://datasets/visurg/LEMON/K0G8UgS7DYs.mp4
+    labels_uri: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+    license: CC-BY-4.0
+    access_date: '2026-07-10'
+  modality:
+  - video
+  robotic_context:
+    is_robotic_assisted: false
+    platform: laparoscopic
+  procedure_tags:
+  - low_anterior_resection
+  quality:
+    resolution:
+    - 1280
+    - 720
+  metadata:
+    title: Laparoscopic Ultra Low Anterior Resection presented in AMASICON 2019 by
+      Dr. Samrat jankar.
+    md5: 534d06c7642f57d023535fe61fb899df
+    informative: true
+    youtube_id: K0G8UgS7DYs
+  rq_mapping:
+  - RQ1
+  experiment_links:
+  - experiment_id: EXP-SPIKE-LEMON-001
+  manifest_index: 2
+- asset_id: lemon:video:zaHesaMb_tg
+  source: lemon
+  provenance:
+    uri: hf://datasets/visurg/LEMON/zaHesaMb_tg.mp4
+    labels_uri: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+    license: CC-BY-4.0
+    access_date: '2026-07-10'
+  modality:
+  - video
+  robotic_context:
+    is_robotic_assisted: false
+    platform: laparoscopic
+  procedure_tags:
+  - colectomy
+  quality:
+    resolution:
+    - 1280
+    - 720
+  metadata:
+    title: Laparoscopic Anterior Resection for Rectosigmoid Cancer
+    md5: 816cf3cc1531ba20e8e049e435a7dd3a
+    informative: true
+    youtube_id: zaHesaMb_tg
+  rq_mapping:
+  - RQ1
+  experiment_links:
+  - experiment_id: EXP-SPIKE-LEMON-001
+  manifest_index: 3
+- asset_id: lemon:video:ac47qnxQCzM
+  source: lemon
+  provenance:
+    uri: hf://datasets/visurg/LEMON/ac47qnxQCzM.mp4
+    labels_uri: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+    license: CC-BY-4.0
+    access_date: '2026-07-10'
+  modality:
+  - video
+  robotic_context:
+    is_robotic_assisted: false
+    platform: laparoscopic
+  procedure_tags:
+  - gastric_bypass
+  quality:
+    resolution:
+    - 1280
+    - 720
+  metadata:
+    title: Laparoscopic conversion of RnY Gastric Bypass to Single Anastomosis Duodenal-Ileostomy
+      with Sleeve
+    md5: a55fb44cc5a784a18806c42a00d33de6
+    informative: true
+    youtube_id: ac47qnxQCzM
+  rq_mapping:
+  - RQ1
+  experiment_links:
+  - experiment_id: EXP-SPIKE-LEMON-001
+  manifest_index: 4
+- asset_id: lemon:video:f5qDdmV6rwU
+  source: lemon
+  provenance:
+    uri: hf://datasets/visurg/LEMON/f5qDdmV6rwU.mp4
+    labels_uri: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+    license: CC-BY-4.0
+    access_date: '2026-07-10'
+  modality:
+  - video
+  robotic_context:
+    is_robotic_assisted: false
+    platform: laparoscopic
+  procedure_tags:
+  - duodenal_switch
+  quality:
+    resolution:
+    - 1280
+    - 720
+  metadata:
+    title: Duodenal switch with single anastomosis - 2  "Unedited" by Dr. Mitchell  Roslin
+    md5: 81eb44bc5fac9f33261473cc659cbb57
+    informative: true
+    youtube_id: f5qDdmV6rwU
+  rq_mapping:
+  - RQ1
+  experiment_links:
+  - experiment_id: EXP-SPIKE-LEMON-001
+  manifest_index: 5
+- asset_id: lemon:video:JDcToB_nN7w
+  source: lemon
+  provenance:
+    uri: hf://datasets/visurg/LEMON/JDcToB_nN7w.mp4
+    labels_uri: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+    license: CC-BY-4.0
+    access_date: '2026-07-10'
+  modality:
+  - video
+  robotic_context:
+    is_robotic_assisted: true
+    platform: da_vinci
+  procedure_tags:
+  - pancreaticoduodenectomy
+  quality:
+    resolution:
+    - 1280
+    - 720
+  metadata:
+    title: Robotic Whipple (part 1, resection)
+    md5: 75edd110c75f75494065bfd8e1a949e1
+    informative: true
+    youtube_id: JDcToB_nN7w
+  rq_mapping:
+  - RQ1
+  experiment_links:
+  - experiment_id: EXP-SPIKE-LEMON-001
+  manifest_index: 6
+- asset_id: lemon:video:pfTqwcFbTIU
+  source: lemon
+  provenance:
+    uri: hf://datasets/visurg/LEMON/pfTqwcFbTIU.mp4
+    labels_uri: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+    license: CC-BY-4.0
+    access_date: '2026-07-10'
+  modality:
+  - video
+  robotic_context:
+    is_robotic_assisted: true
+    platform: da_vinci
+  procedure_tags:
+  - ampullectomy
+  quality:
+    resolution:
+    - 1280
+    - 720
+  metadata:
+    title: Robotic Ampullectomy for Ampullary Adenoma
+    md5: b288289f7d6131688d9282f5763c5c5b
+    informative: true
+    youtube_id: pfTqwcFbTIU
+  rq_mapping:
+  - RQ1
+  experiment_links:
+  - experiment_id: EXP-SPIKE-LEMON-001
+  manifest_index: 7
+- asset_id: lemon:video:WU3751JNzYo
+  source: lemon
+  provenance:
+    uri: hf://datasets/visurg/LEMON/WU3751JNzYo.mp4
+    labels_uri: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+    license: CC-BY-4.0
+    access_date: '2026-07-10'
+  modality:
+  - video
+  robotic_context:
+    is_robotic_assisted: true
+    platform: da_vinci
+  procedure_tags:
+  - hepatectomy
+  quality:
+    resolution:
+    - 1280
+    - 720
+  metadata:
+    title: Robotic liver surgery - left hepatectomy
+    md5: b4be486f290cad33c1d0196787110e96
+    informative: true
+    youtube_id: WU3751JNzYo
+  rq_mapping:
+  - RQ1
+  experiment_links:
+  - experiment_id: EXP-SPIKE-LEMON-001
+  manifest_index: 8
+- asset_id: lemon:video:D_Abmcuwqbc
+  source: lemon
+  provenance:
+    uri: hf://datasets/visurg/LEMON/D_Abmcuwqbc.mp4
+    labels_uri: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+    license: CC-BY-4.0
+    access_date: '2026-07-10'
+  modality:
+  - video
+  robotic_context:
+    is_robotic_assisted: true
+    platform: da_vinci
+  procedure_tags:
+  - pancreatectomy
+  quality:
+    resolution:
+    - 1280
+    - 720
+  metadata:
+    title: Robotic central pancreatectomy with long sleeve pancreaticogastrostomy
+    md5: b7c3b56970c93e194ecf55fd786e12d7
+    informative: true
+    youtube_id: D_Abmcuwqbc
+  rq_mapping:
+  - RQ1
+  experiment_links:
+  - experiment_id: EXP-SPIKE-LEMON-001
+  manifest_index: 9
+- asset_id: lemon:video:GUbigyF201A
+  source: lemon
+  provenance:
+    uri: hf://datasets/visurg/LEMON/GUbigyF201A.mp4
+    labels_uri: https://github.com/visurg-ai/LEMON/blob/main/labels.json
+    license: CC-BY-4.0
+    access_date: '2026-07-10'
+  modality:
+  - video
+  robotic_context:
+    is_robotic_assisted: true
+    platform: da_vinci
+  procedure_tags:
+  - hepatectomy
+  quality:
+    resolution:
+    - 1280
+    - 720
+  metadata:
+    title: Robot-Assisted Hepatectomy & Complete Excision of the Extrahepatic Bile
+      Duct
+    md5: b17825ab8cae25d8d0813d9583bf87d7
+    informative: true
+    youtube_id: GUbigyF201A
+  rq_mapping:
+  - RQ1
+  experiment_links:
+  - experiment_id: EXP-SPIKE-LEMON-001
+  manifest_index: 10

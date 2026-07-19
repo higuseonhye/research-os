@@ -1,0 +1,30 @@
+{
+  "experiment_id": "EXP-SURG-001C",
+  "mode": "isaac",
+  "run_phase": "full",
+  "n_records": 140,
+  "success_threshold_lvd": 0.8,
+  "empirical_latest_viable_delay": {
+    "0.01": 60,
+    "0.03": 60,
+    "0.06": 60,
+    "0.09": 60
+  },
+  "flat_band_3cm": {
+    "persists": false,
+    "spread": 0.2,
+    "detail": "001B 3/3 flat band at n=3 does not fully persist at n=5: REPLAN success 0.8–1.0 across delays with seed variance, not a monotonic delay cliff"
+  },
+  "interaction": {
+    "observed": false,
+    "interpretation": "No monotonic increase in delay sensitivity across tested severities"
+  },
+  "recommend_001d": {
+    "shift_m": 0.06,
+    "shift_cm": 6,
+    "replan_delay": 20,
+    "rationale": "Flat recoverability surface overall; 6 cm / delay 20 as mid-grid baseline (some cells 0.8 success with ~0.14 m residual dist)"
+  },
+  "source": "RunPod full grid merge 2026-07-16; raw JSON on pod volume",
+  "artifact_root_pod": "/workspace/research-os/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/artifacts/study1c_severity_delay_surface"
+}

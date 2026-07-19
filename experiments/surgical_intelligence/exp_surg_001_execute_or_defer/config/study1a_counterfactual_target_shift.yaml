@@ -1,0 +1,84 @@
+# EXP-SURG-001A — Counterfactual Recovery Smoke Test
+# Parent: EXP-SURG-001 · Paper 1 figure-first (Fig 4 counterfactual)
+# Doc: study1a_report.md
+
+experiment: EXP-SURG-001A
+study: study1a_counterfactual_target_shift
+status: ready_to_run
+paper_target: paper1
+figure_targets:
+  - fig4_counterfactual
+  - fig3_screenshot
+  - table_quantitative
+
+task:
+  name: Isaac-Reach-Dual-STAR-IK-Rel-Play-v0
+  platform: ORBIT / Isaac Lab
+  role: surgical_reach_proxy
+
+proposer:
+  mode: scripted_reach
+  note: Do not use zero policy for recovery meaning (zero only for infra smoke).
+
+exception:
+  family: target_shift
+  taxonomy_code: P2
+  severity: mid
+  shift_distance_m: 0.03
+  shift_axis: y  # world-frame offset applied to ee_1_pose command xyz
+  onset_step: 20
+
+responses:
+  - CONTINUE   # freeze pre-shift command after onset
+  - REPLAN     # chase shifted command after onset
+
+timing:
+  compare_delayed_replan: false  # set true for onset+10 if runtime allows
+  delayed_replan_offset: 10
+
+episode:
+  max_steps: 100
+  success_tolerance_m: 0.02
+  seeds: [0, 1, 2]
+  episodes_per_seed: 10
+  # Fallback if blocked:
+  # seeds: [0]
+  # episodes_per_seed: 5
+
+forbidden_region:
+  # Proxy AABB in world frame (meters). Not necessarily physical collider.
+  enabled: true
+  center: [0.45, 0.0, 0.15]
+  half_extents: [0.04, 0.04, 0.04]
+
+scripted_reach:
+  primary_command: ee_1_pose
+  secondary_command: ee_2_pose
+  body_index: 13
+  robot_name: robot  # override if scene name differs
+  action_gain: 2.0
+  action_clip: 1.0
+
+artifacts:
+  root: experiments/surgical_intelligence/exp_surg_001_execute_or_defer/artifacts/study1a_counterfactual_target_shift
+
+primary_metrics:
+  - successful_resolution_rate
+  - final_distance_to_shifted_target
+  - forbidden_violation_rate
+
+secondary_metrics:
+  - completion_steps
+  - path_length
+  - recovery_duration
+  - terminal_category
+
+terminal_categories:
+  - successful_resolution
+  - safe_unresolved
+  - unsafe_failure
+  - timeout_failure
+
+notes: >
+  Taxonomy provisional response for target_shift is replan — do NOT treat as ground truth.
+  Preferred labels come from empirical outcomes only.

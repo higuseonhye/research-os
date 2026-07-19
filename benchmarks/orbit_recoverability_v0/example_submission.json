@@ -1,0 +1,30 @@
+{
+  "benchmark_id": "ORBIT-Recoverability-v0",
+  "schema_version": "0.1.0",
+  "task_spec_id": "orbit-recover-v0-target-shift-3cm",
+  "method_name": "scripted_reach_baseline",
+  "git_commit": "example",
+  "contact": "research-os",
+  "timestamp_utc": "2026-07-17T08:00:00Z",
+  "n_episodes": 15,
+  "n_seeds": 3,
+  "intervention_set": ["CONTINUE", "REPLAN_d0", "REPLAN_d5", "REPLAN_d10", "REPLAN_d20"],
+  "aggregate_metrics": {
+    "mean_max_recoverability": 1.0,
+    "mode_gap": 1.0,
+    "timing_slope": null,
+    "successful_resolution_rate": 0.8,
+    "forbidden_violation_rate": 0.0,
+    "mean_completion_steps": 92.0,
+    "profile_entropy": null,
+    "recoverability_score": 1.0
+  },
+  "per_intervention": [
+    { "mode": "CONTINUE", "replan_delay_steps": null, "successful_resolution_rate": 0.0, "n": 3 },
+    { "mode": "REPLAN_d0", "replan_delay_steps": 0, "successful_resolution_rate": 1.0, "n": 3 },
+    { "mode": "REPLAN_d5", "replan_delay_steps": 5, "successful_resolution_rate": 1.0, "n": 3 },
+    { "mode": "REPLAN_d10", "replan_delay_steps": 10, "successful_resolution_rate": 1.0, "n": 3 },
+    { "mode": "REPLAN_d20", "replan_delay_steps": 20, "successful_resolution_rate": 1.0, "n": 3 }
+  ],
+  "episode_results_uri": "experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1b_isaac/isaac_aggregate.json"
+}

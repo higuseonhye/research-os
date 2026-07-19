@@ -1,0 +1,27 @@
+{
+  "experiment": "EXP-SURG-001B",
+  "mode": "isaac",
+  "task": "Isaac-Reach-Dual-STAR-IK-Rel-Play-v0",
+  "note": "Compact aggregate from RunPod study1b_timing_curve isaac_results.json (n=3 episodes × 5 branches).",
+  "shift_distance_m": 0.03,
+  "tol_m": 0.02,
+  "onset_step": 20,
+  "replan_delays": [0, 5, 10, 20],
+  "records": [
+    {"episode": 0, "response": "CONTINUE", "replan_delay": null, "final_distance_m": 0.5913, "completion_steps": 160, "successful_resolution": false, "forbidden_violation": false, "terminal_category": "timeout_failure"},
+    {"episode": 1, "response": "CONTINUE", "replan_delay": null, "final_distance_m": 0.0294, "completion_steps": 160, "successful_resolution": false, "forbidden_violation": false, "terminal_category": "timeout_failure"},
+    {"episode": 2, "response": "CONTINUE", "replan_delay": null, "final_distance_m": 0.0302, "completion_steps": 160, "successful_resolution": false, "forbidden_violation": false, "terminal_category": "timeout_failure"},
+    {"episode": 0, "response": "REPLAN_d0", "replan_delay": 0, "final_distance_m": 0.0193, "completion_steps": 124, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 1, "response": "REPLAN_d0", "replan_delay": 0, "final_distance_m": 0.0187, "completion_steps": 64, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 2, "response": "REPLAN_d0", "replan_delay": 0, "final_distance_m": 0.0186, "completion_steps": 70, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 0, "response": "REPLAN_d5", "replan_delay": 5, "final_distance_m": 0.0194, "completion_steps": 100, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 1, "response": "REPLAN_d5", "replan_delay": 5, "final_distance_m": 0.0194, "completion_steps": 60, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 2, "response": "REPLAN_d5", "replan_delay": 5, "final_distance_m": 0.0197, "completion_steps": 101, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 0, "response": "REPLAN_d10", "replan_delay": 10, "final_distance_m": 0.0197, "completion_steps": 103, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 1, "response": "REPLAN_d10", "replan_delay": 10, "final_distance_m": 0.0197, "completion_steps": 97, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 2, "response": "REPLAN_d10", "replan_delay": 10, "final_distance_m": 0.0195, "completion_steps": 90, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 0, "response": "REPLAN_d20", "replan_delay": 20, "final_distance_m": 0.0187, "completion_steps": 98, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 1, "response": "REPLAN_d20", "replan_delay": 20, "final_distance_m": 0.0188, "completion_steps": 105, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"},
+    {"episode": 2, "response": "REPLAN_d20", "replan_delay": 20, "final_distance_m": 0.0195, "completion_steps": 67, "successful_resolution": true, "forbidden_violation": false, "terminal_category": "successful_resolution"}
+  ]
+}
