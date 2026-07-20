@@ -1,0 +1,4 @@
+response,response_class,n,successful_resolution_rate,forbidden_violation_rate,mean_final_distance_m
+CONTINUE,policy,5,0.0,0.0,0.1669
+REOBSERVE,policy_information,5,0.8,0.0,0.1749
+REPLAN_d20,policy,5,1.0,0.0,0.0194

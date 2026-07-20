@@ -14,6 +14,7 @@
 | `run_study1d_runpod.sh` | Isaac 001D D0 smoke on RunPod |
 | `orbit_reach_study1d_counterfactual.py` | 001D Isaac runner |
 | `copy_study1c_figures_to_results.sh` | Commit figures from pod |
+| `copy_study1d_results_from_pod.sh` | scp full 001D JSON to results/ |
 | `bootstrap_orbit_surgical_runpod.sh` | ORBIT/Isaac bootstrap |
 | `orbit_reach_scripted_smoke.py` | Scripted controller smoke |
 | `cloud_preflight.sh` | GPU preflight |

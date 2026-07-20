@@ -10,10 +10,11 @@
 | **001A** | CONTINUE vs REPLAN @ same onset | [`study1a_report.md`](study1a_report.md) |
 | **001B** | REPLAN delay 0–20 @ 3 cm (flat band) | [`study1b_report.md`](study1b_report.md) |
 | **001C** | Severity × delay surface (full grid) | [`study1c_report.md`](study1c_report.md) · [`results/study1c_isaac/`](results/study1c_isaac/) |
+| **001D** | Occlusion × 3-mode @ 6 cm | [`study1d_report.md`](study1d_report.md) · [`results/study1d_isaac/`](results/study1d_isaac/) |
 
 Fig 4/5 captions: [`docs/paper1/fig_captions.md`](../../../docs/paper1/fig_captions.md)
 
-**001C re-run / merge:** `bash scripts/run_study1c_severity_runpod.sh` · merge: `/isaac-sim/python.sh scripts/run_study1c.py --merge [--smoke]`
+**001D RunPod:** `STUDY1D_SEEDS=0,1,2,3,4 bash scripts/run_study1d_runpod.sh`
 
 ---
 

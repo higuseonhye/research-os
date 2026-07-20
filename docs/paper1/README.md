@@ -19,6 +19,7 @@ See [`research_question.md`](research_question.md) · status [`status.md`](statu
 | **001A** @ 3 cm | CONTINUE **0/5** vs REPLAN **4/5** |
 | **001B** @ 3 cm | REPLAN **3/3** for delays 0–20; flat band |
 | **001C** grid | Mostly 0.8–1.0; **no timing cliff** in tested grid |
+| **001D** @ 6 cm + occlusion | REPLAN **5/5** · CONTINUE **0/5** · REOBSERVE **4/5** |
 
 **Interpretation (not claim):** Mode may dominate small delay at mild shift. Not a golden-time result.
 
@@ -28,11 +29,11 @@ Captions: [`fig_captions.md`](fig_captions.md)
 
 ---
 
-## Next experiment (Go · 2026-07-21 lab)
+## 001D (Isaac D0 · promoted)
 
-**001D** — occlusion @ 6 cm · REPLAN d20 · multi-mode.  
-Runner: `scripts/run_study1d.py` · RunPod: `scripts/run_study1d_runpod.sh`  
-D0 mock smoke OK · Isaac RunPod next.
+**001D** — [`study1d_report.md`](../../experiments/surgical_intelligence/exp_surg_001_execute_or_defer/study1d_report.md) · [`results/study1d_isaac/`](../../experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1d_isaac/)
+
+RunPod: `STUDY1D_SEEDS=0,1,2,3,4 bash scripts/run_study1d_runpod.sh` · **D1 next:** `STUDY1D_FULL=1`
 
 ---
 

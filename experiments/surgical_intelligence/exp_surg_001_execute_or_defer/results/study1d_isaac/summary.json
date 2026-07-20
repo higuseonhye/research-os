@@ -1,0 +1,16 @@
+{
+  "experiment_id": "EXP-SURG-001D",
+  "mode": "isaac",
+  "git_commit": "992141a83ba37480f847e749d56d3017e3907ad0",
+  "date": "2026-07-20",
+  "n_records": 15,
+  "shift_m": 0.06,
+  "replan_delay_steps": 20,
+  "occlusion_proxy": "gain_scale_flag_v0.1",
+  "aggregate_by_mode": {
+    "CONTINUE": {"n": 5, "success": 0},
+    "REPLAN_d20": {"n": 5, "success": 5},
+    "REOBSERVE": {"n": 5, "success": 4}
+  },
+  "lab_one_liner": "occlusion @ 6cm · REPLAN d20 5/5 vs CONTINUE 0/5 · REOBSERVE 4/5"
+}
