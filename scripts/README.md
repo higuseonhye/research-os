@@ -10,6 +10,9 @@
 | `plot_study1b_timing_curve.py` | Fig 5 from aggregate |
 | `run_study1c.py` | 001C orchestrator / merge |
 | `run_study1c_severity_runpod.sh` | Isaac 001C grid on RunPod |
+| `run_study1d.py` | 001D orchestrator / merge |
+| `run_study1d_runpod.sh` | Isaac 001D D0 smoke on RunPod |
+| `orbit_reach_study1d_counterfactual.py` | 001D Isaac runner |
 | `copy_study1c_figures_to_results.sh` | Commit figures from pod |
 | `bootstrap_orbit_surgical_runpod.sh` | ORBIT/Isaac bootstrap |
 | `orbit_reach_scripted_smoke.py` | Scripted controller smoke |
