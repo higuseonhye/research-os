@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
-# EXP-SURG-001D — Occlusion × multi-mode D0 smoke (RunPod / Isaac host)
+# EXP-SURG-001D — Occlusion × multi-mode (RunPod / Isaac host)
 #
-# Usage (RunPod pod shell):
+# D0 smoke (3 modes · default):
 #   bash scripts/run_study1d_runpod.sh
+#   STUDY1D_SEEDS=0,1,2,3,4 bash scripts/run_study1d_runpod.sh
 #
-# D1 full grid (5 seeds · all modes):
+# D1 gate (1 seed · 5 modes):
+#   STUDY1D_FULL=1 STUDY1D_SEEDS=0 bash scripts/run_study1d_runpod.sh
+#
+# D1 atlas (5 seeds · 5 modes · 25 branches):
 #   STUDY1D_FULL=1 bash scripts/run_study1d_runpod.sh
 #
-# Contract: experiments/.../docs/study1d_occlusion_proxy_v0.1.md
+# Phase gate: experiments/.../docs/study1d_phase_gate.md
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

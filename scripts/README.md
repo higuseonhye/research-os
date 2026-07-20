@@ -11,7 +11,7 @@
 | `run_study1c.py` | 001C orchestrator / merge |
 | `run_study1c_severity_runpod.sh` | Isaac 001C grid on RunPod |
 | `run_study1d.py` | 001D orchestrator / merge |
-| `run_study1d_runpod.sh` | Isaac 001D D0 smoke on RunPod |
+| `run_study1d_runpod.sh` | Isaac 001D D0 smoke / D1 full on RunPod |
 | `orbit_reach_study1d_counterfactual.py` | 001D Isaac runner |
 | `copy_study1c_figures_to_results.sh` | Commit figures from pod |
 | `copy_study1d_results_from_pod.sh` | scp full 001D JSON to results/ |
@@ -23,5 +23,5 @@
 
 ## Artifacts
 
-- Committed: `experiments/.../results/study1a_isaac/`, `study1b_isaac/`, `study1c_isaac/`
+- Committed: `experiments/.../results/study1a_isaac/`, `study1b_isaac/`, `study1c_isaac/`, `study1d_isaac/`
 - Pod-only (gitignored): `experiments/.../artifacts/`

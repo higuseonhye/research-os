@@ -368,10 +368,15 @@ def write_csv(path: Path, records: list[dict[str, Any]]) -> None:
 
 
 def run_manifest(cfg: dict[str, Any], mode: str, smoke: bool, commit: str) -> dict[str, Any]:
+    phase = "D0_smoke" if smoke else "D1_full"
+    block = cfg["smoke"] if smoke else cfg.get("full", cfg["smoke"])
     return {
         "experiment_id": EXPERIMENT_ID,
+        "phase": phase,
         "mode": mode,
         "smoke": smoke,
+        "modes": list(block["modes"]),
+        "seeds": list(block["seeds"]),
         "git_commit": commit,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "occlusion_proxy_version": cfg["perturbation"].get("proxy_version", "v0.1"),
@@ -441,13 +446,14 @@ def run_isaac(cfg: dict[str, Any], artifact_root: Path, smoke: bool) -> None:
     subprocess.run(cmd, check=True)
 
 
-def load_isaac_records(artifact_root: Path) -> list[dict[str, Any]]:
-    for sub in ("isaac_smoke", "isaac_full", "."):
+def load_isaac_records(artifact_root: Path, smoke: bool = True) -> list[dict[str, Any]]:
+    subs = ("isaac_smoke", "isaac_full", ".") if smoke else ("isaac_full", "isaac_smoke", ".")
+    for sub in subs:
         js = artifact_root / sub / "isaac_results.json" if sub != "." else artifact_root / "isaac_results.json"
         if js.exists():
             data = json.loads(js.read_text(encoding="utf-8"))
             return list(data.get("records", []))
-    raise SystemExit(f"No isaac_results.json under {artifact_root}")
+    raise SystemExit(f"No isaac_results.json under {artifact_root} (smoke={smoke})")
 
 
 def print_summary(records: list[dict[str, Any]], agg: list[dict[str, Any]]) -> None:
@@ -464,15 +470,19 @@ def print_summary(records: list[dict[str, Any]], agg: list[dict[str, Any]]) -> N
 
 
 def write_report(path: Path, records: list[dict[str, Any]], agg: list[dict[str, Any]], manifest: dict[str, Any]) -> None:
+    phase = manifest.get("phase", "D0_smoke" if manifest.get("smoke") else "D1_full")
+    phase_label = "D0 smoke (3-mode)" if manifest.get("smoke") else "D1 full (5-mode)"
     lines = [
-        f"# {EXPERIMENT_ID} Report — Occlusion × multi-mode (D0)",
+        f"# {EXPERIMENT_ID} Report — Occlusion × multi-mode ({phase_label})",
         "",
-        f"> **Mode:** `{manifest['mode']}` · **Commit:** `{manifest['git_commit']}` · **Proxy:** gain_scale_flag v0.1",
+        f"> **Phase:** `{phase}` · **Mode:** `{manifest['mode']}` · **Commit:** `{manifest['git_commit']}` · **Proxy:** gain_scale_flag v0.1",
         "",
         "## Design",
         "",
         f"- Shift: **{manifest['target_shift_m']} m** · REPLAN delay **{manifest['replan_delay_steps']}** steps",
+        f"- Modes: {', '.join(str(m) for m in manifest.get('modes', []))} · seeds: {manifest.get('seeds', [])}",
         f"- Occlusion proxy: `{manifest['occlusion_proxy_type']}` · contract in docs/study1d_occlusion_proxy_v0.1.md",
+        f"- Smoke atlas only — see experiments/.../docs/study1d_phase_gate.md",
         "",
         "## Aggregate",
         "",
@@ -545,7 +555,7 @@ def main() -> None:
     commit = git_commit()
 
     if args.merge:
-        records = load_isaac_records(artifact_root)
+        records = load_isaac_records(artifact_root, smoke=smoke)
         mode = "isaac_merge"
     elif args.isaac:
         run_isaac(cfg, artifact_root, smoke=smoke)
