@@ -30,8 +30,9 @@ Captions: [`fig_captions.md`](fig_captions.md)
 
 ## Next experiment (Go · 2026-07-21 lab)
 
-**001D** — occlusion-induced visibility mismatch @ 6 cm · REPLAN delay 20 · multi-mode (continue / replan / reobserve / reshape).  
-Pre-reg and config: private `builder-os-private/working/experiments/` until Isaac smoke promotes public config.
+**001D** — occlusion @ 6 cm · REPLAN d20 · multi-mode.  
+Runner: `scripts/run_study1d.py` · RunPod: `scripts/run_study1d_runpod.sh`  
+D0 mock smoke OK · Isaac RunPod next.
 
 ---
 

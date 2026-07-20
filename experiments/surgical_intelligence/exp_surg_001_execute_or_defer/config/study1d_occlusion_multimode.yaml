@@ -98,6 +98,7 @@ blockers:
 run_plan:
   D0_smoke:
     runner: scripts/run_study1d.py
+    runpod: scripts/run_study1d_runpod.sh
     mode: mock_or_isaac_1seed
     decision_metric: branch_replay_ok
   D1_partial:
