@@ -1,0 +1,34 @@
+{
+  "experiment_id": "EXP-SURG-001D",
+  "phase": "D1_full",
+  "mode": "isaac",
+  "git_commit": "992141a83ba37480f847e749d56d3017e3907ad0",
+  "date": "2026-07-20",
+  "n_records": 25,
+  "shift_m": 0.06,
+  "replan_delay_steps": 20,
+  "occlusion_proxy": "gain_scale_flag_v0.1",
+  "aggregate_by_mode": {
+    "CONTINUE": {
+      "n": 5,
+      "success": 0
+    },
+    "REPLAN_d20": {
+      "n": 5,
+      "success": 5
+    },
+    "REOBSERVE": {
+      "n": 5,
+      "success": 4
+    },
+    "RESHAPE": {
+      "n": 5,
+      "success": 4
+    },
+    "HANDOVER": {
+      "n": 5,
+      "success": 0
+    }
+  },
+  "lab_one_liner": "occlusion @ 6cm \u00b7 5-mode smoke \u00b7 REPLAN 5/5 \u00b7 RESHAPE 4/5 \u00b7 REOBSERVE 4/5 \u00b7 HANDOVER stub 0/5"
+}

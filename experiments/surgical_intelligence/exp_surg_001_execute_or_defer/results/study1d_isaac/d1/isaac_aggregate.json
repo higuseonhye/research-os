@@ -1,0 +1,334 @@
+{
+  "experiment": "EXP-SURG-001D",
+  "phase": "D1_full",
+  "mode": "isaac",
+  "task": "Isaac-Reach-Dual-STAR-IK-Rel-Play-v0",
+  "note": "Promoted from RunPod isaac_full stdout 2026-07-20 \u00b7 pod commit 992141a \u00b7 25 branches.",
+  "git_commit": "992141a83ba37480f847e749d56d3017e3907ad0",
+  "shift_distance_m": 0.06,
+  "replan_delay_steps": 20,
+  "occlusion_proxy": "gain_scale_flag_v0.1",
+  "occlusion_level": 1,
+  "visibility_fraction": 0.35,
+  "onset_step": 20,
+  "tol_m": 0.02,
+  "aggregate_by_mode": [
+    {
+      "response": "CONTINUE",
+      "response_class": "policy",
+      "n": 5,
+      "successful_resolution_rate": 0.0,
+      "forbidden_violation_rate": 0.0,
+      "mean_final_distance_m": 0.1728
+    },
+    {
+      "response": "REPLAN_d20",
+      "response_class": "policy",
+      "n": 5,
+      "successful_resolution_rate": 1.0,
+      "forbidden_violation_rate": 0.0,
+      "mean_final_distance_m": 0.0191
+    },
+    {
+      "response": "REOBSERVE",
+      "response_class": "policy_information",
+      "n": 5,
+      "successful_resolution_rate": 0.8,
+      "forbidden_violation_rate": 0.0,
+      "mean_final_distance_m": 0.1753
+    },
+    {
+      "response": "RESHAPE",
+      "response_class": "environment",
+      "n": 5,
+      "successful_resolution_rate": 0.8,
+      "forbidden_violation_rate": 0.0,
+      "mean_final_distance_m": 0.1467
+    },
+    {
+      "response": "HANDOVER",
+      "response_class": "collaboration",
+      "n": 5,
+      "successful_resolution_rate": 0.0,
+      "forbidden_violation_rate": 0.0,
+      "mean_final_distance_m": 0.3454
+    }
+  ],
+  "records": [
+    {
+      "seed": 0,
+      "response": "CONTINUE",
+      "response_class": "policy",
+      "replan_delay": null,
+      "final_distance_m": 0.6061307191848755,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "timeout_failure"
+    },
+    {
+      "seed": 0,
+      "response": "REPLAN_d20",
+      "response_class": "policy",
+      "replan_delay": 20,
+      "final_distance_m": 0.018976757302880287,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 0,
+      "response": "REOBSERVE",
+      "response_class": "policy_information",
+      "replan_delay": null,
+      "final_distance_m": 0.7993036508560181,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": true,
+      "terminal_category": "timeout_failure"
+    },
+    {
+      "seed": 0,
+      "response": "RESHAPE",
+      "response_class": "environment",
+      "replan_delay": null,
+      "final_distance_m": 0.019913211464881897,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": true,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 0,
+      "response": "HANDOVER",
+      "response_class": "collaboration",
+      "replan_delay": null,
+      "final_distance_m": 0.743508517742157,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "handover_proxy"
+    },
+    {
+      "seed": 1,
+      "response": "CONTINUE",
+      "response_class": "policy",
+      "replan_delay": null,
+      "final_distance_m": 0.059325698763132095,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "timeout_failure"
+    },
+    {
+      "seed": 1,
+      "response": "REPLAN_d20",
+      "response_class": "policy",
+      "replan_delay": 20,
+      "final_distance_m": 0.019658895209431648,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 1,
+      "response": "REOBSERVE",
+      "response_class": "policy_information",
+      "replan_delay": null,
+      "final_distance_m": 0.018676020205020905,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": true,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 1,
+      "response": "RESHAPE",
+      "response_class": "environment",
+      "replan_delay": null,
+      "final_distance_m": 0.017982816323637962,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": true,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 1,
+      "response": "HANDOVER",
+      "response_class": "collaboration",
+      "replan_delay": null,
+      "final_distance_m": 0.24809373915195465,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "handover_proxy"
+    },
+    {
+      "seed": 2,
+      "response": "CONTINUE",
+      "response_class": "policy",
+      "replan_delay": null,
+      "final_distance_m": 0.0891541838645935,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "timeout_failure"
+    },
+    {
+      "seed": 2,
+      "response": "REPLAN_d20",
+      "response_class": "policy",
+      "replan_delay": 20,
+      "final_distance_m": 0.018718549981713295,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 2,
+      "response": "REOBSERVE",
+      "response_class": "policy_information",
+      "replan_delay": null,
+      "final_distance_m": 0.01986357569694519,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": true,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 2,
+      "response": "RESHAPE",
+      "response_class": "environment",
+      "replan_delay": null,
+      "final_distance_m": 0.6565104722976685,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": true,
+      "terminal_category": "timeout_failure"
+    },
+    {
+      "seed": 2,
+      "response": "HANDOVER",
+      "response_class": "collaboration",
+      "replan_delay": null,
+      "final_distance_m": 0.43658357858657837,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "handover_proxy"
+    },
+    {
+      "seed": 3,
+      "response": "CONTINUE",
+      "response_class": "policy",
+      "replan_delay": null,
+      "final_distance_m": 0.06000606343150139,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "timeout_failure"
+    },
+    {
+      "seed": 3,
+      "response": "REPLAN_d20",
+      "response_class": "policy",
+      "replan_delay": 20,
+      "final_distance_m": 0.019860301166772842,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 3,
+      "response": "REOBSERVE",
+      "response_class": "policy_information",
+      "replan_delay": null,
+      "final_distance_m": 0.019340502098202705,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": true,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 3,
+      "response": "RESHAPE",
+      "response_class": "environment",
+      "replan_delay": null,
+      "final_distance_m": 0.019141841679811478,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": true,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 3,
+      "response": "HANDOVER",
+      "response_class": "collaboration",
+      "replan_delay": null,
+      "final_distance_m": 0.186691552400589,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "handover_proxy"
+    },
+    {
+      "seed": 4,
+      "response": "CONTINUE",
+      "response_class": "policy",
+      "replan_delay": null,
+      "final_distance_m": 0.04929659515619278,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "timeout_failure"
+    },
+    {
+      "seed": 4,
+      "response": "REPLAN_d20",
+      "response_class": "policy",
+      "replan_delay": 20,
+      "final_distance_m": 0.018345940858125687,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 4,
+      "response": "REOBSERVE",
+      "response_class": "policy_information",
+      "replan_delay": null,
+      "final_distance_m": 0.01909131556749344,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": true,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 4,
+      "response": "RESHAPE",
+      "response_class": "environment",
+      "replan_delay": null,
+      "final_distance_m": 0.019781440496444702,
+      "successful_resolution": true,
+      "forbidden_violation": false,
+      "visibility_cleared": true,
+      "terminal_category": "successful_resolution"
+    },
+    {
+      "seed": 4,
+      "response": "HANDOVER",
+      "response_class": "collaboration",
+      "replan_delay": null,
+      "final_distance_m": 0.11236872524023056,
+      "successful_resolution": false,
+      "forbidden_violation": false,
+      "visibility_cleared": false,
+      "terminal_category": "handover_proxy"
+    }
+  ]
+}

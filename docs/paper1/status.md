@@ -19,17 +19,19 @@
 | Response mode changes outcome | Shown @ 3 cm |
 | Delay as measurable axis | Shown (001B flat band) |
 | Severity × delay surface | Run (001C) · mostly flat |
-| **001D** occlusion @ 6 cm · 3-mode | **Isaac D0 n=5** · REPLAN **5/5** vs CONTINUE **0/5** · REOBSERVE **4/5** |
+| **001D** occlusion @ 6 cm · 3-mode (D0) | **Isaac n=5** · REPLAN **5/5** vs CONTINUE **0/5** · REOBSERVE **4/5** |
+| **001D** occlusion @ 6 cm · 5-mode (D1 smoke) | REPLAN **5/5** · RESHAPE **4/5** · REOBSERVE **4/5** · HANDOVER stub **0/5** |
 | Fig 4 / Fig 5 captions | Frozen · [`fig_captions.md`](fig_captions.md) |
 
 ---
 
-## Next (001D · D1)
+## Next (Phase B — whole review)
 
 | Item | Status |
 | --- | --- |
-| **001D D1** RESHAPE + HANDOVER | Not yet run |
-| Full pod JSON → `results/study1d_isaac/isaac_results.json` | Optional scp upgrade |
+| Smoke summary table (001A–C + D0 + D1) | Ready for desk review |
+| Proper-run pre-reg v1.0 | Not started |
+| Full pod JSON → `results/study1d_isaac/d1/` | Optional scp upgrade |
 
 ---
 

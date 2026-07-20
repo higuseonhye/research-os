@@ -1,6 +1,6 @@
 # EXP-SURG-001D — Phase gate (smoke atlas vs proper run)
 
-> **Status:** active · D0 Isaac done · **D1 = smoke atlas completion**
+> **Status:** active · D0 + **D1 Isaac done** · Phase A smoke atlas **complete**
 
 ---
 
@@ -10,7 +10,7 @@
 | --- | --- | --- | --- | --- |
 | Shift-only baseline | 001A–C | continue/replan | 0–4 | ✅ Isaac |
 | Occlusion 3-mode | **D0** | CONTINUE, REPLAN, REOBSERVE | 0–4 | ✅ Isaac |
-| Occlusion 5-mode | **D1** | + RESHAPE, HANDOVER | 0–4 | ⏭ RunPod |
+| Occlusion 5-mode | **D1** | + RESHAPE, HANDOVER | 0–4 | ✅ Isaac |
 
 **Purpose:** Pipeline + proxy + profile **direction** — not Paper 1 final n.
 
