@@ -89,6 +89,7 @@ Platform: Isaac Sim 4.1 · ORBIT Dual-STAR Reach · scripted 6D IK-Rel.
 ## Links
 
 - Phase B review: [`phase_b_smoke_review.md`](phase_b_smoke_review.md)
+- Lit positioning v1: [`lit_positioning_v1.md`](lit_positioning_v1.md)
 - Phase C pre-reg: [`phase_c_proper_run_prereg_v1.0.md`](phase_c_proper_run_prereg_v1.0.md)
 - Roadmap: [`roadmap.md`](roadmap.md)
 - Status: [`status.md`](status.md)

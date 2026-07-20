@@ -10,33 +10,39 @@
 Phase A  Smoke atlas (001A–C + D0 + D1)     ✅ DONE
 Phase B  Desk review → decisions             ✅ DONE
 Phase C  Pre-reg v1.0 (frozen · not run)     ✅ PLANNED
+Lit v2   Positioning + baseline spec         ✅ DONE
          ↓
-Stage 2  Lit + industry + method deep dive   ← YOU ARE HERE (next work block)
+Stage 3  PI sign-off · runner proper n=20   ← YOU ARE HERE
          ↓
-Stage 3  Execute Phase C proper run (GPU)
+Stage 4  Execute Phase C proper run (GPU)
          ↓
-Stage 4  Paper 1 draft · lab talk evidence
+Stage 5  Paper 1 draft · lab talk evidence
 ```
 
 ---
 
-## Stage 2 — Prior work & method (before main GPU)
+## Stage 2 — Prior work & method ✅ (Lit sprint v2)
 
-**Goal:** Refine RQ, differentiation, and baselines so Phase C claims are defensible.
-
-| Work block | Deliverable | Location |
+| Work block | Status | Location |
 | --- | --- | --- |
-| **Lit sprint v2** | Update kill matrix · 5–10 new papers · industry scan (VLA, surgical UQ, MEDiC, VAP-TAMP) | private `prior_art_*` · Obsidian [[03_Research/Lit-Sprint-Recoverability-2026-07]] |
-| **RQ refinement** | v1.0 lock + sub-RQs + claim tiers | [`research_question.md`](research_question.md) |
-| **Method doc** | CF protocol · endpoints · baseline specs | private `research_method_and_differentiation_v1.md` |
-| **Industry trends** | What top labs optimize vs our eval wedge | private working note · optional blog slide |
-| **PI sign-off** | Phase C go/no-go on baselines + n | meeting notes |
+| **Lit sprint v2** | ✅ | [`lit_positioning_v1.md`](lit_positioning_v1.md) · private `lit_sprint_v2_smoke_synthesis.md` |
+| **RQ refinement** | ✅ v1.0 | [`research_question.md`](research_question.md) |
+| **Baseline spec** | ✅ draft | private `baseline_spec_phase_c_v1.0.md` |
+| **PI sign-off** | ⏭ | B2 baseline in v1.0 GPU? · GO for n=20 run |
 
-**Exit criterion:** Phase C pre-reg v1.0 signed · no open blocker on proxy/baseline semantics.
+**Exit criterion:** PI sign-off · runner `proper` ready.
 
 ---
 
-## Stage 3 — Main experiment (Phase C execution)
+## Stage 3 — Prep (before GPU)
+
+1. PI decision: include **B2 UQ-inspired baseline** in first proper run? (+20 branches)
+2. Implement `proper` block in yaml + runner (n=20 seeds)
+3. Pre-reg hash ≥7 days on manifest (or waiver)
+
+---
+
+## Stage 4 — Main experiment (Phase C execution)
 
 1. `git pull` · verify pre-reg hash on manifest
 2. RunPod: primary cell n=20 × 5 modes
@@ -66,4 +72,5 @@ Stage 4  Paper 1 draft · lab talk evidence
 | A | `results/study1*_isaac/` · reports | pre-reg history |
 | B | `docs/paper1/phase_b_smoke_review.md` | extended KR notes |
 | C plan | `docs/paper1/phase_c_proper_run_prereg_v1.0.md` | GPU checklist · baseline impl |
+| Lit v2 | `docs/paper1/lit_positioning_v1.md` | `lit_sprint_v2_smoke_synthesis.md` |
 | C results | `results/study1_proper/` (future) | analysis notebook |

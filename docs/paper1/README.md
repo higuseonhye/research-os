@@ -23,6 +23,7 @@ See [`research_question.md`](research_question.md) · status [`status.md`](statu
 | **001D D1** 5-mode | RESHAPE **4/5** · HANDOVER stub **0/5** |
 
 **Phase B review:** [`phase_b_smoke_review.md`](phase_b_smoke_review.md)  
+**Lit positioning v1:** [`lit_positioning_v1.md`](lit_positioning_v1.md)  
 **Phase C plan (not run):** [`phase_c_proper_run_prereg_v1.0.md`](phase_c_proper_run_prereg_v1.0.md)
 
 **Figures:** [Fig 4](../../experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1a_isaac/figures/counterfactual_grid.png) · [Fig 5](../../experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1b_isaac/figures/recoverability_vs_delay.png)
