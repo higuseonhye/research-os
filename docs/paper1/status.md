@@ -1,6 +1,7 @@
 # Paper 1 — evidence status (public)
 
-> **Updated:** 2026-07-19 · Isaac smokes only · mock runs not listed here
+> **Updated:** 2026-07-22 · Isaac smokes only · mock runs not listed here  
+> **Lab:** 2026-07-21 GO on ~6mo center · **001D Go** · detail phase (method/differentiation in private working notes)
 
 ---
 
@@ -22,14 +23,24 @@
 
 ---
 
+## Next (001D · Go 2026-07-21)
+
+| Item | Status |
+| --- | --- |
+| **001D** occlusion @ 6 cm · delay 20 · multi-mode | **Go** · pre-reg private · runner TBD |
+| Occlusion vs shift-only profile separation | Hypothesis · not yet run |
+| RESHAPE / handover branches | Proposed in 001D · not yet run |
+
+---
+
 ## Not yet (do not claim publicly)
 
 | Item | Status |
 | --- | --- |
 | Recoverability estimator / learned selector | Not run |
-| Environment reshape · occlusion · handover | Proposed · not yet run |
 | Clinical / OR validation | Out of scope Stage 1 |
-| Independent novelty verdict | Literature review in progress |
+| Independent novelty verdict | Literature review in progress · 0 Kill on full-combination test (private matrix) |
+| Beat Surgical UQ / VAP-TAMP baselines | Baselines not implemented |
 
 ---
 

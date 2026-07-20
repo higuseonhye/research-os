@@ -28,8 +28,16 @@ Captions: [`fig_captions.md`](fig_captions.md)
 
 ---
 
+## Next experiment (Go · 2026-07-21 lab)
+
+**001D** — occlusion-induced visibility mismatch @ 6 cm · REPLAN delay 20 · multi-mode (continue / replan / reobserve / reshape).  
+Pre-reg and config: private `builder-os-private/working/experiments/` until Isaac smoke promotes public config.
+
+---
+
 ## Not claiming (public)
 
 - Learned recoverability method · clinical deployment · golden time in seconds
 - Severity×delay as Paper 1 headline
 - Full novelty verdict vs recovery literature (in progress)
+- “No prior work on recovery” (pieces exist; wedge = same-state multi-mode CF profiles)
