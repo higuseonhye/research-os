@@ -1,0 +1,110 @@
+# EXP-SURG-001D — Occlusion × multi-mode recoverability profile
+# Pre-reg: builder-os-private/working/experiments/study1d_pre_registration.md v0.1.1
+# Proxy contract: docs/study1d_occlusion_proxy_v0.1.md
+
+experiment_id: EXP-SURG-001D
+status: d0_mock_ready
+pre_registration: study1d_pre_registration.md
+pre_registration_version: "0.1.1"
+
+task: Isaac-Reach-Dual-STAR-IK-Rel-Play-v0
+
+# Inherited from 001A–C (locked)
+onset: 20
+max_steps: 160
+episode_length_s: 20
+tol_m: 0.02
+body_index: 13
+gain: 1.0
+max_delta: 0.08
+seeds: [0, 1, 2, 3, 4]
+
+# 001C Isaac recommendation (anchor for REPLAN branch)
+target_shift_m: 0.06
+target_shift_cm: 6
+replan_delay_steps: 20
+anchor_source: results/study1c_isaac/summary.json
+
+perturbation:
+  id: P3
+  family: occlusion
+  proxy_version: v0.1
+  proxy_type: gain_scale_flag
+  description: >
+    Visibility mismatch at shared onset (step 20) with 6 cm target shift active.
+    v0.1: measurement label + proposer gain scale (no scene occluder geometry).
+  levels:
+    1:
+      visibility_fraction: 0.35
+      label: mild_occlusion_gain_scale
+    2:
+      visibility_fraction: 0.20
+      label: moderate_occlusion_gain_scale
+
+responses:
+  - id: CONTINUE
+    class: policy
+  - id: REPLAN
+    class: policy
+    replan_delay: 20
+  - id: REOBSERVE
+    class: policy_information
+    reobserve_hold_steps: 10
+    post_reobserve: replan_delay_0
+  - id: RESHAPE
+    class: environment
+    alias: camera_reposition
+    reshape_steps: 20
+    post_reshape: replan_delay_0
+  - id: HANDOVER
+    class: collaboration
+    alias: handover_proxy
+    freeze_action: true
+
+intervention_delays: [0, 10, 20, 40]
+
+smoke:
+  seeds: [0]
+  modes: [CONTINUE, REPLAN, REOBSERVE]
+  occlusion_levels: [1]
+
+full:
+  seeds: [0, 1, 2, 3, 4]
+  modes: [CONTINUE, REPLAN, REOBSERVE, RESHAPE, HANDOVER]
+  occlusion_levels: [1]
+
+analysis:
+  success_threshold_lvd: 0.8
+  primary_metrics:
+    - successful_resolution_rate
+    - forbidden_violation_rate
+    - terminal_category_distribution
+    - mean_time_to_resolution_steps
+
+blockers:
+  occlusion_proxy:
+    status: waived_v0.1
+    note: gain_scale_flag per docs/study1d_occlusion_proxy_v0.1.md
+  reshape_skill:
+    status: deferred_d1
+    note: kinematic proxy — camera gain boost + visibility clear after reshape_steps
+  handover_proxy:
+    status: deferred_d1
+    note: zero-action freeze + terminal_category handover_proxy
+  mon_lab_q5:
+    status: done
+    date: 2026-07-21
+
+run_plan:
+  D0_smoke:
+    runner: scripts/run_study1d.py
+    mode: mock_or_isaac_1seed
+    decision_metric: branch_replay_ok
+  D1_partial:
+    status: after_d0_gate
+  D2_confirm:
+    status: blocked_until_d1
+
+isaaclab_path: /workspace/IsaacLab/isaaclab.sh
+orbit_surgical_path: /workspace/orbit-surgical
+artifact_root: experiments/surgical_intelligence/exp_surg_001_execute_or_defer/artifacts/study1d_occlusion_multimode

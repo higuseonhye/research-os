@@ -27,7 +27,7 @@
 
 | Item | Status |
 | --- | --- |
-| **001D** occlusion @ 6 cm · delay 20 · multi-mode | **Go** · pre-reg private · runner TBD |
+| **001D** occlusion @ 6 cm · delay 20 · multi-mode | **Go** · D0 **mock smoke OK** · Isaac RunPod next |
 | Occlusion vs shift-only profile separation | Hypothesis · not yet run |
 | RESHAPE / handover branches | Proposed in 001D · not yet run |
 
