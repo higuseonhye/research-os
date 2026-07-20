@@ -18,24 +18,25 @@
 
 ---
 
-## Phase B — Whole review (after D1)
+## Phase B — Whole review (complete · desk)
 
-Desk checklist before proper run pre-reg v1.0:
-
-1. Smoke summary table (001A–C + D0 + D1)
-2. What we know / don't know (timing, REOBSERVE seed 0, RESHAPE vs REPLAN)
-3. Baseline list (Surgical UQ binary, B-VAP rule)
-4. Proxy upgrade (v0.2 geometry?) vs keep gain_scale
-5. n and power target for proper run
-6. GPU budget estimate
+Deliverable: [`docs/paper1/phase_b_smoke_review.md`](../../../../docs/paper1/phase_b_smoke_review.md)
 
 ---
 
-## Phase C — Proper experiment (later)
+## Phase C — Proper experiment (pre-reg frozen · not run)
 
-- Pre-reg **v1.0** frozen before GPU
-- n↑ · optional baseline implementation · promote to `results/study1d_proper/`
-- Claims for lab/paper from Phase C only (or clearly labeled “smoke” vs “confirmatory”)
+Pre-reg v1.0: [`docs/paper1/phase_c_proper_run_prereg_v1.0.md`](../../../../docs/paper1/phase_c_proper_run_prereg_v1.0.md)
+
+- Execute **after** lit + method deep dive + sign-off
+- n=20 · promote to `results/study1_proper/`
+- Claims labeled **confirmatory** only from Phase C results
+
+---
+
+## Roadmap
+
+[`docs/paper1/roadmap.md`](../../../../docs/paper1/roadmap.md)
 
 ---
 

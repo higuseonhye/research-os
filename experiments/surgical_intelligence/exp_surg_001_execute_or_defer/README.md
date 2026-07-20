@@ -10,11 +10,9 @@
 | **001A** | CONTINUE vs REPLAN @ same onset | [`study1a_report.md`](study1a_report.md) |
 | **001B** | REPLAN delay 0–20 @ 3 cm (flat band) | [`study1b_report.md`](study1b_report.md) |
 | **001C** | Severity × delay surface (full grid) | [`study1c_report.md`](study1c_report.md) · [`results/study1c_isaac/`](results/study1c_isaac/) |
-| **001D** | Occlusion × 3-mode @ 6 cm | [`study1d_report.md`](study1d_report.md) · [`results/study1d_isaac/`](results/study1d_isaac/) |
+| **001D** | Occlusion × multi-mode @ 6 cm (D0 + D1 smoke) | [`study1d_report.md`](study1d_report.md) · [`results/study1d_isaac/`](results/study1d_isaac/) · [`d1/`](results/study1d_isaac/d1/) |
 
-Fig 4/5 captions: [`docs/paper1/fig_captions.md`](../../../docs/paper1/fig_captions.md)
-
-**001D RunPod:** `STUDY1D_SEEDS=0,1,2,3,4 bash scripts/run_study1d_runpod.sh`
+**Phase B/C (planning · no GPU):** [`docs/paper1/phase_b_smoke_review.md`](../../../docs/paper1/phase_b_smoke_review.md) · [`phase_c_proper_run_prereg_v1.0.md`](../../../docs/paper1/phase_c_proper_run_prereg_v1.0.md) · [`roadmap.md`](../../../docs/paper1/roadmap.md)
 
 ---
 
@@ -35,12 +33,13 @@ Fig 4/5 captions: [`docs/paper1/fig_captions.md`](../../../docs/paper1/fig_capti
 
 ---
 
-## Paper 1 RQ (locked v0.7)
+## Paper 1 RQ (locked v1.0)
 
-> **How do intervention choice and start time jointly determine successful resolution after a task-relevant mismatch?**
+> **How do intervention choice and start time jointly determine successful resolution after a task-relevant mismatch at fixed state S?**
 
 - RQ: [`docs/paper1/research_question.md`](../../../docs/paper1/research_question.md)
-- Pre-registration: [`study1_pre_registration.md`](study1_pre_registration.md)
+- Pre-registration (Stage 1): [`study1_pre_registration.md`](study1_pre_registration.md)
+- Proper-run pre-reg v1.0 (frozen · not run): [`docs/paper1/phase_c_proper_run_prereg_v1.0.md`](../../../docs/paper1/phase_c_proper_run_prereg_v1.0.md)
 
 ## Six-month question (program)
 

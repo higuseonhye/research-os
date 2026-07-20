@@ -1,37 +1,41 @@
 # Paper 1 — evidence status (public)
 
-> **Updated:** 2026-07-22 · Isaac smokes only · mock runs not listed here  
-> **Lab:** 2026-07-21 GO on ~6mo center · **001D Go** · detail phase (method/differentiation in private working notes)
+> **Updated:** 2026-07-22 · Phase A complete · Phase B/C planning locked  
+> **Lab:** 2026-07-21 GO · detail phase → **lit + method → proper run**
 
 ---
 
 ## Honest one-liner
 
-> We have **not** yet shown a new recoverability method. We have established a **counterfactual simulation scaffold** that measures how **response choice and timing** affect **successful resolution** after task-relevant mismatch.
+> We have **not** yet shown a new recoverability method. We have established a **counterfactual simulation scaffold** and **smoke profiles** for how **response choice** affects **successful resolution** after task-relevant mismatch.
 
 ---
 
-## Secured (Stage 1)
+## Phase status
 
-| Item | Status |
+| Phase | Content | Status |
+| --- | --- | --- |
+| **A** | Smoke atlas 001A–C + D0 + D1 | ✅ Isaac done |
+| **B** | Desk review · decisions | ✅ [`phase_b_smoke_review.md`](phase_b_smoke_review.md) |
+| **C** | Proper-run pre-reg v1.0 | ✅ Frozen · **not executed** · [`phase_c_proper_run_prereg_v1.0.md`](phase_c_proper_run_prereg_v1.0.md) |
+| **Next** | Lit + industry + method deep dive | ⏭ before GPU |
+| **Then** | Phase C proper run (n=20) | ⏭ after sign-off |
+
+Roadmap: [`roadmap.md`](roadmap.md) · RQ v1.0: [`research_question.md`](research_question.md)
+
+---
+
+## Secured — smoke (Tier B · direction only)
+
+| Item | Result |
 | --- | --- |
 | Same-state counterfactual branching | Shown (001A) |
-| Response mode changes outcome | Shown @ 3 cm |
-| Delay as measurable axis | Shown (001B flat band) |
-| Severity × delay surface | Run (001C) · mostly flat |
-| **001D** occlusion @ 6 cm · 3-mode (D0) | **Isaac n=5** · REPLAN **5/5** vs CONTINUE **0/5** · REOBSERVE **4/5** |
-| **001D** occlusion @ 6 cm · 5-mode (D1 smoke) | REPLAN **5/5** · RESHAPE **4/5** · REOBSERVE **4/5** · HANDOVER stub **0/5** |
+| Mode @ 3 cm | CONTINUE **0/5** vs REPLAN **4/5** |
+| Delay @ 3 cm | Flat REPLAN band 0–20 (001B) |
+| Severity × delay | Mostly 0.8–1.0 · no cliff (001C) |
+| Occlusion @ 6 cm D0 | REPLAN **5/5** · REOBSERVE **4/5** |
+| Occlusion @ 6 cm D1 | + RESHAPE **4/5** · HANDOVER stub **0/5** |
 | Fig 4 / Fig 5 captions | Frozen · [`fig_captions.md`](fig_captions.md) |
-
----
-
-## Next (Phase B — whole review)
-
-| Item | Status |
-| --- | --- |
-| Smoke summary table (001A–C + D0 + D1) | Ready for desk review |
-| Proper-run pre-reg v1.0 | Not started |
-| Full pod JSON → `results/study1d_isaac/d1/` | Optional scp upgrade |
 
 ---
 
@@ -39,10 +43,11 @@
 
 | Item | Status |
 | --- | --- |
-| Recoverability estimator / learned selector | Not run |
+| Confirmatory n (Phase C) | Pre-reg only |
+| Recoverability estimator / learned selector | Stage 2 |
+| Beat Surgical UQ / B-VAP baselines | Stretch · not implemented |
 | Clinical / OR validation | Out of scope Stage 1 |
-| Independent novelty verdict | Literature review in progress · 0 Kill on full-combination test (private matrix) |
-| Beat Surgical UQ / VAP-TAMP baselines | Baselines not implemented |
+| Golden-time headline | Smoke shows flat bands @ tested grid |
 
 ---
 
