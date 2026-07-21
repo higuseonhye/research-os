@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # EXP-SURG-002 Phase 1 — Dream curriculum: mock → Isaac (RunPod)
-# Pre-reg: docs/stage2/study2_prereg_v0.1.md
+# Pre-reg: builder-os-private/working/research/stage2/study2_prereg_v0.1.md
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

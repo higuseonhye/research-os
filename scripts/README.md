@@ -28,7 +28,7 @@
 | `export_study2_isaac_specs.py` | Top-k specs from mock records |
 | `merge_study2_isaac_results.py` | Aggregate per-spec Isaac JSON |
 
-Pre-reg: `docs/stage2/study2_prereg_v0.1.md`
+Pre-reg: `builder-os-private/working/research/stage2/study2_prereg_v0.1.md` (private)
 
 ---
 
