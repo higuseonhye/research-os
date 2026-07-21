@@ -1,0 +1,22 @@
+{
+  "tier": "B",
+  "label": "mock_smoke",
+  "prereg": "docs/stage2/study2_prereg_v0.1.md",
+  "run_id": "20260721T094451Z",
+  "seed": 42,
+  "n_episodes": 48,
+  "compare": true,
+  "runs": [
+    {
+      "dreamer": "gaussian",
+      "informative_rate": 0.979,
+      "param_diversity": 2.358
+    },
+    {
+      "dreamer": "diffusion",
+      "informative_rate": 0.688,
+      "param_diversity": 4.446
+    }
+  ],
+  "note": "Desk mock only · not Isaac confirmatory · re-run on RunPod per pre-reg"
+}

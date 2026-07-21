@@ -1,0 +1,43 @@
+version: "0.1"
+experiment: EXP-SURG-002
+study: dream_curriculum_sandbox
+
+dream_space:
+  shift_m:
+    min: 0.02
+    max: 0.08
+  onset_step:
+    min: 10
+    max: 40
+  occlusion_gain:
+    min: 0.0
+    max: 0.85
+
+mock:
+  max_steps: 80
+  tol_m: 0.02
+  responses: [CONTINUE, REPLAN]
+
+dreamers:
+  gaussian:
+    shift_mean: 0.04
+    shift_std: 0.015
+    onset_mean: 20
+    onset_std: 8
+    occlusion_mean: 0.3
+    occlusion_std: 0.2
+  diffusion:
+    train_steps: 200
+    sample_steps: 50
+    beta_start: 0.0001
+    beta_end: 0.02
+    n_train_seeds: 64
+
+agent:
+  rule:
+    families: [target_shift, visual_occlusion, forbidden_region]
+    severity_cycle: [small, mid, unreachable]
+
+taxonomy_path: experiments/surgical_intelligence/exp_surg_001_execute_or_defer/config/exception_taxonomy.yaml
+
+output_root: results/study2_dream_curriculum/mock

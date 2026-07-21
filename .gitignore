@@ -37,6 +37,8 @@ datasets/metadata/labels.json
 artifacts/
 !experiments/_templates/research_artifact/
 !experiments/_templates/research_artifact/**
+# Study2 ephemeral mock runs (promote summaries under exp_surg_002/results/)
+results/study2_dream_curriculum/
 # Per-run heavy media stays under ignored artifacts/; commit yaml/csv/md beside results/
 *.mp4
 *.webm

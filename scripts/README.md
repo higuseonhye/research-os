@@ -19,6 +19,17 @@
 | `orbit_reach_scripted_smoke.py` | Scripted controller smoke |
 | `cloud_preflight.sh` | GPU preflight |
 
+### EXP-SURG-002 (Stage 1 · dream curriculum)
+
+| Script | Purpose |
+| --- | --- |
+| `run_study2_dream_curriculum_mock.py` | CPU mock · gaussian vs diffusion |
+| `run_study2_dream_curriculum_runpod.sh` | Phase 1 mock → Isaac loop |
+| `export_study2_isaac_specs.py` | Top-k specs from mock records |
+| `merge_study2_isaac_results.py` | Aggregate per-spec Isaac JSON |
+
+Pre-reg: `docs/stage2/study2_prereg_v0.1.md`
+
 ---
 
 ## Artifacts
