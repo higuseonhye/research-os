@@ -10,7 +10,7 @@ This repo does not duplicate the full survey. Use the links below.
 ## Start here
 
 1. [Research framing v1](research_framing_v1.md) — vision · paradigm map · Stage 1–3 arc
-2. [**Paper reading Day 1 (2026-07-22)**](paper_reading_day1_2026-07-22.md) — **today’s PDF queue + NotebookLM**
+2. [**Paper reading Day 1 (2026-07-22)**](paper_reading_day1_2026-07-22.md) — **today's PDF queue + NotebookLM** · **Batch B first**
 3. [Research question v1.0](research_question.md)
 4. [Evaluation landscape v0.2](evaluation_landscape_2024_2026_v0.2.md) — benchmark · metric · ReSYNC cluster
 5. [Lit positioning v1](lit_positioning_v1.md) — one-page public stance
@@ -18,18 +18,12 @@ This repo does not duplicate the full survey. Use the links below.
 
 ---
 
-## Today’s reading (Batch A · must)
+## Today's reading (Batch B first · then A)
 
-| # | Paper | PDF | Role |
-| --- | --- | --- | --- |
-| A1 | Surgical UQ | [2501.10561](https://arxiv.org/pdf/2501.10561) | Binary baseline |
-| A2 | SuFIA-BC | [2504.14857](https://arxiv.org/pdf/2504.14857) | ORBIT surgical benchmark |
-| A3 | Guardian | [2512.01946](https://arxiv.org/pdf/2512.01946) | Failure eval protocol |
-| A4 | FailSafe | [2510.01642](https://arxiv.org/pdf/2510.01642) | Recovery + VLA monitor |
-| A5 | RoboFAC | [2505.12224](https://arxiv.org/pdf/2505.12224) | Failure QA + correction |
-| A6 | ResponsibleRobotBench | [2512.04308](https://arxiv.org/pdf/2512.04308) | HITL + safety metrics |
-
-**Batch B (if time):** [ReSYNC](https://arxiv.org/pdf/2606.18328) · [IVNTR](https://arxiv.org/pdf/2502.08697) · [RecoveryChaining](https://arxiv.org/pdf/2410.13979) · [VAP-TAMP](https://arxiv.org/pdf/2604.26988)
+| Batch | Papers | PDF pack |
+| --- | --- | --- |
+| **B (now)** | ReSYNC · IVNTR · RecoveryChaining · VAP-TAMP | [2606.18328](https://arxiv.org/pdf/2606.18328) · [2502.08697](https://arxiv.org/pdf/2502.08697) · [2410.13979](https://arxiv.org/pdf/2410.13979) · [2604.26988](https://arxiv.org/pdf/2604.26988) |
+| **A (after)** | Surgical UQ · SuFIA · Guardian · FailSafe · RoboFAC · ResponsibleRobotBench | see [reading Day 1](paper_reading_day1_2026-07-22.md) |
 
 Full checklist: [`paper_reading_day1_2026-07-22.md`](paper_reading_day1_2026-07-22.md)
 
@@ -92,5 +86,5 @@ Table: [`evaluation_landscape_2024_2026_v0.2.md`](evaluation_landscape_2024_2026
 ## Honest status (2026-07-22)
 
 - Desk maps + evaluation landscape v0.2 ✅  
-- **PDF deep read:** starting today — see [reading Day 1](paper_reading_day1_2026-07-22.md)  
-- Phase C GPU blocked until Tier 1 Batch A complete + PI baseline sign-off
+- **PDF deep read:** Batch B in progress — see [reading Day 1](paper_reading_day1_2026-07-22.md)  
+- Phase C GPU blocked until Batch B + Batch A PDF read + PI baseline sign-off
