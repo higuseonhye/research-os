@@ -1,7 +1,6 @@
 # Informative failures @ fixed S — measurement + generation
 
-> Portfolio landing v0.1 · copy to Notion / GitHub Pages / personal site  
-> Canonical repo: [github.com/higuseonhye/research-os](https://github.com/higuseonhye/research-os)
+> Portfolio · **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)** · source [`docs/index.md`](docs/index.md)
 
 ---
 

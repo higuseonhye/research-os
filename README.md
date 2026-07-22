@@ -40,7 +40,7 @@ Full status: [`docs/paper1/status.md`](docs/paper1/status.md)
 
 | | Link |
 | --- | --- |
-| Portfolio landing (copy) | [`docs/portfolio/landing.md`](docs/portfolio/landing.md) |
+| Portfolio landing | **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)** · [`docs/index.md`](docs/index.md) |
 | Paper 1 hub | [`docs/paper1/README.md`](docs/paper1/README.md) |
 | Research question v1.0 | [`docs/paper1/research_question.md`](docs/paper1/research_question.md) |
 | EXP-SURG-001 | [`experiments/.../exp_surg_001_execute_or_defer/README.md`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/README.md) |
