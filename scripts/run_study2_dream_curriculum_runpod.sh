@@ -4,6 +4,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PY="${STUDY2_PYTHON:-python3}"
 ARTIFACT_DIR="$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/artifacts"
 DEFAULT_RECORDS="$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/records_seed43.json"
 MOCK_EPISODES="${STUDY2_MOCK_EPISODES:-48}"
@@ -54,7 +55,7 @@ else
     mock_idx=$((mock_idx + 1))
     sub="$OUT_MOCK/seed_${mock_seed}"
     mkdir -p "$sub"
-    python scripts/run_study2_dream_curriculum_mock.py \
+    "$PY" scripts/run_study2_dream_curriculum_mock.py \
       --compare \
       --episodes "$MOCK_EPISODES" \
       --seed "$mock_seed" \
@@ -76,7 +77,7 @@ else
   cp -f "$LATEST_MOCK/summary.json" "$OUT_MOCK/summary_merged.json"
 fi
 
-python scripts/export_study2_isaac_specs.py \
+"$PY" scripts/export_study2_isaac_specs.py \
   --records "$RECORDS_FOR_EXPORT" \
   --out "$SPECS_OUT" \
   --top-k "$TOP_K" \
@@ -159,7 +160,7 @@ if failures:
 PY
 
 # --- Step 4: Merge ---
-python scripts/merge_study2_isaac_results.py \
+"$PY" scripts/merge_study2_isaac_results.py \
   --specs "$SPECS_OUT" \
   --results-dir "$PER_SPEC_DIR" \
   --out-dir "$OUT_ISAAC" \
