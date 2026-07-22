@@ -32,7 +32,7 @@ Stage 5  Paper 1 draft · lab talk evidence
 | **Evaluation landscape** | ✅ v0.2 | [`evaluation_landscape_2024_2026_v0.2.md`](evaluation_landscape_2024_2026_v0.2.md) |
 | **RQ refinement** | ✅ v1.0 | [`research_question.md`](research_question.md) |
 | **Baseline spec** | ✅ draft | private `baseline_spec_phase_c_v1.0.md` |
-| **PI sign-off** | ✅ self-GO 2026-07-22 | Tier 0–1 only · B2 deferred v1.1 |
+| **Proper run** | ⏭ | Tier 0–1 · n=20 · smoke atlas complete |
 
 ## Stage 2b — PDF deep read
 
@@ -48,8 +48,8 @@ Stage 5  Paper 1 draft · lab talk evidence
 
 ## Stage 3 — Prep (before GPU)
 
-1. ~~PI decision: include **B2 UQ-inspired baseline**~~ → **deferred v1.1** (logged in `weekly_alignment_v0.1.md`)
-2. Implement `proper` block in yaml + runner (n=20 seeds) — or use 001D full path @ 6 cm anchor
+1. **B2 UQ baseline** → deferred until after Phase C proper profile (optional v1.1)
+2. Run Phase C proper (n=20 seeds) — smoke path validated via 001D
 3. Pre-reg hash ≥7 days on manifest (or waiver)
 
 ---
