@@ -25,6 +25,7 @@
 | --- | --- |
 | `run_study2_dream_curriculum_mock.py` | CPU mock · gaussian vs diffusion |
 | `run_study2_dream_curriculum_runpod.sh` | Phase 1 mock → Isaac loop |
+| `run_study2_dream_curriculum_smoke_runpod.sh` | Isaac smoke only (skip mock, TOP_K=2) |
 | `export_study2_isaac_specs.py` | Top-k specs from mock records |
 | `merge_study2_isaac_results.py` | Aggregate per-spec Isaac JSON |
 

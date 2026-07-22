@@ -1,0 +1,91 @@
+{
+  "tier": "B",
+  "label": "mock_smoke_v0.2",
+  "prereg": "builder-os-private/working/research/stage2/study2_prereg_v0.1.md (private)",
+  "date": "2026-07-22",
+  "n_episodes": 48,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "agent": "rule",
+  "by_seed": {
+    "42": [
+      {
+        "dreamer": "gaussian",
+        "agent": "rule",
+        "n_episodes": 48,
+        "informative_count": 47,
+        "informative_rate": 0.9791666666666666,
+        "param_diversity": 2.3583575636581644,
+        "bootstrap_informative": 62
+      },
+      {
+        "dreamer": "diffusion",
+        "agent": "rule",
+        "n_episodes": 48,
+        "informative_count": 33,
+        "informative_rate": 0.6875,
+        "param_diversity": 4.446171996312542,
+        "bootstrap_informative": 60
+      }
+    ],
+    "43": [
+      {
+        "dreamer": "gaussian",
+        "agent": "rule",
+        "n_episodes": 48,
+        "informative_count": 47,
+        "informative_rate": 0.9791666666666666,
+        "param_diversity": 2.254466953592866,
+        "bootstrap_informative": 62
+      },
+      {
+        "dreamer": "diffusion",
+        "agent": "rule",
+        "n_episodes": 48,
+        "informative_count": 36,
+        "informative_rate": 0.75,
+        "param_diversity": 4.329715419797287,
+        "bootstrap_informative": 64
+      }
+    ],
+    "44": [
+      {
+        "dreamer": "gaussian",
+        "agent": "rule",
+        "n_episodes": 48,
+        "informative_count": 48,
+        "informative_rate": 1.0,
+        "param_diversity": 2.658508593248688,
+        "bootstrap_informative": 64
+      },
+      {
+        "dreamer": "diffusion",
+        "agent": "rule",
+        "n_episodes": 48,
+        "informative_count": 27,
+        "informative_rate": 0.5625,
+        "param_diversity": 4.468702077392044,
+        "bootstrap_informative": 64
+      }
+    ]
+  },
+  "aggregate": {
+    "gaussian": {
+      "informative_rate_mean": 0.986111111111111,
+      "param_diversity_mean": 2.423777703499906
+    },
+    "diffusion": {
+      "informative_rate_mean": 0.6666666666666666,
+      "param_diversity_mean": 4.414863164500624
+    }
+  },
+  "b3_fixed_p2": {
+    "shift_m": 0.04,
+    "onset_step": 20,
+    "informative_all_seeds": true
+  },
+  "note": "Desk mock complete for pre-reg 3-seed leg. Isaac smoke next on RunPod."
+}

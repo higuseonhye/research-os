@@ -5,10 +5,16 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ARTIFACT_DIR="$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/artifacts"
+DEFAULT_RECORDS="$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/records_seed43.json"
 MOCK_EPISODES="${STUDY2_MOCK_EPISODES:-48}"
 MOCK_SEEDS="${STUDY2_MOCK_SEEDS:-42,43,44}"
 TOP_K="${STUDY2_TOP_K:-5}"
 ISAAC_SEEDS="${STUDY2_ISAAC_SEEDS:-0,1,2,3,4}"
+
+if [ "${STUDY2_SMOKE:-0}" = "1" ]; then
+  TOP_K="${STUDY2_TOP_K:-2}"
+  ISAAC_SEEDS="${STUDY2_ISAAC_SEEDS:-0,1}"
+fi
 ONSET_DEFAULT="${STUDY2_ONSET:-20}"
 MAX_STEPS="${STUDY2_MAX_STEPS:-160}"
 RUN_ID="${STUDY2_RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}"
@@ -28,41 +34,53 @@ cp -f "$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum
 
 echo "== EXP-SURG-002 Phase 1 =="
 echo "run_id: $RUN_ID commit: $commit_sha"
-echo "mock episodes: $MOCK_EPISODES seeds: $MOCK_SEEDS top_k: $TOP_K"
+echo "smoke: ${STUDY2_SMOKE:-0} skip_mock: ${STUDY2_SKIP_MOCK:-0}"
+echo "mock episodes: $MOCK_EPISODES seeds: $MOCK_SEEDS top_k: $TOP_K isaac_seeds: $ISAAC_SEEDS"
 
-# --- Step 1: CPU mock (both dreamers) ---
-IFS=',' read -ra SEED_ARR <<< "$MOCK_SEEDS"
-mock_idx=0
-for mock_seed in "${SEED_ARR[@]}"; do
-  mock_idx=$((mock_idx + 1))
-  sub="$OUT_MOCK/seed_${mock_seed}"
-  mkdir -p "$sub"
-  python scripts/run_study2_dream_curriculum_mock.py \
-    --compare \
-    --episodes "$MOCK_EPISODES" \
-    --seed "$mock_seed" \
-    || true
-  latest="$(ls -td "$ROOT_DIR/results/study2_dream_curriculum/mock"/*/ 2>/dev/null | head -1)"
-  if [ -n "$latest" ]; then
-    cp -f "$latest/summary.json" "$sub/summary.json"
-    cp -f "$latest/records.json" "$sub/records.json"
+# --- Step 1: CPU mock (both dreamers) or reuse committed records ---
+RECORDS_FOR_EXPORT=""
+if [ "${STUDY2_SKIP_MOCK:-0}" = "1" ]; then
+  RECORDS_FOR_EXPORT="${STUDY2_RECORDS:-$DEFAULT_RECORDS}"
+  if [ ! -f "$RECORDS_FOR_EXPORT" ]; then
+    echo "[FAIL] STUDY2_SKIP_MOCK=1 but records missing: $RECORDS_FOR_EXPORT"
+    exit 1
   fi
-done
+  cp -f "$RECORDS_FOR_EXPORT" "$OUT_MOCK/records_merged.json"
+  echo "Using precomputed mock records: $RECORDS_FOR_EXPORT"
+else
+  IFS=',' read -ra SEED_ARR <<< "$MOCK_SEEDS"
+  mock_idx=0
+  for mock_seed in "${SEED_ARR[@]}"; do
+    mock_idx=$((mock_idx + 1))
+    sub="$OUT_MOCK/seed_${mock_seed}"
+    mkdir -p "$sub"
+    python scripts/run_study2_dream_curriculum_mock.py \
+      --compare \
+      --episodes "$MOCK_EPISODES" \
+      --seed "$mock_seed" \
+      || true
+    latest="$(ls -td "$ROOT_DIR/results/study2_dream_curriculum/mock"/*/ 2>/dev/null | head -1)"
+    if [ -n "$latest" ]; then
+      cp -f "$latest/summary.json" "$sub/summary.json"
+      cp -f "$latest/records.json" "$sub/records.json"
+    fi
+  done
 
-# Use latest compare records for spec export
-LATEST_MOCK="$(ls -td "$ROOT_DIR/results/study2_dream_curriculum/mock"/*/ 2>/dev/null | head -1)"
-if [ -z "$LATEST_MOCK" ] || [ ! -f "$LATEST_MOCK/records.json" ]; then
-  echo "[FAIL] No mock records.json — run mock manually first"
-  exit 1
+  LATEST_MOCK="$(ls -td "$ROOT_DIR/results/study2_dream_curriculum/mock"/*/ 2>/dev/null | head -1)"
+  if [ -z "$LATEST_MOCK" ] || [ ! -f "$LATEST_MOCK/records.json" ]; then
+    echo "[FAIL] No mock records.json — run mock manually first or set STUDY2_SKIP_MOCK=1"
+    exit 1
+  fi
+  RECORDS_FOR_EXPORT="$LATEST_MOCK/records.json"
+  cp -f "$RECORDS_FOR_EXPORT" "$OUT_MOCK/records_merged.json"
+  cp -f "$LATEST_MOCK/summary.json" "$OUT_MOCK/summary_merged.json"
 fi
-cp -f "$LATEST_MOCK/records.json" "$OUT_MOCK/records_merged.json"
-cp -f "$LATEST_MOCK/summary.json" "$OUT_MOCK/summary_merged.json"
 
 python scripts/export_study2_isaac_specs.py \
-  --records "$LATEST_MOCK/records.json" \
+  --records "$RECORDS_FOR_EXPORT" \
   --out "$SPECS_OUT" \
   --top-k "$TOP_K" \
-  --mock-run-id "$(basename "$LATEST_MOCK")"
+  --mock-run-id "$(basename "$(dirname "$RECORDS_FOR_EXPORT")")"
 
 # --- Step 2: Isaac bootstrap ---
 bash "$ROOT_DIR/scripts/bootstrap_orbit_surgical_runpod.sh"
