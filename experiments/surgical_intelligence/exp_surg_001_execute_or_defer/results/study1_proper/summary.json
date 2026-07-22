@@ -1,0 +1,36 @@
+{
+  "tier": "C",
+  "label": "study1_proper_v1.0",
+  "experiment": "EXP-SURG-001D Phase C primary cell",
+  "date": "2026-07-22",
+  "prereg": "docs/paper1/phase_c_proper_run_prereg_v1.0.md",
+  "design": {
+    "shift_m": 0.06,
+    "onset_step": 20,
+    "replan_delay": 20,
+    "occlusion_level": 1,
+    "visibility_fraction": 0.35,
+    "seeds_per_mode": 20,
+    "seed_range": "0-19",
+    "modes": ["CONTINUE", "REPLAN_d20", "REOBSERVE", "RESHAPE", "HANDOVER"],
+    "platform": "Isaac Sim 4.1 · ORBIT Reach IK-Rel · RunPod RTX 4090"
+  },
+  "aggregate_by_mode": [
+    {"response": "CONTINUE", "class": "policy", "n": 20, "success_rate": 0.0, "forbidden_violation_rate": 0.0, "mean_final_distance_m": 0.1698},
+    {"response": "REPLAN_d20", "class": "policy", "n": 20, "success_rate": 0.95, "forbidden_violation_rate": 0.0, "mean_final_distance_m": 0.0471},
+    {"response": "REOBSERVE", "class": "policy_information", "n": 20, "success_rate": 0.85, "forbidden_violation_rate": 0.0, "mean_final_distance_m": 0.1102},
+    {"response": "RESHAPE", "class": "environment", "n": 20, "success_rate": 0.9, "forbidden_violation_rate": 0.0, "mean_final_distance_m": 0.0784},
+    {"response": "HANDOVER", "class": "collaboration", "n": 20, "success_rate": 0.0, "forbidden_violation_rate": 0.0, "mean_final_distance_m": 0.3055}
+  ],
+  "primary_contrast": {
+    "hypothesis": "REPLAN_d20 success > CONTINUE @ fixed S",
+    "continue_success_rate": 0.0,
+    "replan_success_rate": 0.95,
+    "delta_pp": 95.0,
+    "pre_reg_direction_met": true
+  },
+  "branch_replay_ok": true,
+  "n_records": 100,
+  "pod_artifacts": "experiments/.../artifacts/study1d_occlusion_multimode/isaac_full/isaac_results.json",
+  "note": "Confirmatory Tier C summary from pod merge 2026-07-22. Full JSON via scripts/copy_study1_proper_from_pod.sh"
+}

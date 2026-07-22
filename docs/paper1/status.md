@@ -1,13 +1,13 @@
 # Paper 1 — evidence status (public)
 
-> **Updated:** 2026-07-22 · Smoke atlas done · **Phase C proper next** (smoke → proper loop)  
+> **Updated:** 2026-07-22 · **Phase C proper executed** (n=20 · Tier C summary committed)  
 > **Lab:** 2026-07-21 GO · detail phase → **runner proper → proper run**
 
 ---
 
 ## Honest one-liner
 
-> We have **not** yet shown a new recoverability method. We have established a **counterfactual simulation scaffold** and **smoke profiles** for how **response choice** affects **successful resolution** after task-relevant mismatch.
+> We have **not** yet shown a new recoverability **method**. We **have** confirmatory (n=20) evidence that **response choice at fixed mismatch S** yields **separable intervention profiles** — REPLAN_d20 **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion L1.
 
 ---
 
@@ -17,12 +17,26 @@
 | --- | --- | --- |
 | **A** | Smoke atlas 001A–C + D0 + D1 | ✅ Isaac done |
 | **B** | Desk review · decisions | ✅ [`phase_b_smoke_review.md`](phase_b_smoke_review.md) |
-| **C** | Proper-run pre-reg v1.0 | ✅ Frozen · **not executed** · [`phase_c_proper_run_prereg_v1.0.md`](phase_c_proper_run_prereg_v1.0.md) |
+| **C** | Proper-run pre-reg v1.0 | ✅ **Executed 2026-07-22** · [`phase_c_proper_run_prereg_v1.0.md`](phase_c_proper_run_prereg_v1.0.md) |
 | **Lit v2** | Positioning · industry · baseline spec | ✅ [`lit_positioning_v1.md`](lit_positioning_v1.md) |
-| **Next** | Phase C proper run (n=20 · Tier 0–1) | ⏭ after smoke atlas · B2 stretch deferred |
-| **Then** | Phase C proper run (GPU) | ⏭ |
+| **Next** | Promote full JSON · paper draft intro/method | ⏭ |
+| **Then** | B2 UQ baseline (optional v1.1) | backlog |
 
 Roadmap: [`roadmap.md`](roadmap.md) · RQ v1.0: [`research_question.md`](research_question.md)
+
+---
+
+## Secured — Phase C proper (Tier C · n=20)
+
+| Mode | Success (n=20) | Notes |
+| --- | ---: | --- |
+| **CONTINUE** | **0/20** | Primary baseline |
+| **REPLAN_d20** | **19/20 (95%)** | Primary contrast · +95 pp vs CONTINUE |
+| **REOBSERVE** | **17/20 (85%)** | Exploratory profile |
+| **RESHAPE** | **18/20 (90%)** | Exploratory profile |
+| **HANDOVER** | 0/20 | Stub · excluded from primary endpoint |
+
+`branch_replay_ok`: **100/100** · committed summary: [`results/study1_proper/summary.json`](../../experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper/summary.json)
 
 ---
 
@@ -44,11 +58,11 @@ Roadmap: [`roadmap.md`](roadmap.md) · RQ v1.0: [`research_question.md`](researc
 
 | Item | Status |
 | --- | --- |
-| Confirmatory n (Phase C) | Pre-reg only |
+| Full `isaac_results.json` in committed `results/study1_proper/` | scp from pod optional |
 | Recoverability estimator / learned selector | Stage 2 |
 | Beat Surgical UQ / B-VAP baselines | Stretch · not implemented |
 | Clinical / OR validation | Out of scope Stage 1 |
-| Golden-time headline | Smoke shows flat bands @ tested grid |
+| Golden-time headline | Delay sweep deferred |
 
 ---
 
