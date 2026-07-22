@@ -92,7 +92,11 @@ fi
   --mock-run-id "$(basename "$(dirname "$RECORDS_FOR_EXPORT")")"
 
 # --- Step 2: Isaac bootstrap ---
-bash "$ROOT_DIR/scripts/bootstrap_orbit_surgical_runpod.sh"
+if [ "${STUDY2_SKIP_BOOTSTRAP:-0}" != "1" ]; then
+  bash "$ROOT_DIR/scripts/bootstrap_orbit_surgical_runpod.sh"
+else
+  echo "Skipping bootstrap (STUDY2_SKIP_BOOTSTRAP=1)"
+fi
 
 export OMNI_KIT_ALLOW_ROOT=1
 export IsaacLab_PATH="${ISAACLAB_PATH:-/workspace/IsaacLab}"
@@ -104,7 +108,7 @@ export TASK
 # --- Step 3: Isaac per spec ---
 export ROOT_DIR SPECS_OUT PER_SPEC_DIR IsaacLab_PATH ORBIT_SURGICAL_PATH TASK ISAAC_SEEDS MAX_STEPS ONSET_DEFAULT
 
-python3 << 'PY'
+"$PY" << 'PY'
 import json
 import os
 import subprocess
