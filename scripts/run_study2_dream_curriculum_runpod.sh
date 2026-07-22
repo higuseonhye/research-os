@@ -4,7 +4,15 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PY="${STUDY2_PYTHON:-python3}"
+ISAAC_SIM_PATH="${ISAAC_SIM_PATH:-/isaac-sim}"
+PY="${STUDY2_PYTHON:-$ISAAC_SIM_PATH/python.sh}"
+if [ ! -x "$PY" ]; then
+  PY="/isaac-sim/python.sh"
+fi
+if [ ! -x "$PY" ]; then
+  echo "[FAIL] No Python on Isaac pod — set STUDY2_PYTHON=/isaac-sim/python.sh" >&2
+  exit 1
+fi
 ARTIFACT_DIR="$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/artifacts"
 DEFAULT_RECORDS="$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/records_seed43.json"
 MOCK_EPISODES="${STUDY2_MOCK_EPISODES:-48}"
