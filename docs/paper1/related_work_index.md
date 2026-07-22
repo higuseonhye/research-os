@@ -1,35 +1,24 @@
 # Paper 1 — Related work index (public)
 
 > **Full review index (private):** [related_work_review_index_v1.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/related_work_review_index_v1.md)  
+> **PDF reading queue (private):** [paper_reading_day1](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/paper_reading_day1_2026-07-22.md)  
 > **Obsidian:** [related-work-review-index](https://github.com/higuseonhye/builder-os-vault/blob/master/03_Research/related-work-review-index.md)
 
-This repo does not duplicate the full survey. Use the links below.
+This repo does not duplicate the full survey or internal reading workflows.
 
 ---
 
 ## Start here
 
 1. [Research framing v1](research_framing_v1.md) — vision · paradigm map · Stage 1–3 arc
-2. [**Paper reading Day 1 (2026-07-22)**](paper_reading_day1_2026-07-22.md) — **today's PDF queue + NotebookLM** · **Batch B first**
-3. [Research question v1.0](research_question.md)
-4. [Evaluation landscape v0.2](evaluation_landscape_2024_2026_v0.2.md) — benchmark · metric · ReSYNC cluster
-5. [Lit positioning v1](lit_positioning_v1.md) — one-page public stance
-6. [Phase B smoke review](phase_b_smoke_review.md) — what smoke supports
+2. [Research question v1.0](research_question.md)
+3. [Evaluation landscape v0.2](evaluation_landscape_2024_2026_v0.2.md) — benchmark · metric · ReSYNC cluster
+4. [Lit positioning v1](lit_positioning_v1.md) — one-page public stance
+5. [Phase B smoke review](phase_b_smoke_review.md) — what smoke supports
 
 ---
 
-## Today's reading (Batch B first · then A)
-
-| Batch | Papers | PDF pack |
-| --- | --- | --- |
-| **B (now)** | ReSYNC · IVNTR · RecoveryChaining · VAP-TAMP | [2606.18328](https://arxiv.org/pdf/2606.18328) · [2502.08697](https://arxiv.org/pdf/2502.08697) · [2410.13979](https://arxiv.org/pdf/2410.13979) · [2604.26988](https://arxiv.org/pdf/2604.26988) |
-| **A (after)** | Surgical UQ · SuFIA · Guardian · FailSafe · RoboFAC · ResponsibleRobotBench | see [reading Day 1](paper_reading_day1_2026-07-22.md) |
-
-Full checklist: [`paper_reading_day1_2026-07-22.md`](paper_reading_day1_2026-07-22.md)
-
----
-
-## Core prior lines (Tier 1 · PDF deep read)
+## Core prior lines (Tier 1)
 
 | Line | arXiv | Our relation |
 | --- | --- | --- |
@@ -37,8 +26,6 @@ Full checklist: [`paper_reading_day1_2026-07-22.md`](paper_reading_day1_2026-07-
 | VAP-TAMP | [2604.26988](https://arxiv.org/abs/2604.26988) | High refine · eval vs stack |
 | MEDiC | [2409.14287](https://arxiv.org/abs/2409.14287) | RESHAPE ally |
 | Recovery RL | [2203.02638](https://arxiv.org/abs/2203.02638) | 2-policy switch |
-| Introspective recovery | [2103.11881](https://arxiv.org/abs/2103.11881) | Recovery exists |
-| When-to-act | [2605.12561](https://arxiv.org/abs/2605.12561) | RTA / timing (control) |
 | Active perception | [2003.06734](https://arxiv.org/abs/2003.06734) | REOBSERVE ally |
 
 ---
@@ -77,14 +64,14 @@ Table: [`evaluation_landscape_2024_2026_v0.2.md`](evaluation_landscape_2024_2026
 | Doc | URL |
 | --- | --- |
 | Related work map EN | [paper1_related_work.md](https://github.com/higuseonhye/builder-os-private/blob/master/program/mechanism_atlas/paper1_related_work.md) |
-| Related work KR | [paper1_related_work_kr.md](https://github.com/higuseonhye/builder-os-private/blob/master/meeting/2026-07-21-first-share/paper1_related_work_kr.md) |
 | Kill matrix | [prior_art_recoverability_matrix.yaml](https://github.com/higuseonhye/builder-os-private/blob/master/program/mechanism_atlas/prior_art_recoverability_matrix.yaml) |
 | Lit sprint v2 | [lit_sprint_v2_smoke_synthesis.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/lit_sprint_v2_smoke_synthesis.md) |
+| Reading queue | [paper_reading_day1_2026-07-22.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/paper_reading_day1_2026-07-22.md) |
 
 ---
 
 ## Honest status (2026-07-22)
 
 - Desk maps + evaluation landscape v0.2 ✅  
-- **PDF deep read:** Batch B in progress — see [reading Day 1](paper_reading_day1_2026-07-22.md)  
-- Phase C GPU blocked until Batch B + Batch A PDF read + PI baseline sign-off
+- PDF deep read progress tracked in **private** reading queue  
+- Phase C GPU blocked until baseline sign-off

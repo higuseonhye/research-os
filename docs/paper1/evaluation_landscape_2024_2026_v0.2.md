@@ -1,8 +1,7 @@
 # Embodied AI Evaluation Landscape 2024–2026 (v0.2)
 
-> **Status:** desk synthesis + session 2026-07-22 · PDF spot-check **in progress**  
-> **Purpose:** validate decision-layer evaluation gap · map paradigms · feed Paper 1 baselines  
-> **Prior:** [v0.1 diff](evaluation_landscape_2024_2026_v0.1.md) — v0.2 adds ReSYNC cluster + paradigm map
+> **Status:** desk synthesis · PDF spot-check in progress  
+> **Purpose:** validate decision-layer evaluation gap · map paradigms · feed Paper 1 baselines
 
 ---
 
@@ -39,8 +38,6 @@ Most failure/recovery work evaluates **detection → recovery action** or **task
 | **RoboFAC** [2505.12224](https://arxiv.org/abs/2505.12224) | arXiv 2025 | Failure QA + correction rounds | No | No |
 | **ResponsibleRobotBench** [2512.04308](https://arxiv.org/abs/2512.04308) | arXiv 2025 | Hazard · SSR · `call_human_help` | Partial | Partial |
 | **001A–D (ours)** | research-os | Profile \(R_a(s,t)\) @ fixed **S** | **Yes** | Planned Phase C+ |
-
-*(Full columns: see [v0.1](evaluation_landscape_2024_2026_v0.1.md) master table — unchanged.)*
 
 ---
 
@@ -79,8 +76,6 @@ Most failure/recovery work evaluates **detection → recovery action** or **task
 | Unsafe continuation | ❌ / partial | **Primary** |
 | Same-state CF fairness | ❌ | **Core method** |
 | Recovery action quality | ✅ common | Secondary |
-
-Full matrix: [v0.1 § Metric gap](evaluation_landscape_2024_2026_v0.1.md).
 
 ---
 

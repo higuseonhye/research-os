@@ -142,8 +142,7 @@ Shared rollout → mismatch @ S → fork(response, delay) → terminal judge →
 | [`research_question.md`](research_question.md) | RQ + sub-RQs + claim tiers |
 | [`lit_positioning_v1.md`](lit_positioning_v1.md) | One-page public stance |
 | [`evaluation_landscape_2024_2026_v0.2.md`](evaluation_landscape_2024_2026_v0.2.md) | Benchmark · metric · gap tables |
-| [`paper_reading_day1_2026-07-22.md`](paper_reading_day1_2026-07-22.md) | **Today’s PDF queue + NotebookLM** |
 | [`phase_b_smoke_review.md`](phase_b_smoke_review.md) | What smoke supports |
 | [`roadmap.md`](roadmap.md) | Stage 3–5 plan |
 
-Private extended notes: builder-os-private · Obsidian `03_Research/`.
+Private extended notes · PDF reading queue: builder-os-private · Obsidian `03_Research/`.

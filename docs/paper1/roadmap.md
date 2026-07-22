@@ -12,9 +12,9 @@ Phase B  Desk review → decisions             ✅ DONE
 Phase C  Pre-reg v1.0 (frozen · not run)     ✅ PLANNED
 Lit v2   Positioning + baseline spec         ✅ DONE
          ↓
-Stage 2b PDF deep read (Day 1 · 2026-07-22)  ← YOU ARE HERE
+Stage 2b PDF deep read (Batch B + A)       ← private queue
          ↓
-Stage 3  PI sign-off · runner proper n=20
+Stage 3  Sign-off · runner proper n=20
          ↓
 Stage 4  Execute Phase C proper run (GPU)
          ↓
@@ -34,11 +34,11 @@ Stage 5  Paper 1 draft · lab talk evidence
 | **Baseline spec** | ✅ draft | private `baseline_spec_phase_c_v1.0.md` |
 | **PI sign-off** | ⏭ | B2 baseline in v1.0 GPU? · GO for n=20 run |
 
-## Stage 2b — PDF deep read (2026-07-22)
+## Stage 2b — PDF deep read
 
 | Work block | Status | Location |
 | --- | --- | --- |
-| **Day 1 reading queue** | 🔄 in progress | [`paper_reading_day1_2026-07-22.md`](paper_reading_day1_2026-07-22.md) |
+| **Reading queue** | 🔄 | private [`paper_reading_day1`](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/paper_reading_day1_2026-07-22.md) · Obsidian vault |
 | **Batch A (6 PDFs)** | ⏭ | Surgical UQ · SuFIA · Guardian · FailSafe · RoboFAC · ResponsibleRobotBench |
 | **Batch B (4 PDFs)** | ⏭ | ReSYNC · IVNTR · RecoveryChaining · VAP-TAMP |
 
