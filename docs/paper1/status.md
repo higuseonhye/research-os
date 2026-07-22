@@ -1,6 +1,6 @@
 # Paper 1 — evidence status (public)
 
-> **Updated:** 2026-07-22 · Lit sprint v2 complete · Phase C GPU after PI sign-off  
+> **Updated:** 2026-07-22 · Phase C **GO** (Tier 0–1 · no B2 stretch) · weekly Monday alignment  
 > **Lab:** 2026-07-21 GO · detail phase → **runner proper → proper run**
 
 ---
@@ -19,7 +19,7 @@
 | **B** | Desk review · decisions | ✅ [`phase_b_smoke_review.md`](phase_b_smoke_review.md) |
 | **C** | Proper-run pre-reg v1.0 | ✅ Frozen · **not executed** · [`phase_c_proper_run_prereg_v1.0.md`](phase_c_proper_run_prereg_v1.0.md) |
 | **Lit v2** | Positioning · industry · baseline spec | ✅ [`lit_positioning_v1.md`](lit_positioning_v1.md) |
-| **Next** | PI sign-off · runner `proper` n=20 | ⏭ **Study 002 Phase 1 done 2026-07-22 — GPU slot → Paper 001 Phase C** |
+| **Next** | Execute Phase C proper run (n=20 · Tier 0–1) | ⏭ Study 002 Phase 1 done · B2 baseline **out of v1.0** |
 | **Then** | Phase C proper run (GPU) | ⏭ |
 
 Roadmap: [`roadmap.md`](roadmap.md) · RQ v1.0: [`research_question.md`](research_question.md)
