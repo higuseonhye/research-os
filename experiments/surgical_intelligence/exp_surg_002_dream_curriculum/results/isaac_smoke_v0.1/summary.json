@@ -1,0 +1,28 @@
+{
+  "tier": "C",
+  "label": "isaac_smoke_v0.1",
+  "run_id": "20260722T020640Z",
+  "date": "2026-07-22",
+  "prereg": "builder-os-private/working/research/stage2/study2_prereg_v0.1.md (private)",
+  "design": {
+    "top_k_per_dreamer": 2,
+    "isaac_seeds": [0, 1],
+    "agent": "rule",
+    "mock_records": "mock_smoke_v0.2/records_seed43.json",
+    "platform": "Isaac Sim 4.1 · ORBIT Reach IK-Rel · RunPod RTX 4090"
+  },
+  "by_dreamer": {
+    "gaussian": {
+      "n": 2,
+      "informative_count": 2,
+      "informative_rate": 1.0
+    },
+    "diffusion": {
+      "n": 2,
+      "informative_count": 2,
+      "informative_rate": 1.0
+    }
+  },
+  "purpose": "Pipeline validation (export → Isaac → merge). Not confirmatory yield comparison.",
+  "full_aggregate": "Pod volume: results/study2_dream_curriculum/isaac/20260722T020640Z/isaac_aggregate.json · scp via scripts/copy_study2_results_from_pod.sh"
+}

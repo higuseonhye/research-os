@@ -19,7 +19,7 @@
 | **B** | Desk review · decisions | ✅ [`phase_b_smoke_review.md`](phase_b_smoke_review.md) |
 | **C** | Proper-run pre-reg v1.0 | ✅ Frozen · **not executed** · [`phase_c_proper_run_prereg_v1.0.md`](phase_c_proper_run_prereg_v1.0.md) |
 | **Lit v2** | Positioning · industry · baseline spec | ✅ [`lit_positioning_v1.md`](lit_positioning_v1.md) |
-| **Next** | PI sign-off · runner `proper` n=20 | ⏭ |
+| **Next** | PI sign-off · runner `proper` n=20 | ⏭ **Study 002 Phase 1 done 2026-07-22 — GPU slot → Paper 001 Phase C** |
 | **Then** | Phase C proper run (GPU) | ⏭ |
 
 Roadmap: [`roadmap.md`](roadmap.md) · RQ v1.0: [`research_question.md`](research_question.md)

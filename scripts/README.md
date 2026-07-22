@@ -28,6 +28,7 @@
 | `run_study2_dream_curriculum_smoke_runpod.sh` | Isaac smoke only (skip mock, TOP_K=2) |
 | `export_study2_isaac_specs.py` | Top-k specs from mock records |
 | `merge_study2_isaac_results.py` | Aggregate per-spec Isaac JSON |
+| `copy_study2_results_from_pod.sh` | scp Study2 Isaac aggregate from pod |
 
 Pre-reg: `builder-os-private/working/research/stage2/study2_prereg_v0.1.md` (private)
 

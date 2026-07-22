@@ -1,0 +1,38 @@
+{
+  "tier": "C",
+  "label": "isaac_full_v0.1",
+  "run_id": "20260722T042707Z",
+  "date": "2026-07-22",
+  "prereg": "builder-os-private/working/research/stage2/study2_prereg_v0.1.md (private)",
+  "design": {
+    "top_k_per_dreamer": 5,
+    "isaac_seeds": [0, 1, 2, 3, 4],
+    "agent": "rule",
+    "mock_records": "mock_smoke_v0.2/records_seed43.json",
+    "platform": "Isaac Sim 4.1 · ORBIT Reach IK-Rel · RunPod RTX 4090"
+  },
+  "by_dreamer": {
+    "gaussian": {
+      "n": 5,
+      "informative_count": 5,
+      "informative_rate": 1.0
+    },
+    "diffusion": {
+      "n": 5,
+      "informative_count": 5,
+      "informative_rate": 1.0
+    }
+  },
+  "mock_reference": "mock_smoke_v0.2/summary.json",
+  "hypothesis_outcomes": {
+    "primary_diffusion_yield_gt_gaussian": false,
+    "note_primary": "Top-k informative specs on Isaac: both dreamers 5/5 at ceiling.",
+    "h2_param_diversity_mock": "diffusion > gaussian on mock_smoke_v0.2 (desk leg only)",
+    "h3_mock_isaac_rank_corr": "not computed in v0.1 merge; top-k selection compresses yield"
+  },
+  "execution_notes": [
+    "First full attempt on new pod failed: STUDY2_SKIP_BOOTSTRAP=1 without omni.isaac.lab.",
+    "Retry after bootstrap: 10/10 specs informative on Isaac."
+  ],
+  "full_aggregate": "Pod volume: results/study2_dream_curriculum/isaac/20260722T042707Z/isaac_aggregate.json · scp via scripts/copy_study2_results_from_pod.sh"
+}
