@@ -28,6 +28,7 @@
 | `run_study2_dream_curriculum_runpod.sh` | Phase 1 mock → Isaac loop |
 | `run_study2_dream_curriculum_smoke_runpod.sh` | Isaac smoke only (skip mock, TOP_K=2) |
 | `export_study2_isaac_specs.py` | Top-k specs from mock records |
+| `run_study2_selection_ablation_runpod.sh` | Top-k + bottom-k selection ablation on RunPod |
 | `merge_study2_isaac_results.py` | Aggregate per-spec Isaac JSON |
 | `compute_study2_h3_mock_isaac.py` | H3 Spearman ρ mock vs Isaac top-k |
 | `copy_study2_results_from_pod.sh` | scp Study2 Isaac aggregate from pod |

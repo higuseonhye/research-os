@@ -18,6 +18,7 @@ DEFAULT_RECORDS="$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_
 MOCK_EPISODES="${STUDY2_MOCK_EPISODES:-48}"
 MOCK_SEEDS="${STUDY2_MOCK_SEEDS:-42,43,44}"
 TOP_K="${STUDY2_TOP_K:-5}"
+EXPORT_STRATEGY="${STUDY2_EXPORT_STRATEGY:-top_k}"
 ISAAC_SEEDS="${STUDY2_ISAAC_SEEDS:-0,1,2,3,4}"
 
 if [ "${STUDY2_SMOKE:-0}" = "1" ]; then
@@ -44,7 +45,7 @@ cp -f "$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum
 echo "== EXP-SURG-002 Phase 1 =="
 echo "run_id: $RUN_ID commit: $commit_sha"
 echo "smoke: ${STUDY2_SMOKE:-0} skip_mock: ${STUDY2_SKIP_MOCK:-0}"
-echo "mock episodes: $MOCK_EPISODES seeds: $MOCK_SEEDS top_k: $TOP_K isaac_seeds: $ISAAC_SEEDS"
+echo "mock episodes: $MOCK_EPISODES seeds: $MOCK_SEEDS top_k: $TOP_K strategy: $EXPORT_STRATEGY isaac_seeds: $ISAAC_SEEDS"
 
 # --- Step 1: CPU mock (both dreamers) or reuse committed records ---
 RECORDS_FOR_EXPORT=""
@@ -89,6 +90,7 @@ fi
   --records "$RECORDS_FOR_EXPORT" \
   --out "$SPECS_OUT" \
   --top-k "$TOP_K" \
+  --strategy "$EXPORT_STRATEGY" \
   --mock-run-id "$(basename "$(dirname "$RECORDS_FOR_EXPORT")")"
 
 # --- Step 2: Isaac bootstrap ---

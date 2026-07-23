@@ -61,6 +61,7 @@ def main() -> None:
     spec_pack = json.loads(args.specs.read_text(encoding="utf-8"))
     merged: list[dict] = []
     by_dreamer: dict[str, list[bool]] = {}
+    by_tier: dict[str, list[bool]] = {}
 
     for spec in spec_pack["specs"]:
         spec_id = spec["spec_id"]
@@ -72,8 +73,11 @@ def main() -> None:
         info = informative_from_records(records)
         dreamer = spec["dreamer"]
         by_dreamer.setdefault(dreamer, [])
+        tier = spec.get("selection_tier", "all")
+        by_tier.setdefault(tier, [])
         if info is not None:
             by_dreamer[dreamer].append(info)
+            by_tier[tier].append(info)
         merged.append(
             {
                 **spec,
@@ -88,6 +92,7 @@ def main() -> None:
         "git_commit": args.git_commit,
         "prereg": spec_pack.get("prereg"),
         "mock_run_id": spec_pack.get("mock_run_id"),
+        "export_strategy": spec_pack.get("export_strategy", "top_k"),
         "by_dreamer": {
             d: {
                 "n": len(flags),
@@ -95,6 +100,14 @@ def main() -> None:
                 "informative_rate": sum(1 for f in flags if f) / max(len(flags), 1),
             }
             for d, flags in by_dreamer.items()
+        },
+        "by_selection_tier": {
+            t: {
+                "n": len(flags),
+                "informative_count": sum(1 for f in flags if f),
+                "informative_rate": sum(1 for f in flags if f) / max(len(flags), 1),
+            }
+            for t, flags in by_tier.items()
         },
     }
 

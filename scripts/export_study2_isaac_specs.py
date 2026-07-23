@@ -17,6 +17,11 @@ def _load_records(path: Path) -> dict[str, list[dict]]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _spec_key(record: dict) -> tuple:
+    spec = record["spec"]
+    return (round(spec["shift_m"], 4), spec["onset_step"])
+
+
 def _score(record: dict) -> tuple:
     informative = int(record.get("informative", False))
     spec = record["spec"]
@@ -27,22 +32,39 @@ def _score(record: dict) -> tuple:
     )
 
 
-def select_top_k(records: list[dict], k: int) -> list[dict]:
-    informative = [r for r in records if r.get("informative")]
-    pool = informative if informative else records
-    ranked = sorted(pool, key=_score, reverse=True)
+def _dedupe_ranked(ranked: list[dict]) -> list[dict]:
     seen: set[tuple] = set()
     out: list[dict] = []
     for r in ranked:
-        spec = r["spec"]
-        key = (round(spec["shift_m"], 4), spec["onset_step"])
+        key = _spec_key(r)
         if key in seen:
             continue
         seen.add(key)
         out.append(r)
-        if len(out) >= k:
-            break
     return out
+
+
+def select_top_k(records: list[dict], k: int) -> list[dict]:
+    informative = [r for r in records if r.get("informative")]
+    pool = informative if informative else records
+    ranked = sorted(pool, key=_score, reverse=True)
+    return _dedupe_ranked(ranked)[:k]
+
+
+def select_top_bottom(records: list[dict], k: int) -> list[tuple[dict, str]]:
+    """Top-k and bottom-k by mock informative rank (deduped by shift/onset)."""
+    ranked = sorted(records, key=_score, reverse=True)
+    deduped = _dedupe_ranked(ranked)
+    top = deduped[:k]
+    top_keys = {_spec_key(r) for r in top}
+    bottom: list[dict] = []
+    for r in reversed(deduped):
+        if _spec_key(r) in top_keys:
+            continue
+        bottom.append(r)
+        if len(bottom) >= k:
+            break
+    return [(r, "top") for r in top] + [(r, "bottom") for r in bottom]
 
 
 def main() -> None:
@@ -50,6 +72,12 @@ def main() -> None:
     parser.add_argument("--records", type=Path, required=True, help="mock records.json")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument(
+        "--strategy",
+        choices=("top_k", "top_bottom"),
+        default="top_k",
+        help="top_k=informative pool only (Phase 1); top_bottom=top-k + bottom-k per dreamer (selection ablation)",
+    )
     parser.add_argument("--mock-run-id", type=str, default="")
     args = parser.parse_args()
 
@@ -57,12 +85,17 @@ def main() -> None:
     export: list[dict] = []
     spec_id = 0
     for dreamer, records in raw.items():
-        for rec in select_top_k(records, args.top_k):
+        if args.strategy == "top_bottom":
+            selected = select_top_bottom(records, args.top_k)
+        else:
+            selected = [(rec, "top") for rec in select_top_k(records, args.top_k)]
+        for rec, tier in selected:
             spec = rec["spec"]
             export.append(
                 {
                     "spec_id": f"{dreamer}_{spec_id:03d}",
                     "dreamer": dreamer,
+                    "selection_tier": tier,
                     "family": spec.get("family", "target_shift"),
                     "severity": spec.get("severity", "mid"),
                     "shift_m": spec["shift_m"],
@@ -78,6 +111,7 @@ def main() -> None:
     payload = {
         "prereg": "builder-os-private/working/research/stage2/study2_prereg_v0.1.md",
         "mock_run_id": args.mock_run_id,
+        "export_strategy": args.strategy,
         "top_k": args.top_k,
         "specs": export,
     }

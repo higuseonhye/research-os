@@ -22,6 +22,9 @@ bash scripts/run_study2_dream_curriculum_smoke_runpod.sh
 # Full confirmatory (bootstrap required on new pod)
 export STUDY2_SKIP_MOCK=1
 bash scripts/run_study2_dream_curriculum_runpod.sh
+
+# Selection ablation — top-5 + bottom-5 mock rank → Isaac (20 specs · seeds 0–4)
+bash scripts/run_study2_selection_ablation_runpod.sh
 ```
 
 Promote full `isaac_aggregate.json` from pod: [`scripts/copy_study2_results_from_pod.sh`](../../../scripts/copy_study2_results_from_pod.sh)

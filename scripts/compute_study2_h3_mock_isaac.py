@@ -13,7 +13,7 @@ REPO = Path(__file__).resolve().parents[1]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
-from scripts.export_study2_isaac_specs import select_top_k  # noqa: E402
+from scripts.export_study2_isaac_specs import select_top_bottom, select_top_k  # noqa: E402
 
 
 def _spearman(x: list[float], y: list[float]) -> tuple[float | None, str]:
@@ -78,17 +78,41 @@ def informative_from_isaac_records(records: list[dict]) -> bool | None:
     return sum(flags) >= (len(flags) + 1) // 2
 
 
-def load_top_k_specs(records_path: Path, top_k: int) -> list[dict]:
+def load_specs(
+    records_path: Path,
+    top_k: int,
+    strategy: str = "top_k",
+    specs_file: Path | None = None,
+) -> list[dict]:
+    if specs_file and specs_file.exists():
+        pack = json.loads(specs_file.read_text(encoding="utf-8"))
+        return [
+            {
+                "spec_id": s["spec_id"],
+                "dreamer": s["dreamer"],
+                "selection_tier": s.get("selection_tier", "top"),
+                "shift_m": s["shift_m"],
+                "onset_step": s["onset_step"],
+                "mock_informative": int(bool(s.get("mock_informative", False))),
+            }
+            for s in pack["specs"]
+        ]
+
     raw = json.loads(records_path.read_text(encoding="utf-8"))
     specs: list[dict] = []
     sid = 0
     for dreamer in ("gaussian", "diffusion"):
-        for rec in select_top_k(raw[dreamer], top_k):
+        if strategy == "top_bottom":
+            selected = select_top_bottom(raw[dreamer], top_k)
+        else:
+            selected = [(rec, "top") for rec in select_top_k(raw[dreamer], top_k)]
+        for rec, tier in selected:
             spec = rec["spec"]
             specs.append(
                 {
                     "spec_id": f"{dreamer}_{sid:03d}",
                     "dreamer": dreamer,
+                    "selection_tier": tier,
                     "shift_m": spec["shift_m"],
                     "onset_step": spec["onset_step"],
                     "mock_informative": int(bool(rec.get("informative", False))),
@@ -118,11 +142,22 @@ def main() -> None:
         help="Use Isaac=1 for all top-k when aggregate missing (ceiling from isaac_full_v0.1 summary)",
     )
     parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument(
+        "--strategy",
+        choices=("top_k", "top_bottom"),
+        default="top_k",
+    )
+    parser.add_argument(
+        "--specs",
+        type=Path,
+        default=None,
+        help="isaac_specs.json from export (preferred after ablation run)",
+    )
     parser.add_argument("--threshold", type=float, default=0.5)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
 
-    specs = load_top_k_specs(args.records, args.top_k)
+    specs = load_specs(args.records, args.top_k, args.strategy, args.specs)
     isaac_by_id: dict[str, int | None] = {}
 
     if args.isaac_aggregate and args.isaac_aggregate.exists():
@@ -170,6 +205,7 @@ def main() -> None:
         "hypothesis": "H3: mock per-spec informative rank correlates with Isaac (rho >= 0.5)",
         "mock_records": str(args.records.relative_to(REPO)),
         "isaac_source": str(args.isaac_aggregate) if args.isaac_aggregate else "isaac_full_v0.1_ceiling_all_informative",
+        "export_strategy": args.strategy if not args.specs else "from_specs_file",
         "top_k_per_dreamer": args.top_k,
         "n_specs_pooled": len(mock_vals),
         "spearman_rho": rho,
