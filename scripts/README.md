@@ -29,6 +29,7 @@
 | `run_study2_dream_curriculum_smoke_runpod.sh` | Isaac smoke only (skip mock, TOP_K=2) |
 | `export_study2_isaac_specs.py` | Top-k specs from mock records |
 | `run_study2_selection_ablation_runpod.sh` | Top-k + bottom-k selection ablation on RunPod |
+| `prep_study2_selection_ablation_runpod.sh` | Pod prep: pull repo, export preview, optional bootstrap |
 | `run_study2_isaac_loop.py` | Per-spec Isaac loop with kit cleanup between runs |
 | `retry_study2_isaac_failed_runpod.sh` | Retry specs missing `isaac_results.json` |
 | `merge_study2_isaac_results.py` | Aggregate per-spec Isaac JSON |
