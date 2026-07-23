@@ -28,7 +28,7 @@
     "primary_diffusion_yield_gt_gaussian": false,
     "note_primary": "Top-k informative specs on Isaac: both dreamers 5/5 at ceiling.",
     "h2_param_diversity_mock": "diffusion > gaussian on mock_smoke_v0.2 (desk leg only)",
-    "h3_mock_isaac_rank_corr": "not computed in v0.1 merge; top-k selection compresses yield"
+    "h3_mock_isaac_rank_corr": "computed 2026-07-23 · rho=null (zero variance) · H3 FAIL — see h3_mock_isaac_v0.1/summary.json"
   },
   "execution_notes": [
     "First full attempt on new pod failed: STUDY2_SKIP_BOOTSTRAP=1 without omni.isaac.lab.",

@@ -1,0 +1,137 @@
+{
+  "tier": "B",
+  "label": "h3_mock_isaac_spearman_v0.1",
+  "date": "2026-07-23",
+  "hypothesis": "H3: mock per-spec informative rank correlates with Isaac (rho >= 0.5)",
+  "mock_records": "experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/records_seed43.json",
+  "isaac_source": "isaac_full_v0.1_ceiling_all_informative",
+  "top_k_per_dreamer": 5,
+  "n_specs_pooled": 10,
+  "spearman_rho": null,
+  "spearman_reason": "zero_variance",
+  "h3_pass": false,
+  "threshold": 0.5,
+  "by_dreamer": {
+    "gaussian": {
+      "n": 5,
+      "mock_informative": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "isaac_informative": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "spearman_rho": null,
+      "reason": "zero_variance"
+    },
+    "diffusion": {
+      "n": 5,
+      "mock_informative": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "isaac_informative": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "spearman_rho": null,
+      "reason": "zero_variance"
+    }
+  },
+  "per_spec": [
+    {
+      "spec_id": "gaussian_000",
+      "dreamer": "gaussian",
+      "shift_m": 0.07774655373057203,
+      "onset_step": 27,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_001",
+      "dreamer": "gaussian",
+      "shift_m": 0.06351042786127116,
+      "onset_step": 10,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_002",
+      "dreamer": "gaussian",
+      "shift_m": 0.0630248877553371,
+      "onset_step": 21,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_003",
+      "dreamer": "gaussian",
+      "shift_m": 0.06128707771075398,
+      "onset_step": 25,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_004",
+      "dreamer": "gaussian",
+      "shift_m": 0.06097367906237846,
+      "onset_step": 12,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_005",
+      "dreamer": "diffusion",
+      "shift_m": 0.08,
+      "onset_step": 40,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_006",
+      "dreamer": "diffusion",
+      "shift_m": 0.08,
+      "onset_step": 31,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_007",
+      "dreamer": "diffusion",
+      "shift_m": 0.08,
+      "onset_step": 27,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_008",
+      "dreamer": "diffusion",
+      "shift_m": 0.08,
+      "onset_step": 24,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_009",
+      "dreamer": "diffusion",
+      "shift_m": 0.08,
+      "onset_step": 23,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    }
+  ],
+  "interpretation": "Top-k selection filters mock-informative specs; Isaac top-k ran at ceiling (5/5). Constant series \u2192 rho undefined \u2192 H3 not supported by current protocol."
+}
