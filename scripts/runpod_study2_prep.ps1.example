@@ -1,0 +1,33 @@
+# RunPod prep — Study2 selection ablation (local helper)
+# Fill $PodSsh from RunPod Connect tab, then run sections below.
+
+# --- RunPod console (before SSH) ---
+# Image:  nvcr.io/nvidia/isaac-sim:4.1.0
+# GPU:    RTX 4090 24GB (Community OK)
+# Disk:   >= 100 GB on /workspace
+# SSH:    Enabled
+
+# --- SSH (replace with your pod id from Connect tab) ---
+# $PodSsh = "YOUR_POD_ID@ssh.runpod.io"
+# ssh $PodSsh -i "$env:USERPROFILE\.ssh\id_ed25519"
+
+# --- On pod: prep before lunch (bootstrap in tmux) ---
+# tmux new -s prep
+# cd /workspace/research-os || (cd /workspace && git clone https://github.com/higuseonhye/research-os.git && cd research-os)
+# git pull origin master
+# STUDY2_PREP_BOOTSTRAP=1 bash scripts/prep_study2_selection_ablation_runpod.sh
+# Ctrl+B, D
+
+# --- After lunch: run experiment ---
+# tmux new -s study2
+# cd /workspace/research-os && git pull origin master
+# export STUDY2_SKIP_BOOTSTRAP=1   # if prep bootstrap finished
+# bash scripts/run_study2_selection_ablation_runpod.sh
+
+# --- scp results (use Direct TCP from Connect tab — NOT ssh.runpod.io proxy) ---
+# $Port = "YOUR_TCP_PORT"
+# $Ip = "YOUR_POD_IP"
+# $RunId = "YOUR_RUN_ID"
+# scp -P $Port -i "$env:USERPROFILE\.ssh\id_ed25519" `
+#   "root@${Ip}:/workspace/research-os/results/study2_dream_curriculum/isaac/$RunId/isaac_aggregate.json" `
+#   "C:\projects\research-os\experiments\surgical_intelligence\exp_surg_002_dream_curriculum\results\selection_ablation_v0.1\isaac_aggregate.json"

@@ -25,6 +25,12 @@ bash scripts/run_study2_dream_curriculum_runpod.sh
 
 # Selection ablation — top-5 + bottom-5 mock rank → Isaac (20 specs · seeds 0–4)
 bash scripts/run_study2_selection_ablation_runpod.sh
+
+**Pod prep (before lunch — bootstrap in tmux):**
+
+```bash
+STUDY2_PREP_BOOTSTRAP=1 bash scripts/prep_study2_selection_ablation_runpod.sh
+```
 ```
 
 Promote full `isaac_aggregate.json` from pod: [`scripts/copy_study2_results_from_pod.sh`](../../../scripts/copy_study2_results_from_pod.sh)
