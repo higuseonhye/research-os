@@ -54,8 +54,6 @@ def run_specs(
         onset = int(spec.get("onset_step", onset_default))
         (out / "spec.json").write_text(json.dumps(spec, indent=2), encoding="utf-8")
 
-        kill_stale_kit()
-
         cmd = [
             str(isaaclab / "isaaclab.sh"),
             "-p",
@@ -91,6 +89,7 @@ def run_specs(
         if rc != 0 or not result_path.exists():
             failures.append(spec_id)
             print(f"[WARN] Isaac failed for {spec_id} rc={rc}", flush=True)
+            cleanup_hung_runner()
         if sleep_s > 0:
             time.sleep(sleep_s)
 
