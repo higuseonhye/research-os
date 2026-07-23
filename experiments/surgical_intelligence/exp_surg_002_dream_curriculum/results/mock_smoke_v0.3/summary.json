@@ -1,0 +1,44 @@
+{
+  "tier": "B",
+  "label": "mock_smoke_v0.3",
+  "prereg": "builder-os-private/working/research/stage2/study2_prereg_v0.1.md (private)",
+  "date": "2026-07-23",
+  "n_episodes": 48,
+  "seeds": [42, 43, 44],
+  "agent": "rule",
+  "block1_ideation": "builder-os-private/working/research/block1_lit_ideation_2026-07-23.md",
+  "by_seed": {
+    "42": {
+      "run_id": "20260723T021036Z",
+      "gaussian": { "informative_rate": 0.9792, "param_diversity": 2.3584 },
+      "diffusion": { "informative_rate": 0.6875, "param_diversity": 4.4462 }
+    },
+    "43": {
+      "run_id": "20260723T021105Z",
+      "gaussian": { "informative_rate": 0.9792, "param_diversity": 2.2545 },
+      "diffusion": { "informative_rate": 0.75, "param_diversity": 4.3297 }
+    },
+    "44": {
+      "run_id": "20260723T021037Z",
+      "gaussian": { "informative_rate": 1.0, "param_diversity": 2.6585 },
+      "diffusion": { "informative_rate": 0.5625, "param_diversity": 4.4687 }
+    }
+  },
+  "aggregate": {
+    "gaussian": {
+      "informative_rate_mean": 0.9861,
+      "param_diversity_mean": 2.4238
+    },
+    "diffusion": {
+      "informative_rate_mean": 0.6667,
+      "param_diversity_mean": 4.4149
+    }
+  },
+  "belief_check": {
+    "belief_2_direction_stable": true,
+    "vs_v0.2": "identical aggregate (deterministic mock)",
+    "adjust": "No change to Phase 1 narrative; next leg = selection-rule ablation or H3 mock-Isaac rho, not more yield episodes"
+  },
+  "raw_runs": "results/study2_dream_curriculum/mock/20260723T021036Z|20260723T021105Z|20260723T021037Z",
+  "note": "Afternoon loop Block 2 · replicates mock_smoke_v0.2 · Tier B direction only"
+}
