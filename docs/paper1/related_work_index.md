@@ -1,10 +1,6 @@
 # Paper 1 — Related work index (public)
 
-> **Full review index (private):** [related_work_review_index_v1.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/related_work_review_index_v1.md)  
-> **PDF reading queue (private):** [paper_reading_day1](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/paper_reading_day1_2026-07-22.md)  
-> **Obsidian:** [related-work-review-index](https://github.com/higuseonhye/builder-os-vault/blob/master/03_Research/related-work-review-index.md)
-
-This repo does not duplicate the full survey or internal reading workflows.
+> **Scope:** public citations and in-repo docs only. Extended survey notes are not duplicated here.
 
 ---
 
@@ -59,19 +55,8 @@ Table: [`evaluation_landscape_2024_2026_v0.2.md`](evaluation_landscape_2024_2026
 
 ---
 
-## Private docs (maps · matrix · KR table)
-
-| Doc | URL |
-| --- | --- |
-| Related work map EN | [paper1_related_work.md](https://github.com/higuseonhye/builder-os-private/blob/master/program/mechanism_atlas/paper1_related_work.md) |
-| Kill matrix | [prior_art_recoverability_matrix.yaml](https://github.com/higuseonhye/builder-os-private/blob/master/program/mechanism_atlas/prior_art_recoverability_matrix.yaml) |
-| Lit sprint v2 | [lit_sprint_v2_smoke_synthesis.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/lit_sprint_v2_smoke_synthesis.md) |
-| Reading queue | [paper_reading_day1_2026-07-22.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/paper_reading_day1_2026-07-22.md) |
-
----
-
-## Honest status (2026-07-22)
+## Honest status (2026-07-23)
 
 - Desk maps + evaluation landscape v0.2 ✅  
-- PDF deep read progress tracked in **private** reading queue  
-- Phase C GPU blocked until baseline sign-off
+- Phase C confirmatory executed (Tier C) ✅  
+- Study 2 Phase 1 summaries committed ✅

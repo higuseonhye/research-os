@@ -36,7 +36,7 @@
 | `compute_study2_h3_mock_isaac.py` | H3 Spearman ρ mock vs Isaac top-k |
 | `copy_study2_results_from_pod.sh` | scp Study2 Isaac aggregate from pod |
 
-Pre-reg: `builder-os-private/working/research/stage2/study2_prereg_v0.1.md` (private)
+Pre-reg: [`docs/stage2/study2_phase1_design_v0.1.md`](../docs/stage2/study2_phase1_design_v0.1.md)
 
 ---
 

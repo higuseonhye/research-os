@@ -1,7 +1,7 @@
 # EXP-SURG-002 — Dream curriculum sandbox (Stage 2 probe)
 
 > **Status:** Phase 1 complete · H3 computed (FAIL) · selection ablation Isaac pending  
-> **Design docs:** **private** — [builder-os-private stage2](https://github.com/higuseonhye/builder-os-private/tree/master/working/research/stage2)  
+> **Design (public):** [`docs/stage2/study2_phase1_design_v0.1.md`](../../../docs/stage2/study2_phase1_design_v0.1.md)  
 > **Parent:** EXP-SURG-001 perturbation taxonomy + mock reach
 
 ## Quick start (no GPU)
@@ -13,7 +13,7 @@ python scripts/run_study2_dream_curriculum_mock.py --compare --episodes 48
 
 ## Phase 1 (RunPod)
 
-Pre-reg (private): [study2_prereg_v0.1.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/stage2/study2_prereg_v0.1.md)
+Frozen design: [`study2_phase1_design_v0.1.md`](../../../docs/stage2/study2_phase1_design_v0.1.md)
 
 ```bash
 # Smoke (~$1)
@@ -25,6 +25,7 @@ bash scripts/run_study2_dream_curriculum_runpod.sh
 
 # Selection ablation — top-5 + bottom-5 mock rank → Isaac (20 specs · seeds 0–4)
 bash scripts/run_study2_selection_ablation_runpod.sh
+```
 
 **Pod prep (bootstrap in tmux):**
 
@@ -48,10 +49,10 @@ Promote full `isaac_aggregate.json` from pod: [`scripts/copy_study2_results_from
 
 ## Boundary
 
-- **Not** Paper 1 confirmatory · parallel L1 probe (discovery voice)
+- **Not** Paper 1 confirmatory · parallel probe (discovery voice)
 - **Not** full ReSYNC / IVNTR — perturbation-param dreaming only (v0.1)
-- Narrative / RQ / paper outline: **private until PI sign-off**
+- Public repo: frozen design + tier-labeled results only (see [`PUBLIC_BOUNDARY.md`](../../../docs/PUBLIC_BOUNDARY.md))
 
 ## Next (Paper program)
 
-Paper 001 Phase C proper run (n=20) is the parallel GPU leg — see [`docs/paper1/status.md`](../../../docs/paper1/status.md).
+Paper 001 Phase C proper run (n=20) complete — see [`docs/paper1/status.md`](../../../docs/paper1/status.md).

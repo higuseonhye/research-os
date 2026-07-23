@@ -1,7 +1,6 @@
 # Paper 1 — Literature positioning v1 (public)
 
-> **Date:** 2026-07-22 · **Status:** post Lit Sprint v2 · smoke-informed · not a survey  
-> **Private extended:** [builder-os-private lit_sprint_v2](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/lit_sprint_v2_smoke_synthesis.md)
+> **Date:** 2026-07-22 · **Status:** post Lit Sprint v2 · smoke-informed · not a survey
 
 ---
 

@@ -1,34 +1,34 @@
 # Public boundary — research-os
 
 > **Audience:** anyone on the internet · employers · collaborators · reviewers  
-> **Master asset rule:** update evidence here first · derive resume / deck / emails elsewhere
+> **Rule:** this repo is **self-contained**. No links to private GitHub repos.
 
 ---
 
-## What belongs in this repo (public)
+## What belongs here (public)
 
 | Category | Examples |
 | --- | --- |
 | **Locked research questions** | Paper 1 RQ v1.0 · public framing |
 | **Reproducible code** | `scripts/` · `exp_surg_001` · `exp_surg_002` |
-| **Tier B smoke evidence** | Isaac aggregates · figures · `summary.json` with tier labels |
+| **Tier B/C evidence** | Isaac aggregates · figures · `summary.json` with tier labels |
 | **Methods / protocol** | Same-state CF · perturbation configs · benchmark schema |
-| **Pre-reg summaries** | Phase C **frozen design** (confirmatory not run) |
+| **Pre-reg / frozen design** | Phase C pre-reg · Study 2 Phase 1 design v0.1 |
 | **Positioning (desk synthesis)** | Eval landscape v0.2 · lit positioning v1 |
 
 ---
 
 ## What does **not** belong here
 
-| Category | Where |
+| Category | Keep off public repo |
 | --- | --- |
-| API keys · tokens · `.env` | Never commit · see `.gitignore` |
+| API keys · tokens · `.env` | Never commit |
 | PHI · patient data · clinical identifiers | Forbidden |
-| Stage 2 L1 RQ · Study2 paper outline · full Study2 pre-reg narrative | **builder-os-private** · stub in `docs/stage2/` |
-| Internal PDF reading queues · day plans | **builder-os-private** / Obsidian vault |
-| Career · immigration · target lists · 9-week program | **builder-os-private/working/career/** |
-| Lab meeting feedback · PI drafts · kill matrix edits | **builder-os-private** |
-| Embargoed co-author material | Private until release |
+| L1 program narrative · Study 2 paper outline · internal exec logs | Working notes (local / private storage) |
+| Internal PDF reading queues · kill matrix drafts | Working notes |
+| Career · immigration · target lists | Working notes |
+| Lab meeting feedback · PI drafts · co-author embargo | Working notes |
+| **URLs to private repos** | Do not link from this repo |
 
 ---
 
@@ -37,23 +37,17 @@
 | Tier | May say publicly |
 | --- | --- |
 | **A** | Protocol exists · pipeline runs · replay OK |
-| **B** | Directional smoke · n=5 or desk pilot · labeled “smoke” |
+| **B** | Directional smoke · desk pilot · labeled “smoke” |
 | **C** | Confirmatory · only after registered GPU run completes |
 
 Never present Tier B as Tier C.
 
 ---
 
-## Links to private repos
-
-Some paths reference `builder-os-private` on GitHub. Those URLs require repo access. Public readers should use this repo + [`docs/stage2/README.md`](stage2/README.md) stubs only.
-
----
-
 ## Promotion flow
 
 ```text
-working (private) → review → promote slice to research-os → tag tier · update status.md
+working notes (local) → review → promote slice to research-os → tag tier · update status.md
 ```
 
-Do not copy wholesale from private to public.
+Promote **design + results + repro** only. Do not copy internal logs or private URLs.

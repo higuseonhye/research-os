@@ -1,24 +1,34 @@
-# Stage 2 — working docs (private)
+# Study 2 — dream curriculum (public)
 
-> **Status:** Phase 1 executed · H3 computed · selection ablation pending Isaac · **not public** narrative until PI sign-off  
-> **Public:** repro code only — `experiments/surgical_intelligence/exp_surg_002_dream_curriculum/` · `scripts/run_study2_dream_curriculum_*.py`
+> **Experiment:** EXP-SURG-002 · parallel to Paper 1 · not Paper 1 confirmatory  
+> **Status (2026-07-23):** Phase 1 complete · H3 computed · selection ablation Isaac pending
 
 ---
 
-## Where the docs live
+## Start here
 
-| Doc | Location |
+| Doc | Purpose |
 | --- | --- |
-| L1 RQ v0.1 | [builder-os-private · l1_research_question_v0.1.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/stage2/l1_research_question_v0.1.md) |
-| Study2 pre-reg v0.1 | [builder-os-private · study2_prereg_v0.1.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/stage2/study2_prereg_v0.1.md) |
-| Paper outline v0.1 | [builder-os-private · study2_paper_outline_v0.1.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/stage2/study2_paper_outline_v0.1.md) |
-| Sandbox design | [builder-os-private · dream_curriculum_sandbox_v0.1.md](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/stage2/dream_curriculum_sandbox_v0.1.md) |
+| [**Phase 1 design v0.1**](study2_phase1_design_v0.1.md) | Frozen hypotheses · design · committed outcomes |
+| [**EXP-SURG-002 README**](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/README.md) | Quick start · results table · RunPod entry |
+| [**Sandbox config**](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/config/sandbox_v0.1.yaml) | Repro parameters |
+| [**Scripts**](../../scripts/README.md) | Mock · Isaac · ablation runners |
 
-**Obsidian:** [[03_Research/stage2-dream-curriculum-sandbox]]
+---
+
+## Committed results (this repo)
+
+| Label | Tier | Summary |
+| --- | --- | --- |
+| [`mock_smoke_v0.2/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/) | B | 3-seed mock · G vs D |
+| [`h3_mock_isaac_v0.1/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.1/) | B | H3 Spearman · ρ=null |
+| [`isaac_full_v0.1/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/) | C | Phase 1 Isaac top-k |
 
 ---
 
 ## Public boundary
 
-- **Paper 1 (001):** [`docs/paper1/`](../paper1/) — locked public evidence  
-- **Study 2:** code + Tier B mock smoke summary only · narrative docs private until promote
+- **In repo:** frozen design · repro code · tier-labeled summaries · honest pass/fail
+- **Not in repo:** L1 program narrative · paper outline · internal execution logs · career material
+
+See [`docs/PUBLIC_BOUNDARY.md`](../PUBLIC_BOUNDARY.md).

@@ -144,5 +144,3 @@ Shared rollout → mismatch @ S → fork(response, delay) → terminal judge →
 | [`evaluation_landscape_2024_2026_v0.2.md`](evaluation_landscape_2024_2026_v0.2.md) | Benchmark · metric · gap tables |
 | [`phase_b_smoke_review.md`](phase_b_smoke_review.md) | What smoke supports |
 | [`roadmap.md`](roadmap.md) | Stage 3–5 plan |
-
-Private extended notes · PDF reading queue: builder-os-private · Obsidian `03_Research/`.

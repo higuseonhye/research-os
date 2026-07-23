@@ -3,7 +3,7 @@
   "label": "isaac_full_v0.1",
   "run_id": "20260722T042707Z",
   "date": "2026-07-22",
-  "prereg": "builder-os-private/working/research/stage2/study2_prereg_v0.1.md (private)",
+  "prereg": "docs/stage2/study2_phase1_design_v0.1.md",
   "design": {
     "top_k_per_dreamer": 5,
     "isaac_seeds": [0, 1, 2, 3, 4],

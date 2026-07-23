@@ -1,12 +1,11 @@
 {
   "tier": "B",
   "label": "mock_smoke_v0.3",
-  "prereg": "builder-os-private/working/research/stage2/study2_prereg_v0.1.md (private)",
+  "prereg": "docs/stage2/study2_phase1_design_v0.1.md",
   "date": "2026-07-23",
   "n_episodes": 48,
   "seeds": [42, 43, 44],
   "agent": "rule",
-  "block1_ideation": "builder-os-private/working/research/block1_lit_ideation_2026-07-23.md",
   "by_seed": {
     "42": {
       "run_id": "20260723T021036Z",

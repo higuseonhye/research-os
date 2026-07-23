@@ -1,6 +1,6 @@
 # Paper 1 — roadmap (post-smoke)
 
-> **Updated:** 2026-07-22 · Phase A complete · Phase B/C = planning (no GPU)
+> **Updated:** 2026-07-23 · Phase A complete · Phase C executed (Tier C)
 
 ---
 
@@ -9,16 +9,12 @@
 ```text
 Phase A  Smoke atlas (001A–C + D0 + D1)     ✅ DONE
 Phase B  Desk review → decisions             ✅ DONE
-Phase C  Pre-reg v1.0 (frozen · not run)     ✅ PLANNED
+Phase C  Pre-reg v1.0 + proper n=20          ✅ DONE (2026-07-22)
 Lit v2   Positioning + baseline spec         ✅ DONE
          ↓
-Stage 2b PDF deep read (Batch B + A)       ← private queue
+Stage 5  Paper 1 draft · lab talk evidence   ← current
          ↓
-Stage 3  Sign-off · runner proper n=20
-         ↓
-Stage 4  Execute Phase C proper run (GPU)
-         ↓
-Stage 5  Paper 1 draft · lab talk evidence
+Stage 2+ Learned selector · timing regret    (not Paper 1)
 ```
 
 ---
@@ -27,48 +23,30 @@ Stage 5  Paper 1 draft · lab talk evidence
 
 | Work block | Status | Location |
 | --- | --- | --- |
-| **Lit sprint v2** | ✅ | [`lit_positioning_v1.md`](lit_positioning_v1.md) · private `lit_sprint_v2_smoke_synthesis.md` |
+| **Lit sprint v2** | ✅ | [`lit_positioning_v1.md`](lit_positioning_v1.md) |
 | **Research framing v1** | ✅ | [`research_framing_v1.md`](research_framing_v1.md) |
 | **Evaluation landscape** | ✅ v0.2 | [`evaluation_landscape_2024_2026_v0.2.md`](evaluation_landscape_2024_2026_v0.2.md) |
 | **RQ refinement** | ✅ v1.0 | [`research_question.md`](research_question.md) |
-| **Baseline spec** | ✅ draft | private `baseline_spec_phase_c_v1.0.md` |
-| **Proper run** | ⏭ | Tier 0–1 · n=20 · smoke atlas complete |
-
-## Stage 2b — PDF deep read
-
-| Work block | Status | Location |
-| --- | --- | --- |
-| **Reading queue** | 🔄 | private [`paper_reading_day1`](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/paper_reading_day1_2026-07-22.md) · Obsidian vault |
-| **Batch A (6 PDFs)** | ⏭ | Surgical UQ · SuFIA · Guardian · FailSafe · RoboFAC · ResponsibleRobotBench |
-| **Batch B (4 PDFs)** | ⏭ | ReSYNC · IVNTR · RecoveryChaining · VAP-TAMP |
-
-**Exit criterion:** Batch A capture notes · kill matrix updated · PI baseline decision.
+| **Phase C proper** | ✅ | [`results/study1_proper/`](../../experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper/) |
 
 ---
 
-## Stage 3 — Prep (before GPU)
+## Stage 3–4 — Phase C ✅ (executed)
 
-1. **B2 UQ baseline** → deferred until after Phase C proper profile (optional v1.1)
-2. Run Phase C proper (n=20 seeds) — smoke path validated via 001D
-3. Pre-reg hash ≥7 days on manifest (or waiver)
+1. Pre-reg frozen · [`phase_c_proper_run_prereg_v1.0.md`](phase_c_proper_run_prereg_v1.0.md)
+2. RunPod primary cell n=20 × 5 modes
+3. Promoted → `results/study1_proper/summary.json`
+4. [`status.md`](status.md) updated · Tier **C**
 
----
-
-## Stage 4 — Main experiment (Phase C execution)
-
-1. `git pull` · verify pre-reg hash on manifest
-2. RunPod: primary cell n=20 × 5 modes
-3. Optional: no-occlusion control arm
-4. Promote → `results/study1_proper/`
-5. Update [`status.md`](status.md) with **confirmatory** label
+**Primary result:** REPLAN_d20 **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion.
 
 ---
 
-## Stage 4 — Paper / lab (6mo scope)
+## Stage 5 — Paper / lab (6mo scope)
 
 | Asset | Source |
 | --- | --- |
-| Fig 4 / 5 | 001A/B (smoke) + optional proper-run overlay |
+| Fig 4 / 5 | 001A/B smoke + Phase C narrative |
 | Table 1 | Mode profiles @ 6 cm occlusion (proper n) |
 | Method | Same-state CF protocol |
 | Limitations | Scripted proposer · proxy occlusion · sim-only |
@@ -77,12 +55,12 @@ Stage 5  Paper 1 draft · lab talk evidence
 
 ---
 
-## Repo map
+## Repo map (public only)
 
-| Phase | Public (research-os) | Private (builder-os-private) |
-| --- | --- | --- |
-| A | `results/study1*_isaac/` · reports | pre-reg history |
-| B | `docs/paper1/phase_b_smoke_review.md` | extended KR notes |
-| C plan | `docs/paper1/phase_c_proper_run_prereg_v1.0.md` | GPU checklist · baseline impl |
-| Lit v2 | `docs/paper1/lit_positioning_v1.md` | `lit_sprint_v2_smoke_synthesis.md` |
-| C results | `results/study1_proper/` (future) | analysis notebook |
+| Phase | Location in research-os |
+| --- | --- |
+| A smoke | `results/study1*_isaac/` · reports |
+| B review | `docs/paper1/phase_b_smoke_review.md` |
+| C design | `docs/paper1/phase_c_proper_run_prereg_v1.0.md` |
+| C results | `results/study1_proper/` |
+| Lit v2 | `docs/paper1/lit_positioning_v1.md` |

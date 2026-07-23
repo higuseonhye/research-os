@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # EXP-SURG-002 selection ablation — top-k + bottom-k mock rank → Isaac (RunPod)
-# Pre-reg: builder-os-private/working/research/stage2/study2_prereg_v0.1.md §adjust 2026-07-23
+# Pre-reg: docs/stage2/study2_phase1_design_v0.1.md (selection ablation)
 set -euo pipefail
 
 export STUDY2_SKIP_MOCK=1

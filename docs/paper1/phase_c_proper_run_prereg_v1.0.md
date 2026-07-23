@@ -1,18 +1,13 @@
 # Paper 1 — Phase C proper-run pre-registration v1.0
 
-> **Status:** **FROZEN DESIGN · NOT EXECUTED**  
-> **Date frozen:** 2026-07-22 · **Execute only after:** lit review sprint + method lock sign-off  
-> **Promote path:** `results/study1_proper/` (confirmatory label)
+> **Status:** **EXECUTED · 2026-07-22** · Tier C confirmatory  
+> **Date frozen:** 2026-07-22 · **Results:** [`study1_proper/summary.json`](../../experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper/summary.json)
 
 ---
 
 ## 0. Scope boundary
 
-This document is **planning only**. No GPU run is authorized until:
-
-1. Phase B review accepted (see [`phase_b_smoke_review.md`](phase_b_smoke_review.md))
-2. Prior-work / industry trend review updated (private working notes)
-3. PI/lab sign-off on claim tier (smoke vs confirmatory)
+This document records the **frozen pre-registered design** for Phase C. The run **completed 2026-07-22**; sections below are unchanged design cells (not retro-edited).
 
 **Smoke atlas (Phase A) must not be cited as confirmatory n.**
 

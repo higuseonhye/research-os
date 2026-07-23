@@ -90,7 +90,7 @@ Bootstrap: [`scripts/bootstrap_orbit_surgical_runpod.sh`](scripts/bootstrap_orbi
 | `experiments/surgical_intelligence/exp_surg_002_*` | Study 2 dream curriculum · mock + Isaac summaries |
 | `docs/paper1/` | Locked RQ · status · Phase C pre-reg |
 | `docs/portfolio/` | Landing page copy |
-| `docs/stage2/` | Stub — design docs in **private** repo |
+| `docs/stage2/` | Study 2 frozen design · public index |
 | `scripts/` | Mock + RunPod entry points |
 
 ---
@@ -99,4 +99,4 @@ Bootstrap: [`scripts/bootstrap_orbit_surgical_runpod.sh`](scripts/bootstrap_orbi
 
 Do **not** commit API keys, credentials, PHI, or embargoed co-author material. See [`.gitignore`](.gitignore) and [`docs/PUBLIC_BOUNDARY.md`](docs/PUBLIC_BOUNDARY.md).
 
-**Private by design:** Stage 2 L1 narrative · internal reading · career planning → not in this repo.
+**Private by design:** Internal reading queues · career planning · lab meeting material — not in this repo. See [`docs/PUBLIC_BOUNDARY.md`](docs/PUBLIC_BOUNDARY.md).

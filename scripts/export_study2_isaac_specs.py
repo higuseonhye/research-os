@@ -109,7 +109,7 @@ def main() -> None:
             spec_id += 1
 
     payload = {
-        "prereg": "builder-os-private/working/research/stage2/study2_prereg_v0.1.md",
+        "prereg": "docs/stage2/study2_phase1_design_v0.1.md",
         "mock_run_id": args.mock_run_id,
         "export_strategy": args.strategy,
         "top_k": args.top_k,

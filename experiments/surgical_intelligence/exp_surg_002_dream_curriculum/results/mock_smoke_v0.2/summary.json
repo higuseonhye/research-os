@@ -1,7 +1,7 @@
 {
   "tier": "B",
   "label": "mock_smoke_v0.2",
-  "prereg": "builder-os-private/working/research/stage2/study2_prereg_v0.1.md (private)",
+  "prereg": "docs/stage2/study2_phase1_design_v0.1.md",
   "date": "2026-07-22",
   "n_episodes": 48,
   "seeds": [
