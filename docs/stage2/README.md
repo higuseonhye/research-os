@@ -1,6 +1,6 @@
 # Stage 2 — working docs (private)
 
-> **Status:** design in progress · **not public** until PI sign-off  
+> **Status:** Phase 1 executed · H3 computed · selection ablation pending Isaac · **not public** narrative until PI sign-off  
 > **Public:** repro code only — `experiments/surgical_intelligence/exp_surg_002_dream_curriculum/` · `scripts/run_study2_dream_curriculum_*.py`
 
 ---

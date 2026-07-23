@@ -9,7 +9,7 @@
 
 **Platform:** Isaac Sim 4.1 · ORBIT Dual-STAR Reach · same-state counterfactual fork.
 
-**Latest (2026-07-22):** Phase C confirmatory — REPLAN **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion. Study 2 Phase 1 complete — mock yield vs diversity tradeoff.
+**Latest (2026-07-23):** Study 2 Phase 1 closed — mock yield vs diversity · H3 mock–Isaac ρ **not supported** (top-k ceiling). Selection ablation Isaac **pending** GPU retry. Paper 001 Phase C — REPLAN **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion.
 
 ---
 
@@ -30,7 +30,7 @@ We have **not** shown a new recoverability **estimator** or clinical deployment.
 | Track | Result | Summary |
 | --- | --- | --- |
 | **Paper 001 Phase C** | REPLAN_d20 **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion L1 | [`study1_proper/summary.json`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper/summary.json) |
-| **Study 002 Phase 1** | Mock: Gaussian yield ↑ · diffusion diversity ↑; Isaac top-k 5/5 both dreamers | [`isaac_full_v0.1`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/summary.json) · [`mock_smoke_v0.2`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/summary.json) |
+| **Study 002 Phase 1** | Mock: Gaussian yield ↑ · diffusion diversity ↑; Isaac top-k 5/5 both dreamers; H3 ρ **null** (zero variance) | [`isaac_full_v0.1`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/summary.json) · [`mock_smoke_v0.2`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/summary.json) · [`h3_mock_isaac_v0.1`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.1/summary.json) |
 
 Full status: [`docs/paper1/status.md`](docs/paper1/status.md)
 
