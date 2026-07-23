@@ -14,10 +14,14 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 
 
-def kill_stale_kit() -> None:
-    subprocess.run(["pkill", "-9", "-f", "/isaac-sim/kit/kit"], check=False)
-    subprocess.run(["pkill", "-9", "-f", "isaaclab.sh"], check=False)
-    time.sleep(3)
+def cleanup_hung_runner() -> None:
+    """Kill hung counterfactual python only.
+
+    Do NOT pkill /isaac-sim/kit/kit — on Isaac Sim pods that kills the container
+    base kit process and drops Web Terminal (RunPod sidecar).
+    """
+    subprocess.run(["pkill", "-9", "-f", "orbit_reach_study1a_counterfactual"], check=False)
+    time.sleep(2)
 
 
 def run_specs(
