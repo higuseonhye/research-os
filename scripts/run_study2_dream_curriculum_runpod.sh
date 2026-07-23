@@ -110,68 +110,16 @@ export TASK
 # --- Step 3: Isaac per spec ---
 export ROOT_DIR SPECS_OUT PER_SPEC_DIR IsaacLab_PATH ORBIT_SURGICAL_PATH TASK ISAAC_SEEDS MAX_STEPS ONSET_DEFAULT
 
-"$PY" << 'PY'
-import json
-import os
-import subprocess
-from pathlib import Path
-
-root = Path(os.environ["ROOT_DIR"])
-specs_path = Path(os.environ["SPECS_OUT"])
-per_spec = Path(os.environ["PER_SPEC_DIR"])
-isaaclab = Path(os.environ["IsaacLab_PATH"])
-orbit = Path(os.environ["ORBIT_SURGICAL_PATH"])
-task = os.environ["TASK"]
-seeds = os.environ["ISAAC_SEEDS"]
-max_steps = os.environ["MAX_STEPS"]
-onset_default = os.environ["ONSET_DEFAULT"]
-
-pack = json.loads(specs_path.read_text(encoding="utf-8"))
-failures = []
-
-for spec in pack["specs"]:
-    spec_id = spec["spec_id"]
-    out = per_spec / spec_id
-    out.mkdir(parents=True, exist_ok=True)
-    shift = spec["shift_m"]
-    onset = int(spec.get("onset_step", onset_default))
-    (out / "spec.json").write_text(json.dumps(spec, indent=2), encoding="utf-8")
-
-    cmd = [
-        str(isaaclab / "isaaclab.sh"),
-        "-p",
-        str(root / "scripts/orbit_reach_study1a_counterfactual.py"),
-        "--experiment-id",
-        f"EXP-SURG-002-{spec_id}",
-        "--task",
-        task,
-        "--num_envs",
-        "1",
-        "--seeds",
-        seeds,
-        "--onset",
-        str(onset),
-        "--max-steps",
-        max_steps,
-        "--shift-m",
-        str(shift),
-        "--include-continue",
-        "--replan-delays",
-        "0",
-        "--out-dir",
-        str(out),
-        "--headless",
-    ]
-    print(f"[Isaac] {spec_id} shift={shift} onset={onset}", flush=True)
-    rc = subprocess.run(cmd, cwd=str(orbit)).returncode
-    if rc != 0:
-        failures.append(spec_id)
-        print(f"[WARN] Isaac failed for {spec_id} rc={rc}", flush=True)
-
-if failures:
-    import sys
-    print(f"[WARN] Failed specs: {failures}", file=sys.stderr)
-PY
+"$PY" "$ROOT_DIR/scripts/run_study2_isaac_loop.py" \
+  --specs "$SPECS_OUT" \
+  --results-dir "$PER_SPEC_DIR" \
+  --isaaclab "$IsaacLab_PATH" \
+  --orbit "$ORBIT_SURGICAL_PATH" \
+  --task "$TASK" \
+  --seeds "$ISAAC_SEEDS" \
+  --max-steps "$MAX_STEPS" \
+  --onset-default "$ONSET_DEFAULT" \
+  || true
 
 # --- Step 4: Merge ---
 "$PY" scripts/merge_study2_isaac_results.py \
