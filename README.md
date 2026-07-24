@@ -1,6 +1,8 @@
 # research-os
 
-**Open portfolio** for two linked research questions on **non-average embodied failure** — measure recoverability @ fixed state **S**, and generate **informative** failure scenarios for validation.
+**Public research portfolio** for a focused question in Physical AI: how embodied systems should respond when reality no longer matches their expectations.
+
+This repository contains **promoted research evidence only**—research questions, reproducible experiments, protocols, figures, and clearly tiered claims. It is not a career diary, lab notebook, or private strategy workspace.
 
 | | |
 | --- | --- |
@@ -10,6 +12,16 @@
 **Platform:** Isaac Sim 4.1 · ORBIT Dual-STAR Reach · same-state counterfactual fork.
 
 **Latest (2026-07-23):** Study 2 Phase 1 closed — mock yield vs diversity · H3 mock–Isaac ρ **not supported** (top-k ceiling). Selection ablation Isaac **pending** GPU retry. Paper 001 Phase C — REPLAN **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion.
+
+---
+
+## Research direction
+
+**Long-term vision:** Physical AI for the Non-Average World.
+
+**Near-term program:** build measurable protocols for recognizing and resolving task-relevant mismatch, with emphasis on recoverability, intervention choice, timing, and human–AI collaboration.
+
+**Current scope:** controlled simulation studies. This repository does not claim clinical deployment, a complete theory of exception-aware intelligence, or a general recoverability estimator.
 
 ---
 
@@ -99,4 +111,4 @@ Bootstrap: [`scripts/bootstrap_orbit_surgical_runpod.sh`](scripts/bootstrap_orbi
 
 Do **not** commit API keys, credentials, PHI, or embargoed co-author material. See [`.gitignore`](.gitignore) and [`docs/PUBLIC_BOUNDARY.md`](docs/PUBLIC_BOUNDARY.md).
 
-**Private by design:** Internal reading queues · career planning · lab meeting material — not in this repo. See [`docs/PUBLIC_BOUNDARY.md`](docs/PUBLIC_BOUNDARY.md).
+**Private by design:** internal reading queues, career and relocation planning, people notes, lab feedback, and unpublished strategy are excluded from this repository.
