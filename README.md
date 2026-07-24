@@ -11,7 +11,7 @@ This repository contains **promoted research evidence only**—research question
 
 **Platform:** Isaac Sim 4.1 · ORBIT Dual-STAR Reach · same-state counterfactual fork.
 
-**Latest (2026-07-23):** Study 2 Phase 1 closed — mock yield vs diversity · H3 mock–Isaac ρ **not supported** (top-k ceiling). Selection ablation Isaac **pending** GPU retry. Paper 001 Phase C — REPLAN **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion.
+**Latest (2026-07-24):** **Paper 001 proper program complete** (D0–D3 · pre-reg v2.0 · VESSL) — REPLAN **19/20** vs CONTINUE **0/20** @ fixed **S**; RQ-B menu **95%** > B2 **0%** > B3 **85%**. Figures + Isaac EE traces in [`docs/paper1/figures/`](docs/paper1/figures/). Study 2 selection ablation executed on VESSL.
 
 ---
 
@@ -31,7 +31,7 @@ This repository contains **promoted research evidence only**—research question
 | --- | --- | --- |
 | A | Scaffold / protocol | Same-state CF pipeline · replay OK |
 | B | Smoke / direction | 001A–D smoke atlas · Study2 desk mock |
-| C | Confirmatory | **Paper 1 Phase C executed** (n=20) · **Study 2 Isaac Phase 1** summary |
+| C | Confirmatory | **Paper 001 D0–D3 executed** (n=20) · **Study 2** Phase 1 + ablation |
 
 We have **not** shown a new recoverability **estimator** or clinical deployment.
 
@@ -41,8 +41,10 @@ We have **not** shown a new recoverability **estimator** or clinical deployment.
 
 | Track | Result | Summary |
 | --- | --- | --- |
-| **Paper 001 Phase C** | REPLAN_d20 **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion L1 | [`study1_proper/summary.json`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper/summary.json) |
-| **Study 002 Phase 1** | Mock: Gaussian yield ↑ · diffusion diversity ↑; Isaac top-k 5/5 both dreamers; H3 ρ **null** (zero variance) | [`isaac_full_v0.1`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/summary.json) · [`mock_smoke_v0.2`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/summary.json) · [`h3_mock_isaac_v0.1`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.1/summary.json) |
+| **Paper 001 D0** | REPLAN **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion | [`study1_proper/summary.json`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper/summary.json) |
+| **Paper 001 D1–D3** | B2 **0%** · B3 **85%** · D1 control descriptive | [`study1_proper_v2/summary.json`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper_v2/summary.json) |
+| **Paper 001 figures** | Profile · baseline overlay · Isaac EE traces | [`docs/paper1/figures/`](docs/paper1/figures/) |
+| **Study 002** | Mock yield vs diversity · Isaac ablation on VESSL | [`isaac_full_v0.1`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/summary.json) · [`mock_smoke_v0.2`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/summary.json) |
 
 Full status: [`docs/paper1/status.md`](docs/paper1/status.md)
 
@@ -57,8 +59,10 @@ Full status: [`docs/paper1/status.md`](docs/paper1/status.md)
 | Research question v1.0 | [`docs/paper1/research_question.md`](docs/paper1/research_question.md) |
 | EXP-SURG-001 | [`experiments/.../exp_surg_001_execute_or_defer/README.md`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/README.md) |
 | EXP-SURG-002 | [`experiments/.../exp_surg_002_dream_curriculum/README.md`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/README.md) |
-| Fig · mode separation | [counterfactual_grid.png](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1a_isaac/figures/counterfactual_grid.png) |
-| Fig · delay band | [recoverability_vs_delay.png](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1b_isaac/figures/recoverability_vs_delay.png) |
+| Fig · D0 profile (Tier C) | [fig3_profile_d0.png](docs/paper1/figures/fig3_profile_d0.png) |
+| Fig · baseline overlay | [fig4_baseline_overlay.png](docs/paper1/figures/fig4_baseline_overlay.png) |
+| Fig · Isaac EE traces | [sim_panel_isaac_traces.png](docs/paper1/figures/sim_panel_isaac_traces.png) |
+| Fig · smoke (Tier B) | [counterfactual_grid.png](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1a_isaac/figures/counterfactual_grid.png) |
 | Experiment loop | [`docs/EXPERIMENT_LOOP.md`](docs/EXPERIMENT_LOOP.md) |
 | Repro scripts | [`scripts/README.md`](scripts/README.md) |
 | Public boundary | [`docs/PUBLIC_BOUNDARY.md`](docs/PUBLIC_BOUNDARY.md) |
