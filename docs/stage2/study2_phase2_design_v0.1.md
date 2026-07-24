@@ -107,6 +107,23 @@
 
 ---
 
+## Phase 2 outcomes (executed · 2026-07-24)
+
+**RUN_ID:** `20260724T053134Z` · VESSL A100 · study1d + occlusion align · mock `mock_smoke_v0.4`
+
+| Leg | Result |
+| --- | --- |
+| **H3′** | **PASS** — Spearman ρ = **0.899** (`reason: ok`, n=20) |
+| **H4′** | **PASS** — top IR **1.0** · bottom **0.3** |
+| **H5′** | **PASS** — lift vs v0.2 = **0.899 − 0.145 = 0.754** |
+| by_dreamer | Gaussian **0.8** · diffusion **0.5** (ceiling broken on diffusion) |
+
+**Narrative:** Mock–Isaac **occlusion alignment** was the missing edge. Phase 1 per-spec rank failure (ρ=0.15) reversed after study1d transfer; tier filter **and** rank correlation supported at Tier B.
+
+Promoted: [`selection_ablation_v0.2/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/selection_ablation_v0.2/) · [`h3_mock_isaac_v0.4/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.4/)
+
+---
+
 ## Metrics (unchanged definitions)
 
 | Metric | Definition |
@@ -135,7 +152,7 @@
 | Version | Date | Note |
 | --- | --- | --- |
 | v0.1 | 2026-07-24 | Design freeze · mock–Isaac alignment + ablation rerun |
-| | | Phase 1 frozen in [`study2_phase1_design_v0.1.md`](study2_phase1_design_v0.1.md) |
+| v0.1-exec | 2026-07-24 | **Executed** · H3′ ρ=0.899 PASS · H4′ bottom=0.3 PASS |
 
 ---
 

@@ -1,0 +1,48 @@
+{
+  "timestamp_utc": "2026-07-24T05:31:34Z",
+  "run_id": "20260724T053134Z",
+  "git_commit": "d5f2b6c",
+  "prereg": "docs/stage2/study2_phase2_design_v0.1.md",
+  "mock_run_id": "mock_smoke_v0.4",
+  "export_strategy": "top_bottom",
+  "isaac_runner": "study1d",
+  "platform": "VESSL A100",
+  "by_dreamer": {
+    "gaussian": {
+      "n": 10,
+      "informative_count": 8,
+      "informative_rate": 0.8
+    },
+    "diffusion": {
+      "n": 10,
+      "informative_count": 5,
+      "informative_rate": 0.5
+    }
+  },
+  "by_selection_tier": {
+    "top": {
+      "n": 10,
+      "informative_count": 10,
+      "informative_rate": 1.0
+    },
+    "bottom": {
+      "n": 10,
+      "informative_count": 3,
+      "informative_rate": 0.3
+    }
+  },
+  "h3_v0.4": {
+    "spearman_rho": 0.898717034272917,
+    "h3_pass": true,
+    "spearman_reason": "ok",
+    "baseline_v0.2_rho": 0.14547859349066158,
+    "alignment_lift": 0.753238440782256
+  },
+  "phase2_verdict": {
+    "h3_prime": "PASS",
+    "h4_prime": "PASS",
+    "h5_prime": "PASS"
+  },
+  "aggregate_path": "results/study2_dream_curriculum/isaac/20260724T053134Z/isaac_aggregate.json",
+  "note": "Promote full isaac_aggregate.json from VESSL before Pause (ephemeral volume)."
+}

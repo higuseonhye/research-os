@@ -1,7 +1,7 @@
 # Study 2 — dream curriculum (public)
 
 > **Experiment:** EXP-SURG-002 · parallel to Paper 1 · not Paper 1 confirmatory  
-> **Status (2026-07-24):** Phase 1 complete · Phase 2 design frozen · Leg 0 code pending
+> **Status (2026-07-24):** Phase 1 complete · **Phase 2 executed** (H3′ ρ=0.899 PASS)
 
 ---
 
@@ -30,6 +30,12 @@
 | [`isaac_full_v0.1/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/) | C | Phase 1 Isaac top-k |
 
 **Phase 2 pending:** `mock_smoke_v0.4` · `selection_ablation_v0.2` · `h3_mock_isaac_v0.4`
+
+| Label | Tier | Summary |
+| --- | --- | --- |
+| [`mock_smoke_v0.4/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.4/) | B | v0.2 dream space · seeds 42–44 |
+| [`selection_ablation_v0.2/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/selection_ablation_v0.2/) | B | study1d · top 1.0 · bottom 0.3 |
+| [`h3_mock_isaac_v0.4/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.4/) | B | H3′ ρ=**0.899** PASS |
 
 ---
 
