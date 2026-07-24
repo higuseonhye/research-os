@@ -17,6 +17,8 @@ def _repo_rel(path: Path) -> str:
         return str(path.resolve().relative_to(REPO.resolve()))
     except ValueError:
         return str(path.resolve())
+
+
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
@@ -162,13 +164,20 @@ def main() -> None:
     )
     parser.add_argument("--threshold", type=float, default=0.5)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--label", type=str, default="h3_mock_isaac_spearman")
+    parser.add_argument("--date", type=str, default="")
     args = parser.parse_args()
 
-    specs = load_specs(args.records, args.top_k, args.strategy, args.specs)
+    records_path = args.records.resolve()
+    isaac_agg = args.isaac_aggregate.resolve() if args.isaac_aggregate else None
+    out_path = args.out.resolve()
+    specs_path = args.specs.resolve() if args.specs else None
+
+    specs = load_specs(records_path, args.top_k, args.strategy, specs_path)
     isaac_by_id: dict[str, int | None] = {}
 
-    if args.isaac_aggregate and args.isaac_aggregate.exists():
-        agg = json.loads(args.isaac_aggregate.read_text(encoding="utf-8"))
+    if isaac_agg and isaac_agg.exists():
+        agg = json.loads(isaac_agg.read_text(encoding="utf-8"))
         for row in agg.get("specs", []):
             val = row.get("isaac_informative")
             if val is None and "isaac_records" in row:
@@ -204,15 +213,17 @@ def main() -> None:
             "reason": dreason,
         }
 
+    from datetime import date
+
     h3_pass = rho is not None and rho >= args.threshold
     payload = {
         "tier": "B",
-        "label": "h3_mock_isaac_spearman_v0.1",
-        "date": "2026-07-23",
+        "label": args.label,
+        "date": args.date or date.today().isoformat(),
         "hypothesis": "H3: mock per-spec informative rank correlates with Isaac (rho >= 0.5)",
-        "mock_records": str(args.records.relative_to(REPO)),
-        "isaac_source": str(args.isaac_aggregate) if args.isaac_aggregate else "isaac_full_v0.1_ceiling_all_informative",
-        "export_strategy": args.strategy if not args.specs else "from_specs_file",
+        "mock_records": _repo_rel(records_path),
+        "isaac_source": _repo_rel(isaac_agg) if isaac_agg else "isaac_full_v0.1_ceiling_all_informative",
+        "export_strategy": args.strategy if not specs_path else "from_specs_file",
         "top_k_per_dreamer": args.top_k,
         "n_specs_pooled": len(mock_vals),
         "spearman_rho": rho,
@@ -229,8 +240,8 @@ def main() -> None:
         ),
     }
 
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print(json.dumps({"spearman_rho": rho, "h3_pass": h3_pass, "reason": reason}, indent=2))
 
 
