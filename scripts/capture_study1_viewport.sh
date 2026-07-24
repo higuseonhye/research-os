@@ -15,7 +15,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 SEED="${SEED:-0}"
-MODES="${MODES:-CONTINUE,REPLAN_d20,REOBSERVE}"
+MODES="${MODES:-CONTINUE,REPLAN,REOBSERVE}"
 CAPTURE_DIR="${CAPTURE_DIR:-docs/paper1/figures/isaac_captures}"
 STEPS="${CAPTURE_STEPS:-0,20,40,80,120}"
 SHIFT_M="${SHIFT_M:-0.06}"
