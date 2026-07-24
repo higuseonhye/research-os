@@ -6,7 +6,7 @@ on:
       tag:
         description: Image tag
         required: false
-        default: "4.1.0"
+        default: "4.1.0-v2"
 
 permissions:
   contents: read

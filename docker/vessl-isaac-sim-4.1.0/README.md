@@ -19,7 +19,7 @@ Hospital / proxy networks often drop the ~8GB layer upload. Push from GitHub ins
    - Name: `NGC_API_KEY` · Value: your NGC API key
 2. Push this repo (includes `.github/workflows/publish-vessl-isaac-image.yml`)
 3. **Actions** → **Publish VESSL Isaac Sim image** → **Run workflow**
-4. Wait ~30–60 min · image: `ghcr.io/YOUR_GH_USER/vessl-isaac-sim:4.1.0`
+4. Wait ~30–60 min · image: `ghcr.io/YOUR_GH_USER/vessl-isaac-sim:4.1.0-v2`
 5. https://github.com/YOUR_GH_USER?tab=packages → package → **Public**
 
 ### Option B · Local Docker

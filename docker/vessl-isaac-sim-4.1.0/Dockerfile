@@ -2,8 +2,8 @@
 # Extends NGC Isaac Sim with openssh-server + JupyterLab (VESSL requirements).
 #
 # Build (requires NGC login: docker login nvcr.io):
-#   docker build -t ghcr.io/YOUR_USER/vessl-isaac-sim:4.1.0 .
-#   docker push ghcr.io/YOUR_USER/vessl-isaac-sim:4.1.0
+#   docker build -t ghcr.io/YOUR_USER/vessl-isaac-sim:4.1.0-v2 .
+#   docker push ghcr.io/YOUR_USER/vessl-isaac-sim:4.1.0-v2
 
 FROM nvcr.io/nvidia/isaac-sim:4.1.0
 
@@ -14,12 +14,15 @@ ENV ACCEPT_EULA=Y \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-server \
+    supervisor \
+    python3-pip \
     git \
     tmux \
     curl \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /var/run/sshd \
+    && mkdir -p /var/run/sshd /var/log/supervisor \
+    && ln -sf /usr/bin/pip3 /usr/local/bin/pip \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
