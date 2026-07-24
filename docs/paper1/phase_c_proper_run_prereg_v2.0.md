@@ -1,8 +1,6 @@
 # Paper 1 — Phase C proper-run pre-registration v2.0
 
-> **Status:** **FROZEN · 2026-07-24** · GPU target **2026-07-25** (accelerated)  
-> **Note:** 7-day pre-reg wait **waived** — design locked on CPU same day; disclose in Methods.  
-> **v1.0 (D0 executed):** [`phase_c_proper_run_prereg_v1.0.md`](phase_c_proper_run_prereg_v1.0.md) · immutable  
+> **Status:** **EXECUTED · 2026-07-24** · D1–D3 complete · [`study1_proper_v2/summary.json`](../../experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper_v2/summary.json)  
 > **RQ · method:** [`research_question.md`](research_question.md) v1.1 · [`method_spec_v1.0.md`](method_spec_v1.0.md)
 
 ---

@@ -1,0 +1,14 @@
+{
+  "run_id": "20260724T070000Z",
+  "label": "study1_proper_v2.0",
+  "prereg": "docs/paper1/phase_c_proper_run_prereg_v2.0.md",
+  "prereg_frozen": "2026-07-24",
+  "gpu_date": "2026-07-24",
+  "platform": "VESSL A100 · Isaac Sim 4.1 · ORBIT IK-Rel",
+  "git_commit_at_run": "705996a",
+  "blocks": ["d1", "d2", "d3"],
+  "branch_replay_ok": true,
+  "n_records": 80,
+  "artifacts": "experiments/surgical_intelligence/exp_surg_001_execute_or_defer/artifacts/study1_proper_v2/",
+  "summary": "experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper_v2/summary.json"
+}

@@ -1,0 +1,81 @@
+{
+  "tier": "C",
+  "label": "study1_proper_v2.0",
+  "experiment": "EXP-SURG-001 Phase C pre-reg v2.0 D1-D3",
+  "date": "2026-07-24",
+  "prereg": "docs/paper1/phase_c_proper_run_prereg_v2.0.md",
+  "d0_reference": "results/study1_proper/summary.json",
+  "d0_primary_contrast": {
+    "hypothesis": "REPLAN_d20 success > CONTINUE @ fixed S",
+    "continue_success_rate": 0.0,
+    "replan_success_rate": 0.95,
+    "delta_pp": 95.0,
+    "pre_reg_direction_met": true
+  },
+  "blocks": {
+    "d1": {
+      "block": "d1",
+      "label": "no_occlusion_control",
+      "sub_rq": "RQ-P",
+      "n_records": 40,
+      "branch_replay_ok": true,
+      "aggregate_by_mode": [
+        {
+          "response": "CONTINUE",
+          "class": null,
+          "n": 20,
+          "success_rate": 0.05,
+          "forbidden_violation_rate": 0.0,
+          "mean_final_distance_m": 0.11444302657619118
+        },
+        {
+          "response": "REPLAN_d20",
+          "class": null,
+          "n": 20,
+          "success_rate": 0.95,
+          "forbidden_violation_rate": 0.0,
+          "mean_final_distance_m": 0.04067304627969861
+        }
+      ],
+      "source": "experiments/surgical_intelligence/exp_surg_001_execute_or_defer/artifacts/study1_proper_v2/d1/isaac_results.json"
+    },
+    "d2": {
+      "block": "d2",
+      "label": "b2_uq_inspired",
+      "sub_rq": "RQ-B",
+      "n_records": 20,
+      "branch_replay_ok": true,
+      "aggregate_by_mode": [
+        {
+          "response": "HANDOVER",
+          "class": "collaboration",
+          "n": 20,
+          "success_rate": 0.0,
+          "forbidden_violation_rate": 0.0,
+          "mean_final_distance_m": 0.3172097682952881
+        }
+      ],
+      "source": "experiments/surgical_intelligence/exp_surg_001_execute_or_defer/artifacts/study1_proper_v2/d2/isaac_results.json"
+    },
+    "d3": {
+      "block": "d3",
+      "label": "b3_situation_rule",
+      "sub_rq": "RQ-B",
+      "n_records": 20,
+      "branch_replay_ok": true,
+      "aggregate_by_mode": [
+        {
+          "response": "REOBSERVE",
+          "class": "policy_information",
+          "n": 20,
+          "success_rate": 0.85,
+          "forbidden_violation_rate": 0.0,
+          "mean_final_distance_m": 0.1003560008481145
+        }
+      ],
+      "source": "experiments/surgical_intelligence/exp_surg_001_execute_or_defer/artifacts/study1_proper_v2/d3/isaac_results.json"
+    }
+  },
+  "branch_replay_ok": true,
+  "n_records_total": 80
+}

@@ -12,9 +12,9 @@ Phase B  Desk review → decisions             ✅ DONE
 Phase C  Pre-reg v1.0 + proper n=20          ✅ DONE (2026-07-22)
 Lit v2   Positioning + baseline spec         ✅ DONE
          ↓
-Stage 5  RQ v1.1 · pre-reg v2.0 draft · proper GPU (D1–D3)   ← current
+Stage 5  Paper 001 proper program complete (D0–D3)   ✅ 2026-07-24
          ↓
-Stage 6  Paper draft (venue after results)
+Stage 6  Paper draft (venue after results)            ← current
 ```
 
 ---
