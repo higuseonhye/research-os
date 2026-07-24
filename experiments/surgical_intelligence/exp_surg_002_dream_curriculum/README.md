@@ -44,8 +44,10 @@ Promote full `isaac_aggregate.json` from pod: [`scripts/copy_study2_results_from
 | [`h3_mock_isaac_v0.1/`](results/h3_mock_isaac_v0.1/) | B | H3 Spearman · ρ=null · zero variance |
 | [`isaac_smoke_v0.1/`](results/isaac_smoke_v0.1/) | C | Pipeline smoke · top-2 × seeds 0,1 |
 | [`isaac_full_v0.1/`](results/isaac_full_v0.1/) | C | Confirmatory summary · top-5 × seeds 0–4 |
-| [`selection_ablation_v0.1/`](results/selection_ablation_v0.1/) | B | 20-spec top+bottom · top IR 1.0 · bottom 0.8 |
-| [`h3_mock_isaac_v0.2/`](results/h3_mock_isaac_v0.2/) | B | H3 on ablation pack · ρ=0.15 · FAIL |
+| [`selection_ablation_v0.1/`](results/selection_ablation_v0.1/) | B | top/bottom IR 1.0 vs 0.8 · study1a |
+| [`h3_mock_isaac_v0.2/`](results/h3_mock_isaac_v0.2/) | B | H3 20-spec · ρ=0.15 FAIL |
+| [`selection_ablation_v0.2/`](results/selection_ablation_v0.2/) | B | study1d · top 1.0 · bottom **0.3** |
+| [`h3_mock_isaac_v0.4/`](results/h3_mock_isaac_v0.4/) | B | H3′ ρ=**0.899** PASS |
 
 **Honest read (2026-07-24):** mock — Gaussian higher informative yield, diffusion higher param diversity. Isaac top-k ceiling (5/5) broken at **bottom tier** (8/10). Tier direction PASS (top 1.0 vs bottom 0.8). H3 per-spec ρ=0.15 — rank correlation **not supported**; mock tier not a strong continuous predictor.
 

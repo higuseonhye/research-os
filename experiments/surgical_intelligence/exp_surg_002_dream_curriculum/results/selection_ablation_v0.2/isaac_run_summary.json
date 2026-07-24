@@ -43,6 +43,7 @@
     "h4_prime": "PASS",
     "h5_prime": "PASS"
   },
-  "aggregate_path": "results/study2_dream_curriculum/isaac/20260724T053134Z/isaac_aggregate.json",
-  "note": "Promote full isaac_aggregate.json from VESSL before Pause (ephemeral volume)."
+  "aggregate_path": "results/selection_ablation_v0.2/isaac_aggregate.json",
+  "h3_summary": "results/h3_mock_isaac_v0.4/summary.json",
+  "run_id": "20260724T053134Z"
 }
