@@ -104,6 +104,12 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--compare", action="store_true", help="Run gaussian vs diffusion")
     parser.add_argument("--print-agent-prompt", action="store_true")
+    parser.add_argument(
+        "--promote-label",
+        type=str,
+        default="",
+        help="Copy records.json to results/<label>/records_seed<seed>.json (Tier B promote)",
+    )
     args = parser.parse_args()
 
     cfg = load_yaml(args.config)
@@ -145,6 +151,20 @@ def main() -> None:
         json.dumps({r["dreamer"]: r["records"] for r in results}, indent=2),
         encoding="utf-8",
     )
+
+    if args.promote_label:
+        promote_dir = (
+            REPO
+            / "experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results"
+            / args.promote_label
+        )
+        promote_dir.mkdir(parents=True, exist_ok=True)
+        dest = promote_dir / f"records_seed{args.seed}.json"
+        dest.write_text((out_dir / "records.json").read_text(encoding="utf-8"), encoding="utf-8")
+        (promote_dir / "summary.json").write_text(
+            json.dumps(summary, indent=2), encoding="utf-8"
+        )
+        print(f"Promoted → {dest}")
 
     print(f"Wrote {out_dir / 'summary.json'}")
     for r in results:

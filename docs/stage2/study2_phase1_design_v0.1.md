@@ -86,6 +86,14 @@ Scripts: [`run_study2_selection_ablation_vessl.sh`](../../scripts/run_study2_sel
 
 ---
 
+## Phase 2 (frozen · 2026-07-24)
+
+**Pivot:** mock–Isaac **occlusion alignment** + selection ablation rerun on `mock_smoke_v0.4`.  
+**Primary:** H3′ ρ ≥ 0.5 on 20-spec pack · **not** diffusion vs Gaussian yield.  
+Design: [`study2_phase2_design_v0.1.md`](study2_phase2_design_v0.1.md) · protocol: [`study2_phase2_run_protocol_v0.1.md`](study2_phase2_run_protocol_v0.1.md)
+
+---
+
 ## Version
 
 | Version | Date | Note |

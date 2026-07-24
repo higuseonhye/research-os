@@ -1,0 +1,61 @@
+version: "0.2"
+experiment: EXP-SURG-002
+study: dream_curriculum_sandbox
+phase: 2
+parent_design: docs/stage2/study2_phase2_design_v0.1.md
+
+# Phase 2 delta vs sandbox_v0.1.yaml — wider shift + Isaac occlusion alignment
+dream_space:
+  shift_m:
+    min: 0.015
+    max: 0.10
+  onset_step:
+    min: 10
+    max: 40
+  occlusion_gain:
+    min: 0.0
+    max: 0.85
+
+# Maps mock occlusion_gain → Isaac study1d visibility_fraction (gain_scale_flag v0.1)
+isaac_occlusion:
+  runner: study1d
+  proxy: gain_scale_flag_v0.1
+  occlusion_level: 1
+  visibility_from_gain: "max(0.05, 1.0 - occlusion_gain)"
+
+mock:
+  max_steps: 80
+  tol_m: 0.02
+  responses: [CONTINUE, REPLAN]
+
+dreamers:
+  gaussian:
+    shift_mean: 0.045
+    shift_std: 0.018
+    onset_mean: 20
+    onset_std: 8
+    occlusion_mean: 0.35
+    occlusion_std: 0.22
+  diffusion:
+    train_steps: 200
+    sample_steps: 50
+    beta_start: 0.0001
+    beta_end: 0.02
+    n_train_seeds: 64
+
+agent:
+  rule:
+    families: [target_shift, visual_occlusion, forbidden_region]
+    severity_cycle: [small, mid, unreachable]
+
+taxonomy_path: experiments/surgical_intelligence/exp_surg_001_execute_or_defer/config/exception_taxonomy.yaml
+
+output_root: results/study2_dream_curriculum/mock
+
+selection_export:
+  strategy: top_bottom
+  top_k: 5
+  bottom_k: 5
+  mock_records_seed: 43
+  mock_label: mock_smoke_v0.4
+  isaac_label: selection_ablation_v0.2

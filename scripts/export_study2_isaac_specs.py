@@ -79,6 +79,11 @@ def main() -> None:
         help="top_k=informative pool only (Phase 1); top_bottom=top-k + bottom-k per dreamer (selection ablation)",
     )
     parser.add_argument("--mock-run-id", type=str, default="")
+    parser.add_argument(
+        "--prereg",
+        type=str,
+        default="docs/stage2/study2_phase1_design_v0.1.md",
+    )
     args = parser.parse_args()
 
     raw = _load_records(args.records)
@@ -101,6 +106,9 @@ def main() -> None:
                     "shift_m": spec["shift_m"],
                     "onset_step": spec["onset_step"],
                     "occlusion_gain": spec.get("occlusion_gain", 0.0),
+                    "visibility_fraction": max(
+                        0.05, 1.0 - float(spec.get("occlusion_gain", 0.0))
+                    ),
                     "mock_seed": spec.get("seed", 0),
                     "mock_informative": bool(rec.get("informative", False)),
                     "goal": rec.get("goal", {}),
@@ -109,7 +117,7 @@ def main() -> None:
             spec_id += 1
 
     payload = {
-        "prereg": "docs/stage2/study2_phase1_design_v0.1.md",
+        "prereg": args.prereg,
         "mock_run_id": args.mock_run_id,
         "export_strategy": args.strategy,
         "top_k": args.top_k,

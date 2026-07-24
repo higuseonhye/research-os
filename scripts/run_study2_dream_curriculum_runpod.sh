@@ -14,7 +14,9 @@ if [ ! -x "$PY" ]; then
   exit 1
 fi
 ARTIFACT_DIR="$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/artifacts"
+STUDY2_CONFIG="${STUDY2_CONFIG:-experiments/surgical_intelligence/exp_surg_002_dream_curriculum/config/sandbox_v0.1.yaml}"
 DEFAULT_RECORDS="$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/records_seed43.json"
+STUDY2_RUNNER="${STUDY2_RUNNER:-study1a}"
 MOCK_EPISODES="${STUDY2_MOCK_EPISODES:-48}"
 MOCK_SEEDS="${STUDY2_MOCK_SEEDS:-42,43,44}"
 TOP_K="${STUDY2_TOP_K:-5}"
@@ -39,13 +41,13 @@ cd "$ROOT_DIR"
 
 commit_sha="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
 echo "$commit_sha" > "$OUT_ISAAC/git_commit.txt"
-cp -f "$ROOT_DIR/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/config/sandbox_v0.1.yaml" \
+cp -f "$ROOT_DIR/$STUDY2_CONFIG" \
   "$ARTIFACT_DIR/config_snapshot_${RUN_ID}.yaml"
 
 echo "== EXP-SURG-002 Phase 1 =="
 echo "run_id: $RUN_ID commit: $commit_sha"
 echo "smoke: ${STUDY2_SMOKE:-0} skip_mock: ${STUDY2_SKIP_MOCK:-0}"
-echo "mock episodes: $MOCK_EPISODES seeds: $MOCK_SEEDS top_k: $TOP_K strategy: $EXPORT_STRATEGY isaac_seeds: $ISAAC_SEEDS"
+echo "mock episodes: $MOCK_EPISODES seeds: $MOCK_SEEDS top_k: $TOP_K strategy: $EXPORT_STRATEGY isaac_seeds: $ISAAC_SEEDS runner: $STUDY2_RUNNER config: $STUDY2_CONFIG"
 
 # --- Step 1: CPU mock (both dreamers) or reuse committed records ---
 RECORDS_FOR_EXPORT=""
@@ -66,6 +68,7 @@ else
     mkdir -p "$sub"
     "$PY" scripts/run_study2_dream_curriculum_mock.py \
       --compare \
+      --config "$ROOT_DIR/$STUDY2_CONFIG" \
       --episodes "$MOCK_EPISODES" \
       --seed "$mock_seed" \
       || true
@@ -119,6 +122,7 @@ export ROOT_DIR SPECS_OUT PER_SPEC_DIR IsaacLab_PATH ORBIT_SURGICAL_PATH TASK IS
   --seeds "$ISAAC_SEEDS" \
   --max-steps "$MAX_STEPS" \
   --onset-default "$ONSET_DEFAULT" \
+  --runner "$STUDY2_RUNNER" \
   || true
 
 # --- Step 4: Merge ---
