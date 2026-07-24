@@ -44,7 +44,7 @@ Stage 2+ Learned selector · timing regret    (not Paper 1)
 
 ## Stage 5 — Paper / lab (6mo scope)
 
-> **Decision doc (private):** Path A workshop draft vs Path B C+1 GPU — see builder-os-private `paper1_phase_c_plus_decision_v0.1.md`
+> **Next:** RQ v1.1 + pre-reg v2.0 (confirmatory blocks D1–D3) before further GPU · see private program doc
 
 | Asset | Source |
 | --- | --- |
