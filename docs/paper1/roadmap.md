@@ -12,9 +12,9 @@ Phase B  Desk review → decisions             ✅ DONE
 Phase C  Pre-reg v1.0 + proper n=20          ✅ DONE (2026-07-22)
 Lit v2   Positioning + baseline spec         ✅ DONE
          ↓
-Stage 5  Paper 1 draft · lab talk evidence   ← current
+Stage 5  RQ v1.1 · pre-reg v2.0 draft · proper GPU (D1–D3)   ← current
          ↓
-Stage 2+ Learned selector · timing regret    (not Paper 1)
+Stage 6  Paper draft (venue after results)
 ```
 
 ---
@@ -44,7 +44,7 @@ Stage 2+ Learned selector · timing regret    (not Paper 1)
 
 ## Stage 5 — Paper / lab (6mo scope)
 
-> **Next:** RQ v1.1 + pre-reg v2.0 (confirmatory blocks D1–D3) before further GPU · see private program doc
+> **Next:** GPU D1–D3 **2026-07-25** (accelerated) · [`phase_c_proper_run_prereg_v2.0.md`](phase_c_proper_run_prereg_v2.0.md) · runbook private `vessl_proper_v2_runbook_v0.1.md`
 
 | Asset | Source |
 | --- | --- |

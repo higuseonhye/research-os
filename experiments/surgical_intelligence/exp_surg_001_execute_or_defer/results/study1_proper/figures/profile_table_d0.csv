@@ -1,0 +1,6 @@
+response,class,n,successes,success_rate,wilson_lo,wilson_hi
+CONTINUE,policy,20,0,0.000,0.000,0.161
+REPLAN_d20,policy,20,19,0.950,0.764,0.991
+REOBSERVE,policy_information,20,17,0.850,0.640,0.948
+RESHAPE,environment,20,18,0.900,0.699,0.972
+HANDOVER,collaboration,20,0,0.000,0.000,0.161

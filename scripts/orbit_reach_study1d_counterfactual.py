@@ -43,6 +43,17 @@ parser.add_argument(
     default="CONTINUE,REPLAN,REOBSERVE",
     help="Comma-separated: CONTINUE, REPLAN, REOBSERVE, RESHAPE, HANDOVER",
 )
+parser.add_argument(
+    "--baseline",
+    type=str,
+    default="none",
+    choices=("none", "b2", "b3"),
+    help="External rule baseline (pre-reg v2.0 D2/D3). Overrides --modes.",
+)
+parser.add_argument("--vis-thresh", type=float, default=0.5, help="B2: visibility threshold")
+parser.add_argument("--dist-thresh", type=float, default=0.15, help="B2: EE-to-shifted distance threshold (m)")
+parser.add_argument("--dist-check-step", type=int, default=10, help="B2: steps after onset before distance check")
+parser.add_argument("--shift-thresh-m", type=float, default=0.06, help="B3: minimum shift for replan/occluded tags")
 parser.add_argument("--out-dir", type=str, required=True)
 parser.add_argument("--disable_fabric", action="store_true", default=False)
 AppLauncher.add_app_launcher_args(parser)
@@ -196,6 +207,114 @@ def classify(success: bool, violation: bool, timed_out: bool, handover: bool = F
     if timed_out:
         return "timeout_failure"
     return "safe_unresolved"
+
+
+def probe_shifted_distance_after_continue_steps(
+    env: Any,
+    robot_name: str,
+    command_name: str,
+    body_index: int,
+    pre_actions: list[torch.Tensor],
+    frozen_xyz: torch.Tensor,
+    shifted_xyz: torch.Tensor,
+    onset: int,
+    probe_steps: int,
+    gain: float,
+    max_delta: float,
+    visibility_fraction: float,
+) -> float:
+    """Replay to S, run probe_steps with frozen target + occluded gain; return dist to shifted target."""
+    for act in pre_actions:
+        with torch.no_grad():
+            env.step(act)
+    shifted_target_np = tensor_to_np(shifted_xyz[0])
+    for _t in range(probe_steps):
+        set_command_xyz(env, command_name, frozen_xyz)
+        with torch.no_grad():
+            act = scripted_action(
+                env,
+                robot_name,
+                command_name,
+                gain,
+                body_index,
+                max_delta,
+                visibility_fraction,
+                False,
+            )
+            env.step(act)
+    _, ee, _ = ee_distance(env, robot_name, command_name, body_index)
+    return float(np.linalg.norm(ee - shifted_target_np))
+
+
+def resolve_b2_mode(
+    env: Any,
+    robot_name: str,
+    command_name: str,
+    body_index: int,
+    pre_actions: list[torch.Tensor],
+    frozen_xyz: torch.Tensor,
+    shifted_xyz: torch.Tensor,
+    onset: int,
+    visibility_fraction: float,
+    vis_thresh: float,
+    dist_thresh: float,
+    dist_check_step: int,
+    gain: float,
+    max_delta: float,
+) -> tuple[str, dict[str, Any]]:
+    risk = 1 if visibility_fraction < vis_thresh else 0
+    dist_m = probe_shifted_distance_after_continue_steps(
+        env,
+        robot_name,
+        command_name,
+        body_index,
+        pre_actions,
+        frozen_xyz,
+        shifted_xyz,
+        onset,
+        dist_check_step,
+        gain,
+        max_delta,
+        visibility_fraction,
+    )
+    if dist_m > dist_thresh:
+        risk = max(risk, 1)
+    mode = "HANDOVER" if risk else "CONTINUE"
+    meta = {
+        "baseline_id": "B2",
+        "baseline_rule": "uq_inspired_binary",
+        "b2_risk": risk,
+        "b2_probe_distance_m": dist_m,
+        "b2_vis_thresh": vis_thresh,
+        "b2_dist_thresh": dist_thresh,
+        "b2_dist_check_step": dist_check_step,
+        "resolved_mode": mode,
+    }
+    return mode, meta
+
+
+def resolve_b3_mode(
+    shift_m: float,
+    occlusion_level: int,
+    shift_thresh_m: float,
+) -> tuple[str, dict[str, Any]]:
+    if occlusion_level >= 1 and shift_m >= shift_thresh_m:
+        mode = "REOBSERVE"
+        tag = "occluded_shift"
+    elif shift_m >= shift_thresh_m:
+        mode = "REPLAN"
+        tag = "shift_only"
+    else:
+        mode = "CONTINUE"
+        tag = "nominal"
+    meta = {
+        "baseline_id": "B3",
+        "baseline_rule": "situation_rule",
+        "b3_situation_tag": tag,
+        "b3_shift_thresh_m": shift_thresh_m,
+        "resolved_mode": mode,
+    }
+    return mode, meta
 
 
 def run_branch(
@@ -382,7 +501,11 @@ def main() -> None:
 
     forbidden_center = np.array([0.45, 0.0, 0.15], dtype=np.float64)
     forbidden_half = np.array([0.04, 0.04, 0.04], dtype=np.float64)
-    mode_list = [m.strip() for m in args_cli.modes.split(",") if m.strip()]
+    baseline = str(args_cli.baseline).lower()
+    if baseline != "none":
+        mode_list: list[str] = []
+    else:
+        mode_list = [m.strip() for m in args_cli.modes.split(",") if m.strip()]
 
     if str(args_cli.seeds).strip():
         seed_list = [int(x.strip()) for x in str(args_cli.seeds).split(",") if x.strip()]
@@ -390,8 +513,8 @@ def main() -> None:
         seed_list = [args_cli.seed * 100 + ep for ep in range(args_cli.episodes)]
 
     print(
-        f"[INFO] EXP-SURG-001D modes={mode_list} shift={args_cli.shift_m} "
-        f"vis={args_cli.visibility_fraction} replan_d={args_cli.replan_delay}",
+        f"[INFO] EXP-SURG-001D baseline={baseline} modes={mode_list or '(rule)'} "
+        f"shift={args_cli.shift_m} vis={args_cli.visibility_fraction} replan_d={args_cli.replan_delay}",
         flush=True,
     )
 
@@ -399,6 +522,7 @@ def main() -> None:
         torch.manual_seed(seed)
         env.reset()
         pre_actions: list[torch.Tensor] = []
+        baseline_meta: dict[str, Any] = {}
         for _ in range(args_cli.onset):
             with torch.no_grad():
                 act = scripted_action(
@@ -412,7 +536,37 @@ def main() -> None:
         shift_vec[:, 1] = args_cli.shift_m
         shifted_xyz = frozen_xyz + shift_vec
 
-        for mode in mode_list:
+        if baseline == "b2":
+            torch.manual_seed(seed)
+            env.reset()
+            mode, baseline_meta = resolve_b2_mode(
+                env,
+                robot_name,
+                command_name,
+                body_index,
+                pre_actions,
+                frozen_xyz,
+                shifted_xyz,
+                args_cli.onset,
+                args_cli.visibility_fraction,
+                args_cli.vis_thresh,
+                args_cli.dist_thresh,
+                args_cli.dist_check_step,
+                args_cli.gain,
+                args_cli.max_delta,
+            )
+            branch_modes = [mode]
+        elif baseline == "b3":
+            mode, baseline_meta = resolve_b3_mode(
+                args_cli.shift_m,
+                args_cli.occlusion_level,
+                args_cli.shift_thresh_m,
+            )
+            branch_modes = [mode]
+        else:
+            branch_modes = mode_list
+
+        for mode in branch_modes:
             torch.manual_seed(seed)
             env.reset()
             result = run_branch(
@@ -446,8 +600,10 @@ def main() -> None:
                     "mode": "isaac",
                     "task": args_cli.task,
                     "experiment_id": args_cli.experiment_id,
+                    "baseline": baseline,
                 }
             )
+            result.update(baseline_meta)
             records.append(result)
             print(json.dumps(result), flush=True)
 
@@ -456,6 +612,7 @@ def main() -> None:
         "mode": "isaac",
         "records": records,
         "occlusion_proxy": "gain_scale_flag_v0.1",
+        "baseline": baseline,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
     }
     out_json = out_dir / "isaac_results.json"
