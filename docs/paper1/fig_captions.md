@@ -52,6 +52,8 @@ PNG: [`fig5_occlusion_contrast.png`](figures/fig5_occlusion_contrast.png)
 
 PNG: [`sim_panel_continue_replan.png`](figures/sim_panel_continue_replan.png) · [`sim_panel_multimode.png`](figures/sim_panel_multimode.png)
 
+**Isaac EE traces (Tier C · seed 0 · 2026-07-24):** [`sim_panel_isaac_traces.png`](figures/sim_panel_isaac_traces.png) · traces in [`isaac_captures/`](figures/isaac_captures/)
+
 ---
 
 ## Appendix — smoke figures (Tier B)

@@ -1,0 +1,10 @@
+{
+  "script": "scripts/run_study1_capture_vessl.sh",
+  "git_commit": "cc4439d9fc68521cf620087c4607c9c36faa253b",
+  "seed": 0,
+  "modes": "CONTINUE,REPLAN,REOBSERVE",
+  "shift_m": 0.06,
+  "onset_step": 20,
+  "task": "Isaac-Reach-Dual-STAR-IK-Rel-Play-v0",
+  "trace_files": 3
+}

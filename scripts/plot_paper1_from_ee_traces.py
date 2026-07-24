@@ -16,9 +16,11 @@ DEFAULT_OUT = ROOT / "docs/paper1/figures"
 
 
 def load_traces(trace_dir: Path) -> list[dict]:
+    order = {"CONTINUE": 0, "REPLAN": 1, "REOBSERVE": 2, "RESHAPE": 3, "HANDOVER": 4}
     traces = []
     for p in sorted(trace_dir.glob("*_ee_trace.json")):
         traces.append(json.loads(p.read_text(encoding="utf-8")))
+    traces.sort(key=lambda t: (order.get(t.get("mode", ""), 99), t.get("seed", 0)))
     return traces
 
 

@@ -28,6 +28,6 @@
 | --- | --- | --- |
 | CONTINUE vs REPLAN schematic | [`sim_panel_continue_replan.png`](sim_panel_continue_replan.png) | CPU schematic (protocol geometry) |
 | Multi-mode menu | [`sim_panel_multimode.png`](sim_panel_multimode.png) | CPU schematic |
-| Isaac EE traces | `sim_panel_isaac_traces.png` | GPU capture → `isaac_captures/*_ee_trace.json` |
+| Isaac EE traces | [`sim_panel_isaac_traces.png`](sim_panel_isaac_traces.png) | GPU capture → [`isaac_captures/`](isaac_captures/) |
 
 Captions: [`../fig_captions.md`](../fig_captions.md)

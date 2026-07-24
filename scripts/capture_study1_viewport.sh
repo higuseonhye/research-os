@@ -21,9 +21,11 @@ STEPS="${CAPTURE_STEPS:-0,20,40,80,120}"
 SHIFT_M="${SHIFT_M:-0.06}"
 ONSET="${ONSET:-20}"
 
-mkdir -p "$CAPTURE_DIR"
+# Prefer VESSL wrapper (isaaclab.sh + bootstrap)
+if [ -f "$ROOT/scripts/run_study1_capture_vessl.sh" ] && [ -d "${ISAACLAB_PATH:-/workspace/IsaacLab}" ]; then
+  exec bash "$ROOT/scripts/run_study1_capture_vessl.sh"
+fi
 
-ISAAC_PYTHON="${ISAAC_PYTHON:-python}"
 if command -v /isaac-sim/python.sh >/dev/null 2>&1; then
   ISAAC_PYTHON="/isaac-sim/python.sh"
 fi
