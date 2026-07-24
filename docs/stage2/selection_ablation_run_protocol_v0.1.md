@@ -32,6 +32,7 @@ Test whether **mock informative rank** predicts Isaac informativeness when **bot
 
 - Image: `nvcr.io/nvidia/isaac-sim:4.1.0` · RTX 4090 · **On-Demand** preferred
 - Access: SSH + tmux (not Web Terminal for long runs)
+- **RunPod SSH blocked?** → [VESSL Isaac setup v0.1](vessl_isaac_setup_v0.1.md) (Jupyter :8888 + same `/workspace` scripts)
 - **Never** `pkill -9 -f '/isaac-sim/kit/kit'` (kills RunPod sidecar)
 - `git pull` → need commit **`21c95ec+`**
 
