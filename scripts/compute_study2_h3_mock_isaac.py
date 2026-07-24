@@ -10,6 +10,13 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+
+
+def _repo_rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(REPO.resolve()))
+    except ValueError:
+        return str(path.resolve())
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
