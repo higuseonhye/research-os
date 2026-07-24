@@ -28,5 +28,18 @@ for block in d1 d2 d3; do
 done
 
 echo "== All blocks done. Merge summary: =="
-python "$ROOT_DIR/scripts/merge_study1_proper_v2_summary.py"
+PY="${ISAAC_PYTHON:-}"
+if [[ -z "$PY" && -x "${IsaacLab_PATH:-/workspace/IsaacLab}/_isaac_sim/python.sh" ]]; then
+  PY="${IsaacLab_PATH:-/workspace/IsaacLab}/_isaac_sim/python.sh"
+elif command -v python3 >/dev/null 2>&1; then
+  PY="python3"
+elif command -v python >/dev/null 2>&1; then
+  PY="python"
+else
+  echo "[WARN] No python — run manually: python3 scripts/merge_study1_proper_v2_summary.py"
+  PY=""
+fi
+if [[ -n "$PY" ]]; then
+  "$PY" "$ROOT_DIR/scripts/merge_study1_proper_v2_summary.py"
+fi
 echo "== Download artifacts/study1_proper_v2/ before VESSL Pause (ephemeral volume) =="
