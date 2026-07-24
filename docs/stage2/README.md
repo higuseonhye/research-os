@@ -1,7 +1,7 @@
 # Study 2 — dream curriculum (public)
 
 > **Experiment:** EXP-SURG-002 · parallel to Paper 1 · not Paper 1 confirmatory  
-> **Status (2026-07-23):** Phase 1 complete · H3 computed · selection ablation Isaac pending
+> **Status (2026-07-24):** Phase 1 complete · selection ablation executed (Tier B direction PASS · H3 ρ=0.15 FAIL)
 
 ---
 
@@ -23,7 +23,9 @@
 | Label | Tier | Summary |
 | --- | --- | --- |
 | [`mock_smoke_v0.2/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/) | B | 3-seed mock · G vs D |
-| [`h3_mock_isaac_v0.1/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.1/) | B | H3 Spearman · ρ=null |
+| [`h3_mock_isaac_v0.1/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.1/) | B | H3 top-k · ρ=null |
+| [`selection_ablation_v0.1/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/selection_ablation_v0.1/) | B | top/bottom IR 1.0 vs 0.8 |
+| [`h3_mock_isaac_v0.2/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.2/) | B | H3 20-spec · ρ=0.15 FAIL |
 | [`isaac_full_v0.1/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/) | C | Phase 1 Isaac top-k |
 
 ---

@@ -1,0 +1,258 @@
+{
+  "tier": "B",
+  "label": "h3_mock_isaac_spearman_v0.2",
+  "date": "2026-07-24",
+  "hypothesis": "H3: mock per-spec informative rank correlates with Isaac (rho >= 0.5)",
+  "mock_records": "experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/records_seed43.json",
+  "isaac_source": "results/study2_dream_curriculum/isaac/20260724T041955Z/isaac_aggregate.json",
+  "export_strategy": "from_specs_file",
+  "top_k_per_dreamer": 5,
+  "n_specs_pooled": 20,
+  "spearman_rho": 0.14547859349066158,
+  "spearman_reason": "ok",
+  "h3_pass": false,
+  "threshold": 0.5,
+  "by_dreamer": {
+    "gaussian": {
+      "n": 10,
+      "mock_informative": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "isaac_informative": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "spearman_rho": 0.6666666666666666,
+      "reason": "ok"
+    },
+    "diffusion": {
+      "n": 10,
+      "mock_informative": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isaac_informative": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "spearman_rho": null,
+      "reason": "zero_variance"
+    }
+  },
+  "per_spec": [
+    {
+      "spec_id": "gaussian_000",
+      "dreamer": "gaussian",
+      "selection_tier": "top",
+      "shift_m": 0.07774655373057203,
+      "onset_step": 27,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_001",
+      "dreamer": "gaussian",
+      "selection_tier": "top",
+      "shift_m": 0.06351042786127116,
+      "onset_step": 10,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_002",
+      "dreamer": "gaussian",
+      "selection_tier": "top",
+      "shift_m": 0.0630248877553371,
+      "onset_step": 21,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_003",
+      "dreamer": "gaussian",
+      "selection_tier": "top",
+      "shift_m": 0.06128707771075398,
+      "onset_step": 25,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_004",
+      "dreamer": "gaussian",
+      "selection_tier": "top",
+      "shift_m": 0.06097367906237846,
+      "onset_step": 12,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_005",
+      "dreamer": "gaussian",
+      "selection_tier": "bottom",
+      "shift_m": 0.02,
+      "onset_step": 20,
+      "mock_informative": 0,
+      "isaac_informative": 0
+    },
+    {
+      "spec_id": "gaussian_006",
+      "dreamer": "gaussian",
+      "selection_tier": "bottom",
+      "shift_m": 0.02,
+      "onset_step": 31,
+      "mock_informative": 1,
+      "isaac_informative": 0
+    },
+    {
+      "spec_id": "gaussian_007",
+      "dreamer": "gaussian",
+      "selection_tier": "bottom",
+      "shift_m": 0.0217698004107291,
+      "onset_step": 15,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_008",
+      "dreamer": "gaussian",
+      "selection_tier": "bottom",
+      "shift_m": 0.023644283948471234,
+      "onset_step": 16,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "gaussian_009",
+      "dreamer": "gaussian",
+      "selection_tier": "bottom",
+      "shift_m": 0.023667944737058595,
+      "onset_step": 18,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_010",
+      "dreamer": "diffusion",
+      "selection_tier": "top",
+      "shift_m": 0.08,
+      "onset_step": 40,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_011",
+      "dreamer": "diffusion",
+      "selection_tier": "top",
+      "shift_m": 0.08,
+      "onset_step": 31,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_012",
+      "dreamer": "diffusion",
+      "selection_tier": "top",
+      "shift_m": 0.08,
+      "onset_step": 27,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_013",
+      "dreamer": "diffusion",
+      "selection_tier": "top",
+      "shift_m": 0.08,
+      "onset_step": 24,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_014",
+      "dreamer": "diffusion",
+      "selection_tier": "top",
+      "shift_m": 0.08,
+      "onset_step": 23,
+      "mock_informative": 1,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_015",
+      "dreamer": "diffusion",
+      "selection_tier": "bottom",
+      "shift_m": 0.02050085382057223,
+      "onset_step": 40,
+      "mock_informative": 0,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_016",
+      "dreamer": "diffusion",
+      "selection_tier": "bottom",
+      "shift_m": 0.03139185050661341,
+      "onset_step": 40,
+      "mock_informative": 0,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_017",
+      "dreamer": "diffusion",
+      "selection_tier": "bottom",
+      "shift_m": 0.03480254282279098,
+      "onset_step": 32,
+      "mock_informative": 0,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_018",
+      "dreamer": "diffusion",
+      "selection_tier": "bottom",
+      "shift_m": 0.05756463587573031,
+      "onset_step": 40,
+      "mock_informative": 0,
+      "isaac_informative": 1
+    },
+    {
+      "spec_id": "diffusion_019",
+      "dreamer": "diffusion",
+      "selection_tier": "bottom",
+      "shift_m": 0.07711113375383052,
+      "onset_step": 29,
+      "mock_informative": 0,
+      "isaac_informative": 1
+    }
+  ],
+  "interpretation": ""
+}

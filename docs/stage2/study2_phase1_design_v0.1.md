@@ -72,16 +72,17 @@
 | Mock | `mock_smoke_v0.2` | Gaussian yield ↑ · diffusion diversity ↑ · primary yield **not supported** |
 | Isaac | `isaac_full_v0.1` | Top-k 5/5 both dreamers (ceiling) |
 | H3 | `h3_mock_isaac_v0.1` | ρ **null** (zero variance) · **not supported** |
-| Ablation | `selection_ablation_v0.1` | Design frozen · Isaac run **pending** |
+| Ablation | `selection_ablation_v0.1` | Tier B direction **PASS** (top 1.0 · bottom 0.8 IR) |
+| H3 ablation | `h3_mock_isaac_v0.2` | ρ=**0.145** · **not supported** (variance restored) |
 
-Narrative: **coverage (Gaussian) vs diversity (diffusion)**, not diffusion beats Gaussian on yield.
+Narrative: **coverage (Gaussian) vs diversity (diffusion)**, not diffusion beats Gaussian on yield. Mock **tier** (top vs bottom) partially predicts Isaac; per-spec rank correlation remains weak.
 
 ---
 
-## Selection ablation (frozen · pending Isaac)
+## Selection ablation (executed · 2026-07-24)
 
-Per dreamer: **top-5 + bottom-5** by mock informative rank → **20 Isaac specs** · seeds 0–4.  
-Script: [`run_study2_selection_ablation_runpod.sh`](../../scripts/run_study2_selection_ablation_runpod.sh)
+Per dreamer: **top-5 + bottom-5** by mock informative rank → **20 Isaac specs** · seeds 0–4 · **RUN_ID** `20260724T041955Z` (VESSL A100).  
+Scripts: [`run_study2_selection_ablation_vessl.sh`](../../scripts/run_study2_selection_ablation_vessl.sh) · promote → [`selection_ablation_v0.1/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/selection_ablation_v0.1/)
 
 ---
 

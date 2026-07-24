@@ -1,0 +1,31 @@
+{
+  "timestamp_utc": "2026-07-24T04:34:47.729731+00:00",
+  "git_commit": "d9aee9341016541d3d708c5d38a7816723b76647",
+  "prereg": "docs/stage2/study2_phase1_design_v0.1.md",
+  "mock_run_id": "mock_smoke_v0.2",
+  "export_strategy": "top_bottom",
+  "by_dreamer": {
+    "gaussian": {
+      "n": 10,
+      "informative_count": 8,
+      "informative_rate": 0.8
+    },
+    "diffusion": {
+      "n": 10,
+      "informative_count": 10,
+      "informative_rate": 1.0
+    }
+  },
+  "by_selection_tier": {
+    "top": {
+      "n": 10,
+      "informative_count": 10,
+      "informative_rate": 1.0
+    },
+    "bottom": {
+      "n": 10,
+      "informative_count": 8,
+      "informative_rate": 0.8
+    }
+  }
+}

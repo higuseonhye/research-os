@@ -1,6 +1,6 @@
 # EXP-SURG-002 — Dream curriculum sandbox (Stage 2 probe)
 
-> **Status:** Phase 1 complete · H3 computed (FAIL) · selection ablation Isaac pending  
+> **Status:** Phase 1 complete · selection ablation executed (2026-07-24 · VESSL)  
 > **Design (public):** [`docs/stage2/study2_phase1_design_v0.1.md`](../../../docs/stage2/study2_phase1_design_v0.1.md)  
 > **Parent:** EXP-SURG-001 perturbation taxonomy + mock reach
 
@@ -44,8 +44,10 @@ Promote full `isaac_aggregate.json` from pod: [`scripts/copy_study2_results_from
 | [`h3_mock_isaac_v0.1/`](results/h3_mock_isaac_v0.1/) | B | H3 Spearman · ρ=null · zero variance |
 | [`isaac_smoke_v0.1/`](results/isaac_smoke_v0.1/) | C | Pipeline smoke · top-2 × seeds 0,1 |
 | [`isaac_full_v0.1/`](results/isaac_full_v0.1/) | C | Confirmatory summary · top-5 × seeds 0–4 |
+| [`selection_ablation_v0.1/`](results/selection_ablation_v0.1/) | B | 20-spec top+bottom · top IR 1.0 · bottom 0.8 |
+| [`h3_mock_isaac_v0.2/`](results/h3_mock_isaac_v0.2/) | B | H3 on ablation pack · ρ=0.15 · FAIL |
 
-**Honest read (2026-07-23):** mock — Gaussian higher informative yield, diffusion higher param diversity. Isaac top-k — both dreamers 5/5 informative (ceiling); primary yield hypothesis not supported. H3 — mock rank does not discriminate Isaac informativeness at top-k protocol (ρ undefined). Selection ablation (top+bottom mock rank) **pending** Isaac retry.
+**Honest read (2026-07-24):** mock — Gaussian higher informative yield, diffusion higher param diversity. Isaac top-k ceiling (5/5) broken at **bottom tier** (8/10). Tier direction PASS (top 1.0 vs bottom 0.8). H3 per-spec ρ=0.15 — rank correlation **not supported**; mock tier not a strong continuous predictor.
 
 ## Boundary
 
