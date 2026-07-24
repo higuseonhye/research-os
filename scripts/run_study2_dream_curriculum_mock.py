@@ -112,7 +112,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    cfg = load_yaml(args.config)
+    cfg = load_yaml(args.config.resolve())
 
     if args.print_agent_prompt:
         print(default_agent_prompt(args.episodes, cfg["taxonomy_path"]))
@@ -135,9 +135,15 @@ def main() -> None:
             _run_single(args.dreamer, args.agent, args.episodes, cfg, REPO, rng, args.agent_json)
         )
 
+    config_path = args.config.resolve()
+    try:
+        config_rel = str(config_path.relative_to(REPO.resolve()))
+    except ValueError:
+        config_rel = str(config_path)
+
     summary = {
         "run_id": run_id,
-        "config": str(args.config.relative_to(REPO)),
+        "config": config_rel,
         "seed": args.seed,
         "compare": args.compare,
         "runs": [

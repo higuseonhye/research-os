@@ -1,0 +1,1830 @@
+{
+  "gaussian": [
+    {
+      "goal": {
+        "episode": 0,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.04904179739540224,
+        "onset_step": 28,
+        "occlusion_gain": 0.5085733572101617,
+        "seed": 200745
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 1,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.048780020629968196,
+        "onset_step": 26,
+        "occlusion_gain": 0.16461057824120984,
+        "seed": 686937
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 2,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.04211064787313242,
+        "onset_step": 10,
+        "occlusion_gain": 0.3342311648380995,
+        "seed": 177384
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 3,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.04564137335696553,
+        "onset_step": 28,
+        "occlusion_gain": 0.36000131880510045,
+        "seed": 396098
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 4,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.015,
+        "onset_step": 31,
+        "occlusion_gain": 0.3797711216944444,
+        "seed": 352660
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 5,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.03040142497706095,
+        "onset_step": 26,
+        "occlusion_gain": 0.6839440216100046,
+        "seed": 50799
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 6,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.015519552592854736,
+        "onset_step": 30,
+        "occlusion_gain": 0.13992703159975642,
+        "seed": 138175
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 7,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.04470169443489849,
+        "onset_step": 37,
+        "occlusion_gain": 0.0,
+        "seed": 428217
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 8,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.033148947699192396,
+        "onset_step": 20,
+        "occlusion_gain": 0.4896442957508063,
+        "seed": 826911
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 9,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.05242017803964075,
+        "onset_step": 12,
+        "occlusion_gain": 0.5164555102323845,
+        "seed": 169021
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 10,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.06370572883571254,
+        "onset_step": 11,
+        "occlusion_gain": 0.17220117273820737,
+        "seed": 571481
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 11,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.05070364590585584,
+        "onset_step": 24,
+        "occlusion_gain": 0.07659296718162284,
+        "seed": 281685
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 12,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.03760359030982208,
+        "onset_step": 16,
+        "occlusion_gain": 0.6466204425794232,
+        "seed": 282179
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 13,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.03560026168208432,
+        "onset_step": 13,
+        "occlusion_gain": 0.34693904548062005,
+        "seed": 13918
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 14,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.06634133687034979,
+        "onset_step": 10,
+        "occlusion_gain": 0.37237422812090126,
+        "seed": 693348
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 15,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.08082446801197707,
+        "onset_step": 25,
+        "occlusion_gain": 0.647006824471986,
+        "seed": 683462
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 16,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.045556358822555036,
+        "onset_step": 10,
+        "occlusion_gain": 0.03147669391513713,
+        "seed": 582087
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 17,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.047195021493804605,
+        "onset_step": 18,
+        "occlusion_gain": 0.2430898980599547,
+        "seed": 612072
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 18,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.0775683089463573,
+        "onset_step": 10,
+        "occlusion_gain": 0.11383148203128465,
+        "seed": 770719
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 19,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.05031855406008644,
+        "onset_step": 14,
+        "occlusion_gain": 0.09730125718914229,
+        "seed": 600626
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 20,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.059336106813610484,
+        "onset_step": 26,
+        "occlusion_gain": 0.5264135880689643,
+        "seed": 553453
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 21,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.04715805680978033,
+        "onset_step": 18,
+        "occlusion_gain": 0.44474137863345237,
+        "seed": 464240
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 22,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.015349106274763057,
+        "onset_step": 25,
+        "occlusion_gain": 0.6872463545934092,
+        "seed": 926786
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 23,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.06061724376418883,
+        "onset_step": 33,
+        "occlusion_gain": 0.5438703548678168,
+        "seed": 116426
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 24,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.04390176531506689,
+        "onset_step": 21,
+        "occlusion_gain": 0.2297515459303074,
+        "seed": 386505
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 25,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.02590842819655689,
+        "onset_step": 20,
+        "occlusion_gain": 0.16121083716950457,
+        "seed": 550262
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 26,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.018456820301446537,
+        "onset_step": 32,
+        "occlusion_gain": 0.0,
+        "seed": 368449
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 27,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.015,
+        "onset_step": 28,
+        "occlusion_gain": 0.3908818563127252,
+        "seed": 248519
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 28,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.01544975911668265,
+        "onset_step": 16,
+        "occlusion_gain": 0.12197894359389849,
+        "seed": 836953
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 29,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.06100021705802862,
+        "onset_step": 10,
+        "occlusion_gain": 0.0,
+        "seed": 744744
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 30,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.06527162019556165,
+        "onset_step": 23,
+        "occlusion_gain": 0.349729258863412,
+        "seed": 826507
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 31,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.05764091324627949,
+        "onset_step": 23,
+        "occlusion_gain": 0.32382694251271604,
+        "seed": 771063
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 32,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.0341693066977979,
+        "onset_step": 29,
+        "occlusion_gain": 0.6739960318347091,
+        "seed": 920383
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 33,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.099644635458104,
+        "onset_step": 22,
+        "occlusion_gain": 0.3914123526737958,
+        "seed": 650839
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 34,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.07274973069503957,
+        "onset_step": 22,
+        "occlusion_gain": 0.40858382055795284,
+        "seed": 250907
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 35,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.053775945825954026,
+        "onset_step": 10,
+        "occlusion_gain": 0.18723734350891616,
+        "seed": 683534
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 36,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.025266689166073563,
+        "onset_step": 10,
+        "occlusion_gain": 0.5937732635355387,
+        "seed": 86575
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 37,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.02890225958620945,
+        "onset_step": 23,
+        "occlusion_gain": 0.07185839421478846,
+        "seed": 970986
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 38,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.06141731298725249,
+        "onset_step": 31,
+        "occlusion_gain": 0.030431363639922493,
+        "seed": 25463
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 39,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.04875644180314955,
+        "onset_step": 29,
+        "occlusion_gain": 0.39461886255890083,
+        "seed": 242861
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 40,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.02957958445266912,
+        "onset_step": 10,
+        "occlusion_gain": 0.10192025164256313,
+        "seed": 988383
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 41,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.06430649236999116,
+        "onset_step": 25,
+        "occlusion_gain": 0.4180507350869892,
+        "seed": 527663
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 42,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.07186265912543179,
+        "onset_step": 10,
+        "occlusion_gain": 0.08818112997681438,
+        "seed": 74713
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 43,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.046293400249960114,
+        "onset_step": 10,
+        "occlusion_gain": 0.22025392407045688,
+        "seed": 721896
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 44,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.070039959423252,
+        "onset_step": 28,
+        "occlusion_gain": 0.6967288978995172,
+        "seed": 998944
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 45,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.026289472446137836,
+        "onset_step": 22,
+        "occlusion_gain": 0.14539895460778327,
+        "seed": 438647
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 46,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.04350494806008938,
+        "onset_step": 19,
+        "occlusion_gain": 0.4712646112637186,
+        "seed": 925445
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 47,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.0705112806635077,
+        "onset_step": 28,
+        "occlusion_gain": 0.3068030043571222,
+        "seed": 822571
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    }
+  ],
+  "diffusion": [
+    {
+      "goal": {
+        "episode": 0,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.1,
+        "onset_step": 29,
+        "occlusion_gain": 0.85,
+        "seed": 339915
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 1,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.015,
+        "onset_step": 27,
+        "occlusion_gain": 0.85,
+        "seed": 482068
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 2,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.015,
+        "onset_step": 40,
+        "occlusion_gain": 0.85,
+        "seed": 810373
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 3,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.06382976868192738,
+        "onset_step": 27,
+        "occlusion_gain": 0.0,
+        "seed": 862987
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 4,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.1,
+        "onset_step": 10,
+        "occlusion_gain": 0.85,
+        "seed": 933538
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 5,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.07621018004895888,
+        "onset_step": 10,
+        "occlusion_gain": 0.31643314199739236,
+        "seed": 562223
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 6,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.015,
+        "onset_step": 17,
+        "occlusion_gain": 0.0,
+        "seed": 235332
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 7,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.1,
+        "onset_step": 10,
+        "occlusion_gain": 0.85,
+        "seed": 178365
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 8,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.1,
+        "onset_step": 10,
+        "occlusion_gain": 0.85,
+        "seed": 358377
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 9,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.015,
+        "onset_step": 40,
+        "occlusion_gain": 0.85,
+        "seed": 891129
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 10,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.09352351500224332,
+        "onset_step": 32,
+        "occlusion_gain": 0.85,
+        "seed": 272847
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 11,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.015,
+        "onset_step": 40,
+        "occlusion_gain": 0.0,
+        "seed": 687683
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 12,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.0750251714920963,
+        "onset_step": 10,
+        "occlusion_gain": 0.8354910255792565,
+        "seed": 935816
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 13,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.060065337454185554,
+        "onset_step": 40,
+        "occlusion_gain": 0.85,
+        "seed": 963633
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 14,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.015,
+        "onset_step": 16,
+        "occlusion_gain": 0.85,
+        "seed": 805712
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 15,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.015,
+        "onset_step": 10,
+        "occlusion_gain": 0.0,
+        "seed": 587080
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 16,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.046271824505557245,
+        "onset_step": 10,
+        "occlusion_gain": 0.0,
+        "seed": 695613
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 17,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.1,
+        "onset_step": 40,
+        "occlusion_gain": 0.85,
+        "seed": 120583
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 18,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.1,
+        "onset_step": 40,
+        "occlusion_gain": 0.0798520303937332,
+        "seed": 529980
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 19,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.015,
+        "onset_step": 40,
+        "occlusion_gain": 0.85,
+        "seed": 942352
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 20,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.1,
+        "onset_step": 10,
+        "occlusion_gain": 0.09105221652099216,
+        "seed": 543284
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 21,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.015,
+        "onset_step": 10,
+        "occlusion_gain": 0.0,
+        "seed": 408676
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 22,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.05201297825936587,
+        "onset_step": 13,
+        "occlusion_gain": 0.6809824731456712,
+        "seed": 506467
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 23,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.1,
+        "onset_step": 10,
+        "occlusion_gain": 0.19202747511077628,
+        "seed": 72555
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 24,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.015,
+        "onset_step": 40,
+        "occlusion_gain": 0.0,
+        "seed": 388383
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 25,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.015,
+        "onset_step": 10,
+        "occlusion_gain": 0.85,
+        "seed": 775894
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 26,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.015,
+        "onset_step": 10,
+        "occlusion_gain": 0.0,
+        "seed": 159566
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 27,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.04864124326910933,
+        "onset_step": 14,
+        "occlusion_gain": 0.7146625009453084,
+        "seed": 837211
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 28,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.0573431496670942,
+        "onset_step": 16,
+        "occlusion_gain": 0.0,
+        "seed": 61704
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 29,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.020139899899243894,
+        "onset_step": 40,
+        "occlusion_gain": 0.85,
+        "seed": 507773
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 30,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.026484265287961016,
+        "onset_step": 10,
+        "occlusion_gain": 0.07406005372725712,
+        "seed": 889082
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 31,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.015,
+        "onset_step": 10,
+        "occlusion_gain": 0.48188265840841893,
+        "seed": 956846
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 32,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.1,
+        "onset_step": 25,
+        "occlusion_gain": 0.85,
+        "seed": 812773
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 33,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.1,
+        "onset_step": 10,
+        "occlusion_gain": 0.85,
+        "seed": 821392
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 34,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.015,
+        "onset_step": 28,
+        "occlusion_gain": 0.0,
+        "seed": 985229
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 35,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.1,
+        "onset_step": 12,
+        "occlusion_gain": 0.85,
+        "seed": 309073
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 36,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.015,
+        "onset_step": 37,
+        "occlusion_gain": 0.85,
+        "seed": 343559
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 37,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.03473050599902783,
+        "onset_step": 40,
+        "occlusion_gain": 0.6828763537854822,
+        "seed": 584450
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 38,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.015,
+        "onset_step": 10,
+        "occlusion_gain": 0.8338017438241263,
+        "seed": 653999
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 39,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.06853612000571063,
+        "onset_step": 40,
+        "occlusion_gain": 0.0,
+        "seed": 882306
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 40,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.015,
+        "onset_step": 40,
+        "occlusion_gain": 0.85,
+        "seed": 682591
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 41,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.015,
+        "onset_step": 13,
+        "occlusion_gain": 0.4349726111706839,
+        "seed": 496793
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 42,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.015,
+        "onset_step": 13,
+        "occlusion_gain": 0.5625728503776597,
+        "seed": 499498
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 43,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.1,
+        "onset_step": 10,
+        "occlusion_gain": 0.10590258681800781,
+        "seed": 383564
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 44,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.021521319218878714,
+        "onset_step": 15,
+        "occlusion_gain": 0.7583901946388121,
+        "seed": 499561
+      },
+      "continue_success": false,
+      "replan_success": true,
+      "informative": true
+    },
+    {
+      "goal": {
+        "episode": 45,
+        "family": "target_shift",
+        "severity": "small",
+        "rationale": "rule cycle \u00b7 exception_type=state \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "target_shift",
+        "severity": "small",
+        "shift_m": 0.015,
+        "onset_step": 40,
+        "occlusion_gain": 0.0,
+        "seed": 721827
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 46,
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "rationale": "rule cycle \u00b7 exception_type=perceptual \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "visual_occlusion",
+        "severity": "mid",
+        "shift_m": 0.015,
+        "onset_step": 40,
+        "occlusion_gain": 0.0,
+        "seed": 739804
+      },
+      "continue_success": true,
+      "replan_success": true,
+      "informative": false
+    },
+    {
+      "goal": {
+        "episode": 47,
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "rationale": "rule cycle \u00b7 exception_type=safety \u00b7 elicit informative S"
+      },
+      "spec": {
+        "family": "forbidden_region",
+        "severity": "unreachable",
+        "shift_m": 0.09420259171384944,
+        "onset_step": 10,
+        "occlusion_gain": 0.85,
+        "seed": 69374
+      },
+      "continue_success": false,
+      "replan_success": false,
+      "informative": false
+    }
+  ]
+}

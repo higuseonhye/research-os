@@ -1,0 +1,26 @@
+{
+  "run_id": "20260724T051708Z",
+  "config": "experiments\\surgical_intelligence\\exp_surg_002_dream_curriculum\\config\\sandbox_v0.2.yaml",
+  "seed": 43,
+  "compare": true,
+  "runs": [
+    {
+      "dreamer": "gaussian",
+      "agent": "rule",
+      "n_episodes": 48,
+      "informative_count": 45,
+      "informative_rate": 0.9375,
+      "param_diversity": 2.261963180689464,
+      "bootstrap_informative": 57
+    },
+    {
+      "dreamer": "diffusion",
+      "agent": "rule",
+      "n_episodes": 48,
+      "informative_count": 25,
+      "informative_rate": 0.5208333333333334,
+      "param_diversity": 4.4089909388136475,
+      "bootstrap_informative": 59
+    }
+  ]
+}
