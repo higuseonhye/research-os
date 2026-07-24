@@ -88,7 +88,7 @@ HANDOVER excluded from primary endpoint · reported as burden proxy.
 | --- | --- |
 | A | Scaffold / protocol |
 | B | Smoke n≤5 (001A–D) |
-| C | Pre-reg n=20 · D0 executed · D1–D3 pending v2.0 |
+| C | Pre-reg n=20 · D0–D3 executed · v2.0 complete 2026-07-24 |
 
 ---
 

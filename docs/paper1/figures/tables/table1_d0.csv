@@ -1,0 +1,6 @@
+mode,class,successes,n,rate,wilson_lo,wilson_hi,mean_final_distance_m
+CONTINUE,policy,0,20,0.000,0.000,0.161,0.1698
+REPLAN_d20,policy,19,20,0.950,0.764,0.991,0.0471
+REOBSERVE,policy_information,17,20,0.850,0.640,0.948,0.1102
+RESHAPE,environment,18,20,0.900,0.699,0.972,0.0784
+HANDOVER,collaboration,0,20,0.000,0.000,0.161,0.3055

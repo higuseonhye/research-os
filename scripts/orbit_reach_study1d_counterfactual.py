@@ -54,7 +54,11 @@ parser.add_argument("--vis-thresh", type=float, default=0.5, help="B2: visibilit
 parser.add_argument("--dist-thresh", type=float, default=0.15, help="B2: EE-to-shifted distance threshold (m)")
 parser.add_argument("--dist-check-step", type=int, default=10, help="B2: steps after onset before distance check")
 parser.add_argument("--shift-thresh-m", type=float, default=0.06, help="B3: minimum shift for replan/occluded tags")
-parser.add_argument("--out-dir", type=str, required=True)
+parser.add_argument("--out-dir", type=str, default="")
+parser.add_argument("--capture", action="store_true", help="Save EE traces for figure reproduction")
+parser.add_argument("--capture-dir", type=str, default="")
+parser.add_argument("--capture-seed", type=int, default=0)
+parser.add_argument("--capture-modes", type=str, default="CONTINUE,REPLAN")
 parser.add_argument("--disable_fabric", action="store_true", default=False)
 AppLauncher.add_app_launcher_args(parser)
 args_cli = parser.parse_args()
@@ -338,6 +342,7 @@ def run_branch(
     reobserve_hold: int,
     reshape_steps: int,
     occlusion_level: int,
+    ee_trace: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     path = 0.0
     prev_ee = None
@@ -345,15 +350,19 @@ def run_branch(
     shifted_target_np = tensor_to_np(shifted_xyz[0])
     visibility_cleared = False
 
+    step_idx = 0
     for act in pre_actions:
         with torch.no_grad():
             env.step(act)
         _, ee, _ = ee_distance(env, robot_name, command_name, body_index)
+        if ee_trace is not None:
+            ee_trace.append({"step": step_idx, "ee": ee.tolist(), "phase": "nominal"})
         if prev_ee is not None:
             path += float(np.linalg.norm(ee - prev_ee))
         prev_ee = ee
         if in_forbidden(ee, forbidden_center, forbidden_half):
             violation = True
+        step_idx += 1
 
     is_continue = mode == "CONTINUE"
     is_reobserve = mode == "REOBSERVE"
@@ -435,11 +444,14 @@ def run_branch(
 
         _, ee, _ = ee_distance(env, robot_name, command_name, body_index)
         final_dist = float(np.linalg.norm(ee - shifted_target_np))
+        if ee_trace is not None:
+            ee_trace.append({"step": step_idx, "ee": ee.tolist(), "phase": "post_onset", "dist_shifted_m": final_dist})
         if prev_ee is not None:
             path += float(np.linalg.norm(ee - prev_ee))
         prev_ee = ee
         if in_forbidden(ee, forbidden_center, forbidden_half):
             violation = True
+        step_idx += 1
 
         if final_dist <= tol:
             success = not violation
@@ -476,8 +488,13 @@ def main() -> None:
     if not hasattr(args_cli, "device"):
         args_cli.device = "cuda:0"
 
-    out_dir = Path(args_cli.out_dir)
+    out_dir = Path(args_cli.out_dir or args_cli.capture_dir or "artifacts/study1d_capture")
     out_dir.mkdir(parents=True, exist_ok=True)
+    capture_dir = Path(args_cli.capture_dir) if args_cli.capture_dir else out_dir
+    capture_modes = {m.strip() for m in str(args_cli.capture_modes).split(",") if m.strip()}
+    do_capture = bool(args_cli.capture)
+    if do_capture:
+        capture_dir.mkdir(parents=True, exist_ok=True)
     records: list[dict[str, Any]] = []
 
     env_cfg = parse_env_cfg(
@@ -569,6 +586,9 @@ def main() -> None:
         for mode in branch_modes:
             torch.manual_seed(seed)
             env.reset()
+            ee_trace: list[dict[str, Any]] | None = None
+            if do_capture and seed == args_cli.capture_seed and mode in capture_modes:
+                ee_trace = []
             result = run_branch(
                 env,
                 robot_name,
@@ -590,7 +610,24 @@ def main() -> None:
                 args_cli.reobserve_hold_steps,
                 args_cli.reshape_steps,
                 args_cli.occlusion_level,
+                ee_trace=ee_trace,
             )
+            if ee_trace is not None:
+                trace_path = capture_dir / f"seed{seed}_{mode}_ee_trace.json"
+                trace_payload = {
+                    "seed": seed,
+                    "mode": mode,
+                    "onset_step": args_cli.onset,
+                    "shift_m": args_cli.shift_m,
+                    "frozen_xyz": tensor_to_np(frozen_xyz[0]).tolist(),
+                    "shifted_xyz": tensor_to_np(shifted_xyz[0]).tolist(),
+                    "forbidden_center": forbidden_center.tolist(),
+                    "forbidden_half": forbidden_half.tolist(),
+                    "trace": ee_trace,
+                    "terminal": {k: result[k] for k in ("final_distance_m", "successful_resolution", "terminal_category")},
+                }
+                trace_path.write_text(json.dumps(trace_payload, indent=2), encoding="utf-8")
+                print(f"[INFO] capture trace {trace_path}", flush=True)
             result.update(
                 {
                     "seed": seed,

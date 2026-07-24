@@ -1,0 +1,16 @@
+{
+  "generator": "scripts/plot_paper1_figures.py",
+  "d0_summary": "experiments\\surgical_intelligence\\exp_surg_001_execute_or_defer\\results\\study1_proper\\summary.json",
+  "v2_summary": "experiments\\surgical_intelligence\\exp_surg_001_execute_or_defer\\results\\study1_proper_v2\\summary.json",
+  "figures": [
+    "docs\\paper1\\figures\\fig1_architecture_overview.png",
+    "docs\\paper1\\figures\\fig2_same_state_fork.png",
+    "docs\\paper1\\figures\\fig4_baseline_overlay.png",
+    "docs\\paper1\\figures\\fig5_occlusion_contrast.png",
+    "docs\\paper1\\figures\\sim_panel_continue_replan.png",
+    "docs\\paper1\\figures\\sim_panel_multimode.png",
+    "docs\\paper1\\figures\\fig3_profile_d0.png",
+    "docs\\paper1\\figures\\table1_d0_results.png",
+    "docs\\paper1\\figures\\table2_proper_program.png"
+  ]
+}

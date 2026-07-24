@@ -1,0 +1,5 @@
+block,sub_rq,condition,outcome,success_rate,n
+D0,RQ-M,5-mode + occlusion L1,REPLAN vs CONTINUE,19/20 vs 0/20,20
+D1,RQ-P,no occlusion control,REPLAN vs CONTINUE,19/20 vs 1/20,20
+D2,RQ-B,B2 UQ-inspired rule,HANDOVER burden,20/20 handover · 0/20 success,20
+D3,RQ-B,B3 situation rule,REOBSERVE path,17/20 (85%),20
