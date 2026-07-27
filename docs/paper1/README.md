@@ -5,14 +5,6 @@
 
 ---
 
-## Working paper
-
-| Doc | Link |
-| --- | --- |
-| **EN short paper (July 2026)** | [`paper001_recoverability_en.pdf`](paper001_recoverability_en.pdf) · Tier C D0–D3 + Study 002 appendix · *not peer-reviewed* · *independent research (title-page disclaimer)* |
-
----
-
 ## Research question (v1.1)
 
 > At fixed mismatch onset **S**, do intervention-conditioned recoverability profiles separate under same-state counterfactual evaluation?
@@ -58,7 +50,7 @@ Regenerate: `python scripts/plot_paper1_figures.py` · Isaac capture: `bash scri
 
 ## Next
 
-Linked working paper: [`paper001_recoverability_en.pdf`](paper001_recoverability_en.pdf) · venue selection · Isaac viewport capture for trace-backed sim panels
+Paper draft (Stage 6) · Isaac viewport capture on GPU for trace-backed sim panels
 
 ---
 

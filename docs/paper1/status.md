@@ -1,6 +1,6 @@
 # Paper 1 — evidence status (public)
 
-> **Updated:** 2026-07-24 · **Working paper:** [`paper001_recoverability_en.pdf`](paper001_recoverability_en.pdf) (2026-07-28)  
+> **Updated:** 2026-07-24 · **Pre-reg v2.0 complete** (D0 + D1–D3 · Tier C)  
 > **Program:** publication-grade proper run · [`phase_c_proper_run_prereg_v2.0.md`](phase_c_proper_run_prereg_v2.0.md)
 
 ---
@@ -20,7 +20,7 @@
 | **C v1.0** | D0 primary cell | ✅ 2026-07-22 |
 | **C v2.0** | D1–D3 baselines + control | ✅ **2026-07-24** VESSL |
 | **Lit v2** | Positioning | ✅ |
-| **Next** | Working paper · venue · Fig baseline overlay | ⏭ [`paper001_recoverability_en.pdf`](paper001_recoverability_en.pdf) |
+| **Next** | Paper draft · Fig 4 baseline overlay | ⏭ |
 
 ---
 
