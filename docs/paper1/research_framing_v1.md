@@ -129,7 +129,7 @@ Shared rollout → mismatch @ S → fork(response, delay) → terminal judge →
 
 ---
 
-## Positioning one-liner (PI / abstract)
+## Positioning one-liner (abstract / outreach)
 
 > Prior failure benchmarks ask whether failure occurred and what recovery to execute. We ask which **response class** at fixed mismatch onset maximizes successful resolution — and measure unsafe continuation, premature stop, and escalation error via **same-state counterfactual evaluation** on a surgical reach proxy.
 

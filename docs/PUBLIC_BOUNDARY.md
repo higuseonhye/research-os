@@ -1,7 +1,8 @@
 # Public boundary — research-os
 
 > **Audience:** anyone on the internet · employers · collaborators · reviewers  
-> **Rule:** this repo is **self-contained**. No links to private GitHub repos.
+> **Rule:** this repo is **self-contained**. No links to private GitHub repos.  
+> **Governance (2026-07-28):** Independent personal research — public promotion = self sign-off after tier labeling and this checklist (no external PI gate).
 
 ---
 
@@ -27,7 +28,7 @@
 | L1 program narrative · Study 2 paper outline · internal exec logs | Working notes (local / private storage) |
 | Internal PDF reading queues · kill matrix drafts | Working notes |
 | Career · immigration · target lists | Working notes |
-| Lab meeting feedback · PI drafts · co-author embargo | Working notes |
+| Unreviewed manuscript drafts · internal meeting notes · collaborator-embargoed material | Working notes (private / vault) |
 | **URLs to private repos** | Do not link from this repo |
 
 ---
@@ -47,7 +48,7 @@ Never present Tier B as Tier C.
 ## Promotion flow
 
 ```text
-working notes (local) → review → promote slice to research-os → tag tier · update status.md
+working notes (private / vault) → self review (tier + claim boundary) → promote slice to research-os → tag tier · update status.md
 ```
 
 Promote **design + results + repro** only. Do not copy internal logs or private URLs.

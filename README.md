@@ -113,6 +113,6 @@ Bootstrap: [`scripts/bootstrap_orbit_surgical_runpod.sh`](scripts/bootstrap_orbi
 
 ## Security
 
-Do **not** commit API keys, credentials, PHI, or embargoed co-author material. See [`.gitignore`](.gitignore) and [`docs/PUBLIC_BOUNDARY.md`](docs/PUBLIC_BOUNDARY.md).
+Do **not** commit API keys, credentials, PHI, or collaborator-embargoed material without consent. See [`.gitignore`](.gitignore) and [`docs/PUBLIC_BOUNDARY.md`](docs/PUBLIC_BOUNDARY.md).
 
-**Private by design:** internal reading queues, career and relocation planning, people notes, lab feedback, and unpublished strategy are excluded from this repository.
+**Private by design:** internal reading queues, career and relocation planning, people notes, internal meeting notes, and unpublished strategy are excluded from this repository.

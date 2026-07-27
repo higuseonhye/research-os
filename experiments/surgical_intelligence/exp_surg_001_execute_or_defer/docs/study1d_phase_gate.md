@@ -28,7 +28,7 @@ Deliverable: [`docs/paper1/phase_b_smoke_review.md`](../../../../docs/paper1/pha
 
 Pre-reg v1.0: [`docs/paper1/phase_c_proper_run_prereg_v1.0.md`](../../../../docs/paper1/phase_c_proper_run_prereg_v1.0.md)
 
-- Execute **after** lit + method deep dive + sign-off
+- Execute **after** lit + method deep dive + pre-reg freeze (self review)
 - n=20 · promote to `results/study1_proper/`
 - Claims labeled **confirmatory** only from Phase C results
 
