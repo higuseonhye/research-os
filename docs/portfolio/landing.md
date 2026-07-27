@@ -56,6 +56,7 @@ Phase 1 mock + Isaac · selection ablation VESSL 2026-07-24 · [isaac_full_v0.1 
 
 ## Artifacts
 
+- **Working paper (EN):** [paper001_recoverability_en.pdf](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/paper001_recoverability_en.pdf) · *not peer-reviewed*
 - [research-os](https://github.com/higuseonhye/research-os) · [EXPERIMENT_LOOP.md](https://github.com/higuseonhye/research-os/blob/master/docs/EXPERIMENT_LOOP.md)
 
 ---
@@ -68,4 +69,4 @@ Open to research and evaluation roles where **failure is data**. Korea · Toront
 
 ---
 
-*Updated 2026-07-24 · sync with [`docs/index.md`](../index.md)*
+*Updated 2026-07-28 · sync with [`docs/index.md`](../index.md)*
