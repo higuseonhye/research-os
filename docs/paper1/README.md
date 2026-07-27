@@ -9,7 +9,7 @@
 
 | Doc | Link |
 | --- | --- |
-| **EN short paper (July 2026)** | [`paper001_recoverability_en.pdf`](paper001_recoverability_en.pdf) · Tier C D0–D3 + Study 002 appendix · *not peer-reviewed* |
+| **EN short paper (July 2026)** | [`paper001_recoverability_en.pdf`](paper001_recoverability_en.pdf) · Tier C D0–D3 + Study 002 appendix · *not peer-reviewed* · *independent research (title-page disclaimer)* |
 
 ---
 

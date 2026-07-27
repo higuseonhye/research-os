@@ -77,7 +77,7 @@ Superseded for claims by Tier C figures above.
 
 ## Artifacts
 
-- **Working paper (EN · July 2026):** [paper001_recoverability_en.pdf](paper1/paper001_recoverability_en.pdf) — same-state CF · Tier C D0–D3 · Study 002 appendix · *not peer-reviewed*
+- **Working paper (EN · July 2026):** [paper001_recoverability_en.pdf](paper1/paper001_recoverability_en.pdf) — same-state CF · Tier C D0–D3 · Study 002 appendix · *not peer-reviewed* · *independent research*
 - **Code & results:** [research-os](https://github.com/higuseonhye/research-os)
 - **Paper 1 hub:** [docs/paper1/](https://github.com/higuseonhye/research-os/tree/master/docs/paper1)
 - **Experiment loop:** [EXPERIMENT_LOOP.md](https://github.com/higuseonhye/research-os/blob/master/docs/EXPERIMENT_LOOP.md)
