@@ -16,7 +16,7 @@
 | **Methods / protocol** | Same-state CF · perturbation configs · benchmark schema |
 | **Pre-reg / frozen design** | Phase C pre-reg · Study 2 Phase 1 design v0.1 |
 | **Positioning (desk synthesis)** | Eval landscape v0.2 · lit positioning v1 |
-| **Working paper PDF** | Labeled *not peer-reviewed* · tier-aligned narrative (e.g. `docs/paper1/paper001_recoverability_en.pdf`) |
+| **Working paper PDF** | Labeled *not peer-reviewed* · tier-aligned narrative (e.g. `docs/paper1/paper001_recoverability_complete.pdf`) |
 
 ---
 

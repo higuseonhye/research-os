@@ -11,7 +11,7 @@
 
 | Doc | Link |
 | --- | --- |
-| **EN short paper (July 2026)** | [`paper001_recoverability_en.pdf`](paper001_recoverability_en.pdf) · Tier C D0–D3 + Study 002 appendix · *not peer-reviewed* · *independent research* |
+| **EN working paper (July 2026)** | [`paper001_recoverability_complete.pdf`](paper001_recoverability_complete.pdf) · Tier C D0–D3 · *not peer-reviewed* · *independent research* |
 
 ---
 
@@ -60,7 +60,7 @@ Regenerate: `python scripts/plot_paper1_figures.py` · Isaac capture: `bash scri
 
 ## Next
 
-Working paper: [`paper001_recoverability_en.pdf`](paper001_recoverability_en.pdf) · venue selection · Isaac viewport capture for trace-backed sim panels
+Working paper: [`paper001_recoverability_complete.pdf`](paper001_recoverability_complete.pdf) · venue selection · Isaac viewport capture for trace-backed sim panels
 
 ---
 
