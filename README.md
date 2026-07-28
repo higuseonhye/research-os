@@ -58,8 +58,9 @@ Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper
 | | Link |
 | --- | --- |
 | Portfolio landing | **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)** · [`docs/index.md`](docs/index.md) |
-| Paper 1 hub | [`docs/paper1/README.md`](docs/paper1/README.md) |
-| Paper 2 hub | [`docs/paper002/README.md`](docs/paper002/README.md) |
+| Paper 001 hub | [`docs/paper1/README.md`](docs/paper1/README.md) |
+| Paper 002 hub | [`docs/paper002/README.md`](docs/paper002/README.md) |
+| Study 002 hub | [`docs/stage2/README.md`](docs/stage2/README.md) |
 | Pre-results PDF (002) | [`docs/paper002/paper002_pre_results_v1.2.pdf`](docs/paper002/paper002_pre_results_v1.2.pdf) · *under review* |
 | Research question v1.0 | [`docs/paper1/research_question.md`](docs/paper1/research_question.md) |
 | EXP-SURG-001 | [`experiments/.../exp_surg_001_execute_or_defer/README.md`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/README.md) |
