@@ -1,5 +1,7 @@
 # research-os
 
+> Public Physical AI research portfolio — Paper 001 recoverability @ fixed S (Tier C) · Paper 002 mock-to-physics validation (pre-reg v0.3 · MS under review)
+
 **Public research portfolio** for a focused question in Physical AI: how embodied systems should respond when reality no longer matches their expectations.
 
 This repository contains **promoted research evidence only**—research questions, reproducible experiments, protocols, figures, and clearly tiered claims. It is not a career diary, lab notebook, or private strategy workspace.
