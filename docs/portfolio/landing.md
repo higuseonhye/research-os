@@ -1,4 +1,4 @@
-# Informative failures @ fixed S — measurement + generation
+# Informative failures @ fixed S — measurement + selection
 
 > Portfolio · **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)** · source [`docs/index.md`](../index.md)
 

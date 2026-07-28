@@ -1,4 +1,4 @@
-# Informative failures @ fixed S — measurement + generation
+# Informative failures @ fixed S — measurement + selection
 
 Research portfolio · [GitHub repo](https://github.com/higuseonhye/research-os)
 
