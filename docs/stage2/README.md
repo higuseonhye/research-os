@@ -1,7 +1,7 @@
 # Study 2 — dream curriculum (public)
 
 > **Experiment:** EXP-SURG-002 · parallel to Paper 1 · not Paper 1 confirmatory  
-> **Status (2026-07-24):** Phase 1 complete · **Phase 2 executed** (H3′ ρ=0.899 PASS)
+> **Status (2026-07-28):** Phase 1 + Phase 2 **executed** · GPU **closed** · appendix-scope for Paper 001 only · **Paper 002** continues generation/agent line
 
 ---
 
@@ -29,7 +29,7 @@
 | [`h3_mock_isaac_v0.2/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.2/) | B | H3 20-spec · ρ=0.15 FAIL |
 | [`isaac_full_v0.1/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/) | C | Phase 1 Isaac top-k |
 
-**Phase 2 pending:** `mock_smoke_v0.4` · `selection_ablation_v0.2` · `h3_mock_isaac_v0.4`
+## Committed results (Phase 2 · executed 2026-07-24)
 
 | Label | Tier | Summary |
 | --- | --- | --- |

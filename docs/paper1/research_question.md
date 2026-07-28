@@ -1,8 +1,8 @@
 # Paper 1 — research question (public lock)
 
-> **Status:** **v1.1** · D0 Tier C executed · pre-reg v2.0 (D1–D3) in design  
+> **Status:** **v1.1 locked** · D0–D3 Tier C executed (2026-07-24) · working paper live  
 > **Scope:** Stage 1 measurement · surgical reach proxy · EXP-SURG-001 unified with study1A–D  
-> **Program context:** Non-Average World ruler @ fixed **S** — not WM extension · Study 002 separate
+> **Program context:** Non-Average World ruler @ fixed **S** — not WM extension · Study 002 separate (closed)
 
 ---
 
@@ -38,8 +38,8 @@ Counterfactual evaluation is **method**, not a claim of a new learned recoverabi
 | ID | Sub-RQ | Smoke (Tier B) | Confirmatory (pre-reg v2.0) |
 | --- | --- | --- | --- |
 | **RQ-M** | At fixed **S**, do response classes yield **separable** success profiles? (REPLAN ≫ CONTINUE) | **Direction yes** — 001A · 001D | ✅ **D0** n=20 · REPLAN **19/20** vs CONTINUE **0/20** |
-| **RQ-B** | Do multi-mode profiles beat **B2 UQ rule** and **B3 situation rule**? | Not tested | **Required** · **D2** · **D3** |
-| **RQ-P** | Does **occlusion** change profiles vs shift-only @ matched 6 cm? | 001D direction | **Required** · **D1** |
+| **RQ-B** | Do multi-mode profiles beat **B2 UQ rule** and **B3 situation rule**? | Not tested | ✅ **D2** · **D3** · direction met |
+| **RQ-P** | Does **occlusion** change profiles vs shift-only @ matched 6 cm? | 001D direction | ✅ **D1** · descriptive |
 | **RQ-C** | Do REOBSERVE / RESHAPE add viable paths beyond REPLAN? | 001D smoke 4/5 | Exploratory · **D0** profile (17/20 · 18/20) |
 | **RQ-T** | Does **delaying REPLAN** materially reduce recoverability? | **Mostly flat** · 001B/C | **Deferred** — not confirmatory headline |
 
@@ -54,9 +54,9 @@ Counterfactual evaluation is **method**, not a claim of a new learned recoverabi
 | Severity × delay | 001C | RQ-T · anchor | B | 6 cm · d20 lock |
 | Occlusion + 5-mode smoke | 001D | RQ-M · RQ-C · RQ-P | B | Proxy validation |
 | Primary cell | **D0** (Phase C) | RQ-M · RQ-C | **C** | Executed 2026-07-22 |
-| No-occlusion control | **D1** | RQ-P | C target | pre-reg v2.0 |
-| B2 UQ-inspired binary | **D2** | RQ-B | C target | pre-reg v2.0 |
-| B3 situation rule | **D3** | RQ-B | C target | pre-reg v2.0 |
+| No-occlusion control | **D1** | RQ-P | **C** | ✅ 2026-07-24 |
+| B2 UQ-inspired binary | **D2** | RQ-B | **C** | ✅ 2026-07-24 |
+| B3 situation rule | **D3** | RQ-B | **C** | ✅ 2026-07-24 |
 
 **Study 002 (EXP-SURG-002):** informative scenario **generation** — separate program · optional appendix only · not Paper 1 body.
 
@@ -76,7 +76,7 @@ We **evaluate** profiles; we do not claim a new VAP-TAMP-style architecture.
 | --- | --- | --- |
 | **A** | Scaffold / protocol | Same-state CF pipeline · ORBIT Isaac · replay OK |
 | **B** | Smoke / direction | 001A–D · n=5 · scripted IK-Rel |
-| **C** | Confirmatory | **D0** Phase C n=20 · D1–D3 pending pre-reg v2.0 |
+| **C** | Confirmatory | **D0–D3** Phase C n=20 · pre-reg v2.0 · 2026-07-24 |
 
 **Public stance today:** Tier A + B + **one Tier C cell (D0)**. Full publication-grade program after D1–D3.
 
