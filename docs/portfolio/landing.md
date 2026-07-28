@@ -1,78 +1,23 @@
 # Informative failures @ fixed S — measurement + selection
 
-> Portfolio · **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)** · source [`docs/index.md`](../index.md)
+> Live · **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)** · source [`docs/index.md`](../index.md)
 
 ---
 
-## Two questions
+**Paper 1 — measure @ S** · **Paper 2 — select @ S** · Isaac Sim / ORBIT · same-state CF
 
-1. **Paper 1 (measure):** At fixed mismatch onset **S**, do **intervention-conditioned recoverability profiles** separate under same-state counterfactual evaluation?
-
-2. **Paper 2 (select):** Can a **cheap mock rank** predict **physics-level counterfactual value** on a frozen export set?
-
-**Platform:** Isaac Sim 4.1 · ORBIT Dual-STAR Reach · same-state CF replay.
-
-**Latest:** Paper 001 Tier C complete · **Paper 002** PDF v1.2 **under review** · GPU not started.
-
----
-
-## What is verified
-
-### Tier C — Paper 001 proper program (2026-07-24)
-
-| Block | Result |
+| Paper | Phase |
 | --- | --- |
-| **D0** @ 6 cm + occlusion | REPLAN **19/20** vs CONTINUE **0/20** |
-| **D1** no occlusion | REPLAN **19/20** vs CONTINUE **1/20** |
-| **D2** B2 UQ rule | success **0/20** (HANDOVER 20/20) |
-| **D3** B3 situation rule | REOBSERVE **17/20 (85%)** |
+| **001** | Tier C complete · [working paper](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/paper001_recoverability_complete.pdf) |
+| **002** | Pre-reg frozen · MS under review · GPU not started |
 
-RQ-B direction met: menu best **95%** > B2 **0%** > B3 **85%**.
+**001 headline:** REPLAN **19/20** vs CONTINUE **0/20** · RQ-B **95%** > **0%** / **85%** → [Paper 001](https://github.com/higuseonhye/research-os/tree/master/docs/paper1) · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/status.md)
 
-Links: [D0 summary](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper/summary.json) · [D1–D3 summary](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper_v2/summary.json) · [Paper 1 status](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/status.md)
+**002:** mock-to-physics · not LLM curriculum → [PDF](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_pre_results_v1.2.pdf) · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/status.md)
 
-### Evidence (Tier C)
+**Not claimed:** estimator · clinical deployment · Paper 002 confirmatory outcomes.
 
-| Table / Fig | Asset |
-| --- | --- |
-| **Table 2** program summary | [table2_proper_program.png](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/figures/table2_proper_program.png) |
-| **Table 1** D0 profiles + Wilson CI | [table1_d0_results.png](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/figures/table1_d0_results.png) |
-| **Fig 3** D0 profile (visual) | [fig3_profile_d0.png](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/figures/fig3_profile_d0.png) |
-| More (overlay · traces · schematics) | [docs/paper1/figures/](https://github.com/higuseonhye/research-os/tree/master/docs/paper1/figures) |
-
-### Paper 002 · pre-results (under review)
-
-Pre-reg frozen · tag `paper002-prereg-v0.3` · [PDF v1.2](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_pre_results_v1.2.pdf) · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/status.md) · **no Tier C outcome tables yet** · confirmatory GPU not started
-
-### Study 2 · Tier B pilot (closed)
-
-Phase 1 mock + Isaac · selection ablation VESSL 2026-07-24 · [isaac_full_v0.1 summary](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/summary.json) · [Paper 002 hub](https://github.com/higuseonhye/research-os/tree/master/docs/paper002)
-
-### Tier B smoke (superseded for claims)
-
-[counterfactual_grid.png](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1a_isaac/figures/counterfactual_grid.png) · [recoverability_vs_delay.png](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1b_isaac/figures/recoverability_vs_delay.png)
-
----
-
-## What we do not claim
-
-- Learned recoverability estimator · clinical deployment · WM extension in Paper 001 body
-
----
-
-## Artifacts
-
-- **Working paper (EN):** [paper001_recoverability_complete.pdf](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/paper001_recoverability_complete.pdf) · *not peer-reviewed*
-- **Pre-results 002 (under review):** [paper002_pre_results_v1.2.pdf](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_pre_results_v1.2.pdf)
-- [research-os](https://github.com/higuseonhye/research-os) · [EXPERIMENT_LOOP.md](https://github.com/higuseonhye/research-os/blob/master/docs/EXPERIMENT_LOOP.md)
-
----
-
-## Contact
-
-Open to research and evaluation roles where **failure is data**. Korea · Toronto / remote Canada welcome.
-
-**GitHub:** [higuseonhye/research-os](https://github.com/higuseonhye/research-os)
+Open to research & evaluation roles · Korea · Toronto / remote Canada · [research-os](https://github.com/higuseonhye/research-os)
 
 ---
 
