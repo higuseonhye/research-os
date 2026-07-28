@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Paper 002 LLM curriculum v0.1",
+  "type": "array",
+  "minItems": 128,
+  "maxItems": 128,
+  "items": {
+    "type": "object",
+    "required": ["episode", "family", "severity", "rationale"],
+    "properties": {
+      "episode": { "type": "integer", "minimum": 0, "maximum": 127 },
+      "family": {
+        "type": "string",
+        "enum": ["target_shift", "visual_occlusion", "forbidden_region"]
+      },
+      "severity": {
+        "type": "string",
+        "enum": ["small", "mid", "unreachable"]
+      },
+      "rationale": { "type": "string", "minLength": 1 }
+    },
+    "additionalProperties": false
+  }
+}
