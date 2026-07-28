@@ -21,6 +21,7 @@
 | **C v2.0** | D1–D3 baselines + control | ✅ **2026-07-24** VESSL |
 | **Lit v2** | Positioning | ✅ |
 | **Next** | Working paper · venue · Fig baseline overlay | ⏭ [`paper001_recoverability_complete.pdf`](paper001_recoverability_complete.pdf) |
+| **Paper 002** | Mock→physics validation · pre-results MS | 🔄 **under review** · [`../paper002/status.md`](../paper002/status.md) |
 
 ---
 

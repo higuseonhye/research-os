@@ -8,9 +8,11 @@
 
 1. **Paper 1 (measure):** At fixed mismatch onset **S**, do **intervention-conditioned recoverability profiles** separate under same-state counterfactual evaluation?
 
-2. **Study 2 (generate):** Which dreamed perturbation scenarios are **informative** for curriculum design (CONTINUE fails ∧ REPLAN succeeds)—**Gaussian vs diffusion** dreaming?
+2. **Paper 2 (select):** Can a **cheap mock rank** predict **physics-level counterfactual value** on a frozen export set?
 
 **Platform:** Isaac Sim 4.1 · ORBIT Dual-STAR Reach · same-state CF replay.
+
+**Latest:** Paper 001 Tier C complete · **Paper 002** PDF v1.2 **under review** · GPU not started.
 
 ---
 
@@ -42,6 +44,10 @@ Links: [D0 summary](https://github.com/higuseonhye/research-os/blob/master/exper
 
 Phase 1 mock + Isaac · selection ablation VESSL 2026-07-24 · [isaac_full_v0.1 summary](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/summary.json)
 
+### Paper 002 · pre-results (under review)
+
+Pre-reg frozen · tag `paper002-prereg-v0.3` · [PDF v1.2](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_pre_results_v1.2.pdf) · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/status.md) · confirmatory GPU not started
+
 ### Tier B smoke (superseded for claims)
 
 [counterfactual_grid.png](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1a_isaac/figures/counterfactual_grid.png) · [recoverability_vs_delay.png](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1b_isaac/figures/recoverability_vs_delay.png)
@@ -57,6 +63,7 @@ Phase 1 mock + Isaac · selection ablation VESSL 2026-07-24 · [isaac_full_v0.1 
 ## Artifacts
 
 - **Working paper (EN):** [paper001_recoverability_complete.pdf](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/paper001_recoverability_complete.pdf) · *not peer-reviewed*
+- **Pre-results 002 (under review):** [paper002_pre_results_v1.2.pdf](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_pre_results_v1.2.pdf)
 - [research-os](https://github.com/higuseonhye/research-os) · [EXPERIMENT_LOOP.md](https://github.com/higuseonhye/research-os/blob/master/docs/EXPERIMENT_LOOP.md)
 
 ---

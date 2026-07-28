@@ -8,9 +8,11 @@ Research portfolio · [GitHub repo](https://github.com/higuseonhye/research-os)
 
 1. **Paper 1 (measure):** At fixed mismatch onset **S**, do **intervention-conditioned recoverability profiles** separate under same-state counterfactual evaluation?
 
-2. **Study 2 (generate):** Which dreamed perturbation scenarios are **informative** for curriculum design (CONTINUE fails ∧ REPLAN succeeds)—**Gaussian vs diffusion** dreaming?
+2. **Paper 2 (select):** Can a **cheap mock rank** predict **physics-level counterfactual value** on a frozen export set — before full Isaac evaluation?
 
-**Platform:** Isaac Sim 4.1 · ORBIT Dual-STAR Reach · scripted IK-Rel · same-state CF replay.
+**Platform:** Isaac Sim 4.1 · ORBIT Dual-STAR Reach · same-state CF replay.
+
+**Latest:** Paper 001 Tier C complete · **Paper 002** pre-reg frozen · pre-results PDF v1.2 **under review** · GPU not started.
 
 ---
 
@@ -54,7 +56,7 @@ More: [figure index](https://github.com/higuseonhye/research-os/tree/master/docs
 | Dream curriculum pipeline | Phase 1–2 executed · H3′ ρ=0.899 after occlusion align |
 | Mock tradeoff | Gaussian higher informative yield · diffusion higher param diversity |
 
-[Study 2 index](stage2/README.md) · **Next:** [Paper 002 — mock-to-physics validation](paper002/README.md)
+[Study 2 index](stage2/README.md) · **Active:** [Paper 002 — mock-to-physics validation](paper002/README.md) · **Status:** [under review](paper002/status.md)
 
 ### Tier B (smoke · design input only)
 
@@ -78,9 +80,10 @@ Superseded for claims by Tier C figures above.
 ## Artifacts
 
 - **Working paper (EN · July 2026):** [paper001_recoverability_complete.pdf](paper1/paper001_recoverability_complete.pdf) — same-state CF · Tier C D0–D3 · *not peer-reviewed* · *independent research*
+- **Pre-results (002 · under review):** [paper002_pre_results_v1.2.pdf](paper002/paper002_pre_results_v1.2.pdf) · [status](paper002/status.md)
 - **Code & results:** [research-os](https://github.com/higuseonhye/research-os)
 - **Paper 1 hub:** [docs/paper1/](https://github.com/higuseonhye/research-os/tree/master/docs/paper1)
-- **Paper 002 (pre-reg v0.3):** [docs/paper002/](https://github.com/higuseonhye/research-os/tree/master/docs/paper002)
+- **Paper 002 hub:** [docs/paper002/](https://github.com/higuseonhye/research-os/tree/master/docs/paper002) · tag `paper002-prereg-v0.3`
 - **Naming guide:** [NAMING.md](https://github.com/higuseonhye/research-os/blob/master/docs/NAMING.md)
 - **Experiment loop:** [EXPERIMENT_LOOP.md](https://github.com/higuseonhye/research-os/blob/master/docs/EXPERIMENT_LOOP.md)
 

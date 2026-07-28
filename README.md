@@ -7,11 +7,10 @@ This repository contains **promoted research evidence only**—research question
 | | |
 | --- | --- |
 | **Paper 001 (EXP-SURG-001)** | After mismatch @ **S**, how do **intervention choice** and **timing** determine **successful resolution**? |
-| **Study 002 (EXP-SURG-002)** | Which dreamed scenarios are **informative** (CONTINUE fail ∧ REPLAN success)? Gaussian vs diffusion dreaming. |
+| **Paper 002 (EXP-SURG-003)** | Can a **cheap mock rank** predict **physics-level counterfactual value** before Isaac evaluation? |
+| **Study 002 (EXP-SURG-002)** | Pilot: informative-**S** generation (Tier B · archived) |
 
-**Platform:** Isaac Sim 4.1 · ORBIT Dual-STAR Reach · same-state counterfactual fork.
-
-**Latest (2026-07-24):** **Paper 001 proper program complete** (D0–D3 · pre-reg v2.0 · VESSL) — REPLAN **19/20** vs CONTINUE **0/20** @ fixed **S**; RQ-B menu **95%** > B2 **0%** > B3 **85%**. Figures + Isaac EE traces in [`docs/paper1/figures/`](docs/paper1/figures/). Study 2 selection ablation executed on VESSL.
+**Latest (2026-07-28):** **Paper 001 complete** (D0–D3 · working paper live). **Paper 002** pre-reg frozen · pre-results PDF v1.2 **under review** · confirmatory GPU not started.
 
 ---
 
@@ -31,7 +30,8 @@ This repository contains **promoted research evidence only**—research question
 | --- | --- | --- |
 | A | Scaffold / protocol | Same-state CF pipeline · replay OK |
 | B | Smoke / direction | 001A–D smoke atlas · Study2 desk mock |
-| C | Confirmatory | **Paper 001 D0–D3 executed** (n=20) · **Study 2** Phase 1 + ablation |
+| C | Confirmatory | **Paper 001 D0–D3 executed** (n=20) · **Paper 002** pre-reg frozen · GPU pending |
+| — | Pre-results MS | **Paper 002 PDF v1.2 under review** (no confirmatory outcomes) |
 
 We have **not** shown a new recoverability **estimator** or clinical deployment.
 
@@ -44,9 +44,10 @@ We have **not** shown a new recoverability **estimator** or clinical deployment.
 | **Paper 001 D0** | REPLAN **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion | [`study1_proper/summary.json`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper/summary.json) |
 | **Paper 001 D1–D3** | B2 **0%** · B3 **85%** · D1 control descriptive | [`study1_proper_v2/summary.json`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper_v2/summary.json) |
 | **Paper 001 figures** | Profile · baseline overlay · Isaac EE traces | [`docs/paper1/figures/`](docs/paper1/figures/) |
-| **Study 002** | Mock yield vs diversity · Isaac ablation on VESSL | [`isaac_full_v0.1`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/summary.json) · [`mock_smoke_v0.2`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/mock_smoke_v0.2/summary.json) |
+| **Study 002** | Pilot · mock–Isaac alignment (Tier B) | [`h3_mock_isaac_v0.4`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.4/summary.json) |
+| **Paper 002** | Pre-reg frozen · manuscript under review | [`docs/paper002/`](docs/paper002/) · [`status.md`](docs/paper002/status.md) |
 
-Full status: [`docs/paper1/status.md`](docs/paper1/status.md)
+Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper 002 [`docs/paper002/status.md`](docs/paper002/status.md)
 
 ---
 
@@ -56,6 +57,8 @@ Full status: [`docs/paper1/status.md`](docs/paper1/status.md)
 | --- | --- |
 | Portfolio landing | **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)** · [`docs/index.md`](docs/index.md) |
 | Paper 1 hub | [`docs/paper1/README.md`](docs/paper1/README.md) |
+| Paper 2 hub | [`docs/paper002/README.md`](docs/paper002/README.md) |
+| Pre-results PDF (002) | [`docs/paper002/paper002_pre_results_v1.2.pdf`](docs/paper002/paper002_pre_results_v1.2.pdf) · *under review* |
 | Research question v1.0 | [`docs/paper1/research_question.md`](docs/paper1/research_question.md) |
 | EXP-SURG-001 | [`experiments/.../exp_surg_001_execute_or_defer/README.md`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/README.md) |
 | EXP-SURG-002 | [`experiments/.../exp_surg_002_dream_curriculum/README.md`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/README.md) |
@@ -104,9 +107,9 @@ Bootstrap: [`scripts/bootstrap_orbit_surgical_runpod.sh`](scripts/bootstrap_orbi
 | --- | --- |
 | `experiments/surgical_intelligence/exp_surg_001_*` | Paper 1 configs · reports · Tier B/C results |
 | `experiments/surgical_intelligence/exp_surg_002_*` | Study 2 dream curriculum · mock + Isaac summaries |
-| `docs/paper1/` | Locked RQ · status · Phase C pre-reg |
-| `docs/portfolio/` | Landing page copy |
-| `docs/stage2/` | Study 2 frozen design · public index |
+| `docs/paper1/` | Paper 001 RQ · status · working paper |
+| `docs/paper002/` | Paper 002 pre-reg · pre-results PDF · protocols |
+| `docs/stage2/` | Study 002 pilot · archived |
 | `scripts/` | Mock + RunPod entry points |
 
 ---

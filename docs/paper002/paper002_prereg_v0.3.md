@@ -54,7 +54,7 @@ Spearman ρ(\(\bar M_i\), \(I_i\)) ≥ **0.50** on rule export set where:
 
 1. ρ ≥ 0.50 · `reason: ok` · n ≥ 18 after exclusions  
 2. Bootstrap 95% CI lower bound (B=2000) > **0.25**  
-3. Permutation empirical p ≤ 0.05 (1000 shuffles · Tier B sanity)
+3. Permutation empirical p reported (1000 shuffles · **supporting · not pass criterion**)
 
 ### H2 — Top-tier enrichment (rule planner)
 

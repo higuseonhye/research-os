@@ -1,7 +1,7 @@
 # EXP-SURG-002 / EXP-SURG-003 — Dream curriculum
 
 > **Study 002 (pilot):** Phase 1–2 complete · Tier B · archived  
-> **Paper 002 (confirmatory):** pre-reg frozen · [`docs/paper002/`](../../../docs/paper002/) · config `sandbox_v0.3.yaml`  
+> **Paper 002 (confirmatory):** pre-reg frozen · [`docs/paper002/`](../../../docs/paper002/) · config `sandbox_v0.4.yaml` · **MS under review**  
 > **Parent:** EXP-SURG-001 perturbation taxonomy + mock reach
 
 ## Quick start (no GPU)
