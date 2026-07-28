@@ -27,7 +27,12 @@ from scripts.study2_dream_curriculum.agentic_planner import (  # noqa: E402
     default_agent_prompt,
 )
 from scripts.study2_dream_curriculum.dreamers import make_dreamer  # noqa: E402
-from scripts.study2_dream_curriculum.mock_reach import evaluate_spec, is_informative  # noqa: E402
+from scripts.study2_dream_curriculum.mock_reach import (
+    cf_margin,
+    evaluate_spec,
+    is_informative,
+    is_informative_from_margin,
+)  # noqa: E402
 from scripts.study2_dream_curriculum.perturbation_spec import (  # noqa: E402
     PerturbationSpec,
     load_yaml,
@@ -62,11 +67,15 @@ def _run_single(
                 bootstrap_specs.append(spec)
     dreamer.fit(bootstrap_specs, cfg)
 
+    mock_tol = float(cfg.get("mock", {}).get("tol_m", 0.02))
+    margin_threshold = float(cfg.get("mock", {}).get("margin_threshold", 0.5))
+
     records: list[dict] = []
     informative = 0
     for goal in goals:
         spec = dreamer.sample(1, goal.family, goal.severity, cfg, rng)[0]
-        outcomes = evaluate_spec(spec)
+        outcomes = evaluate_spec(spec, tol=mock_tol)
+        margin = cf_margin(outcomes, tol=mock_tol)
         info = is_informative(outcomes)
         informative += int(info)
         records.append(
@@ -75,7 +84,11 @@ def _run_single(
                 "spec": spec.to_dict(),
                 "continue_success": bool(outcomes["CONTINUE"].successful_resolution),
                 "replan_success": bool(outcomes["REPLAN"].successful_resolution),
+                "continue_distance_m": float(outcomes["CONTINUE"].final_distance_m),
+                "replan_distance_m": float(outcomes["REPLAN"].final_distance_m),
+                "mock_score": float(margin),
                 "informative": bool(info),
+                "informative_from_margin": bool(is_informative_from_margin(margin, margin_threshold)),
             }
         )
 

@@ -1,0 +1,80 @@
+version: "0.4"
+experiment: EXP-SURG-003
+study: paper002_mock_to_physics_validation
+phase: confirmatory
+parent_design: docs/paper002/paper002_prereg_v0.3.md
+pilot: EXP-SURG-002 · Study 002 Phase 1–2 (Tier B · archived)
+
+dream_space:
+  shift_m:
+    min: 0.015
+    max: 0.10
+  onset_step:
+    min: 10
+    max: 40
+  occlusion_gain:
+    min: 0.0
+    max: 0.85
+
+isaac_occlusion:
+  runner: study1d
+  proxy: gain_scale_flag_v0.1
+  occlusion_level: 1
+  visibility_from_gain: "max(0.05, 1.0 - occlusion_gain)"
+
+mock:
+  max_steps: 80
+  tol_m: 0.02
+  margin_threshold: 0.5
+  responses: [CONTINUE, REPLAN]
+  score: cf_margin_v0.3
+
+dreamers:
+  gaussian:
+    shift_mean: 0.045
+    shift_std: 0.018
+    onset_mean: 20
+    onset_std: 8
+    occlusion_mean: 0.35
+    occlusion_std: 0.22
+  diffusion:
+    train_steps: 200
+    sample_steps: 50
+    beta_start: 0.0001
+    beta_end: 0.02
+    n_train_seeds: 64
+
+agent:
+  rule:
+    families: [target_shift, visual_occlusion, forbidden_region]
+    severity_cycle: [small, mid, unreachable]
+  llm_json:
+    prompt_version: v0.1
+    schema: artifacts/llm_curriculum_schema_v0.1.json
+
+taxonomy_path: experiments/surgical_intelligence/exp_surg_001_execute_or_defer/config/exception_taxonomy.yaml
+
+output_root: results/study2_dream_curriculum/mock
+
+confirmatory:
+  mock_episodes_per_dreamer: 128
+  mock_seeds: [42, 43, 44, 45, 46]
+  consensus_aggregation: median_mock_score
+  export_scope: planner
+  top_k: 10
+  bottom_k: 10
+  specs_per_planner: 20
+  total_isaac_specs: 40
+  agents: [rule, llm-json]
+  isaac_seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  sensitivity_export_seed: 43
+  optional_middle_k: 5
+
+selection_export:
+  strategy: top_bottom
+  mock_label_rule: mock_confirmatory_v0.1
+  mock_label_llm: mock_confirmatory_llm_v0.1
+  consensus_label_rule: consensus_rule_v0.3
+  consensus_label_llm: consensus_llm_v0.3
+  isaac_label_rule: selection_ablation_rule_v0.3
+  isaac_label_llm: selection_ablation_llm_v0.3

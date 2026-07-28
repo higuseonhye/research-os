@@ -1,7 +1,7 @@
-# EXP-SURG-002 — Dream curriculum sandbox (Stage 2 probe)
+# EXP-SURG-002 / EXP-SURG-003 — Dream curriculum
 
-> **Status:** Phase 1 complete · selection ablation executed (2026-07-24 · VESSL)  
-> **Design (public):** [`docs/stage2/study2_phase1_design_v0.1.md`](../../../docs/stage2/study2_phase1_design_v0.1.md)  
+> **Study 002 (pilot):** Phase 1–2 complete · Tier B · archived  
+> **Paper 002 (confirmatory):** pre-reg frozen · [`docs/paper002/`](../../../docs/paper002/) · config `sandbox_v0.3.yaml`  
 > **Parent:** EXP-SURG-001 perturbation taxonomy + mock reach
 
 ## Quick start (no GPU)
@@ -63,6 +63,18 @@ Promote full `isaac_aggregate.json` from pod: [`scripts/copy_study2_results_from
 - **Not** full ReSYNC / IVNTR — perturbation-param dreaming only (v0.1)
 - Public repo: frozen design + tier-labeled results only (see [`PUBLIC_BOUNDARY.md`](../../../docs/PUBLIC_BOUNDARY.md))
 
-## Next (Paper program)
+## Paper 002 confirmatory (execute next)
 
-Paper 001 Phase C proper run (n=20) complete — see [`docs/paper1/status.md`](../../../docs/paper1/status.md).
+Pre-reg: [`paper002_prereg_v0.1.md`](../../../docs/paper002/paper002_prereg_v0.1.md) · protocol: [`paper002_run_protocol_v0.1.md`](../../../docs/paper002/paper002_run_protocol_v0.1.md)
+
+```bash
+# Mock (CPU) — after LLM curricula generated
+python scripts/run_study2_dream_curriculum_mock.py \
+  --config experiments/surgical_intelligence/exp_surg_002_dream_curriculum/config/sandbox_v0.3.yaml \
+  --compare --episodes 128 --seed 43 --agent rule --promote-label mock_confirmatory_v0.1
+
+# Isaac (GPU) — see run protocol Leg 5
+export STUDY2_CONFIG=experiments/surgical_intelligence/exp_surg_002_dream_curriculum/config/sandbox_v0.3.yaml
+export STUDY2_TOP_K=10
+export STUDY2_ISAAC_SEEDS=0,1,2,3,4,5,6,7
+```

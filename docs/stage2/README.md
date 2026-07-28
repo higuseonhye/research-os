@@ -1,7 +1,7 @@
 # Study 2 — dream curriculum (public)
 
 > **Experiment:** EXP-SURG-002 · parallel to Paper 1 · not Paper 1 confirmatory  
-> **Status (2026-07-28):** Phase 1 + Phase 2 **executed** · GPU **closed** · appendix-scope for Paper 001 only · **Paper 002** continues generation/agent line
+> **Status (2026-07-28):** Phase 1 + Phase 2 **executed** · **pilot archived (Tier B)** · GPU closed for Study 002 label · **Confirmatory → [Paper 002](../paper002/README.md)**
 
 ---
 

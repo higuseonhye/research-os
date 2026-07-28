@@ -1,0 +1,72 @@
+version: "0.3"
+experiment: EXP-SURG-003
+study: paper002_dream_curriculum_confirmatory
+phase: confirmatory
+parent_design: docs/paper002/paper002_prereg_v0.2.md
+pilot: EXP-SURG-002 · Study 002 Phase 1–2 (Tier B · archived)
+
+# Frozen from Study 002 Phase 2 — do not change without new pre-reg
+dream_space:
+  shift_m:
+    min: 0.015
+    max: 0.10
+  onset_step:
+    min: 10
+    max: 40
+  occlusion_gain:
+    min: 0.0
+    max: 0.85
+
+isaac_occlusion:
+  runner: study1d
+  proxy: gain_scale_flag_v0.1
+  occlusion_level: 1
+  visibility_from_gain: "max(0.05, 1.0 - occlusion_gain)"
+
+mock:
+  max_steps: 80
+  tol_m: 0.02
+  responses: [CONTINUE, REPLAN]
+
+dreamers:
+  gaussian:
+    shift_mean: 0.045
+    shift_std: 0.018
+    onset_mean: 20
+    onset_std: 8
+    occlusion_mean: 0.35
+    occlusion_std: 0.22
+  diffusion:
+    train_steps: 200
+    sample_steps: 50
+    beta_start: 0.0001
+    beta_end: 0.02
+    n_train_seeds: 64
+
+agent:
+  rule:
+    families: [target_shift, visual_occlusion, forbidden_region]
+    severity_cycle: [small, mid, unreachable]
+  llm_json:
+    prompt_version: v0.1
+    schema: artifacts/llm_curriculum_schema_v0.1.json
+
+taxonomy_path: experiments/surgical_intelligence/exp_surg_001_execute_or_defer/config/exception_taxonomy.yaml
+
+output_root: results/study2_dream_curriculum/mock
+
+# Confirmatory scale-up vs Study 002 Phase 2 (v0.2)
+confirmatory:
+  mock_episodes_per_dreamer: 128
+  mock_seeds: [42, 43, 44, 45, 46]
+  primary_export_seed: 43
+  sensitivity_export_seeds: [42, 44]
+  agents: [rule, llm-json]
+  isaac_seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+
+selection_export:
+  strategy: top_bottom
+  top_k: 10
+  bottom_k: 10
+  mock_label: mock_confirmatory_v0.1
+  isaac_label: selection_ablation_v0.3

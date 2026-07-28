@@ -54,7 +54,7 @@ More: [figure index](https://github.com/higuseonhye/research-os/tree/master/docs
 | Dream curriculum pipeline | Phase 1–2 executed · H3′ ρ=0.899 after occlusion align |
 | Mock tradeoff | Gaussian higher informative yield · diffusion higher param diversity |
 
-[Study 2 index](stage2/README.md) · **Next:** [Paper 002 — agentic loop](paper002/README.md)
+[Study 2 index](stage2/README.md) · **Next:** [Paper 002 — mock-to-physics validation](paper002/README.md)
 
 ### Tier B (smoke · design input only)
 
@@ -80,7 +80,7 @@ Superseded for claims by Tier C figures above.
 - **Working paper (EN · July 2026):** [paper001_recoverability_complete.pdf](paper1/paper001_recoverability_complete.pdf) — same-state CF · Tier C D0–D3 · *not peer-reviewed* · *independent research*
 - **Code & results:** [research-os](https://github.com/higuseonhye/research-os)
 - **Paper 1 hub:** [docs/paper1/](https://github.com/higuseonhye/research-os/tree/master/docs/paper1)
-- **Paper 002 (design):** [docs/paper002/](https://github.com/higuseonhye/research-os/tree/master/docs/paper002)
+- **Paper 002 (pre-reg v0.3):** [docs/paper002/](https://github.com/higuseonhye/research-os/tree/master/docs/paper002)
 - **Naming guide:** [NAMING.md](https://github.com/higuseonhye/research-os/blob/master/docs/NAMING.md)
 - **Experiment loop:** [EXPERIMENT_LOOP.md](https://github.com/higuseonhye/research-os/blob/master/docs/EXPERIMENT_LOOP.md)
 

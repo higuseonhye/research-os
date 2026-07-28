@@ -9,7 +9,7 @@
 | Label | Experiment ID | Role | Status |
 | --- | --- | --- | --- |
 | **Paper 001** | **EXP-SURG-001** | Measure recoverability profiles @ fixed **S** | ✅ Tier C complete · working paper live |
-| **Study 002** | **EXP-SURG-002** | Dream curriculum / informative-**S** generation probe | ✅ Phase 1–2 executed · **closed** (appendix only for Paper 001) |
+| **Study 002** | **EXP-SURG-002** | Dream curriculum **pilot** (Tier B) | ✅ Phase 1–2 · **archived** · feeds Paper 002 |
 
 **Do not call Paper 001 “Study 001”.** Config paths use legacy `study1_*`; public brand = **Paper 001 / EXP-SURG-001**.
 
@@ -17,20 +17,22 @@
 
 ## Active (now)
 
-| Label | Experiment ID(s) | Role | Status |
+| Label | Experiment ID | Role | Status |
 | --- | --- | --- | --- |
-| **Paper 002** | **EXP-SURG-003** (+ sub-arms) | Recoverable agentic loop: mismatch · generative **S** · response agent/RL | 🔄 design · pre-reg next |
-| **Program alias** | Study 003 (optional) | Same as Paper 002 — use **Paper 002** in outreach |
+| **Paper 002** | **EXP-SURG-003** | **Mock-to-physics validation** for informative mismatch selection | 🔄 pre-reg v0.3 frozen |
+| **Paper 003** | **EXP-WM-MISMATCH-001** (+ policy) | Latent mismatch · response agent/RL | design · after Paper 002 |
 
 ---
 
-## Sub-arms (Paper 002)
+## Paper 002 scope (confirmatory · not full loop)
 
-| Arm | ID | Interest |
+| Component | In Paper 002 | Deferred |
 | --- | --- | --- |
-| Mismatch trigger | **EXP-WM-MISMATCH-001** | WM / residual signal · agentic L1 |
-| Generative curriculum | **EXP-SURG-003 · dream** | Diffusion + **LLM agent** @ Isaac (Study 002 lesson: occlusion contract) |
-| Response selection | **EXP-SURG-003 · policy** | Agent / **RL** over Paper 001 menu |
+| Gaussian + diffusion dreamers | ✅ | — |
+| Rule + **LLM** planner @ Isaac | ✅ | — |
+| Mock→Isaac rank @ n=40 | ✅ | — |
+| Latent mismatch trigger | — | Paper 003 |
+| RL response selection | — | Paper 003 |
 
 Paper 001 remains the **eval ruler** for all arms.
 
@@ -49,4 +51,4 @@ Paper 001 remains the **eval ruler** for all arms.
 
 ## One-line program
 
-> Paper 001 measures @ **S** · Study 002 probed generation (closed) · **Paper 002** closes the loop with mismatch detection, LLM/diffusion curriculum, and agent/RL response selection on the same ruler.
+> Paper 001 measures @ **S** · **Paper 002** validates mock→Isaac selection · **Paper 003** mismatch + response loop.

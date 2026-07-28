@@ -1,79 +1,75 @@
-# Paper 002 — Recoverable agentic loop (design v0.1)
+# Paper 002 — Mock-to-physics validation (confirmatory)
 
-> **Status:** design · pre-reg pending · **Gate:** Paper 001 ruler frozen ✅  
-> **Experiment:** EXP-SURG-003 (+ EXP-WM-MISMATCH-001 sub-arm)  
-> **Study 002:** closed — lessons feed in; not extended as “Phase 3”
+> **Positioning:** cheap proxy validates expensive physics selection · **not** LLM curriculum · **not** policy training  
+> **Status:** pre-reg **v0.3 frozen** · code ready · **execute after commit**  
+> **Program:** Paper 001 = measure @ **S** · **Paper 002 = which mismatch to evaluate**
 
 ---
 
-## Why Paper 002 (not “Study 001”)
+## Start here
 
-| Done | Label |
+| Doc | Purpose |
 | --- | --- |
-| Measurement @ fixed **S** | **Paper 001** / EXP-SURG-001 |
-| Generation probe | **Study 002** / EXP-SURG-002 (closed) |
-| **Next paper** | **Paper 002** — agent · diffusion · LLM · RL on the same ruler |
+| [**Description**](paper002_description_v0.1.md) | Title · abstract · program position · novelty |
+| [**Related work**](paper002_related_work_v0.1.md) | POET · PLR · GenSim · differentiation table |
+| [**Manuscript pre-results**](paper002_manuscript_pre_results_v0.1.md) | Full methods · tables · interpretation rules |
+| [**RQ v0.3**](paper002_rq_v0.3.md) | Sharp research questions |
+| [**Pre-reg v0.3**](paper002_prereg_v0.3.md) | **Frozen** confirmatory design |
+| [**Method v0.2**](paper002_method_spec_v0.2.md) | Continuous score · consensus export |
+| [**Analysis v0.2**](paper002_analysis_plan_v0.2.md) | Bootstrap · binomial · H3 CI |
+| [**Run protocol v0.2**](paper002_run_protocol_v0.2.md) | Staged execution · operational gate |
+| [**Operational gate**](paper002_operational_gate_v0.1.md) | Engineering go/no-go (not H1∧H2) |
+| [**Smoke protocol**](paper002_smoke_protocol_v0.1.md) | Seed-43 engineering only |
+| **Config** | [`sandbox_v0.4.yaml`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/config/sandbox_v0.4.yaml) |
 
-See [`../NAMING.md`](../NAMING.md).
-
----
-
-## Central question (draft)
-
-> After Paper 001 showed intervention profiles separate @ fixed **S**, can a **recoverable agentic loop**—(1) mismatch signal, (2) **LLM- or diffusion-generated** informative scenarios validated by same-state CF, and (3) an **agent or RL policy** over the response menu—beat rule baselines on recovery and curriculum yield?
-
-**Uses Paper 001 as:** matched-**S** fork · terminal resolution metric · B2/B3 comparators.
-
-**Does not claim:** clinical deployment · new surgical foundation model · SOTA reach policy.
+*v0.1–v0.2 superseded · Study 002 = Tier B pilot only.*
 
 ---
 
-## Three arms (one paper · tier-labeled)
+## One-line claim
 
-| Arm | ID | Hypothesis (directional) | Builds on |
-| --- | --- | --- | --- |
-| **A · Mismatch** | EXP-WM-MISMATCH-001 | WM residual / learned signal triggers recovery earlier than geometry-only rules | Agentic WM L1 · EXP-DAILY-001 scout |
-| **B · Generate S** | EXP-SURG-003 · dream | **LLM agent** + **diffusion** propose specs; mock rank predicts Isaac informative rate when occlusion contract aligned (Study 002 H3′) | Study 002 Phase 2 · LLM JSON mock-only today |
-| **C · Select response** | EXP-SURG-003 · policy | Agent or **RL** over {CONTINUE, REPLAN, …} beats B2/B3 @ **S** | Paper 001 D0–D3 profiles as labels / baselines |
-
-**Paper body strategy:** one primary confirmatory arm (pick after desk week) · others exploratory Tier B.
+> Prior work asks whether generated environments **improve learning**; Paper 002 asks whether a cheap mock **predicts which physics experiments** expose same-state counterfactual response differences.
 
 ---
 
-## Honest carryover from Study 002
+## v0.3 vs v0.2 (why upgrade before GPU)
 
-| Finding | Paper 002 use |
+| Fix | Reason |
 | --- | --- |
-| Gaussian ↑ yield · diffusion ↑ diversity | Hybrid curriculum design |
-| H3 FAIL → H3′ PASS after occlusion align | **Mandatory** Paper 001 occlusion contract in all Isaac arms |
-| LLM JSON = rule on mock | **Isaac arm required** before LLM claim |
-| Phase 3 GPU deferred | Scope as Paper 002 pre-reg, not Study 002 Phase 3 |
+| **Continuous mock score** | Binary Spearman ≈ point-biserial · many ties |
+| **5-seed median export** | Separates planner quality from one RNG draw |
+| **Within-planner export** | Fair rule vs LLM comparison |
+| **H2 IR_top ≥ 0.80** | Rate thresholds pass · binomial p **reported only** |
+| **Operational vs hypothesis gate** | LLM leg = engineering gate · H1–H3 = post-hoc |
+| **H3b bootstrap CI** | Non-inferiority needs interval, not point Δρ |
+| **Extreme-export claim label** | Top/bottom only → honest scope |
 
 ---
 
-## Phase plan
+## Execute pipeline (summary)
 
-| Phase | Work | Tier |
-| --- | --- | --- |
-| **0 · Desk** | Pick primary arm · related work · kill matrix | — |
-| **1 · Pre-reg** | Frozen hypotheses · promote to `docs/paper002/` | A |
-| **2 · Mock smoke** | LLM agent · diffusion · optional L1 mismatch | B |
-| **3 · Isaac GPU** | Same-state CF validation @ **S** | B/C |
-| **4 · Paper** | Draft · figures · public promote slice | — |
-
----
-
-## Public boundary
-
-Design + pre-reg + tier-labeled results only. No private career material · no unlabeled mock as confirmatory.
+```text
+1. v0.3 commit + tag
+2. seed-43 smoke (engineering · optional)
+3. mock seeds 42–46 · consensus · export · checksum
+4. rule Isaac leg
+5. operational go/no-go → LLM Isaac leg
+6. H1 → H2 → H3 confirmatory analysis
+```
 
 ---
 
-## Links
+## Program stack
 
-| Resource | Path |
-| --- | --- |
-| Paper 001 ruler | [`../paper1/status.md`](../paper1/status.md) |
-| Study 002 index | [`../stage2/README.md`](../stage2/README.md) |
-| Naming | [`../NAMING.md`](../NAMING.md) |
-| EXP-SURG-002 code | [`../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/) |
+```text
+Paper 002 — which mismatch to evaluate? (proxy validation)
+Paper 001 — how do responses compare @ S? (recoverability ruler)
+Paper 003 — latent mismatch + response policy
+Paper 004 — adaptive world model update
+```
+
+---
+
+## Deferred
+
+Paper 003 (mismatch + RL) · middle-tier 50-spec leg (Tier B optional) · policy training claims

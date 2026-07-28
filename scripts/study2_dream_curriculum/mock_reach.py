@@ -77,3 +77,20 @@ def is_informative(outcomes: dict[str, MockOutcome]) -> bool:
     cont = outcomes["CONTINUE"]
     repl = outcomes["REPLAN"]
     return (not cont.successful_resolution) and repl.successful_resolution
+
+
+def cf_margin(outcomes: dict[str, MockOutcome], tol: float = 0.02) -> float:
+    """Continuous counterfactual informativeness margin for proxy ranking (Paper 002 v0.3)."""
+    cont = outcomes["CONTINUE"]
+    repl = outcomes["REPLAN"]
+    success_gap = float(repl.successful_resolution) - float(cont.successful_resolution)
+    dist_gap = (cont.final_distance_m - repl.final_distance_m) / max(tol * 4.0, 1e-9)
+    dist_gap = max(0.0, min(float(dist_gap), 1.0))
+    violation_lift = (
+        0.25 if cont.forbidden_violation and not repl.forbidden_violation else 0.0
+    )
+    return success_gap + dist_gap + violation_lift
+
+
+def is_informative_from_margin(margin: float, threshold: float = 0.5) -> bool:
+    return margin >= threshold
