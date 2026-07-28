@@ -31,22 +31,22 @@ RQ-B direction met: menu best **95%** > B2 **0%** > B3 **85%**.
 
 Links: [D0 summary](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper/summary.json) · [D1–D3 summary](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper_v2/summary.json) · [Paper 1 status](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/status.md)
 
-### Figures (Tier C)
+### Evidence (Tier C)
 
-| Fig | Asset |
+| Table / Fig | Asset |
 | --- | --- |
-| D0 profile | [fig3_profile_d0.png](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/figures/fig3_profile_d0.png) |
-| Baseline overlay | [fig4_baseline_overlay.png](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/figures/fig4_baseline_overlay.png) |
-| Isaac EE traces | [sim_panel_isaac_traces.png](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/figures/sim_panel_isaac_traces.png) |
-| Full set | [docs/paper1/figures/](https://github.com/higuseonhye/research-os/tree/master/docs/paper1/figures) |
-
-### Study 2 · Tier B/C probe
-
-Phase 1 mock + Isaac · selection ablation VESSL 2026-07-24 · [isaac_full_v0.1 summary](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/summary.json)
+| **Table 2** program summary | [table2_proper_program.png](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/figures/table2_proper_program.png) |
+| **Table 1** D0 profiles + Wilson CI | [table1_d0_results.png](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/figures/table1_d0_results.png) |
+| **Fig 3** D0 profile (visual) | [fig3_profile_d0.png](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/figures/fig3_profile_d0.png) |
+| More (overlay · traces · schematics) | [docs/paper1/figures/](https://github.com/higuseonhye/research-os/tree/master/docs/paper1/figures) |
 
 ### Paper 002 · pre-results (under review)
 
-Pre-reg frozen · tag `paper002-prereg-v0.3` · [PDF v1.2](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_pre_results_v1.2.pdf) · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/status.md) · confirmatory GPU not started
+Pre-reg frozen · tag `paper002-prereg-v0.3` · [PDF v1.2](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_pre_results_v1.2.pdf) · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/status.md) · **no Tier C outcome tables yet** · confirmatory GPU not started
+
+### Study 2 · Tier B pilot (closed)
+
+Phase 1 mock + Isaac · selection ablation VESSL 2026-07-24 · [isaac_full_v0.1 summary](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/isaac_full_v0.1/summary.json) · [Paper 002 hub](https://github.com/higuseonhye/research-os/tree/master/docs/paper002)
 
 ### Tier B smoke (superseded for claims)
 

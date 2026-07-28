@@ -33,30 +33,34 @@ Pre-reg v2.0 executed on VESSL · n=20 per branch · `branch_replay_ok` on all r
 
 Summaries: [D0 JSON](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper/summary.json) · [D1–D3 JSON](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper_v2/summary.json) · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/status.md)
 
-### Figures (Tier C)
+### Evidence (Tier C)
 
-**D0 recoverability profile @ fixed S (n=20):**
+**Table 2 — proper program summary (D0–D3 · n=20):**
+
+![Table 2 program summary](https://raw.githubusercontent.com/higuseonhye/research-os/master/docs/paper1/figures/table2_proper_program.png)
+
+**Table 1 — D0 five-mode profiles @ fixed S (Wilson 95% CI):**
+
+![Table 1 D0 results](https://raw.githubusercontent.com/higuseonhye/research-os/master/docs/paper1/figures/table1_d0_results.png)
+
+**Figure — D0 recoverability profile (visual anchor · n=20):**
 
 ![D0 profile](https://raw.githubusercontent.com/higuseonhye/research-os/master/docs/paper1/figures/fig3_profile_d0.png)
 
-**Response menu vs rule baselines (RQ-B):**
+More figures (RQ-B overlay · Isaac EE traces · method schematics): [figure index](https://github.com/higuseonhye/research-os/tree/master/docs/paper1/figures) · [method spec](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/method_spec_v1.0.md)
 
-![Baseline overlay](https://raw.githubusercontent.com/higuseonhye/research-os/master/docs/paper1/figures/fig4_baseline_overlay.png)
+### Paper 002 · pre-results (under review)
 
-**Isaac EE traces — seed 0 (reproducible capture):**
+Pre-reg v0.3 frozen · tag `paper002-prereg-v0.3` · [PDF v1.2](paper002/paper002_pre_results_v1.2.pdf) · [status](paper002/status.md) · **no Tier C outcome tables yet** · confirmatory GPU not started
 
-![Isaac traces](https://raw.githubusercontent.com/higuseonhye/research-os/master/docs/paper1/figures/sim_panel_isaac_traces.png)
-
-More: [figure index](https://github.com/higuseonhye/research-os/tree/master/docs/paper1/figures) · [method spec](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/method_spec_v1.0.md)
-
-### Study 2 (Tier B/C probe · closed)
+### Study 2 (Tier B pilot · closed)
 
 | Claim | Evidence |
 | --- | --- |
 | Dream curriculum pipeline | Phase 1–2 executed · H3′ ρ=0.899 after occlusion align |
 | Mock tradeoff | Gaussian higher informative yield · diffusion higher param diversity |
 
-[Study 2 index](stage2/README.md) · **Active:** [Paper 002 — mock-to-physics validation](paper002/README.md) · **Status:** [under review](paper002/status.md)
+[Study 2 index](stage2/README.md) · **Active:** [Paper 002 — mock-to-physics validation](paper002/README.md)
 
 ### Tier B (smoke · design input only)
 
@@ -65,7 +69,7 @@ More: [figure index](https://github.com/higuseonhye/research-os/tree/master/docs
 | Same-state CF fork @ 3 cm | [counterfactual_grid.png](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1a_isaac/figures/counterfactual_grid.png) |
 | Delay band @ 3 cm | [recoverability_vs_delay.png](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1b_isaac/figures/recoverability_vs_delay.png) |
 
-Superseded for claims by Tier C figures above.
+Superseded for claims by Tier C tables above.
 
 ---
 
