@@ -57,9 +57,15 @@ Evidence needed: **parameter-only updates do not absorb structured residual.**
 
 ### Competing update arms (between Ep1 and Ep2)
 
-1. **No Update** — frozen WM  
-2. **Parameter Update** — position / velocity estimates only  
-3. **Structural Expansion** — add `target_mode` or motion-mode latent  
+| Arm | Expansion level | Mechanism |
+| --- | --- | --- |
+| **No Update** | — | frozen M₀ |
+| **Parameter Update** | L1 | θ on static dynamics only |
+| **Modular expansion** | L3 | add expert M₁ (drift) + regime gating |
+
+**Deferred arms (extension):** monolithic fine-tune · diffusion future generator · M₂ external perturb.
+
+Diffusion is an **expansion operator candidate**, not the whole world model — see [taxonomy doc](paper002_wm_system_expansion_v0.1.md).
 
 ### Episode 2 — novel but related
 
@@ -100,9 +106,9 @@ persistent structured residual
 
 ## Defensible claim (first paper)
 
-> Under a controlled hidden-mode setting, persistent unexplained failures can trigger a representation expansion that improves generalization to related encounters beyond parameter-only adaptation.
+> Under a controlled hidden-mode setting, **failure-driven model-class expansion** (not latent relabeling alone) improves **prediction and control** on novel related encounters beyond parameter-only adaptation — with latent reorganization as **observed mechanism**, not primary claim.
 
-**Not claimed:** autonomous concept invention · general WM expansion · clinical deployment.
+**Not claimed:** latent representation learning SOTA · arbitrary z invention without behavior gain.
 
 ---
 
@@ -117,7 +123,7 @@ E. Next encounter — mode predicted · action changed
 F. Evaluation — improved prediction/recovery · no static regression
 ```
 
-Layout: **Reality | Agent belief** · belief panel gains `motion mode` node after expansion.
+Layout: **Reality | Agent belief** · mode/expert node after expansion · **Latent before/after** (Fig 4 · supporting) · **Behavior metrics** (primary).
 
 ---
 

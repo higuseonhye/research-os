@@ -135,6 +135,65 @@ Diffusion = **expanded possibility generator** · expansion **decision** needs s
 
 ---
 
+## Latent space — experiment substrate, not the claim
+
+**Do not** frame the program as “latent representation expansion” alone — readers will classify it as representation learning.
+
+**Do** run experiments largely in latent world models (RSSM / JEPA-style stack: image → encoder → z → dynamics → prediction) for efficiency and analysis.
+
+| Role | Latent |
+| --- | --- |
+| **Claim** | Failure-driven **world-model system** reconstruction improves prediction · planning · recoverability |
+| **Observation** | How z reorganizes (clusters · uncertainty · new slots) **supports** the claim |
+| **Not sufficient alone** | “z split into two clusters” without behavior gain |
+
+### Three linked layers (required in every paper)
+
+```text
+Layer 1  Reality          3D sim · mismatch · trajectories
+Layer 2  Latent / belief  before vs after expansion · residual · uncertainty
+Layer 3  Behavior         prediction · planning · recoverability · (later) human timing
+```
+
+Novelty chain:
+
+```text
+Failure → representation change → behavior change → recoverability (measurement window)
+```
+
+Reviewer “so what?” must be answered on **Layer 3**, with Layer 2 as mechanistic evidence.
+
+### Expansion trigger (program core)
+
+```text
+Current latent / model class
+  → prediction residual
+  → residual not explained by parameter update
+  → latent uncertainty / structured residual rises
+  → invoke expansion operator (L3)
+  → planner / policy interface may change
+```
+
+Research starts at **“latent is insufficient”** (self-recognized inadequacy), not at “we improved latent quality.”
+
+### Figure convention — latent panel (optional Fig 4)
+
+| Panel | Content |
+| --- | --- |
+| Before failure | single z cluster ●●●●● |
+| After expansion | z_static ●●● · z_drift □□□□ |
+| Linked | same seed · Ep2 success ↑ on drift · static unchanged |
+
+Always pair with Layer 1 (Reality | Belief) and Layer 3 metrics table.
+
+### Boundary vs prior work
+
+Dreamer · JEPA · continual WM · object-centric models already adapt latents. **Differentiation:**
+
+> When is latent **adaptation** enough, and when does **model-class / system** reconstruction become necessary — triggered by **unexplained failure**, not scheduled training?
+
+---
+
 ## Program ladder (non-sequential with Paper 001)
 
 ```text
