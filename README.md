@@ -72,7 +72,7 @@ Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper
 | | Link |
 | --- | --- |
 | Portfolio landing | **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)** · [`docs/index.md`](docs/index.md) |
-| **Mismatch Lab** | [`docs/mismatch_lab/README.md`](docs/mismatch_lab/README.md) · [Diff demo](docs/mismatch_lab/diff_explorer_v0.1.html) · spec · API |
+| **Mismatch Lab** | [`docs/mismatch_lab/README.md`](docs/mismatch_lab/README.md) · [Diff demo](docs/mismatch_lab/diff_explorer_v0.1.html) · [public scope](docs/mismatch_lab/PUBLIC_SCOPE.md) |
 | Paper 001 hub | [`docs/paper1/README.md`](docs/paper1/README.md) |
 | Paper 002 hub | [`docs/paper002/README.md`](docs/paper002/README.md) |
 | EXP-SURG-003 | [`experiments/.../exp_surg_003_wm_expansion/README.md`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md) |
@@ -80,7 +80,7 @@ Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper
 | Research question v1.0 | [`docs/paper1/research_question.md`](docs/paper1/research_question.md) |
 | Experiment loop | [`docs/EXPERIMENT_LOOP.md`](docs/EXPERIMENT_LOOP.md) |
 | Repro scripts | [`scripts/README.md`](scripts/README.md) |
-| Public boundary | [`docs/PUBLIC_BOUNDARY.md`](docs/PUBLIC_BOUNDARY.md) |
+| Public boundary | [`docs/PUBLIC_BOUNDARY.md`](docs/PUBLIC_BOUNDARY.md) · [`docs/mismatch_lab/PUBLIC_SCOPE.md`](docs/mismatch_lab/PUBLIC_SCOPE.md) |
 
 ---
 

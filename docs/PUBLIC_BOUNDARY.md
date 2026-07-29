@@ -6,6 +6,22 @@
 
 ---
 
+## Three-repo architecture (what this repo is)
+
+```text
+builder-os-vault (private)  →  builder-os-private (private)  →  research-os (THIS · public)
+```
+
+| Layer | Role | Linked from here? |
+| --- | --- | --- |
+| **research-os** | Promoted evidence · protocols · tier-labeled results · Mismatch Lab public spec | — |
+| **builder-os-private** | Working records · Go gates · hardware · career | **Never** |
+| **builder-os-vault** | Obsidian thinking · daily · meetings · people | **Never** |
+
+Mismatch Lab (`docs/mismatch_lab/`) is a **public research/product spec** inside this repo — not a separate company layer. See [PUBLIC_SCOPE.md](mismatch_lab/PUBLIC_SCOPE.md).
+
+---
+
 ## What belongs here (public)
 
 | Category | Examples |

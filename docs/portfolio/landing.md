@@ -15,7 +15,7 @@
 
 **Paper 002:** adequacy gate · L1 vs L3 · Ep1→Ep2 · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/status.md)
 
-[research-os](https://github.com/higuseonhye/research-os) · [NAMING.md](https://github.com/higuseonhye/research-os/blob/master/docs/NAMING.md)
+[research-os](https://github.com/higuseonhye/research-os) · [PUBLIC_BOUNDARY](https://github.com/higuseonhye/research-os/blob/master/docs/PUBLIC_BOUNDARY.md) · [NAMING.md](https://github.com/higuseonhye/research-os/blob/master/docs/NAMING.md)
 
 ---
 

@@ -58,7 +58,7 @@ private/
 clinical_data/
 patient_data/
 
-# Legacy working tree (lives in builder-os-private / local vault only)
+# Legacy working tree (lives in private working repo / local vault only)
 docs/mechanism_atlas/
 docs/lab_meeting*
 docs/*Manifesto*
@@ -93,3 +93,6 @@ notes/
 benchmark/
 papers/
 Automations/
+
+# IDE / local tooling (may reference private integrations)
+.cursor/
