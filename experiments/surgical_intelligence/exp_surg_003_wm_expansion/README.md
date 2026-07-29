@@ -1,7 +1,7 @@
 # EXP-SURG-003 — Paper 002 WM expansion confirmatory
 
 > **Paper:** [docs/paper002/](../../../docs/paper002/) · [confirmatory spec](../../../docs/paper002/paper002_confirmatory_spec_v0.1.md)  
-> **Status:** scaffold · **not started** · pre-reg not frozen  
+> **Status:** mock pilot **implemented** · smoke in [`results/pilot_v0.1/`](results/pilot_v0.1/) · pre-reg not frozen  
 > **Parent:** EXP-SURG-001 ORBIT reach pipeline
 
 ---
