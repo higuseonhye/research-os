@@ -73,15 +73,38 @@ Check `summary.C_vs_B.delta_prediction_error > 0` before Isaac spend.
 ## Step 3 — Isaac drift (GPU)
 
 ```bash
-# Infra smoke included (zero_agent) — MUST PASS
-export EXP_SURG_003_SKIP_BOOTSTRAP=1   # if already bootstrapped
+# Quick smoke (1 seed · skip zero_agent if scripted_smoke already passed)
+export EXP_SURG_003_SKIP_BOOTSTRAP=1
+export EXP_SURG_003_ZERO_AGENT=0
+export DISABLE_FABRIC=1
+export OUT="$PWD/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_drift_smoke"
+export SEEDS=0
+export ONSET=40
+export MAX_STEPS=200
+export DRIFT_SPEED=0.0003
+export DRIFT_DURATION=80
+bash scripts/run_exp_surg_003_drift.sh
+```
+
+**Direct Python (same flags):** `orbit_reach_drift.py` uses `--max-steps`, `--onset`, `--drift-speed`, `--drift-axis`, `--out-dir` — **not** `--steps` / `--drift-onset` / `--out` (those are `orbit_reach_scripted_smoke.py`).
+
+```bash
+/workspace/IsaacLab/isaaclab.sh -p scripts/orbit_reach_drift.py \
+  --task Isaac-Reach-Dual-STAR-IK-Rel-Play-v0 \
+  --num_envs 1 --seed 0 --episodes 1 --headless --disable_fabric \
+  --onset 40 --max-steps 200 --drift-speed 0.0003 --drift-axis x --drift-duration 80 \
+  --out-dir experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_drift_smoke
+```
+
+**Output:** `.../isaac_drift_smoke/isaac_drift_results.json` (+ trajectories)
+
+**Full pilot via wrapper:**
+
+```bash
+export EXP_SURG_003_SKIP_BOOTSTRAP=1
+export EXP_SURG_003_ZERO_AGENT=0
+export DISABLE_FABRIC=1
 bash scripts/run_exp_surg_003_vessl.sh
-
-# Or explicit mode
-EXP_SURG_003_MODE=isaac_drift bash scripts/run_exp_surg_003_vessl.sh
-
-# Mock + Isaac in one session
-EXP_SURG_003_MODE=both bash scripts/run_exp_surg_003_vessl.sh
 ```
 
 **Tunable env:**
@@ -90,9 +113,12 @@ EXP_SURG_003_MODE=both bash scripts/run_exp_surg_003_vessl.sh
 | --- | --- | --- |
 | `SEEDS` | `0,1,2,3,4` | Episode seeds |
 | `ONSET` | `20` | Drift start step |
+| `MAX_STEPS` | `160` | Episode length (steps) |
 | `DRIFT_SPEED` | `0.01` | m per step |
 | `DRIFT_AXIS` | `x` | `x` · `y` · `z` |
 | `DRIFT_DURATION` | `40` | Drift steps |
+| `DISABLE_FABRIC` | `0` | Set `1` on VESSL headless if fabric errors |
+| `EXP_SURG_003_ZERO_AGENT` | `1` | Set `0` to skip after scripted_smoke passed |
 
 **Output:** `results/isaac_drift_pilot_v0.1/isaac_drift_results.json`
 

@@ -7,10 +7,12 @@ REPO="${REPO:-$ROOT_DIR}"
 OUT="${OUT:-$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_drift_pilot_v0.1}"
 SEEDS="${SEEDS:-0,1,2,3,4}"
 ONSET="${ONSET:-20}"
+MAX_STEPS="${MAX_STEPS:-160}"
 DRIFT_SPEED="${DRIFT_SPEED:-0.01}"
 DRIFT_AXIS="${DRIFT_AXIS:-x}"
 DRIFT_DURATION="${DRIFT_DURATION:-40}"
 SKIP_BOOTSTRAP="${EXP_SURG_003_SKIP_BOOTSTRAP:-0}"
+DISABLE_FABRIC="${DISABLE_FABRIC:-0}"
 
 ISAACLAB_PATH="${IsaacLab_PATH:-/workspace/IsaacLab}"
 ORBIT_SURGICAL_PATH="${ORBIT_SURGICAL_PATH:-/workspace/orbit-surgical}"
@@ -58,13 +60,19 @@ if [ "${EXP_SURG_003_ZERO_AGENT:-1}" = "1" ]; then
 fi
 
 cd "$ORBIT_SURGICAL_PATH"
+FABRIC_ARGS=()
+if [ "$DISABLE_FABRIC" = "1" ]; then
+  FABRIC_ARGS+=(--disable_fabric)
+fi
 set +e
 "$ISAACLAB_SH" -p "$REPO/scripts/orbit_reach_drift.py" \
   --headless \
+  "${FABRIC_ARGS[@]}" \
   --task "$TASK" \
   --out-dir "$OUT" \
   --seeds "$SEEDS" \
   --onset "$ONSET" \
+  --max-steps "$MAX_STEPS" \
   --drift-speed "$DRIFT_SPEED" \
   --drift-axis "$DRIFT_AXIS" \
   --drift-duration "$DRIFT_DURATION" \
