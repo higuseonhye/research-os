@@ -26,6 +26,7 @@
 | Investor ask · use of funds · pricing · cap table | Private working repo |
 | Design partner names · pilot customer list | Private working repo |
 | Outreach scripts · LinkedIn drafts · career / relocation | Private vault |
+| Named commercial product patterns (e.g. “Vendor X pattern”) in lab copy | Use generic UX framing only |
 | Links to private GitHub repos | **Never** in research-os |
 | Unredacted pilot metrics in hero copy until confirmatory | Tier B+ label only |
 

@@ -33,8 +33,8 @@ experiment_links:
   - experiment_id: string
   - commit_sha: string
 rq_mapping: [RQ1 | RQ2 | RQ3 | RQ4]
-search_index:             # optional — Twelve Labs / future providers
-  provider: string         # twelvelabs
+search_index:             # optional — video search index provider
+  provider: string         # e.g. twelvelabs (implementation-specific)
   index_id: string
   indexed_asset_id: string
   model: string            # marengo3.0
@@ -66,7 +66,7 @@ assets:
 | Source | Phase 2 action |
 | --- | --- |
 | LEMON | HF access → first 10-asset manifest |
-| Twelve Labs index | 1-clip search smoke → `twelvelabs_lemon_v0.yaml` |
+| Video search index (optional) | 1-clip search smoke → `twelvelabs_lemon_v0.yaml` |
 | ORBIT rollouts | already in `benchmark/leaderboard/reach_v0.md` |
 | DexBench | crosswalk metadata only |
 | Tool detection | add after EXP-SI-PER-002 |

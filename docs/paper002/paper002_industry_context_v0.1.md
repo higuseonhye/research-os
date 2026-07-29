@@ -1,6 +1,6 @@
 # Paper 002 — Industry context v0.1 (brief)
 
-> **Public brief** for Introduction · related-work positioning · not a market report
+> **Public brief** for Paper 002 Introduction · industry landscape · not a market report or vendor map
 
 ---
 

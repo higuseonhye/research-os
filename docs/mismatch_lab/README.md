@@ -39,7 +39,9 @@ Commercial operations (hosting, contracts, SLAs) are **not** in research-os. See
 
 ---
 
-## User-facing verbs (Twelve Labs pattern)
+## User-facing verbs
+
+Simple public entry · adequacy as research-backed insight (not the hero).
 
 | User sees | Internal engine |
 | --- | --- |
