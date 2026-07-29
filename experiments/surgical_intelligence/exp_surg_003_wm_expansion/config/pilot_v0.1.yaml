@@ -1,0 +1,31 @@
+# EXP-SURG-003 mock pilot v0.1 — fast iteration (not confirmatory)
+
+pilot:
+  max_steps: 80
+  pretrain_static_episodes: 40
+  pretrain_steps: 250
+  repair_steps: 120
+  expansion_steps: 280
+  K_repairs: 3
+  prediction_horizon: 10
+  device: cpu
+  seed: 42
+
+gate:
+  tau_error: 0.015
+  tau_autocorr: 0.35
+  tau_delta_nll: 0.002
+  K_repairs: 3
+
+arms: [A, B, C]
+confirmatory_seeds: [0, 1, 2, 3, 4]
+
+drift:
+  ep1:
+    onset_step: 20
+    velocity: [0.012, 0.0]
+    duration_steps: 35
+  ep2:
+    onset_step: 12
+    velocity: [0.0, 0.010]
+    duration_steps: 35

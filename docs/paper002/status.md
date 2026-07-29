@@ -16,7 +16,7 @@
 | Confirmatory spec v0.1 | ✅ [paper002_confirmatory_spec_v0.1.md](paper002_confirmatory_spec_v0.1.md) |
 | EXP-SURG-003 scaffold | ✅ [exp_surg_003_wm_expansion](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md) |
 | Pre-reg v0.1 | 🔄 draft · [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md) |
-| Engineering pilot | ⏳ **milestone 1:** L1-fail / L3-succeed regime |
+| Engineering pilot (mock) | ✅ smoke · [`results/pilot_v0.1`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/pilot_v0.1/) |
 | Confirmatory GPU | ⏳ pending · **after pre-reg freeze** |
 | Archived mock→physics GPU | ❌ **cancelled** |
 

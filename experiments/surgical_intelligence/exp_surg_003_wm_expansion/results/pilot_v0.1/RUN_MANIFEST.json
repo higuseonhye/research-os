@@ -1,0 +1,35 @@
+{
+  "experiment": "EXP-SURG-003-pilot-mock",
+  "tier": "pilot",
+  "timestamp_utc": "2026-07-29T07:19:09.239268+00:00",
+  "summary": {
+    "A": {
+      "n_ep2": 2,
+      "mean_prediction_error_h10": 0.2348222442104348,
+      "success_rate_ep2": 0.0,
+      "mean_final_distance_ep2": 1.0630067769716454,
+      "success_rate_static": 0.0,
+      "gate_fire_rate": 1.0
+    },
+    "B": {
+      "n_ep2": 2,
+      "mean_prediction_error_h10": 0.23716969181384356,
+      "success_rate_ep2": 0.0,
+      "mean_final_distance_ep2": 1.2054986833391097,
+      "success_rate_static": 0.0,
+      "gate_fire_rate": 1.0
+    },
+    "C": {
+      "n_ep2": 2,
+      "mean_prediction_error_h10": 0.2224716571558799,
+      "success_rate_ep2": 0.0,
+      "mean_final_distance_ep2": 1.2107494270586394,
+      "success_rate_static": 0.0,
+      "gate_fire_rate": 1.0
+    },
+    "C_vs_B": {
+      "delta_prediction_error": 0.014698034657963654,
+      "delta_success_rate": 0.0
+    }
+  }
+}

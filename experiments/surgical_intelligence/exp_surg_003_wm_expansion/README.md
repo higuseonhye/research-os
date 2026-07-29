@@ -21,39 +21,44 @@ Train static-only WM (W0)
 
 ---
 
+## Quick start (mock pilot — no GPU)
+
+```bash
+# Smoke (~30s CPU)
+python scripts/run_exp_surg_003_pilot.py --smoke
+
+# Pilot (5 seeds · arms A/B/C)
+python scripts/run_exp_surg_003_pilot.py --config experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/pilot_v0.1.yaml
+```
+
+Requires: `pip install torch pyyaml numpy`
+
+## Quick start (Isaac drift data — GPU)
+
+```bash
+bash scripts/run_exp_surg_003_drift_runpod.sh
+```
+
+Collects persistent drift trajectories (`TRACK_DRIFTING` vs `TRACK_FROZEN`) for WM training data.
+
 ## Config
 
 | File | Role |
 | --- | --- |
-| [`config/confirmatory_v0.1.yaml`](config/confirmatory_v0.1.yaml) | Phase · arms · drift · gate · outcomes skeleton |
+| [`config/pilot_v0.1.yaml`](config/pilot_v0.1.yaml) | Mock pilot hyperparameters |
+| [`config/confirmatory_v0.1.yaml`](config/confirmatory_v0.1.yaml) | Confirmatory design contract |
 
----
+## Implementation
 
-## Implementation status
-
-| Step | Status |
+| Module | Path |
 | --- | --- |
-| Target drift env params in ORBIT reach | ⏳ |
-| GRU/RSSM-lite W0 pretrain | ⏳ |
-| MPC ← WM rollouts | ⏳ |
-| Arms A/B pilot | ⏳ |
-| F1 + G (L3) | ⏳ |
-| Gate negative controls N1/N2 | ⏳ |
-| Confirmatory run | ⏳ after pre-reg freeze |
-
----
-
-## Quick start (future)
-
-```bash
-# Engineering pilot (not confirmatory)
-python scripts/run_exp_surg_003_pilot.py --config experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/confirmatory_v0.1.yaml --tier pilot
-
-# Confirmatory (after freeze + fresh seeds)
-python scripts/run_exp_surg_003_confirmatory.py --config ... --tier confirmatory
-```
-
-Scripts **not yet implemented** — config and spec define the contract.
+| Mock env (drift / noise / impulse) | `scripts/wm_expansion/env.py` |
+| GRU world model + L3 expansion | `scripts/wm_expansion/world_model.py` |
+| MPC controller | `scripts/wm_expansion/mpc.py` |
+| Adequacy gate | `scripts/wm_expansion/gate.py` |
+| Pilot protocol | `scripts/wm_expansion/protocol.py` |
+| Orchestrator | `scripts/run_exp_surg_003_pilot.py` |
+| Isaac drift runner | `scripts/orbit_reach_drift.py` |
 
 ---
 
