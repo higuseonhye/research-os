@@ -16,7 +16,15 @@
 | Confirmatory spec v0.1 | ✅ [paper002_confirmatory_spec_v0.1.md](paper002_confirmatory_spec_v0.1.md) |
 | EXP-SURG-003 scaffold | ✅ [exp_surg_003_wm_expansion](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md) |
 | Pre-reg v0.1 | 🔄 draft · [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md) |
-| Engineering pilot (mock) | ✅ smoke · [`results/pilot_v0.1`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/pilot_v0.1/) |
+## Run target
+
+**VESSL** (not local · not RunPod) — [vessl_runbook_v0.1.md](vessl_runbook_v0.1.md)
+
+| Step | Command on VESSL |
+| --- | --- |
+| Prep | `EXP_SURG_003_PREP_BOOTSTRAP=1 bash scripts/prep_exp_surg_003_vessl.sh` |
+| Mock | `bash scripts/run_exp_surg_003_mock_vessl.sh` |
+| Isaac drift | `EXP_SURG_003_SKIP_BOOTSTRAP=1 bash scripts/run_exp_surg_003_vessl.sh` |
 | Confirmatory GPU | ⏳ pending · **after pre-reg freeze** |
 | Archived mock→physics GPU | ❌ **cancelled** |
 

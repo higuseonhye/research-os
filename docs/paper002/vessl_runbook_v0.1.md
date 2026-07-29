@@ -1,0 +1,142 @@
+# Paper 002 / EXP-SURG-003 — VESSL runbook v0.1
+
+> **When to use:** Local laptop too slow · RunPod SSH/proxy unstable  
+> **Same infra as Study 2:** [vessl_isaac_setup_v0.1.md](../stage2/vessl_isaac_setup_v0.1.md) · custom Isaac image · `/workspace` mount
+
+---
+
+## Why VESSL for Paper 002
+
+| Path | Needs GPU | Notes |
+| --- | --- | --- |
+| **Mock pilot** (GRU + MPC + arms A/B/C) | No (CPU OK) | ~3–15 min · validates L1 vs L3 separation |
+| **Isaac drift** (persistent target M1) | Yes | ORBIT Reach · trajectory data for WM |
+
+Both run on the **same VESSL workspace** (Isaac image). Mock can start **before** bootstrap finishes if you only need CPU.
+
+---
+
+## One-time workspace (reuse Study 2 if available)
+
+1. [VESSL Cloud](https://cloud.vessl.ai) → **New Workspace**
+2. **GPU:** RTX 4090 24GB (Isaac drift) · or CPU workspace for mock-only
+3. **Mount:** cluster storage at **`/workspace`**
+4. **Image:** `ghcr.io/YOUR_GH_USER/vessl-isaac-sim:4.1.0` ([docker README](../../docker/vessl-isaac-sim-4.1.0/README.md))
+5. **Env:** `ACCEPT_EULA=Y`, `PRIVACY_CONSENT=Y`, `OMNI_KIT_ALLOW_ROOT=1`
+6. **Init script:** `scripts/vessl_workspace_init.sh`
+
+**Billing:** Pause workspace when idle.
+
+---
+
+## Connect
+
+**Jupyter (8888)** → Terminal (recommended):
+
+```bash
+cd /workspace/research-os && git pull origin master
+tmux new -s exp003
+```
+
+Or SSH: `vesslctl workspace ssh <slug>`
+
+---
+
+## Step 1 — Prep
+
+```bash
+# First time on empty volume (15–25 min bootstrap)
+EXP_SURG_003_PREP_BOOTSTRAP=1 bash scripts/prep_exp_surg_003_vessl.sh
+
+# Reuse existing IsaacLab on /workspace
+bash scripts/prep_exp_surg_003_vessl.sh
+```
+
+---
+
+## Step 2 — Mock pilot (milestone 1 · no Isaac)
+
+```bash
+# Smoke (~2–3 min)
+bash scripts/run_exp_surg_003_mock_vessl.sh --smoke
+
+# Full pilot (5 seeds)
+bash scripts/run_exp_surg_003_mock_vessl.sh
+```
+
+**Output:** `experiments/.../exp_surg_003_wm_expansion/results/pilot_v0.1/summary.json`
+
+Check `summary.C_vs_B.delta_prediction_error > 0` before Isaac spend.
+
+---
+
+## Step 3 — Isaac drift (GPU)
+
+```bash
+# Infra smoke included (zero_agent) — MUST PASS
+export EXP_SURG_003_SKIP_BOOTSTRAP=1   # if already bootstrapped
+bash scripts/run_exp_surg_003_vessl.sh
+
+# Or explicit mode
+EXP_SURG_003_MODE=isaac_drift bash scripts/run_exp_surg_003_vessl.sh
+
+# Mock + Isaac in one session
+EXP_SURG_003_MODE=both bash scripts/run_exp_surg_003_vessl.sh
+```
+
+**Tunable env:**
+
+| Var | Default | Meaning |
+| --- | --- | --- |
+| `SEEDS` | `0,1,2,3,4` | Episode seeds |
+| `ONSET` | `20` | Drift start step |
+| `DRIFT_SPEED` | `0.01` | m per step |
+| `DRIFT_AXIS` | `x` | `x` · `y` · `z` |
+| `DRIFT_DURATION` | `40` | Drift steps |
+
+**Output:** `results/isaac_drift_pilot_v0.1/isaac_drift_results.json`
+
+---
+
+## Step 4 — Pull results to Windows
+
+```powershell
+$env:VESSL_SSH = "root@<VESSL_SSH_HOST>"   # Connect tab
+
+bash scripts/copy_exp_surg_003_from_vessl.sh all
+# or: mock · isaac
+```
+
+Or download via Jupyter file browser before **Pause**.
+
+---
+
+## Failure policy
+
+| Symptom | Action |
+| --- | --- |
+| `zero_agent` FAIL (futex / GPU) | Log infra blocker · do **not** retry spiral on same host |
+| `ssh.runpod.io` N/A on VESSL | Use Jupyter :8888 |
+| Mock C ≈ B | Tune drift in `config/pilot_v0.1.yaml` · re-run mock only |
+
+**Never** `pkill -9 -f '/isaac-sim/kit/kit'`.
+
+---
+
+## Scripts map
+
+| Script | Role |
+| --- | --- |
+| `prep_exp_surg_003_vessl.sh` | Clone · pull · optional bootstrap |
+| `run_exp_surg_003_mock_vessl.sh` | CPU mock pilot |
+| `run_exp_surg_003_vessl.sh` | Entry · `EXP_SURG_003_MODE` |
+| `run_exp_surg_003_drift.sh` | Isaac drift (shared RunPod/VESSL) |
+| `copy_exp_surg_003_from_vessl.sh` | scp results home |
+
+---
+
+## Links
+
+- [Confirmatory spec](paper002_confirmatory_spec_v0.1.md)
+- [EXP-SURG-003 README](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md)
+- [Study 2 VESSL setup](../stage2/vessl_isaac_setup_v0.1.md)

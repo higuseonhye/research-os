@@ -27,4 +27,7 @@ git checkout master
 git pull origin master
 
 echo "[OK] VESSL workspace ready: $REPO"
-echo "Next: STUDY2_PREP_BOOTSTRAP=1 bash scripts/prep_study2_selection_ablation_vessl.sh"
+echo "Next (Paper 002 EXP-SURG-003):"
+echo "  EXP_SURG_003_PREP_BOOTSTRAP=1 bash scripts/prep_exp_surg_003_vessl.sh"
+echo "  bash scripts/run_exp_surg_003_mock_vessl.sh --smoke"
+echo "Or Study 2: STUDY2_PREP_BOOTSTRAP=1 bash scripts/prep_study2_selection_ablation_vessl.sh"

@@ -21,7 +21,27 @@ Train static-only WM (W0)
 
 ---
 
-## Quick start (mock pilot — no GPU)
+## Quick start (VESSL — recommended)
+
+See **[VESSL runbook](../../../docs/paper002/vessl_runbook_v0.1.md)**.
+
+```bash
+# Jupyter terminal on VESSL workspace
+cd /workspace/research-os && git pull origin master
+EXP_SURG_003_PREP_BOOTSTRAP=1 bash scripts/prep_exp_surg_003_vessl.sh   # first time only
+
+# Mock pilot (CPU · milestone 1)
+bash scripts/run_exp_surg_003_mock_vessl.sh --smoke
+bash scripts/run_exp_surg_003_mock_vessl.sh
+
+# Isaac drift (GPU · after bootstrap)
+export EXP_SURG_003_SKIP_BOOTSTRAP=1
+bash scripts/run_exp_surg_003_vessl.sh
+```
+
+Pull results locally: `bash scripts/copy_exp_surg_003_from_vessl.sh all`
+
+## Quick start (mock pilot — local · if CPU allows)
 
 ```bash
 # Smoke (~2–3 min CPU)
