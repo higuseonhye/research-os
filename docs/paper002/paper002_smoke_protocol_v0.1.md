@@ -1,5 +1,8 @@
 # Paper 002 — Seed-43 smoke protocol v0.1
 
+> **ARCHIVED** · mock→physics direction · superseded **2026-07-29** · **do not cite or extend**
+> **Current Paper 002:** [WM expansion](paper002_description_wm_expansion_v0.1.md) · [archive index](archive/mock_to_physics/README.md)
+
 > **Purpose:** engineering pipeline validation only · **not** confirmatory  
 > **When:** after v0.3 commit · **before** mock seeds 42–46 consensus export  
 > **Pre-reg:** [paper002_prereg_v0.3.md](paper002_prereg_v0.3.md) §9

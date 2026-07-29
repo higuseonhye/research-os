@@ -1,5 +1,8 @@
 # Paper 002 — Research questions v0.1 (superseded)
 
+> **ARCHIVED** · mock→physics direction · superseded **2026-07-29** · **do not cite or extend**
+> **Current Paper 002:** [WM expansion](paper002_description_wm_expansion_v0.1.md) · [archive index](archive/mock_to_physics/README.md)
+
 > **Superseded by [paper002_rq_v0.2.md](paper002_rq_v0.2.md)**
 
 > **Paper:** CF-validated generative curriculum for informative failure scenarios  

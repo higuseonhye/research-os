@@ -1,5 +1,8 @@
 # Paper 002 — Operational gate v0.1
 
+> **ARCHIVED** · mock→physics direction · superseded **2026-07-29** · **do not cite or extend**
+> **Current Paper 002:** [WM expansion](paper002_description_wm_expansion_v0.1.md) · [archive index](archive/mock_to_physics/README.md)
+
 > **Type:** engineering feasibility · **not** confirmatory hypothesis gate  
 > **When:** after rule-planner Isaac leg · before LLM-planner Isaac leg  
 > **Pre-reg:** [paper002_prereg_v0.3.md](paper002_prereg_v0.3.md) §8

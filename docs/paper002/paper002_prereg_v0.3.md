@@ -1,5 +1,8 @@
 # Paper 002 — Pre-registration v0.3 (frozen)
 
+> **ARCHIVED** · mock→physics pre-reg · confirmatory GPU **cancelled** · tag paper002-prereg-v0.3 history only
+> **Current:** [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md) · [archive index](archive/mock_to_physics/README.md)
+
 > **Status:** **FROZEN** · GPU only after commit  
 > **Supersedes:** v0.2 (desk draft · not executed)  
 > **Positioning:** [paper002_description_v0.1.md](paper002_description_v0.1.md)  

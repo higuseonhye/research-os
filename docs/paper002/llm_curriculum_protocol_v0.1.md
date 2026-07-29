@@ -1,5 +1,8 @@
 # Paper 002 — LLM curriculum protocol v0.1
 
+> **ARCHIVED** · mock→physics direction · superseded **2026-07-29** · **do not cite or extend**
+> **Current Paper 002:** [WM expansion](paper002_description_wm_expansion_v0.1.md) · [archive index](archive/mock_to_physics/README.md)
+
 > **Pre-reg:** [paper002_prereg_v0.1.md](paper002_prereg_v0.1.md)  
 > **Prompt version:** v0.1 · **Schema:** [`llm_curriculum_schema_v0.1.json`](../../experiments/surgical_intelligence/exp_surg_002_dream_curriculum/artifacts/llm_curriculum_schema_v0.1.json)
 

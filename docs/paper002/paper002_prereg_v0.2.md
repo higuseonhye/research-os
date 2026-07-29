@@ -1,5 +1,8 @@
 # Paper 002 — Pre-registration v0.2 (superseded)
 
+> **ARCHIVED** · mock→physics direction · superseded **2026-07-29** · **do not cite or extend**
+> **Current Paper 002:** [WM expansion](paper002_description_wm_expansion_v0.1.md) · [archive index](archive/mock_to_physics/README.md)
+
 > **Superseded by [paper002_prereg_v0.3.md](paper002_prereg_v0.3.md)** · not executed  
 > **Experiment:** EXP-SURG-003 · confirmatory generative curriculum  
 > **Method:** [paper002_method_spec_v0.1.md](paper002_method_spec_v0.1.md)  
