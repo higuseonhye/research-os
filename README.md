@@ -1,6 +1,6 @@
 # research-os
 
-> Public Physical AI research portfolio — Paper 001 recoverability @ fixed S (Tier C) · Paper 002 mock-to-physics validation (pre-reg v0.3 · MS under review)
+> Public Physical AI research portfolio — Paper 001 recoverability @ S (Tier C) · Paper 002 world-model structural expansion (design)
 
 **Public research portfolio** for a focused question in Physical AI: how embodied systems should respond when reality no longer matches their expectations.
 
@@ -9,10 +9,10 @@ This repository contains **promoted research evidence only**—research question
 | | |
 | --- | --- |
 | **Paper 001 (EXP-SURG-001)** | After mismatch @ **S**, how do **intervention choice** and **timing** determine **successful resolution**? |
-| **Paper 002 (EXP-SURG-003)** | Can a **cheap mock rank** predict **physics-level counterfactual value** before Isaac evaluation? |
-| **Study 002 (EXP-SURG-002)** | Pilot: informative-**S** generation (Tier B · archived) |
+| **Paper 002 (EXP-SURG-003)** | Can structural WM expansion beat parameter-only update after unexplained failures? |
+| **Study 002 (EXP-SURG-002)** | Pilot: dream curriculum (Tier B · archived) |
 
-**Latest (2026-07-28):** **Paper 001 complete** (D0–D3 · working paper live). **Paper 002** pre-reg frozen · pre-results PDF v1.2 **under review** · confirmatory GPU not started.
+**Latest (2026-07-29):** **Paper 001** complete. **Paper 002** pivoted to **representation reconstruction** · mock→physics archived · pre-reg draft v0.1.
 
 ---
 
@@ -32,8 +32,8 @@ This repository contains **promoted research evidence only**—research question
 | --- | --- | --- |
 | A | Scaffold / protocol | Same-state CF pipeline · replay OK |
 | B | Smoke / direction | 001A–D smoke atlas · Study2 desk mock |
-| C | Confirmatory | **Paper 001 D0–D3 executed** (n=20) · **Paper 002** pre-reg frozen · GPU pending |
-| — | Pre-results MS | **Paper 002 PDF v1.2 under review** (no confirmatory outcomes) |
+| C | Confirmatory | **Paper 001 D0–D3 executed** (n=20) |
+| — | Design | **Paper 002** WM expansion · pre-reg draft v0.1 |
 
 We have **not** shown a new recoverability **estimator** or clinical deployment.
 
@@ -47,7 +47,7 @@ We have **not** shown a new recoverability **estimator** or clinical deployment.
 | **Paper 001 D1–D3** | B2 **0%** · B3 **85%** · D1 control descriptive | [`study1_proper_v2/summary.json`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/results/study1_proper_v2/summary.json) |
 | **Paper 001 figures** | Profile · baseline overlay · Isaac EE traces | [`docs/paper1/figures/`](docs/paper1/figures/) |
 | **Study 002** | Pilot · mock–Isaac alignment (Tier B) | [`h3_mock_isaac_v0.4`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.4/summary.json) |
-| **Paper 002** | Pre-reg frozen · manuscript under review | [`docs/paper002/`](docs/paper002/) · [`status.md`](docs/paper002/status.md) |
+| **Paper 002** | WM expansion design · mock→physics archived | [`docs/paper002/`](docs/paper002/) · [`status.md`](docs/paper002/status.md) |
 
 Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper 002 [`docs/paper002/status.md`](docs/paper002/status.md)
 

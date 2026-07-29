@@ -1,25 +1,21 @@
-# Informative failures @ fixed S — measurement + selection
+# When reality outruns the model — representation reconstruction
 
 > Live · **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)** · source [`docs/index.md`](../index.md)
 
 ---
 
-**Paper 001** · **Paper 002** · **Study 002** (pilot) · Isaac Sim / ORBIT · same-state CF
+**L0:** Representation reconstruction when failures are structurally unexplained.
 
 | Program | EXP ID | Phase |
 | --- | --- | --- |
-| **Paper 001** | EXP-SURG-001 | Tier C complete · [working paper](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/paper001_recoverability_complete.pdf) |
-| **Paper 002** | EXP-SURG-003 | Pre-reg frozen · MS under review · GPU not started |
+| **Paper 001** | EXP-SURG-001 | Tier C complete · [WP](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/paper001_recoverability_complete.pdf) |
+| **Paper 002** | EXP-SURG-003 | WM expansion · design v0.1 · [hub](https://github.com/higuseonhye/research-os/tree/master/docs/paper002) |
 | **Study 002** | EXP-SURG-002 | Tier B pilot · archived |
 
-**Paper 001 headline:** REPLAN **19/20** vs CONTINUE **0/20** · RQ-B **95%** > **0%** / **85%** → [hub](https://github.com/higuseonhye/research-os/tree/master/docs/paper1) · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/status.md)
+**Paper 002:** hidden `target_mode` · No / Parameter / Structural arms · Ep1→Ep2 · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/status.md)
 
-**Paper 002:** mock-to-physics · not LLM curriculum → [PDF](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_pre_results_v1.2.pdf) · [status](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/status.md)
-
-**Not claimed:** estimator · clinical deployment · Paper 002 confirmatory outcomes.
-
-Open to research & evaluation roles · Korea · Toronto / remote Canada · [research-os](https://github.com/higuseonhye/research-os)
+[research-os](https://github.com/higuseonhye/research-os) · [NAMING.md](https://github.com/higuseonhye/research-os/blob/master/docs/NAMING.md)
 
 ---
 
-*Updated 2026-07-28 · sync with [`docs/index.md`](../index.md)*
+*Updated 2026-07-29 · sync with [`docs/index.md`](../index.md)*

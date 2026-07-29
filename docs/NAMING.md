@@ -1,17 +1,24 @@
 # Naming guide — research program
 
-> **Updated:** 2026-07-28 · Independent personal research
+> **Updated:** 2026-07-29 · Independent personal research
 
 ---
 
-## Frozen (do not renumber)
+## L0 (program center)
+
+> **When reality cannot be explained by the current model, how does intelligence reconfigure its representation?**
+
+**Recoverability** = measurement window · not the program center.
+
+---
+
+## Completed / archived
 
 | Label | Experiment ID | Role | Status |
 | --- | --- | --- | --- |
-| **Paper 001** | **EXP-SURG-001** | Measure recoverability profiles @ fixed **S** | ✅ Tier C complete · working paper live |
-| **Study 002** | **EXP-SURG-002** | Dream curriculum **pilot** (Tier B) | ✅ Phase 1–2 · **archived** · feeds Paper 002 |
-
-**Do not call Paper 001 “Study 001”.** Config paths use legacy `study1_*`; public brand = **Paper 001 / EXP-SURG-001**.
+| **Paper 001** | **EXP-SURG-001** | Recoverability profiles @ fixed **S** (optional credential) | ✅ Tier C complete |
+| **Study 002** | **EXP-SURG-002** | Dream curriculum **pilot** (Tier B) | ✅ archived |
+| **Paper 002 (mock→physics)** | EXP-SURG-003 | Mock→Isaac selection | ❌ **archived** · [archive](paper002/archive/mock_to_physics/) |
 
 ---
 
@@ -19,22 +26,25 @@
 
 | Label | Experiment ID | Role | Status |
 | --- | --- | --- | --- |
-| **Paper 002** | **EXP-SURG-003** | **Mock-to-physics validation** for informative mismatch selection | 🔄 pre-reg v0.3 frozen |
-| **Paper 003** | **EXP-WM-MISMATCH-001** (+ policy) | Latent mismatch · response agent/RL | design · after Paper 002 |
+| **Paper 002** | **EXP-SURG-003** | **Structural WM expansion** · hidden mode minimal cell | 🔄 design v0.1 |
+| **Paper 003+** | TBD | Missing relations · human representation · surgical exceptions | design |
+
+Paper 001 **not required** as logical prerequisite for Paper 002.
 
 ---
 
-## Paper 002 scope (confirmatory · not full loop)
+## Paper 002 scope (WM expansion v0.1)
 
 | Component | In Paper 002 | Deferred |
 | --- | --- | --- |
-| Gaussian + diffusion dreamers | ✅ | — |
-| Rule + **LLM** planner @ Isaac | ✅ | — |
-| Mock→Isaac rank @ n=40 | ✅ | — |
-| Latent mismatch trigger | — | Paper 003 |
-| RL response selection | — | Paper 003 |
-
-Paper 001 remains the **eval ruler** for all arms.
+| Hidden `target_mode` (static / drift) | ✅ | — |
+| Three arms: none / parameter / structural | ✅ | — |
+| Ep1 fail · Ep2 novel drift | ✅ | — |
+| Expansion gate (parsimony) | ✅ | — |
+| Reality \| Belief figures | ✅ | — |
+| Missing causal variables | — | Paper 003+ |
+| Human-in-the-loop expansion | — | later |
+| Mock→physics curriculum | — | archived |
 
 ---
 
@@ -42,13 +52,12 @@ Paper 001 remains the **eval ruler** for all arms.
 
 | Term | Means | Does **not** mean |
 | --- | --- | --- |
-| **`docs/stage2/`** | Study 002 public docs | Paper 002 · program Stage 2 |
-| **Stage 2 (lit sprint)** | Paper 001 prior-work phase (done) | Study 002 |
-| **Paper 2 (timing)** | Deferred timing-regret paper | Paper 002 |
-| **L1/L2/L3 (Agentic WM)** | Predictor / simulator / evolver levels | Study phase numbers |
+| **`docs/stage2/`** | Study 002 public docs | Paper 002 body |
+| **Parameter update** | Re-estimate within fixed representation | Structural expansion |
+| **Structural expansion** | Add variable · mode · relation | Mock rank transfer |
 
 ---
 
 ## One-line program
 
-> Paper 001 measures @ **S** · **Paper 002** validates mock→Isaac selection · **Paper 003** mismatch + response loop.
+> When failures are structurally unexplained, expand representation · validate on novel encounters · recoverability measures whether it helped.

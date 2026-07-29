@@ -1,16 +1,18 @@
-# Informative failures @ fixed S — measurement + selection
+# When reality outruns the model — representation reconstruction
 
 Research portfolio · [GitHub](https://github.com/higuseonhye/research-os)
 
 ---
 
-**Paper 001 (EXP-SURG-001) — measure @ S:** Do intervention-conditioned recoverability profiles separate under same-state counterfactual evaluation?
+**L0:** When reality cannot be explained by the current model, how does intelligence reconfigure its representation?
 
-**Paper 002 (EXP-SURG-003) — select @ S:** Can a cheap mock rank predict physics-level counterfactual value before full Isaac evaluation?
+**Paper 001 (EXP-SURG-001):** Recoverability @ fixed **S** — complete · optional credential · [hub](paper1/README.md)
 
-**Study 002 (EXP-SURG-002):** Dream-curriculum pilot · Tier B · archived · feeds Paper 002 design.
+**Paper 002 (EXP-SURG-003):** Structural world-model expansion from unexplained failures — [hub](paper002/README.md) · design v0.1
 
-Isaac Sim 4.1 · ORBIT Reach · same-state CF replay.
+**Study 002 (EXP-SURG-002):** Tier B pilot · archived · [stage2/](stage2/README.md)
+
+Isaac Sim 4.1 · ORBIT Reach · 3D embodied sim.
 
 ---
 
@@ -19,14 +21,14 @@ Isaac Sim 4.1 · ORBIT Reach · same-state CF replay.
 | Program | EXP ID | Phase |
 | --- | --- | --- |
 | **Paper 001** | EXP-SURG-001 | Tier C complete · [working paper](paper1/paper001_recoverability_complete.pdf) |
-| **Paper 002** | EXP-SURG-003 | Pre-reg frozen · MS under review · GPU not started |
+| **Paper 002** | EXP-SURG-003 | WM expansion design · pre-reg draft · GPU pending |
 | **Study 002** | EXP-SURG-002 | Tier B pilot · archived |
 
-**Paper 001 headline (D0 · n=20):** REPLAN **19/20** vs CONTINUE **0/20** @ 6 cm + occlusion · RQ-B menu **95%** > rule baselines **0%** / **85%**.
+**Paper 001 headline (D0 · n=20):** REPLAN **19/20** vs CONTINUE **0/20** → [status](paper1/status.md)
 
-Details · figures · JSON → [Paper 001 hub](paper1/README.md) · [status](paper1/status.md)
+**Paper 002 (now):** hidden motion mode · parameter vs structural expansion · Ep1/Ep2 → [status](paper002/status.md)
 
-**Paper 002:** mock-to-physics validation — not LLM curriculum → [pre-results PDF](paper002/paper002_pre_results_v1.2.pdf) · [status](paper002/status.md)
+Mock→physics design → [archived](paper002/archive/mock_to_physics/README.md)
 
 ---
 
@@ -37,15 +39,15 @@ Details · figures · JSON → [Paper 001 hub](paper1/README.md) · [status](pap
 | **Paper 001** | [docs/paper1/](paper1/README.md) |
 | **Paper 002** | [docs/paper002/](paper002/README.md) |
 | **Study 002** | [docs/stage2/](stage2/README.md) |
-| **Repo** | [github.com/higuseonhye/research-os](https://github.com/higuseonhye/research-os) |
 | **Naming** | [NAMING.md](NAMING.md) |
+| **Repo** | [github.com/higuseonhye/research-os](https://github.com/higuseonhye/research-os) |
 
 ---
 
-**Not claimed:** learned recoverability estimator · clinical deployment · confirmatory Paper 002 outcomes.
+**Not claimed:** general WM expansion solved · clinical deployment · mock→physics confirmatory (cancelled).
 
 Open to research & evaluation roles · Korea · Toronto / remote Canada · [@higuseonhye](https://github.com/higuseonhye)
 
 ---
 
-*Updated 2026-07-28*
+*Updated 2026-07-29*

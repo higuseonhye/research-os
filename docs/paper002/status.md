@@ -1,8 +1,8 @@
 # Paper 002 — Status (public)
 
-> **Updated:** 2026-07-28  
-> **Pre-reg tag:** `paper002-prereg-v0.3` · **Config:** `sandbox_v0.4.yaml`  
-> **Manuscript:** [`paper002_pre_results_v1.2.pdf`](paper002_pre_results_v1.2.pdf)
+> **Updated:** 2026-07-29  
+> **Direction:** world-model **structural expansion** from unexplained failures  
+> **Previous direction:** mock→physics · [archived](archive/mock_to_physics/README.md)
 
 ---
 
@@ -10,39 +10,32 @@
 
 | Phase | Status |
 | --- | --- |
-| Protocol design | ✅ frozen · tag `paper002-prereg-v0.3` |
-| Pre-results manuscript (PDF v1.2) | 🔄 **under review** · not confirmatory results |
-| Confirmatory mock (42–46) | ⏳ pending |
-| Confirmatory Isaac GPU | ⏳ pending |
-| Results / venue | ⏳ pending |
+| Program pivot | ✅ 2026-07-29 · core question first |
+| Description v0.1 | ✅ [paper002_description_wm_expansion_v0.1.md](paper002_description_wm_expansion_v0.1.md) |
+| Pre-reg v0.1 | 🔄 draft · [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md) |
+| Engineering spike (drift mode) | ⏳ pending |
+| Confirmatory GPU | ⏳ pending · **after pre-reg freeze** |
+| Archived mock→physics GPU | ❌ **cancelled** |
 
 ---
 
 ## Honest one-liner
 
-> Can a **continuous mock score** rank exported occlusion mismatches by **same-state counterfactual value** in Isaac — on the **rule-planner export set** — before spending GPU on every candidate?
+> Can an agent detect **structural** (not parametric) model inadequacy from persistent unexplained failure, **expand** its representation with a hidden motion mode, and improve prediction and action on a **novel related** encounter?
 
-Not claimed: policy learning · LLM curriculum SOTA · clinical deployment · global proxy validity without middle tier.
-
----
-
-## Artifact tiers
-
-| Tier | Artifact | Label |
-| --- | --- | --- |
-| A | Pre-reg v0.3 · method · analysis · code | Frozen protocol |
-| B | Study 002 pilot (Phase 1–2) | Archived · informs design |
-| — | **PDF v1.2** | **Pre-results discussion draft · under review** |
-| C | Confirmatory Isaac outcomes | **Not started** |
+Recoverability scores outcome improvement · **representation reconstruction** is the object.
 
 ---
 
-## Review boundary (2026-07-28)
+## Archived (do not execute)
 
-While **under review**, the PDF may change (prose · related work · §7 interpretation).  
-**Frozen until GPU:** H1–H3 criteria · export n=40 · consensus seeds 42–46 · operational gate thresholds · mock/Isaac score definitions.
+| Item | Note |
+| --- | --- |
+| Pre-reg v0.3 · tag `paper002-prereg-v0.3` | Historical |
+| MS PDF v1.2 | Abandoned · kept for record |
+| Mock 42–46 · Isaac H1–H3 confirmatory | Cancelled |
 
-Changes to frozen protocol → new pre-reg tag (e.g. v0.4).
+→ [archive/mock_to_physics/](archive/mock_to_physics/README.md)
 
 ---
 
@@ -51,6 +44,6 @@ Changes to frozen protocol → new pre-reg tag (e.g. v0.4).
 | Resource | Path |
 | --- | --- |
 | Hub | [README.md](README.md) |
-| Pre-reg | [paper002_prereg_v0.3.md](paper002_prereg_v0.3.md) |
-| Paper 001 ruler | [../paper1/status.md](../paper1/status.md) |
+| Paper 001 (parallel) | [../paper1/status.md](../paper1/status.md) |
 | Study 002 pilot | [../stage2/README.md](../stage2/README.md) |
+| Program naming | [../NAMING.md](../NAMING.md) |
