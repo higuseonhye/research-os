@@ -41,13 +41,24 @@ bash scripts/run_exp_surg_003_vessl.sh
 
 Pull results locally: `bash scripts/copy_exp_surg_003_from_vessl.sh all`
 
+## Pilot v0.2 tuning (local)
+
+| Change | Why |
+| --- | --- |
+| Arm **D** (oracle F1) | Identifiability ceiling |
+| `behavior_policy: scripted` | Pilot isolates WM prediction · shared task success |
+| MPC: greedy + observed target | For confirmatory `behavior_policy: mpc` |
+| Stronger drift · more expansion | Widen C vs B on Ep2 PE |
+
+**Latest local 5-seed (v0.2):** Ep2 success 100% all arms · C vs B ΔPE ≈ +0.001 (~0.8%) · **Go gate not passed** · tune further.
+
 ## Quick start (mock pilot — local · if CPU allows)
 
 ```bash
 # Smoke (~2–3 min CPU)
 python scripts/run_exp_surg_003_pilot.py --smoke
 
-# Pilot (5 seeds · arms A/B/C)
+# Pilot (5 seeds · arms A/B/C/D)
 python scripts/run_exp_surg_003_pilot.py --config experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/pilot_v0.1.yaml
 ```
 

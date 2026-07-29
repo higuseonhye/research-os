@@ -1,34 +1,46 @@
 {
   "experiment": "EXP-SURG-003-pilot-mock",
   "tier": "pilot",
-  "timestamp_utc": "2026-07-29T07:19:09.239268+00:00",
+  "timestamp_utc": "2026-07-29T09:19:42.681046+00:00",
   "summary": {
     "A": {
-      "n_ep2": 2,
-      "mean_prediction_error_h10": 0.2348222442104348,
-      "success_rate_ep2": 0.0,
-      "mean_final_distance_ep2": 1.0630067769716454,
-      "success_rate_static": 0.0,
-      "gate_fire_rate": 1.0
+      "n_ep2": 5,
+      "mean_prediction_error_h10": 0.1624068979085,
+      "success_rate_ep2": 1.0,
+      "mean_final_distance_ep2": 0.009152093108974737,
+      "success_rate_static": 1.0,
+      "gate_fire_rate": 0.0
     },
     "B": {
-      "n_ep2": 2,
-      "mean_prediction_error_h10": 0.23716969181384356,
-      "success_rate_ep2": 0.0,
-      "mean_final_distance_ep2": 1.2054986833391097,
-      "success_rate_static": 0.0,
-      "gate_fire_rate": 1.0
+      "n_ep2": 5,
+      "mean_prediction_error_h10": 0.1631654018730941,
+      "success_rate_ep2": 1.0,
+      "mean_final_distance_ep2": 0.009152093108974737,
+      "success_rate_static": 1.0,
+      "gate_fire_rate": 0.0
     },
     "C": {
-      "n_ep2": 2,
-      "mean_prediction_error_h10": 0.2224716571558799,
-      "success_rate_ep2": 0.0,
-      "mean_final_distance_ep2": 1.2107494270586394,
-      "success_rate_static": 0.0,
-      "gate_fire_rate": 1.0
+      "n_ep2": 5,
+      "mean_prediction_error_h10": 0.1618610576893711,
+      "success_rate_ep2": 1.0,
+      "mean_final_distance_ep2": 0.009152093108974737,
+      "success_rate_static": 1.0,
+      "gate_fire_rate": 0.0
+    },
+    "D": {
+      "n_ep2": 5,
+      "mean_prediction_error_h10": 0.16041956256863404,
+      "success_rate_ep2": 1.0,
+      "mean_final_distance_ep2": 0.009152093108974737,
+      "success_rate_static": 1.0,
+      "gate_fire_rate": 0.0
     },
     "C_vs_B": {
-      "delta_prediction_error": 0.014698034657963654,
+      "delta_prediction_error": 0.0013043441837230219,
+      "delta_success_rate": 0.0
+    },
+    "C_vs_D": {
+      "delta_prediction_error": -0.0014414951207370463,
       "delta_success_rate": 0.0
     }
   }

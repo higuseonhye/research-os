@@ -22,10 +22,15 @@ class PilotConfig:
     success_tol: float = 0.02
     pretrain_static_episodes: int = 40
     pretrain_steps: int = 250
-    repair_steps: int = 120
-    expansion_steps: int = 280
+    repair_steps: int = 200
+    expansion_steps: int = 400
     K_repairs: int = 3
     prediction_horizon: int = 10
+    mpc_horizon: int = 10
+    mpc_candidates: int = 17
+    ep1_velocity: tuple[float, float] = (0.012, 0.0)
+    ep2_velocity: tuple[float, float] = (0.0, 0.007)
+    behavior_policy: str = "scripted"  # scripted | mpc — pilot uses scripted for task success
     gate: GateThresholds = field(default_factory=GateThresholds)
     device: str = "cpu"
     seed: int = 0
@@ -74,27 +79,37 @@ def _run_episode_mpc(
     obs_seq = [obs.copy()]
     act_seq: list[np.ndarray] = []
     while not env.done:
-        action, state = mpc_action(wm, obs, state, force_expert=force_expert)
+        if cfg.behavior_policy == "scripted":
+            action = env.scripted_action_toward_observed_target()
+        else:
+            action, state = mpc_action(
+                wm,
+                obs,
+                state,
+                n_candidates=cfg.mpc_candidates,
+                horizon=cfg.mpc_horizon,
+                force_expert=force_expert,
+            )
         obs, _, done, info = env.step(action)
         act_seq.append(action.copy())
         obs_seq.append(obs.copy())
     return obs_seq[:-1], act_seq, bool(info.get("success", False)), float(info["distance"])
 
 
-def _ep1_drift_spec(onset: int = 20) -> DriftSpec:
+def _ep1_drift_spec(cfg: PilotConfig, onset: int = 20) -> DriftSpec:
     return DriftSpec(
         mode=TargetMode.DRIFT,
         onset_step=onset,
-        velocity=np.array([0.012, 0.0], dtype=np.float64),
+        velocity=np.array(cfg.ep1_velocity, dtype=np.float64),
         duration_steps=35,
     )
 
 
-def _ep2_drift_spec(ep1: DriftSpec) -> DriftSpec:
+def _ep2_drift_spec(cfg: PilotConfig, ep1: DriftSpec) -> DriftSpec:
     return DriftSpec(
         mode=TargetMode.DRIFT,
         onset_step=max(8, ep1.onset_step - 8),
-        velocity=np.array([0.0, 0.010], dtype=np.float64),
+        velocity=np.array(cfg.ep2_velocity, dtype=np.float64),
         duration_steps=ep1.duration_steps,
     )
 
@@ -114,8 +129,8 @@ def run_arm(
     wm_static: StaticWorldModel,
 ) -> tuple[list[EpisodeResult], dict[str, Any]]:
     """Run full protocol for one arm on one seed."""
-    ep1_drift = _ep1_drift_spec()
-    ep2_drift = _ep2_drift_spec(ep1_drift)
+    ep1_drift = _ep1_drift_spec(cfg)
+    ep2_drift = _ep2_drift_spec(cfg, ep1_drift)
     target_ep1 = _target_for_seed(seed, ep2=False)
     target_ep2 = _target_for_seed(seed, ep2=True)
 
@@ -157,7 +172,8 @@ def run_arm(
         wm_eval = ModularWorldModel(wm_b.clone_f0(), device=cfg.device)
         wm_eval.train_expansion(np.asarray(ep1_obs), np.asarray(ep1_act), steps=cfg.expansion_steps)
     elif arm == "D":
-        wm_eval = wm_probe
+        wm_eval = ModularWorldModel(wm_b.clone_f0(), device=cfg.device)
+        wm_eval.train_expansion(np.asarray(ep1_obs), np.asarray(ep1_act), steps=cfg.expansion_steps)
     else:
         raise ValueError(f"unknown arm {arm}")
 
@@ -224,7 +240,7 @@ def run_gate_controls(cfg: PilotConfig, wm: StaticWorldModel, seed: int) -> list
                 duration_steps=5,
             ),
         ),
-        ("drift_M1", _ep1_drift_spec()),
+        ("drift_M1", _ep1_drift_spec(cfg)),
     ]
     out: list[dict[str, Any]] = []
     for name, spec in controls:
@@ -291,6 +307,12 @@ def _aggregate(results: list[EpisodeResult], arms: list[str]) -> dict[str, Any]:
             "delta_prediction_error": summary["B"]["mean_prediction_error_h10"]
             - summary["C"]["mean_prediction_error_h10"],
             "delta_success_rate": summary["C"]["success_rate_ep2"] - summary["B"]["success_rate_ep2"],
+        }
+    if "C" in summary and "D" in summary:
+        summary["C_vs_D"] = {
+            "delta_prediction_error": summary["D"]["mean_prediction_error_h10"]
+            - summary["C"]["mean_prediction_error_h10"],
+            "delta_success_rate": summary["C"]["success_rate_ep2"] - summary["D"]["success_rate_ep2"],
         }
     return summary
 

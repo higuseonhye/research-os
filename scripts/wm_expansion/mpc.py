@@ -11,12 +11,12 @@ def mpc_action(
     wm: StaticWorldModel | ModularWorldModel,
     obs: np.ndarray,
     state,
-    n_candidates: int = 9,
-    horizon: int = 5,
+    n_candidates: int = 17,
+    horizon: int = 10,
     force_expert: int | None = None,
 ) -> tuple[np.ndarray, object]:
-    """Pick action minimizing predicted distance to observed target over horizon."""
-    candidates = _action_candidates(n_candidates)
+    """Pick action minimizing predicted EE distance to **observed** target over horizon."""
+    candidates = _action_candidates(obs, n_candidates)
     best_cost = float("inf")
     best_a = candidates[0]
     best_state = state
@@ -30,9 +30,15 @@ def mpc_action(
     return best_a, best_state
 
 
-def _action_candidates(n: int) -> list[np.ndarray]:
-    angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
-    return [np.array([np.cos(t), np.sin(t)], dtype=np.float64) for t in angles]
+def _action_candidates(obs: np.ndarray, n: int) -> list[np.ndarray]:
+    """Greedy-to-observed-target first, then evenly spaced directions."""
+    out: list[np.ndarray] = [_greedy_toward_target(obs)]
+    if n <= 1:
+        return out
+    angles = np.linspace(0, 2 * np.pi, n - 1, endpoint=False)
+    for t in angles:
+        out.append(np.array([np.cos(t), np.sin(t)], dtype=np.float64))
+    return out
 
 
 def _rollout_cost(
@@ -52,7 +58,8 @@ def _rollout_cost(
             pred, cur_state, _, _ = wm.predict_step(cur_obs, action, cur_state, force_expert=force_expert)
         else:
             pred, cur_state, _ = wm.predict_step(cur_obs, action, cur_state)
-        target = pred[4:6]
+        # Plan toward observed target (claim path), not WM-predicted target position.
+        target = cur_obs[4:6]
         ee = pred[0:2]
         total += float(np.linalg.norm(ee - target))
         cur_obs = pred

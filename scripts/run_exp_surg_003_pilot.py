@@ -42,14 +42,22 @@ def load_yaml(path: Path) -> dict:
 def cfg_from_yaml(data: dict) -> PilotConfig:
     gate = data.get("gate", {})
     pilot = data.get("pilot", {})
+    drift = data.get("drift", {})
+    ep1_v = drift.get("ep1", {}).get("velocity", [0.012, 0.0])
+    ep2_v = drift.get("ep2", {}).get("velocity", [0.0, 0.007])
     return PilotConfig(
         max_steps=int(pilot.get("max_steps", 80)),
         pretrain_static_episodes=int(pilot.get("pretrain_static_episodes", 40)),
         pretrain_steps=int(pilot.get("pretrain_steps", 250)),
-        repair_steps=int(pilot.get("repair_steps", 120)),
-        expansion_steps=int(pilot.get("expansion_steps", 280)),
+        repair_steps=int(pilot.get("repair_steps", 200)),
+        expansion_steps=int(pilot.get("expansion_steps", 400)),
         K_repairs=int(pilot.get("K_repairs", 3)),
         prediction_horizon=int(pilot.get("prediction_horizon", 10)),
+        mpc_horizon=int(pilot.get("mpc_horizon", 10)),
+        mpc_candidates=int(pilot.get("mpc_candidates", 17)),
+        ep1_velocity=(float(ep1_v[0]), float(ep1_v[1])),
+        ep2_velocity=(float(ep2_v[0]), float(ep2_v[1])),
+        behavior_policy=str(pilot.get("behavior_policy", "scripted")),
         gate=GateThresholds(
             tau_error=float(gate.get("tau_error", 0.015)),
             tau_autocorr=float(gate.get("tau_autocorr", 0.35)),
@@ -66,7 +74,7 @@ def main() -> None:
     parser.add_argument("--config", type=Path, default=DEFAULT_CFG)
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--seeds", type=str, default="0,1,2,3,4")
-    parser.add_argument("--arms", type=str, default="A,B,C")
+    parser.add_argument("--arms", type=str, default="A,B,C,D")
     parser.add_argument("--smoke", action="store_true", help="Fast smoke: 2 seeds, reduced training")
     parser.add_argument("--device", type=str, default="")
     args = parser.parse_args()
@@ -82,8 +90,10 @@ def main() -> None:
     if args.smoke:
         cfg.pretrain_static_episodes = 8
         cfg.pretrain_steps = 40
-        cfg.repair_steps = 25
-        cfg.expansion_steps = 50
+        cfg.repair_steps = 40
+        cfg.expansion_steps = 80
+        cfg.mpc_horizon = 8
+        cfg.mpc_candidates = 13
         cfg.gate.tau_error = 0.008
         cfg.gate.tau_delta_nll = 0.0005
         seeds = [0, 1]
