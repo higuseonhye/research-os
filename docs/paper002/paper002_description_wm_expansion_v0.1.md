@@ -13,11 +13,13 @@
 
 ## Central question
 
-> **Can unexplained failure trigger selection of a more adequate world-model architecture (not parameter tuning alone), improving prediction and control on novel related encounters without nominal regression?**
+> **Can persistent, structured task failures provide evidence that the current dynamics model class is inadequate — and does selecting a prepared structural expansion operator improve prediction and control on novel related encounters beyond parameter-only repair, without nominal regression?**
 
-Paper 002 v0.1 tests **one** L3 operator: **add dynamics expert M₁ (drift)** vs L1 parameter update on fixed M₀.
+Paper 002 v0.1 tests **one** adequacy decision: **L1 parameter repair insufficient** → invoke **L3** operator (add dynamics expert M₁ + gating) vs L1 vs no update.
 
 Recoverability is a **measurement window**, not the program center.
+
+**Related work:** [paper002_related_work_v0.2.md](paper002_related_work_v0.2.md) · closest prior: TMoW · MuSix · Worldscape-MoE · LMC.
 
 ---
 
@@ -76,16 +78,19 @@ Avoid pure memorization of Ep1.
 
 ---
 
-## Expansion gate (parsimony)
+## Expansion gate (parsimony · model-adequacy test)
 
-Do **not** expand on first failure. Allow expansion only when:
+Do **not** expand on first failure. Expand only when evidence supports **structural inadequacy** (not distribution shift or uncertainty alone):
 
 ```text
-persistent structured residual
-+ multiple parameter updates fail
-+ errors cluster by latent condition
-→ candidate structural gap
+structured residual persists
+after K parameter-update attempts
++ errors cluster by provisional mode / hidden condition
++ not absorbed by L1 repair on Ep1
+→ candidate structural gap → invoke prepared L3 operator
 ```
+
+Three-way distinction (method text): distribution shift · epistemic uncertainty · **structural inadequacy** (Paper 002 target).
 
 ---
 
@@ -106,9 +111,9 @@ persistent structured residual
 
 ## Defensible claim (first paper)
 
-> Under a controlled hidden-mode setting, **failure-driven model-class expansion** (not latent relabeling alone) improves **prediction and control** on novel related encounters beyond parameter-only adaptation — with latent reorganization as **observed mechanism**, not primary claim.
+> **Failure-conditioned model-adequacy testing:** persistent structured task failures justify switching from parameter repair to a **prepared** model-class expansion operator, improving **prediction and control** on novel related encounters beyond parameter-only adaptation — with latent reorganization as **observed mechanism**, not primary claim.
 
-**Not claimed:** latent representation learning SOTA · arbitrary z invention without behavior gain.
+**Not claimed:** adding experts alone (TMoW · Worldscape-MoE precedent) · latent representation learning SOTA · arbitrary z invention without behavior gain · unconstrained causal ontology invention.
 
 ---
 
@@ -123,7 +128,7 @@ E. Next encounter — mode predicted · action changed
 F. Evaluation — improved prediction/recovery · no static regression
 ```
 
-Layout: **Reality | Agent belief** · mode/expert node after expansion · **Latent before/after** (Fig 4 · supporting) · **Behavior metrics** (primary).
+Layout: **Primary results table** (L1 repair failure on Ep1 → L3 advantage on Ep2 · Layer 3) · **Reality | Agent belief** · **Latent before/after** (Fig 4 · supporting · mechanistic secondary).
 
 ---
 
@@ -146,5 +151,7 @@ Paper 001 **not required** as logical prerequisite.
 | Doc | Path |
 | --- | --- |
 | Pre-reg skeleton | [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md) |
+| Related work | [paper002_related_work_v0.2.md](paper002_related_work_v0.2.md) |
+| Industry context | [paper002_industry_context_v0.1.md](paper002_industry_context_v0.1.md) |
 | Status | [status.md](status.md) |
 | Archive (mock→physics) | [archive/mock_to_physics/](archive/mock_to_physics/) |

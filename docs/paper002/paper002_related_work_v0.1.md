@@ -1,5 +1,11 @@
 # Paper 002 — Related work v0.1
 
+> **ARCHIVED** · mock→physics direction · superseded by [v0.2 (WM expansion)](paper002_related_work_v0.2.md) · 2026-07-29
+
+---
+
+# Paper 002 — Related work v0.1 (mock→physics)
+
 > **Positioning doc** · cite in Introduction §4 · not a lit review draft  
 > **Core wedge:** proxy validation before physics · not policy-training curriculum
 

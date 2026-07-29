@@ -11,6 +11,7 @@
 | Phase | Status |
 | --- | --- |
 | Program pivot | ✅ 2026-07-29 · core question first |
+| Related work v0.2 | ✅ TMoW · MuSix · Worldscape-MoE · LMC · adequacy wedge |
 | Description v0.1 | ✅ [paper002_description_wm_expansion_v0.1.md](paper002_description_wm_expansion_v0.1.md) |
 | Pre-reg v0.1 | 🔄 draft · [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md) |
 | Engineering spike (drift mode) | ⏳ pending |
@@ -21,9 +22,9 @@
 
 ## Honest one-liner
 
-> Can an agent detect **structural** (not parametric) model inadequacy from persistent unexplained failure, **reconstruct** its world-model system (e.g. add dynamics expert + gating — not z relabeling alone), and improve prediction and action on a **novel related** encounter?
+> Can **persistent structured task failures** — after **K failed parameter repairs** — justify **structural inadequacy** and does **prepared L3 expansion** beat L1 on Ep2 novel drift without nominal regression?
 
-Recoverability scores outcome improvement · **world-model reconstruction** is the object · latent change is supporting evidence.
+Novelty = **whether/when expansion is warranted** · not expert addition alone (TMoW · Worldscape-MoE precedent).
 
 ---
 

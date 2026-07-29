@@ -7,9 +7,17 @@
 
 ## 1. Hypotheses
 
-### H1 — Structural gap detectable
+### H1 — Structural inadequacy detectable (not uncertainty alone)
 
-Persistent structured residual after ≥ *K* parameter-update attempts on Ep1 clusters by true latent mode (drift vs static mis-specification).
+On Ep1, evidence supports **structural inadequacy** (third category — distinct from distribution shift and epistemic uncertainty):
+
+```text
+structured residual persists after ≥ K parameter-update attempts
+AND clusters by provisional hidden mode (drift vs static mis-specification)
+AND is not absorbed by L1 repair
+```
+
+Latent cluster separation is **diagnostic / mechanistic**, not the expansion trigger by itself.
 
 ### H2 — Expansion beats parameter update (Ep2 · novel drift)
 
@@ -44,13 +52,18 @@ Agent fixed for v0.1 · response menu TBD (CONTINUE / REPLAN minimum).
 
 ---
 
-## 3. Expansion gate (pre-specified)
+## 3. Expansion gate (pre-specified · model-adequacy test)
 
-Expand only if all hold on Ep1:
+Expand only if **all** hold on Ep1:
 
-1. Residual norm > τ for ≥ *M* steps after parameter update  
-2. ≥ *K* parameter updates attempted  
-3. Residual variance explained by provisional mode cluster > baseline (exploratory threshold TBD)
+1. ≥ *K* parameter-update attempts on M₀ (L1 repair) attempted  
+2. Structured residual norm > τ for ≥ *M* consecutive steps **after each** repair attempt  
+3. Residual variance explained by provisional mode cluster > baseline (TBD threshold at freeze)  
+4. Prepared L3 expert explains held-out Ep1 trajectories better than L1-only (exploratory diagnostic · TBD)
+
+**Not sufficient alone:** single-step high error · epistemic uncertainty spike · input OOD without failed repair.
+
+Three-way taxonomy (method): distribution shift · epistemic uncertainty · **structural inadequacy**.
 
 ---
 
@@ -64,14 +77,18 @@ Same hidden structure: **drifting mode** family.
 
 ## 5. Outcomes
 
-| ID | Metric | Analysis |
-| --- | --- | --- |
-| O1 | Next-state prediction error (Ep2) | Primary · arm comparison |
-| O2 | Mismatch detection latency | Secondary |
-| O3 | Response selection accuracy | Secondary |
-| O4 | Recoverability / success (Ep2) | Primary co-endpoint |
-| O5 | Repeated failure rate | Secondary |
-| O6 | Static-condition success (guardrail) | H3 |
+**Primary presentation order:** Ep1 L1 repair failure diagnostics → Ep2 arm comparison (Layer 3) → latent panel (Fig 4 · supporting).
+
+| ID | Metric | Role | Analysis |
+| --- | --- | --- | --- |
+| O1 | Next-state prediction error (Ep2) | **Primary** | arm comparison |
+| O4 | Recoverability / success (Ep2) | **Primary co-endpoint** | arm comparison |
+| O2 | Mismatch detection latency | Secondary | arm comparison |
+| O3 | Response selection accuracy | Secondary | arm comparison |
+| O5 | Repeated failure rate | Secondary | arm comparison |
+| O6 | Static-condition success (guardrail) | H3 | non-inferiority |
+| O7 | Ep1 L1 residual after *K* repairs | H1 diagnostic | descriptive |
+| O8 | Latent cluster separation (before/after) | **Mechanistic secondary · exploratory** | not expansion trigger |
 
 ---
 
@@ -101,6 +118,23 @@ Permutation / seed holdout: TBD at freeze.
 - [ ] Parameter update algorithm (EKF / heuristic / bounded LS)  
 - [ ] Structural expansion operator (hand-designed vs search over finite mode set)  
 - [ ] Recoverability definition (Paper 001 fork reuse vs binary success)  
+- [ ] O8 latent logging spec (see Appendix A)
+
+---
+
+## Appendix A — Latent logging (mechanistic · exploratory)
+
+> **Status:** secondary endpoint · **not** primary claim · **not** expansion trigger
+
+| Field | Spec |
+| --- | --- |
+| **When logged** | End Ep1 (pre-expansion) · post-expansion · end Ep2 |
+| **What** | Encoder embeddings z_t · optional 2D projection (UMAP/t-SNE · fixed seed) |
+| **Fig 4 use** | Before: single cluster · After: mode-separated clusters (qualitative + optional silhouette) |
+| **Analysis tier** | Exploratory · descriptive · pairs with O1/O4 · never standalone success criterion |
+| **Pre-reg rule** | Cluster separation **cannot** gate expansion · gate uses O7 residual diagnostics only |
+
+Diffusion future generator: **extension arm only** · excluded from confirmatory v0.1 (see [related work v0.2](paper002_related_work_v0.2.md)).
 
 ---
 

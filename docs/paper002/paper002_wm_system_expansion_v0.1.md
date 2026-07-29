@@ -211,9 +211,20 @@ Always pair with Layer 1 (Reality | Belief) and Layer 3 metrics table.
 
 ### Boundary vs prior work
 
-Dreamer · JEPA · continual WM · object-centric models already adapt latents. **Differentiation:**
+Latent WM (Dreamer · JEPA · RSSM) · continual WM · object-centric models adapt latents under a **fixed model class**. Closest structural neighbors **add modules or route mixtures**:
 
-> When is latent **adaptation** enough, and when does **model-class / system** reconstruction become necessary — triggered by **unexplained failure**, not scheduled training?
+| Prior | Trigger | Paper 002 difference |
+| --- | --- | --- |
+| [TMoW](https://arxiv.org/abs/2601.22647) | Unseen domain · test-time mixture | **Task failure after failed L1 repair** · adequacy **necessity test** |
+| [MuSix](https://arxiv.org/abs/2607.00457) | Experiential novelty · multi-scale | **Structured residual** after *K* repairs |
+| [Worldscape-MoE](https://arxiv.org/abs/2607.03964) | New action modality · MoE | **Deployment failure diagnosis** · L1 vs L3 comparison |
+| [LMC](https://openreview.net/forum?id=LJjC6DmSkgT) | Input OOD | **Action-conditioned prediction failure** + task consequence |
+
+**Differentiation (one line):**
+
+> **Whether and when** expansion is warranted — not **how** to expand — validated on prediction · control · recoverability · nominal regression.
+
+Full matrix: [related work v0.2](paper002_related_work_v0.2.md).
 
 ---
 
