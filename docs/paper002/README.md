@@ -16,7 +16,7 @@
 | [**Pre-reg v0.1 (draft)**](paper002_prereg_wm_expansion_v0.1.md) | H1–H4 · gate · sample size |
 | [**Analysis plan v0.3**](paper002_analysis_plan_v0.3.md) | C vs B · non-inferiority · H4 |
 | [**Related work v0.2**](paper002_related_work_v0.2.md) | TMoW · MuSix · Worldscape-MoE · LMC · adequacy wedge |
-| [**Physical validation roadmap**](paper002_physical_validation_roadmap_v0.1.md) | Sim-first · SO-101 HOLD · Go gates |
+| [**Physical validation roadmap**](paper002_physical_validation_roadmap_v0.1.md) | L1/L2/L3 · parallel tracks · Go gates for confirmatory |
 | [**VESSL runbook v0.1**](vessl_runbook_v0.1.md) | Mock + Isaac drift on VESSL |
 | [**Industry context**](paper002_industry_context_v0.1.md) | Deployment stack · outreach brief |
 | [**WM system · taxonomy**](paper002_wm_system_expansion_v0.1.md) | L0 v2 · levels L1–L4 · diffusion role · operator menu |

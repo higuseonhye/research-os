@@ -17,7 +17,8 @@
 | EXP-SURG-003 scaffold | ✅ [exp_surg_003_wm_expansion](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md) |
 | Pre-reg v0.1 | 🔄 draft · [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md) |
 | VESSL sim pilot | 🔄 scripted_smoke PASS · mock/drift |
-| Physical SO-101 | ⏸ **HOLD** until sim Go gates · [physical roadmap](paper002_physical_validation_roadmap_v0.1.md) |
+| Physical anchor (SO-101) | 🔄 Track B · observability · parallel with sim |
+| EXP-REAL-001 confirmatory | ⏸ after sim Go gates · [physical roadmap](paper002_physical_validation_roadmap_v0.1.md) |
 | Confirmatory GPU | ⏳ after pre-reg freeze |
 | Archived mock→physics GPU | ❌ cancelled |
 

@@ -1,14 +1,14 @@
-# Paper 002 — Physical validation roadmap v0.1 (DRAFT)
+# Paper 002 — Physical validation roadmap v0.2 (DRAFT)
 
-> **Status:** design · **not promoted to experiments/** until sim Go gates pass  
-> **Sim first:** EXP-SURG-003 (Isaac/mock) · [confirmatory spec](paper002_confirmatory_spec_v0.1.md)  
-> **Physical (deferred):** EXP-REAL-001 · private protocol until freeze
+> **Status:** design · confirmatory **experiments/** promotion after sim Go gates  
+> **Sim (Track A):** EXP-SURG-003 · [confirmatory spec](paper002_confirmatory_spec_v0.1.md)  
+> **Physical anchor (Track B):** SO-101 · observability cell · private until freeze
 
 ---
 
 ## Purpose
 
-Validate whether **failure-conditioned model adequacy** and **repair vs structural expansion** (Paper 002 mechanism) merit **low-cost physical replication** — not to claim clinical or industrial deployment.
+Validate whether **failure-conditioned model adequacy** and **repair vs structural expansion** survive **real sensors** — not to claim clinical deployment.
 
 **Working name:** Physical Testbed for Failure-Driven World-Model Reconstruction
 
@@ -16,17 +16,28 @@ Validate whether **failure-conditioned model adequacy** and **repair vs structur
 
 ---
 
-## Sim before hardware (2026-07 decision)
+## Research layers (program)
 
-| Phase | Share | Action |
+| Layer | Question | Primary venue |
 | --- | --- | --- |
-| **Simulation** | ~80% | EXP-SURG-003 mock + Isaac · Go gates below |
-| **Hardware prep** | ~20% | Schema · adapter stub · BOM research (private) |
-| **Purchase** | **Hold** | SO-101 follower until **all Go gates** pass |
+| **L1 Mechanism** | Does L3 expansion beat L1 repair when a dynamics **mode** is missing? | Simulation (EXP-SURG-003) |
+| **L2 Observability** | Can inadequacy be detected **without privileged state**? | SO-101 anchor (Track B) |
+| **L3 Task value** | Does expansion improve success/safety in task-relevant settings? | Precision arm · surgical-like · later |
 
-Buying hardware before **L1 fail · L3 win on held-out drift** risks debugging servos instead of model adequacy.
+Ultimate question is **embodied**. Paper 002 v0.1 **isolates mechanism** in L1 before L2/L3 claims.
 
-**Next sim deliverable:** five priority experiments (strong repair · parameter control · missing mode · noise gate · compositional Ep2) — see private Go gates doc.
+---
+
+## Parallel tracks (2026-07 rev.)
+
+| Track | Share | Action |
+| --- | --- | --- |
+| **A — Paper 002 sim** | 70–80% | EXP-SURG-003 · Go gates · pre-reg · confirmatory |
+| **B — Physical anchor** | 20–30% | SO-101 · logging · repeatability · failure-signal observability |
+
+**Anchor purchase:** justified as **2–3 year program instrument** — not as Paper 002 confirmatory on day one.
+
+**EXP-REAL-001 A/B/C:** runs **after** sim Go gates G1–G5 (private doc).
 
 ---
 
@@ -48,9 +59,9 @@ Recoverability = **measurement window** on Ep2 · not the program title.
 
 ---
 
-## Go / No-Go gates (hardware purchase)
+## Go / No-Go gates (EXP-REAL-001 confirmatory — not anchor purchase)
 
-Purchase **only if** sim pilot + confirmatory show:
+Run full A/B/C protocol on hardware **only if** sim pilot + confirmatory show:
 
 | Gate | Criterion (initial · tune at pre-reg) |
 | --- | --- |
@@ -60,7 +71,9 @@ Purchase **only if** sim pilot + confirmatory show:
 | **G4 Physical contract** | Runs on **joint pose · commanded action · EE pose · RGB object pose** only (no privileged physics in claim path) |
 | **G5 Gate validity** | False expansion on noise/impulse **≤10%** |
 
-**No-Go →** revise perturbation taxonomy · repair baseline · or task — **do not buy robot**.
+**No-Go →** revise perturbation taxonomy · repair baseline · or task — **do not** run confirmatory on hardware.
+
+**Track B (anchor) may proceed regardless** — assembly · logging · repeatability · raw perturbation trajectories only.
 
 ---
 
@@ -80,13 +93,15 @@ Different: physics backend · sensors · command interface · reset
 ## Evidence ladder (honest claims)
 
 ```text
-Sim (Paper 002 v0.1)     mechanism · adequacy test · L1 vs L3
-        ↓ Go gates
-SO-101 (EXP-REAL-001)    mechanism survives sensor noise · backlash · contact
+L1  Sim (Paper 002)        mechanism · L1 vs L3 · Go gates
+        ↓
+L2  SO-101 (Track B)       observability · sensor contract · residuals
+        ↓ confirmatory after Go
+L2b EXP-REAL-001           frozen A/B/C on real robot
         ↓ selective
-Precision arm / lab      partial reproduction · not artifact of cheap servos
+L3  Precision / task       partial reproduction · safety · intervention
         ↓ later
-Task-relevant / clinical NOT claimed from SO-101 alone
+    Clinical / surgical    NOT claimed from SO-101 alone
 ```
 
 ---
