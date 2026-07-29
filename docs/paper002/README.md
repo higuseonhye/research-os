@@ -12,7 +12,7 @@
 | --- | --- |
 | [**Status**](status.md) | Phase · pivot note |
 | [**Description v0.1**](paper002_description_wm_expansion_v0.1.md) | RQ · minimal cell · claims |
-| [**Pre-reg v0.1 (draft)**](paper002_prereg_wm_expansion_v0.1.md) | H1–H3 · arms · outcomes |
+| [**WM system · taxonomy**](paper002_wm_system_expansion_v0.1.md) | L0 v2 · levels L1–L4 · diffusion role · operator menu |
 | [**Archive: mock→physics**](archive/mock_to_physics/README.md) | Superseded design · tag `paper002-prereg-v0.3` |
 
 ---

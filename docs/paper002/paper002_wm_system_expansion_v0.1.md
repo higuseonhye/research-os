@@ -1,0 +1,151 @@
+# World-model system · expansion levels · taxonomy v0.1
+
+> **Program doc** · Paper 002 uses a **minimal slice** of this · [description](paper002_description_wm_expansion_v0.1.md)
+
+---
+
+## L0 (v2)
+
+> **When reality cannot be explained by the agent’s current model class, how should an embodied system revise not only its parameters, but the architecture and composition of its world-modeling system?**
+
+Experimental question:
+
+> **Can unexplained failure trigger the selection or construction of a more adequate world-model architecture, improving future prediction and control without catastrophic regression?**
+
+Recoverability = **measurement window** for whether reconstruction helped · not the program center.
+
+---
+
+## World model = system (not one network)
+
+```text
+Observation encoder
+        ↓
+Latent state / belief
+        ↓
+Dynamics or video predictor
+        ↓
+Possible future trajectories
+        ↓
+Planner / value / risk estimator
+        ↓
+Policy or controller
+```
+
+**Diffusion** may implement:
+
+- dynamics / video generator (multimodal futures)
+- diffusion policy
+- latent planner
+
+Diffusion ≠ entire world model. It is one **expansion operator** candidate (multimodal futures), not automatic invention of new mechanisms outside training support.
+
+---
+
+## Four expansion levels
+
+| Level | What changes | Example | Paper 002? |
+| --- | --- | --- | --- |
+| **L1 Parameter** | Same architecture · θ → θ′ | friction estimate · encoder FT · score-net update | **Baseline arm** |
+| **L2 Latent reorganize** | Same size · new factorization in z | static vs drift clusters in latent | Weak alone for “structural” claim |
+| **L3 Model-class / architecture** | New module · expert · slot · generative family | MoE dynamics · mode inference head · deterministic → multimodal generator | **Primary arm** |
+| **L4 System reconstruction** | Adequacy monitor · multi-model · human gate | self-reconstructing stack | Program horizon · not Paper 002 |
+
+Paper 002 confirmatory = **L1 vs L3 (restricted menu)** · L4 deferred.
+
+---
+
+## Computational core
+
+```text
+Observation → prediction residual
+Can current model class explain it?
+├── Yes → parameter / belief update (L1)
+└── No  → model reconstruction
+          ├── recalibrate uncertainty
+          ├── add latent mode / expert (L3)
+          ├── add diffusion future generator (L3)
+          ├── add relation module (later)
+          └── request human / experiment (L4)
+```
+
+Question is **not** “how to fine-tune weights?” but **which expansion operator to invoke**.
+
+---
+
+## Expansion operator menu (program)
+
+```text
+Expand(model, failure evidence) ∈ {
+  recalibrate,
+  add_latent_mode,
+  add_dynamics_expert,      ← Paper 002 v0.1 primary
+  add_diffusion_generator,  ← extension / Paper 003
+  add_relation_module,
+  system_recompose           ← L4
+}
+```
+
+First paper: **finite menu** · failure selects among **prepared** operators · not free neural architecture search.
+
+---
+
+## Failure cause → expansion type (taxonomy)
+
+| Failure cause | Appropriate expansion |
+| --- | --- |
+| Wrong value | parameter update (L1) |
+| Underestimated uncertainty | probabilistic recalibration |
+| Single deterministic future | diffusion / generative (L3) |
+| New dynamics regime | expert / module (L3) · **Paper 002 cell** |
+| New entity | object-centric slot |
+| New causal relation | graph / causal module |
+| Wrong planning interface | system recomposition (L4) |
+| Unknown which applies | meta-model / selection |
+
+---
+
+## Paper 002 v0.1 scope (honest)
+
+**True env mechanisms (full program):** M₀ static · M₁ drift · M₂ external perturb (later)
+
+**Initial agent:** only M₀ (deterministic static dynamics)
+
+**Arms (confirmatory v0.1):**
+
+| Arm | Level | Mechanism |
+| --- | --- | --- |
+| A No update | — | frozen |
+| B Parameter | L1 | θ update on M₀ |
+| C Modular expansion | L3 | add expert M₁ + gating |
+
+**Extension (not confirmatory v0.1):** monolithic fine-tune · diffusion future model · M₂
+
+**Compare:** C > B > A on novel drift Ep2 · no static regression.
+
+---
+
+## Diffusion — role and limits
+
+**Useful when:** futures are multimodal within learned support.
+
+**Does not solve:** discovering entirely new causal structure (e.g. external actor) without meta-system or prepared operator.
+
+Diffusion = **expanded possibility generator** · expansion **decision** needs separate adequacy / selection layer.
+
+---
+
+## Program ladder (non-sequential with Paper 001)
+
+```text
+Paper 001  Recoverability @ S (optional credential)
+Paper 002  L1 vs L3 · select expansion operator (drift expert)
+Next       diffusion vs MoE vs relation · gap-type taxonomy
+Later      L4 · human-provided representation · surgical exceptions
+```
+
+---
+
+## Figure convention
+
+**Reality | Agent WM system** — not only state vector: show **which module** was added (expert node · gating · optional diffusion head).

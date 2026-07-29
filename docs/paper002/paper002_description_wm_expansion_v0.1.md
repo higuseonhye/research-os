@@ -1,8 +1,7 @@
 # Paper 002 — Description · world-model expansion v0.1
 
-> **Program L0:** When reality cannot be explained by the current model, how does intelligence reconfigure its representation?  
-> **Experiment ID:** EXP-SURG-003 · **Pre-reg:** [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md)  
-> **Supersedes:** [archive/mock_to_physics/](archive/mock_to_physics/)
+> **Program L0:** When reality cannot be explained by the agent’s **model class**, how should an embodied system revise **parameters and the architecture/composition** of its world-modeling system?  
+> **Architecture note:** [paper002_wm_system_expansion_v0.1.md](paper002_wm_system_expansion_v0.1.md)
 
 ---
 
@@ -14,9 +13,11 @@
 
 ## Central question
 
-> **Can an embodied agent detect that a failure is caused by a structural gap in its world model and expand its representation to improve future prediction and action?**
+> **Can unexplained failure trigger selection of a more adequate world-model architecture (not parameter tuning alone), improving prediction and control on novel related encounters without nominal regression?**
 
-Recoverability is a **measurement window**, not the program center: it scores whether expanded representation improves recovery on novel related encounters.
+Paper 002 v0.1 tests **one** L3 operator: **add dynamics expert M₁ (drift)** vs L1 parameter update on fixed M₀.
+
+Recoverability is a **measurement window**, not the program center.
 
 ---
 

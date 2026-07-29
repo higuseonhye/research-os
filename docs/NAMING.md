@@ -4,11 +4,13 @@
 
 ---
 
-## L0 (program center)
+## L0 (program center · v2)
 
-> **When reality cannot be explained by the current model, how does intelligence reconfigure its representation?**
+> **When reality cannot be explained by the agent’s current model class, how should an embodied system revise not only its parameters, but the architecture and composition of its world-modeling system?**
 
 **Recoverability** = measurement window · not the program center.
+
+Full architecture · expansion levels · taxonomy: [paper002_wm_system_expansion_v0.1.md](paper002/paper002_wm_system_expansion_v0.1.md)
 
 ---
 
