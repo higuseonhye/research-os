@@ -17,13 +17,14 @@ This repository contains **promoted research evidence only**—research question
 
 ---
 
-## Three layers
+## Two public surfaces
 
 ```text
 Research OS (this repo)     Evidence · protocols · Paper 001/002 · promoted results
 Mismatch Lab (public spec)  Robot Diff · benchmark · SDK design · pilot invitation
-Company (future)            Customer integrations · private failure logs
 ```
+
+Long-term vision (research program only): [docs/mismatch_lab/vision_narrative_v0.2.md](docs/mismatch_lab/vision_narrative_v0.2.md) — not a company or product roadmap in this repo.
 
 ---
 

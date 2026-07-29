@@ -7,13 +7,14 @@
 
 ## What is Mismatch Lab?
 
-**Mismatch Lab** is the public-facing layer for understanding robot behavior — starting with **Robot Diff**, not failure analysis.
+**Mismatch Lab** is the public-facing spec for understanding robot behavior — starting with **Robot Diff**, not failure analysis.
 
-| Layer | Role |
+| Surface | Role |
 | --- | --- |
 | **Research OS** | Evidence engine — prereg, protocols, Paper 001/002, negative controls |
-| **Mismatch Lab** | Community & adoption — demos, benchmark, explorer, SDK pilot |
-| **Company** (future) | Customer contracts, integrations, enterprise evaluation |
+| **Mismatch Lab** | Open spec — demos, benchmark, explorer design, SDK sketch, pilot invitation |
+
+Commercial operations (hosting, contracts, SLAs) are **not** in research-os. See [vision narrative](vision_narrative_v0.2.md) for long-term research framing only.
 
 ---
 
@@ -34,7 +35,7 @@
 | [**Benchmark spec**](benchmark_spec_v0.1.md) | Adequacy benchmark · negative controls · scoring |
 | [**Product overview v0.1**](product_overview_v0.1.md) | Public-safe problem · product · evidence summary |
 | [**Public scope**](PUBLIC_SCOPE.md) | What belongs / excluded from this folder |
-| [**Company narrative v0.2**](company_narrative_v0.2.md) | Vision · wedge · roadmap by trust level |
+| [**Vision narrative v0.2**](vision_narrative_v0.2.md) | Long-term research framing · not a company roadmap |
 
 ---
 

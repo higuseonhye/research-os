@@ -74,7 +74,7 @@ Do **not** cite pilot percentages in external materials until confirmatory CI is
 Roadmap by trust level: **Detect → Diagnose → Test → Revise → Validate → Deploy**  
 2026–28 public scope: **Detect + partial Diagnose/Test** only.
 
-See [company_narrative_v0.2.md](company_narrative_v0.2.md) for full framing.
+See [vision_narrative_v0.2.md](vision_narrative_v0.2.md) for long-term research framing (not a company roadmap).
 
 ---
 

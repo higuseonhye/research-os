@@ -10,7 +10,8 @@ Research portfolio · [GitHub](https://github.com/higuseonhye/research-os)
 
 **Paper 002 (EXP-SURG-003):** Structural world-model expansion from unexplained failures — [hub](paper002/README.md) · design v0.1
 
-**Mismatch Lab (public):** Robot Diff · model adequacy · pilot spec — [hub](mismatch_lab/README.md)
+**Mismatch Lab (public spec):** Robot Diff · model adequacy · pilot spec — [hub](mismatch_lab/README.md)  
+*(research-os documents two public surfaces only: Research OS + Mismatch Lab spec · no commercial/product company layer in this repo)*
 
 **Study 002 (EXP-SURG-002):** Tier B pilot · archived · [stage2/](stage2/README.md)
 

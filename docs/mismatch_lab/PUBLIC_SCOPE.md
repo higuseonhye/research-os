@@ -14,7 +14,7 @@
 | [api_schema_v0.1.json](api_schema_v0.1.json) | Report JSON schema |
 | [benchmark_spec_v0.1.md](benchmark_spec_v0.1.md) | Public benchmark definition |
 | [product_overview_v0.1.md](product_overview_v0.1.md) | Public problem/product/evidence summary |
-| [company_narrative_v0.2.md](company_narrative_v0.2.md) | Vision · wedge · honest capability bounds |
+| [vision_narrative_v0.2.md](vision_narrative_v0.2.md) | Long-term research framing · honest capability bounds |
 | [homepage_v0.1.md](homepage_v0.1.md) | Landing copy draft |
 
 ---
