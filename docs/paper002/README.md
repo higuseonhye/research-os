@@ -1,7 +1,7 @@
 # Paper 002 — Representation reconstruction (WM expansion)
 
 > **L0:** Model-class / system-composition reconstruction when current WM cannot explain failure · [taxonomy](paper002_wm_system_expansion_v0.1.md)  
-> **Status:** design v0.1 · mock→physics direction **archived** · confirmatory GPU not started  
+> **Status:** design v0.1 · mock pilot **v0.4 preliminary** · confirmatory GPU not started  
 > **Recoverability:** measurement window · not program center
 
 ---
@@ -18,6 +18,7 @@
 | [**Related work v0.2**](paper002_related_work_v0.2.md) | TMoW · MuSix · Worldscape-MoE · LMC · adequacy wedge |
 | [**Physical validation roadmap**](paper002_physical_validation_roadmap_v0.1.md) | L1/L2/L3 · parallel tracks · Go gates for confirmatory |
 | [**VESSL runbook v0.1**](vessl_runbook_v0.1.md) | Mock + Isaac drift on VESSL |
+| [**Mismatch Lab v0.1**](../mismatch_lab/README.md) | Robot Diff · public lab spec · API · benchmark |
 | [**Industry context**](paper002_industry_context_v0.1.md) | Deployment stack · outreach brief |
 | [**WM system · taxonomy**](paper002_wm_system_expansion_v0.1.md) | L0 v2 · levels L1–L4 · diffusion role · operator menu |
 | [**Archive: mock→physics**](archive/mock_to_physics/README.md) | Superseded design · tag `paper002-prereg-v0.3` |
@@ -43,7 +44,7 @@ Safety:  static retention · gate on noise/impulse (H4)
 
 Package: [`exp_surg_003_wm_expansion`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md)
 
-**Blocking milestone:** L1 fails · L3 explains held-out drift (pilot).
+**Blocking milestone:** L1 fails · L3 explains held-out drift · **pilot v0.4 mechanism pass (preliminary)** · pre-reg freeze next.
 
 ---
 

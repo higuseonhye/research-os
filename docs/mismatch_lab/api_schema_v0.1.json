@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mismatch.lab/schemas/v0.1/report.json",
+  "title": "Mismatch Lab Report v0.1",
+  "description": "Output schema for mismatch.diff() and mismatch.analyze()",
+  "type": "object",
+  "required": ["schema_version", "report_type", "classification", "evidence", "confidence"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1"
+    },
+    "report_type": {
+      "type": "string",
+      "enum": ["diff", "analyze"]
+    },
+    "diff_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "run_a": {
+      "$ref": "#/$defs/RunRef"
+    },
+    "run_b": {
+      "$ref": "#/$defs/RunRef"
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "policy_shift",
+        "transient_noise",
+        "persistent_drift",
+        "impulse",
+        "sim_real_gap",
+        "unknown"
+      ]
+    },
+    "max_divergence": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Peak |prediction - observation| or |run_a - run_b|"
+    },
+    "onset_step": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "First step where divergence exceeds threshold"
+    },
+    "interesting_moments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/InterestingMoment"
+      }
+    },
+    "shifts": {
+      "type": "array",
+      "description": "Detected behavior shifts between runs",
+      "items": {
+        "$ref": "#/$defs/BehaviorShift"
+      }
+    },
+    "adequacy_hint": {
+      "type": "string",
+      "enum": ["none", "watch", "repair", "replan", "structural_review", "escalate"]
+    },
+    "adequacy_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Calibrated score; pilot/internal until confirmatory"
+    },
+    "repair_likely_sufficient": {
+      "type": "boolean"
+    },
+    "recommended_next_test": {
+      "type": "string",
+      "examples": [
+        "add_drift_mode_counterfactual",
+        "static_retention_regression",
+        "sensor_calibration_check",
+        "held_out_direction_drift_episode"
+      ]
+    },
+    "recommended_action": {
+      "type": "string",
+      "enum": ["continue", "repair", "replan", "expand", "escalate", "investigate"]
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["low", "moderate", "high"]
+    },
+    "gate_details": {
+      "$ref": "#/$defs/GateDetails",
+      "description": "Optional; included when adequacy layer runs"
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": { "type": "number" },
+      "properties": {
+        "mean_prediction_error": { "type": "number" },
+        "residual_autocorr": { "type": "number" },
+        "delta_nll": { "type": "number" },
+        "final_repair_residual": { "type": "number" }
+      }
+    }
+  },
+  "$defs": {
+    "RunRef": {
+      "type": "object",
+      "required": ["run_id"],
+      "properties": {
+        "run_id": { "type": "string" },
+        "label": { "type": "string" },
+        "metadata": { "type": "object" }
+      }
+    },
+    "InterestingMoment": {
+      "type": "object",
+      "required": ["step", "label", "severity"],
+      "properties": {
+        "step": { "type": "integer", "minimum": 0 },
+        "label": { "type": "string" },
+        "severity": { "type": "string", "enum": ["low", "medium", "high"] },
+        "detail": { "type": "string" }
+      }
+    },
+    "BehaviorShift": {
+      "type": "object",
+      "required": ["start_step", "end_step", "channel"],
+      "properties": {
+        "start_step": { "type": "integer" },
+        "end_step": { "type": "integer" },
+        "channel": { "type": "string", "examples": ["ee_x", "target_y", "prediction_error"] },
+        "magnitude": { "type": "number" }
+      }
+    },
+    "GateDetails": {
+      "type": "object",
+      "properties": {
+        "fired": { "type": "boolean" },
+        "mean_residual": { "type": "number" },
+        "autocorr": { "type": "number" },
+        "delta_nll": { "type": "number" },
+        "reasons": {
+          "type": "object",
+          "properties": {
+            "residual_high": { "type": "boolean" },
+            "K_repairs_failed": { "type": "boolean" },
+            "autocorr_high": { "type": "boolean" },
+            "delta_nll_high": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "RunBundle": {
+      "type": "object",
+      "description": "Input bundle for mismatch.analyze()",
+      "required": ["trajectory", "predictions"],
+      "properties": {
+        "trajectory": {
+          "type": "object",
+          "required": ["obs", "actions"],
+          "properties": {
+            "obs": { "type": "array", "items": { "type": "array", "items": { "type": "number" } } },
+            "actions": { "type": "array", "items": { "type": "array", "items": { "type": "number" } } },
+            "timestamps": { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "predictions": {
+          "type": "object",
+          "required": ["one_step"],
+          "properties": {
+            "one_step": { "type": "array", "items": { "type": "array", "items": { "type": "number" } } },
+            "multi_step_h10": { "type": "array" }
+          }
+        },
+        "recovery_attempts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "attempt": { "type": "integer" },
+              "residual_after": { "type": "number" }
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "task": { "type": "string" },
+            "seed": { "type": "integer" },
+            "condition_id": { "type": "string" },
+            "policy": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "0.1",
+      "report_type": "analyze",
+      "diff_id": "550e8400-e29b-41d4-a716-446655440000",
+      "classification": "persistent_drift",
+      "max_divergence": 0.041,
+      "onset_step": 8,
+      "interesting_moments": [
+        { "step": 8, "label": "Drift onset", "severity": "medium" },
+        { "step": 24, "label": "Repair plateau", "severity": "high" }
+      ],
+      "adequacy_hint": "structural_review",
+      "adequacy_score": 0.81,
+      "repair_likely_sufficient": false,
+      "recommended_next_test": "add_drift_mode_counterfactual",
+      "recommended_action": "investigate",
+      "evidence": [
+        "Prediction error persisted after three parameter repair attempts",
+        "Residual autocorrelation above threshold",
+        "F1 probe reduced NLL relative to repaired F0",
+        "Static retention risk assessed low in pilot"
+      ],
+      "confidence": "moderate",
+      "gate_details": {
+        "fired": true,
+        "mean_residual": 0.035,
+        "autocorr": 0.76,
+        "delta_nll": 0.062,
+        "reasons": {
+          "residual_high": true,
+          "K_repairs_failed": true,
+          "autocorr_high": true,
+          "delta_nll_high": true
+        }
+      }
+    }
+  ]
+}

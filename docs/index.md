@@ -10,6 +10,8 @@ Research portfolio · [GitHub](https://github.com/higuseonhye/research-os)
 
 **Paper 002 (EXP-SURG-003):** Structural world-model expansion from unexplained failures — [hub](paper002/README.md) · design v0.1
 
+**Mismatch Lab (public):** Robot Diff · model adequacy · pilot spec — [hub](mismatch_lab/README.md)
+
 **Study 002 (EXP-SURG-002):** Tier B pilot · archived · [stage2/](stage2/README.md)
 
 Isaac Sim 4.1 · ORBIT Reach · 3D embodied sim.
@@ -26,7 +28,9 @@ Isaac Sim 4.1 · ORBIT Reach · 3D embodied sim.
 
 **Paper 001 headline (D0 · n=20):** REPLAN **19/20** vs CONTINUE **0/20** → [status](paper1/status.md)
 
-**Paper 002 (now):** hidden motion mode · parameter vs structural expansion · Ep1/Ep2 → [status](paper002/status.md)
+**Paper 002 (now):** hidden motion mode · parameter vs structural expansion · Ep1/Ep2 · mock pilot v0.4 · [status](paper002/status.md)
+
+**Mismatch Lab:** Robot Diff · model adequacy public spec · [hub](mismatch_lab/README.md)
 
 Mock→physics design → [archived](paper002/archive/mock_to_physics/README.md)
 
@@ -38,6 +42,7 @@ Mock→physics design → [archived](paper002/archive/mock_to_physics/README.md)
 | --- | --- |
 | **Paper 001** | [docs/paper1/](paper1/README.md) |
 | **Paper 002** | [docs/paper002/](paper002/README.md) |
+| **Mismatch Lab** | [docs/mismatch_lab/](mismatch_lab/README.md) |
 | **Study 002** | [docs/stage2/](stage2/README.md) |
 | **Naming** | [NAMING.md](NAMING.md) |
 | **Repo** | [github.com/higuseonhye/research-os](https://github.com/higuseonhye/research-os) |

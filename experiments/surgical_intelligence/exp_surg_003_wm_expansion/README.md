@@ -1,7 +1,8 @@
 # EXP-SURG-003 — Paper 002 WM expansion confirmatory
 
 > **Paper:** [docs/paper002/](../../../docs/paper002/) · [confirmatory spec](../../../docs/paper002/paper002_confirmatory_spec_v0.1.md)  
-> **Status:** mock pilot **implemented** · smoke in [`results/pilot_v0.1/`](results/pilot_v0.1/) · pre-reg not frozen  
+> **Status:** mock pilot **v0.4** · preliminary G1 + H4 pass · pre-reg not frozen  
+> **Public lab:** [Mismatch Lab spec](../../../docs/mismatch_lab/README.md)  
 > **Parent:** EXP-SURG-001 ORBIT reach pipeline
 
 ---
@@ -12,82 +13,67 @@
 Train static-only WM (W0)
 → Ep1 persistent drift failure
 → K × L1 repair fails
-→ Arms: A none · B repair F0 · C add F1+G
+→ Arms: A none · B repair F0 · C add F1+G · D oracle
 → Ep2 novel drift
 → Primary: prediction error (H=10) · task success · static retention · gate H4
 ```
 
-**First milestone:** find drift regime where **L1 fails but L3 succeeds** (pilot only).
+**First milestone:** find drift regime where **L1 fails but L3 succeeds** — **pilot v0.4 preliminary pass**.
 
 ---
+
+## Pilot v0.4 (latest · 5 seeds · local)
+
+| Metric | Result |
+| --- | --- |
+| Ep1 gate fire | **100%** (5/5) |
+| H4 drift_M1 / negatives | **100% / 0%** |
+| **C vs B ΔPE** | **+0.122** (~50% relative) |
+| A / B / C / D PE | 0.187 / 0.243 / **0.121** / 0.114 |
+| Ep2 success | 100% all arms (scripted) |
+
+Fixes in v0.4: full Ep1 drift window · unified F1-probe gate · H4 aggregation in summary.
+
+→ [`results/pilot_v0.1/summary.json`](results/pilot_v0.1/summary.json)
+
+**Tier:** B+ preliminary · not confirmatory · not behavior (MPC) claim.
+
+---
+
+## Quick start (local CPU)
+
+```bash
+python scripts/run_exp_surg_003_pilot.py --smoke
+python scripts/run_exp_surg_003_pilot.py --config experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/pilot_v0.1.yaml
+```
+
+Requires: `pip install torch pyyaml numpy`
 
 ## Quick start (VESSL — recommended)
 
 See **[VESSL runbook](../../../docs/paper002/vessl_runbook_v0.1.md)**.
 
 ```bash
-# Jupyter terminal on VESSL workspace
 cd /workspace/research-os && git pull origin master
-EXP_SURG_003_PREP_BOOTSTRAP=1 bash scripts/prep_exp_surg_003_vessl.sh   # first time only
-
-# Mock pilot (CPU · milestone 1)
-bash scripts/run_exp_surg_003_mock_vessl.sh --smoke
+EXP_SURG_003_PREP_BOOTSTRAP=1 bash scripts/prep_exp_surg_003_vessl.sh
 bash scripts/run_exp_surg_003_mock_vessl.sh
-
-# Isaac drift (GPU · after bootstrap)
 export EXP_SURG_003_SKIP_BOOTSTRAP=1
 bash scripts/run_exp_surg_003_vessl.sh
 ```
 
-Pull results locally: `bash scripts/copy_exp_surg_003_from_vessl.sh all`
-
-## Pilot v0.3 (CV drift mode F1)
-
-| Metric | 5-seed result |
-| --- | --- |
-| Ep2 success | 100% all arms |
-| **C vs B ΔPE** | **+0.078 (~42% relative)** |
-| A / B / C / D PE | 0.183 / 0.187 / **0.109** / 0.122 |
-| Gate fire (ep2 log) | tune · H4 controls next |
-
-F1 = **constant-velocity target mode** (direction-agnostic) · not fixed bias.
-
-## Pilot v0.2 tuning (local)
-
-| Change | Why |
-| --- | --- |
-| Arm **D** (oracle F1) | Identifiability ceiling |
-| `behavior_policy: scripted` | Pilot isolates WM prediction · shared task success |
-| MPC: greedy + observed target | For confirmatory `behavior_policy: mpc` |
-| Stronger drift · more expansion | Widen C vs B on Ep2 PE |
-
-**Latest local 5-seed (v0.2):** Ep2 success 100% all arms · C vs B ΔPE ≈ +0.001 (~0.8%) · **Go gate not passed** · tune further.
-
-## Quick start (mock pilot — local · if CPU allows)
-
-```bash
-# Smoke (~2–3 min CPU)
-python scripts/run_exp_surg_003_pilot.py --smoke
-
-# Pilot (5 seeds · arms A/B/C/D)
-python scripts/run_exp_surg_003_pilot.py --config experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/pilot_v0.1.yaml
-```
-
-Requires: `pip install torch pyyaml numpy`
-
-## Quick start (Isaac drift data — GPU)
+## Quick start (Isaac drift — GPU)
 
 ```bash
 bash scripts/run_exp_surg_003_drift_runpod.sh
 ```
 
-Collects persistent drift trajectories (`TRACK_DRIFTING` vs `TRACK_FROZEN`) for WM training data.
+---
 
 ## Config
 
 | File | Role |
 | --- | --- |
-| [`config/pilot_v0.1.yaml`](config/pilot_v0.1.yaml) | Mock pilot hyperparameters |
+| [`config/pilot_v0.1.yaml`](config/pilot_v0.1.yaml) | Mock pilot v0.4 hyperparameters |
 | [`config/confirmatory_v0.1.yaml`](config/confirmatory_v0.1.yaml) | Confirmatory design contract |
 
 ## Implementation
@@ -108,7 +94,7 @@ Collects persistent drift trajectories (`TRACK_DRIFTING` vs `TRACK_FROZEN`) for 
 
 | Label | Tier | Note |
 | --- | --- | --- |
-| [`pilot_v0.1/`](results/pilot_v0.1/) | B | Mock smoke · 2 seeds · C vs B ΔPE > 0 (tune drift next) |
+| [`pilot_v0.1/`](results/pilot_v0.1/) | B+ | 5-seed v0.4 · G1 + H4 preliminary |
 
 ---
 
@@ -125,4 +111,5 @@ Collects persistent drift trajectories (`TRACK_DRIFTING` vs `TRACK_FROZEN`) for 
 
 - [Confirmatory spec](../../../docs/paper002/paper002_confirmatory_spec_v0.1.md)
 - [Pre-reg draft](../../../docs/paper002/paper002_prereg_wm_expansion_v0.1.md)
+- [Mismatch Lab v0.1 spec](../../../docs/mismatch_lab/v0.1_spec.md)
 - [Analysis plan v0.3](../../../docs/paper002/paper002_analysis_plan_v0.3.md)
