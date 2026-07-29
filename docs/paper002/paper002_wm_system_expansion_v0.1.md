@@ -141,6 +141,29 @@ Diffusion = **expanded possibility generator** · expansion **decision** needs s
 
 **Do** run experiments largely in latent world models (RSSM / JEPA-style stack: image → encoder → z → dynamics → prediction) for efficiency and analysis.
 
+### What the paper must show (vs what it must not claim)
+
+| Show | Do not center the claim on |
+| --- | --- |
+| **The agent’s way of modeling the world changed** (new mode · expert · gating · planner interface) | “Latent representation quality improved” |
+| Layer 3 gain: prediction · planning · recoverability | “z split into two clusters” alone |
+
+Most WM papers ask *why latent changed* or optimize *latent representation quality*. This program asks:
+
+> **Is changing / reorganizing latent alone sufficient — or must the world-model system (architecture / composition) be reconstructed?**
+
+That is a larger question than representation learning; recoverability · exception handling · human intervention · shared autonomy sit **downstream of** reconstruction, not as the program title.
+
+### Experiment vs claim (recommended split)
+
+| | Role |
+| --- | --- |
+| **Experiment space** | Latent world model (efficient · analyzable) |
+| **Observation targets** | z before/after · residual · uncertainty · which operator fired |
+| **Paper claim** | **Failure-driven world-model reconstruction** improves prediction · control · recoverability |
+
+Research **starts** when the agent (or adequacy monitor) recognizes **current latent / model class is insufficient** — not when we report SOTA latent metrics.
+
 | Role | Latent |
 | --- | --- |
 | **Claim** | Failure-driven **world-model system** reconstruction improves prediction · planning · recoverability |

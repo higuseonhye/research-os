@@ -20,7 +20,7 @@
 
 ## One-line claim
 
-> Persistent unexplained failures under a hidden motion mode trigger **structural** representation expansion that beats parameter-only update on **novel related** encounters — without static regression.
+> Persistent unexplained failures under a hidden motion mode trigger **failure-driven model-class expansion** (not latent relabeling alone) that beats parameter-only update on **novel related** encounters — without static regression · latent reorganization as **observed mechanism**.
 
 ---
 

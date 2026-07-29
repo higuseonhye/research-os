@@ -21,9 +21,9 @@
 
 ## Honest one-liner
 
-> Can an agent detect **structural** (not parametric) model inadequacy from persistent unexplained failure, **expand** its representation with a hidden motion mode, and improve prediction and action on a **novel related** encounter?
+> Can an agent detect **structural** (not parametric) model inadequacy from persistent unexplained failure, **reconstruct** its world-model system (e.g. add dynamics expert + gating — not z relabeling alone), and improve prediction and action on a **novel related** encounter?
 
-Recoverability scores outcome improvement · **representation reconstruction** is the object.
+Recoverability scores outcome improvement · **world-model reconstruction** is the object · latent change is supporting evidence.
 
 ---
 
