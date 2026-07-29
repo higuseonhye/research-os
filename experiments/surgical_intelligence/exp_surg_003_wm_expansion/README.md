@@ -24,7 +24,7 @@ Train static-only WM (W0)
 ## Quick start (mock pilot — no GPU)
 
 ```bash
-# Smoke (~30s CPU)
+# Smoke (~2–3 min CPU)
 python scripts/run_exp_surg_003_pilot.py --smoke
 
 # Pilot (5 seeds · arms A/B/C)
@@ -64,13 +64,9 @@ Collects persistent drift trajectories (`TRACK_DRIFTING` vs `TRACK_FROZEN`) for 
 
 ## Results
 
-```text
-results/
-  pilot_v0.1/       # excluded from confirmatory analysis
-  confirmatory_v0.1/  # post freeze
-```
-
-Empty until first pilot run.
+| Label | Tier | Note |
+| --- | --- | --- |
+| [`pilot_v0.1/`](results/pilot_v0.1/) | B | Mock smoke · 2 seeds · C vs B ΔPE > 0 (tune drift next) |
 
 ---
 
