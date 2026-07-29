@@ -1,7 +1,6 @@
 # Paper 002 — Industry context v0.1 (brief)
 
-> **Public brief** for Introduction / outreach · not a market report  
-> **Full career notes:** private [builder-os-private industry positioning](https://github.com/higuseonhye/builder-os-private/tree/master/working/research/paper002)
+> **Public brief** for Introduction · related-work positioning · not a market report
 
 ---
 
@@ -34,7 +33,7 @@ Paper 002 sits in the **last layer** — not competing on foundation model scale
 
 ---
 
-## Positioning sentence (outreach)
+## Positioning sentence (public)
 
 > We evaluate **failure-conditioned model adequacy** and **repair-vs-expansion** decisions for deployed embodied stacks — not a new foundation world model.
 

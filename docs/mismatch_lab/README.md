@@ -32,7 +32,8 @@
 | [**API schema**](api_schema_v0.1.json) | `mismatch.diff` · `mismatch.analyze` · report JSON |
 | [**Homepage v0.1**](homepage_v0.1.md) | Hero · CTAs · demo copy · pilot waitlist |
 | [**Benchmark spec**](benchmark_spec_v0.1.md) | Adequacy benchmark · negative controls · scoring |
-| [**Investor deck v0.1**](investor_deck_v0.1.md) | 6-slide outline · understanding-first framing |
+| [**Product overview v0.1**](product_overview_v0.1.md) | Public-safe problem · product · evidence summary |
+| [**Public scope**](PUBLIC_SCOPE.md) | What belongs / excluded from this folder |
 | [**Company narrative v0.2**](company_narrative_v0.2.md) | Vision · wedge · roadmap by trust level |
 
 ---

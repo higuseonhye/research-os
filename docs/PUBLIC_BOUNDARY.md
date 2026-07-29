@@ -31,6 +31,8 @@
 | Career · immigration · target lists | Working notes |
 | Unreviewed manuscript drafts · internal meeting notes · collaborator-embargoed material | Working notes (private / vault) |
 | **URLs to private repos** | Do not link from this repo |
+| **Fundraising decks · pricing · hiring intent · relocation** | Private working repo / vault |
+| **Mismatch Lab `docs/mismatch_lab/`** | Product spec · public-safe overview only — no investor ask · no private repo links |
 
 ---
 

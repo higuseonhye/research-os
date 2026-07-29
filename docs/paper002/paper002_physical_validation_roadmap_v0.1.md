@@ -37,7 +37,7 @@ Ultimate question is **embodied**. Paper 002 v0.1 **isolates mechanism** in L1 b
 
 **Anchor purchase:** justified as **2–3 year program instrument** — not as Paper 002 confirmatory on day one.
 
-**EXP-REAL-001 A/B/C:** runs **after** sim Go gates G1–G5 (private doc).
+**EXP-REAL-001 A/B/C:** runs **after** sim Go gates G1–G5 · hardware confirmatory protocol **not yet public** (promote after pre-reg freeze).
 
 ---
 
@@ -55,7 +55,7 @@ Recoverability = **measurement window** on Ep2 · not the program title.
 
 **First task (draft):** planar **push** (preferred over grasp) · controlled friction / mass perturbations · same A/B/C arms as sim.
 
-**Full protocol:** private [exp_real_001_protocol](https://github.com/higuseonhye/builder-os-private/blob/master/working/research/paper002/exp_real_001_protocol.md) · public after freeze.
+**Full protocol:** EXP-REAL-001 · promote to `experiments/` after pre-reg freeze · not linked from this repo until then.
 
 ---
 
@@ -111,8 +111,8 @@ L3  Precision / task       partial reproduction · safety · intervention
 | Tier | Location |
 | --- | --- |
 | Frozen protocol + results | `research-os/experiments/physical_world_model/` (future) |
-| BOM · purchase · assembly | **private** `working/hardware/so101/` |
-| Thinking · daily | **vault** |
+| BOM · purchase · assembly | Private working records · not in research-os |
+| Thinking · daily | Private vault · not in research-os |
 
 ---
 

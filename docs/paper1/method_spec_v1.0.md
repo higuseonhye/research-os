@@ -1,7 +1,6 @@
 # Paper 1 — Method spec v1.0 (public)
 
-> **Status:** v1.0 · aligns with RQ [v1.1](research_question.md) · pre-reg v2.0 in design  
-> **Private draft:** builder-os-private `paper1_method_spec_v1.0.md`
+> **Status:** v1.0 · aligns with RQ [v1.1](research_question.md) · pre-reg v2.0 in design
 
 ---
 

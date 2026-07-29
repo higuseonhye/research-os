@@ -1,6 +1,6 @@
 # Company Narrative v0.2 — Understanding-first
 
-> Internal + external narrative · understanding entry · adequacy as premium insight
+> Public-safe narrative · understanding entry · adequacy as premium insight
 
 ---
 
