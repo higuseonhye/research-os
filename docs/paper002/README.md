@@ -19,6 +19,7 @@
 | [**Physical validation roadmap**](paper002_physical_validation_roadmap_v0.1.md) | L1/L2/L3 · parallel tracks · Go gates for confirmatory |
 | [**VESSL runbook v0.1**](vessl_runbook_v0.1.md) | Mock + Isaac drift on VESSL |
 | [**Mismatch Lab v0.1**](../mismatch_lab/README.md) | Robot Diff · public lab spec · API · benchmark |
+| [**Manuscript skeleton v0.1**](paper002_manuscript_wm_expansion_v0.1.md) | Pre-results MS · WM expansion · fill T1–T6 after confirmatory |
 | [**Industry context**](paper002_industry_context_v0.1.md) | Deployment stack · outreach brief |
 | [**WM system · taxonomy**](paper002_wm_system_expansion_v0.1.md) | L0 v2 · levels L1–L4 · diffusion role · operator menu |
 | [**Archive: mock→physics**](archive/mock_to_physics/README.md) | Superseded design · tag `paper002-prereg-v0.3` |

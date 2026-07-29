@@ -1,7 +1,15 @@
 # Paper 002 — Manuscript pre-results v0.1
 
+> **ARCHIVED** · mock→physics direction · superseded 2026-07-29  
+> **Use instead:** [paper002_manuscript_wm_expansion_v0.1.md](paper002_manuscript_wm_expansion_v0.1.md)  
+> **Archive context:** [archive/mock_to_physics/README.md](archive/mock_to_physics/README.md)
+
+---
+
+# Paper 002 — Manuscript pre-results v0.1 (mock→physics · archived)
+
 > **Draft body** before Isaac confirmatory run · fill T1–T6 after execution  
-> **Companion:** [paper002_description_v0.1.md](paper002_description_v0.1.md) · [paper002_prereg_v0.3.md](paper002_prereg_v0.3.md)
+> **Companion (historical):** [paper002_description_v0.1.md](paper002_description_v0.1.md) · [paper002_prereg_v0.3.md](paper002_prereg_v0.3.md)
 
 ---
 
