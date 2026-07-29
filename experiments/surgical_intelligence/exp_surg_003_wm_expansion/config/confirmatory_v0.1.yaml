@@ -1,0 +1,143 @@
+# EXP-SURG-003 · Paper 002 confirmatory v0.1 (DRAFT — not frozen)
+# See docs/paper002/paper002_confirmatory_spec_v0.1.md
+
+experiment_id: exp_surg_003_wm_expansion
+paper: paper002_wm_expansion_v0.1
+status: design
+tier_default: pilot
+
+environment:
+  platform: ORBIT
+  task: Isaac-Reach-Dual-STAR-IK-Rel-Play-v0
+  isaac_sim: "4.1"
+  modes:
+    M0_static:
+      dynamics: "x_target(t+1) = x_target(t)"
+    M1_drift:
+      dynamics: "x_target(t+1) = x_target(t) + v_drift * dt"
+  observation:
+    - joint_positions
+    - joint_velocities
+    - end_effector_pose
+    - observed_target_pose
+  action: joint_command  # or cartesian_delta
+  success:
+    distance_threshold_m: null  # freeze at pre-reg
+    consecutive_steps: null
+
+world_model:
+  backbone: gru_dynamics  # gru_dynamics | rssm_lite | mlp_latent
+  W0:
+    encoder: latent_encoder
+    dynamics: F0
+    decoder: observation_decoder
+  L3_expansion:
+    F1: drift_dynamics_expert
+    G: mode_gate
+    F0_policy: freeze  # freeze | low_lr
+
+controller:
+  type: mpc  # v0.1 required
+  rollout_horizon: null  # freeze
+  cost:
+    distance_to_target: 1.0
+    control: null
+    safety: null
+    uncertainty: null
+
+arms:
+  A: { label: no_update, intervention: frozen_W0 }
+  B: { label: parameter_L1, intervention: finetune_F0_only }
+  C: { label: modular_L3, intervention: add_F1_G }
+  D: { label: oracle, intervention: true_mode_to_gate, analysis: diagnostic_only }
+
+protocol:
+  phase_0_pretrain:
+    data: M0_static_only
+    stop:
+      static_success_min: null
+  phase_1_ep1:
+    mode: M1_drift
+    example:
+      drift_onset_step: 20
+      drift_direction: [1, 0, 0]
+      drift_speed_m_s: 0.01
+      drift_duration_steps: 30
+  phase_2_repair:
+    K_attempts: null  # freeze after pilot
+    held_out_ep1_fraction: 0.2
+  phase_3_gate:
+    rule_based: true
+    thresholds:
+      tau_error: null
+      tau_autocorrelation: null
+      tau_delta_nll: null
+  phase_4_intervention:
+    data_budget_equal: true
+  phase_5_ep2:
+    novelty_min_dims_changed: 2
+    dims: [target_position, drift_direction, drift_speed, drift_onset, initial_joints]
+    mode: M1_drift
+  phase_6_retention:
+    mode: M0_static
+
+gate_negative_controls:
+  N1_observation_noise:
+    dynamics: M0_static
+    noise_multiplier: null
+  N2_single_impulse:
+    dynamics: impulse_then_static
+
+outcomes:
+  primary:
+    O1_prediction_error:
+      horizon_confirmatory: 10
+      horizons_secondary: [5, 20]
+    O2_task_success: true
+  guardrail:
+    O6_static_retention: true
+    delta_non_inferiority_pp: 5  # candidate · freeze at pre-reg
+  gate:
+    O9_gate_rate_by_condition: true
+
+sample_size:
+  pilot:
+    arms: 3
+    seeds: 5
+    ep2_conditions: 10
+    in_confirmatory_analysis: false
+  confirmatory:
+    arms: 3
+    seeds: 10
+    ep2_conditions: 30
+    minimum_start:
+      seeds: 10
+      ep2_conditions: 20
+
+analysis:
+  primary_contrast: C_vs_B
+  secondary_contrast: C_vs_A
+  plan: docs/paper002/paper002_analysis_plan_v0.3.md
+
+logging:
+  every_step:
+    - episode_id
+    - seed
+    - condition
+    - arm
+    - time
+    - z_t
+    - predicted_z_rollout
+    - residual
+    - uncertainty
+    - gate_probability
+    - selected_expert
+    - action
+    - success_state
+  latent_analysis_tier: exploratory_mechanistic
+
+milestone_1:
+  description: >
+    Static-only W0: reasonable L1 repair cannot explain held-out drift,
+    but adding F1 (L3) can.
+  blocking: true

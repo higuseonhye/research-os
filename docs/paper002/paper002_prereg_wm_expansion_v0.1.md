@@ -1,39 +1,34 @@
 # Paper 002 — Pre-registration · WM structural expansion v0.1 (DRAFT)
 
 > **Status:** design · **not frozen** · supersedes mock→physics pre-reg v0.3  
-> **Description:** [paper002_description_wm_expansion_v0.1.md](paper002_description_wm_expansion_v0.1.md)
+> **Confirmatory spec:** [paper002_confirmatory_spec_v0.1.md](paper002_confirmatory_spec_v0.1.md)  
+> **Analysis:** [paper002_analysis_plan_v0.3.md](paper002_analysis_plan_v0.3.md)
+
+---
+
+## 0. Primary RQ
+
+> When a fixed dynamics model cannot explain **persistent drift failure** with parameter update alone, does adding a **drift dynamics expert** (L3) improve **held-out drift prediction** and **Ep2 control**, without **nominal static regression**?
 
 ---
 
 ## 1. Hypotheses
 
-### H1 — Structural inadequacy detectable (not uncertainty alone)
+### H1 — Prediction
 
-On Ep1, evidence supports **structural inadequacy** (third category — distinct from distribution shift and epistemic uncertainty):
+L3 modular expansion shows **lower held-out drift trajectory prediction error** than L1 parameter update on Ep2 (multi-step horizon **H=10**).
 
-```text
-structured residual persists after ≥ K parameter-update attempts
-AND clusters by provisional hidden mode (drift vs static mis-specification)
-AND is not absorbed by L1 repair
-```
+### H2 — Behavior
 
-Latent cluster separation is **diagnostic / mechanistic**, not the expansion trigger by itself.
+L3 shows **higher Ep2 task success** (or recoverability) than L1 on held-out drift conditions.
 
-### H2 — Expansion beats parameter update (Ep2 · novel drift)
+### H3 — Retention
 
-On Ep2 with **novel drift instance** (≠ Ep1 parameters):
+L3 does **not** degrade nominal static success beyond pre-specified margin **δ** (non-inferiority).
 
-| Arm | Expected ordering |
-| --- | --- |
-| Structural Expansion | Best: prediction error ↓ · mismatch latency ↓ · success ↑ |
-| Parameter Update | Intermediate |
-| No Update | Worst |
+### H4 — Gate validity
 
-Primary: **recoverability or task success** on Ep2 (TBD exact threshold · n=20 seeds).
-
-### H3 — No nominal regression
-
-Static-target episodes: Structural Expansion ≈ Parameter Update ≈ No Update (guardrail · pre-specified non-inferiority band).
+Rule-based expansion gate activates on **persistent drift (M1)** · rarely on **observation noise (N1)** · **single impulse (N2)** · **nominal static (M0)**.
 
 ---
 
@@ -41,103 +36,155 @@ Static-target episodes: Structural Expansion ≈ Parameter Update ≈ No Update 
 
 | Factor | Levels |
 | --- | --- |
-| Update arm | No · Parameter · Structural |
-| True mode | static · drifting |
-| Encounter | Ep1 (train failure) · Ep2 (test · novel drift params) |
+| Update arm | A No update · B Parameter (L1) · C Modular expansion (L3) · D Oracle (diagnostic) |
+| True mode | M0 static · M1 drift |
+| Protocol | Phase 0 pretrain → Ep1 → K repairs → gate → intervention → Ep2 → static retention |
 
-Agent fixed for v0.1 · response menu TBD (CONTINUE / REPLAN minimum).
+**Hidden from initial WM:** `target_mode` · drift velocity  
+**L3 adds:** F1 drift expert + gate G (not latent scalar alone)
 
-**Hidden from initial WM:** `target_mode`  
-**Expansion adds:** `target_mode` or binary motion-mode latent
-
----
-
-## 3. Expansion gate (pre-specified · model-adequacy test)
-
-Expand only if **all** hold on Ep1:
-
-1. ≥ *K* parameter-update attempts on M₀ (L1 repair) attempted  
-2. Structured residual norm > τ for ≥ *M* consecutive steps **after each** repair attempt  
-3. Residual variance explained by provisional mode cluster > baseline (TBD threshold at freeze)  
-4. Prepared L3 expert explains held-out Ep1 trajectories better than L1-only (exploratory diagnostic · TBD)
-
-**Not sufficient alone:** single-step high error · epistemic uncertainty spike · input OOD without failed repair.
-
-Three-way taxonomy (method): distribution shift · epistemic uncertainty · **structural inadequacy**.
+**Controller:** MPC / model-based trajectory selection (v0.1).
 
 ---
 
-## 4. Ep2 novelty constraints
+## 3. Arms
 
-Must differ from Ep1 on ≥2 of: start pose · drift vector · drift speed · mismatch onset step.
+| Arm | Intervention |
+| --- | --- |
+| A | `W_after = W0` |
+| B | Fine-tune F0 only · `θ0 → θ0'` |
+| C | Add F1 + G · F0 frozen or low LR |
+| D | Oracle mode label to gate · upper bound only |
 
-Same hidden structure: **drifting mode** family.
-
----
-
-## 5. Outcomes
-
-**Primary presentation order:** Ep1 L1 repair failure diagnostics → Ep2 arm comparison (Layer 3) → latent panel (Fig 4 · supporting).
-
-| ID | Metric | Role | Analysis |
-| --- | --- | --- | --- |
-| O1 | Next-state prediction error (Ep2) | **Primary** | arm comparison |
-| O4 | Recoverability / success (Ep2) | **Primary co-endpoint** | arm comparison |
-| O2 | Mismatch detection latency | Secondary | arm comparison |
-| O3 | Response selection accuracy | Secondary | arm comparison |
-| O5 | Repeated failure rate | Secondary | arm comparison |
-| O6 | Static-condition success (guardrail) | H3 | non-inferiority |
-| O7 | Ep1 L1 residual after *K* repairs | H1 diagnostic | descriptive |
-| O8 | Latent cluster separation (before/after) | **Mechanistic secondary · exploratory** | not expansion trigger |
+**Primary contrast:** C vs B · equal **data budget** across arms.
 
 ---
 
-## 6. Analysis plan (sketch)
+## 4. Protocol phases
 
-- Ep2 primary: bootstrap CI on arm differences · hierarchical: Expansion vs Parameter first  
-- H3: one-sided non-inferiority vs Parameter on static episodes  
-- Ep1 diagnostics: descriptive only for gate triggers  
+| Phase | Content |
+| --- | --- |
+| 0 | Pretrain W0 on M0 static only |
+| 1 | Ep1 drift exposure · log full trajectory |
+| 2 | K parameter repair attempts on F0 |
+| 3 | Rule-based expansion gate |
+| 4 | Arm intervention |
+| 5 | Ep2 novel drift (≥2 params differ from Ep1) |
+| 6 | Static retention (M0) |
 
-Permutation / seed holdout: TBD at freeze.
-
----
-
-## 7. Environment
-
-- Isaac Sim 4.1 · ORBIT Reach (3D rigid · target shift / drift injection)  
-- Belief panel logged separately from ground truth for figures  
-
-4D temporal variants (drift profile): **deferred** to extension · not confirmatory v0.1.
+Ep1 evidence identical across arms before split.
 
 ---
 
-## 8. Open before freeze
+## 5. Expansion gate (rule-based · pre-specified)
 
-- [ ] Exact τ, *K*, *M* for expansion gate  
-- [ ] n seeds · Ep1/Ep2 count per seed  
-- [ ] Parameter update algorithm (EKF / heuristic / bounded LS)  
-- [ ] Structural expansion operator (hand-designed vs search over finite mode set)  
-- [ ] Recoverability definition (Paper 001 fork reuse vs binary success)  
-- [ ] O8 latent logging spec (see Appendix A)
+```text
+Gate = 1 iff ALL:
+  mean(residual_after_repair) > τ_error
+  K repair attempts completed without absorbing residual
+  residual_autocorrelation > τ_a
+  ΔNLL = NLL(F0_repaired) - NLL(F1_candidate) > τ_nll   [held-out Ep1 slice]
+```
+
+Structural inadequacy · not distribution shift or epistemic uncertainty alone.
+
+Latent cluster metrics **do not** trigger gate (Appendix A).
+
+---
+
+## 6. Ep2 novelty
+
+≥2 differ from Ep1 among: initial target · drift direction · drift speed · drift onset · robot initial joints.  
+Same regime: **M1 drift**.
+
+---
+
+## 7. Gate negative controls (H4)
+
+| ID | Condition |
+| --- | --- |
+| N1 | ↑ target observation noise · M0 static |
+| N2 | Single target impulse then stop |
+| — | Nominal M0 · persistent M1 |
+
+---
+
+## 8. Outcomes
+
+**Presentation:** Ep1 L1 failure → Ep2 O1/O2 → static retention → H4 → latent (supporting).
+
+| ID | Metric | Role |
+| --- | --- | --- |
+| O1 | Multi-step prediction error Ep2 · **H=10** | **Primary** |
+| O2 | Ep2 task success | **Primary** |
+| O6 | Static retention success | H3 · non-inferiority |
+| O9 | Gate activation rate by condition | H4 |
+| O7 | Ep1 residual after K L1 repairs | H1 diagnostic |
+| O2b | Recoverability composite | Secondary (optional) |
+| O3–O5 | Latency · tracking · safety · effort | Secondary |
+| O8 | Latent / expert / residual mechanistic | Exploratory |
+
+---
+
+## 9. Sample size
+
+| Tier | Design | In confirmatory? |
+| --- | --- | --- |
+| Engineering pilot | 3 arms × 5 seeds × 10 Ep2 | No |
+| Confirmatory | 3 arms × 10 seeds × 30 Ep2 | Yes |
+| Minimum start | 10 seeds × 20 Ep2 conditions | Yes |
+
+Paired: same (seed, condition) across arms.
+
+---
+
+## 10. Analysis
+
+See [paper002_analysis_plan_v0.3.md](paper002_analysis_plan_v0.3.md).
+
+- Primary: C vs B on O1 · O2  
+- H3: one-sided non-inferiority · margin **δ** (candidate 5 pp)  
+- H4: gate rates by control condition  
+
+---
+
+## 11. Environment
+
+- Isaac Sim 4.1 · ORBIT Reach  
+- Config: [`confirmatory_v0.1.yaml`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/confirmatory_v0.1.yaml)  
+- Drift via env: `target_mode · drift_velocity · drift_onset · drift_duration`
+
+---
+
+## 12. Open before freeze
+
+- [ ] τ_error · K · τ_a · τ_nll (from pilot seeds only)  
+- [ ] Pretrain success floor · ε · N consecutive steps  
+- [ ] F0 parameter update algorithm · step budget  
+- [ ] F1 + G training budget · F0 freeze policy  
+- [ ] δ non-inferiority margin  
+- [ ] MPC horizon · cost weights  
+- [ ] Exclusion rules  
+- [ ] Confirmatory seed list (generated post-pilot)
 
 ---
 
 ## Appendix A — Latent logging (mechanistic · exploratory)
 
-> **Status:** secondary endpoint · **not** primary claim · **not** expansion trigger
-
 | Field | Spec |
 | --- | --- |
-| **When logged** | End Ep1 (pre-expansion) · post-expansion · end Ep2 |
-| **What** | Encoder embeddings z_t · optional 2D projection (UMAP/t-SNE · fixed seed) |
-| **Fig 4 use** | Before: single cluster · After: mode-separated clusters (qualitative + optional silhouette) |
-| **Analysis tier** | Exploratory · descriptive · pairs with O1/O4 · never standalone success criterion |
-| **Pre-reg rule** | Cluster separation **cannot** gate expansion · gate uses O7 residual diagnostics only |
+| **When** | Every step Ep1/Ep2 · snapshots pre/post expansion |
+| **Log** | `z_t` · predicted z rollouts · residual · uncertainty · gate p · selected expert · action · success |
+| **Analysis** | static/drift probe · silhouette · expert entropy · CKA before/after |
+| **Rule** | **Not** primary endpoint · **not** gate trigger |
+| **Claim text** | Must link to O1/O2: separation **associated with** lower error and higher success |
 
-Diffusion future generator: **extension arm only** · excluded from confirmatory v0.1 (see [related work v0.2](paper002_related_work_v0.2.md)).
+Diffusion WM: extension only · not confirmatory v0.1.
 
 ---
 
-## 9. Tags
+## 13. Tags
 
-Freeze → `paper002-prereg-wm-v0.1` · new config path TBD (`exp_surg_003_wm_expansion/` or extend exp_surg_002 with new sandbox)
+Freeze → `paper002-prereg-wm-v0.1` · experiment `exp_surg_003_wm_expansion`
+
+**First milestone (engineering):** L1 repair fails · L3 explains held-out drift on pilot seeds.

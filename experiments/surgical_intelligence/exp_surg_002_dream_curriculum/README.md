@@ -69,4 +69,4 @@ Docs: [`paper002_description_wm_expansion_v0.1.md`](../../../docs/paper002/paper
 
 Mock→physics confirmatory GPU **cancelled** · see [archive](../../../docs/paper002/archive/mock_to_physics/).
 
-Engineering spike (drift mode · Ep1/Ep2): TBD · config path after pre-reg freeze.
+Engineering spike (drift mode · Ep1/Ep2): [`exp_surg_003_wm_expansion`](../exp_surg_003_wm_expansion/README.md) · pre-reg freeze pending.

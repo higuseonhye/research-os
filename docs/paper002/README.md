@@ -12,7 +12,9 @@
 | --- | --- |
 | [**Status**](status.md) | Phase · pivot note |
 | [**Description v0.1**](paper002_description_wm_expansion_v0.1.md) | RQ · minimal cell · claims |
-| [**Pre-reg v0.1 (draft)**](paper002_prereg_wm_expansion_v0.1.md) | H1–H3 · arms · outcomes |
+| [**Confirmatory spec v0.1**](paper002_confirmatory_spec_v0.1.md) | Runnable minimum · phases · arms · outcomes |
+| [**Pre-reg v0.1 (draft)**](paper002_prereg_wm_expansion_v0.1.md) | H1–H4 · gate · sample size |
+| [**Analysis plan v0.3**](paper002_analysis_plan_v0.3.md) | C vs B · non-inferiority · H4 |
 | [**Related work v0.2**](paper002_related_work_v0.2.md) | TMoW · MuSix · Worldscape-MoE · LMC · adequacy wedge |
 | [**Industry context**](paper002_industry_context_v0.1.md) | Deployment stack · outreach brief |
 | [**WM system · taxonomy**](paper002_wm_system_expansion_v0.1.md) | L0 v2 · levels L1–L4 · diffusion role · operator menu |
@@ -29,15 +31,17 @@
 ## Minimal experiment
 
 ```text
-True env: target_mode ∈ {static, drifting}
-Agent WM: target_position only (initially)
-
-Ep1: drift → fail · gate: parameter updates insufficient
-Arms: No update | Parameter | Structural (+ target_mode)
-Ep2: novel drift → measure prediction · decision · recoverability
+Phase 0: train W0 on M0 static only
+Ep1:     persistent drift → L1 repair × K fails
+Arms:    A none | B repair F0 | C add F1+G (+ D oracle diagnostic)
+Ep2:     novel drift (direction · speed · onset · pose)
+Primary: multi-step prediction error (H=10) · task success
+Safety:  static retention · gate on noise/impulse (H4)
 ```
 
-Figure: **Reality | Agent belief** · mode node appears after expansion.
+Package: [`exp_surg_003_wm_expansion`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md)
+
+**Blocking milestone:** L1 fails · L3 explains held-out drift (pilot).
 
 ---
 

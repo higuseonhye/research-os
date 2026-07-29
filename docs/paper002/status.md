@@ -13,8 +13,10 @@
 | Program pivot | ✅ 2026-07-29 · core question first |
 | Related work v0.2 | ✅ TMoW · MuSix · Worldscape-MoE · LMC · adequacy wedge |
 | Description v0.1 | ✅ [paper002_description_wm_expansion_v0.1.md](paper002_description_wm_expansion_v0.1.md) |
+| Confirmatory spec v0.1 | ✅ [paper002_confirmatory_spec_v0.1.md](paper002_confirmatory_spec_v0.1.md) |
+| EXP-SURG-003 scaffold | ✅ [exp_surg_003_wm_expansion](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md) |
 | Pre-reg v0.1 | 🔄 draft · [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md) |
-| Engineering spike (drift mode) | ⏳ pending |
+| Engineering pilot | ⏳ **milestone 1:** L1-fail / L3-succeed regime |
 | Confirmatory GPU | ⏳ pending · **after pre-reg freeze** |
 | Archived mock→physics GPU | ❌ **cancelled** |
 

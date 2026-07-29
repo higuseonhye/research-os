@@ -150,6 +150,7 @@ Paper 001 **not required** as logical prerequisite.
 
 | Doc | Path |
 | --- | --- |
+| Confirmatory spec | [paper002_confirmatory_spec_v0.1.md](paper002_confirmatory_spec_v0.1.md) |
 | Pre-reg skeleton | [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md) |
 | Related work | [paper002_related_work_v0.2.md](paper002_related_work_v0.2.md) |
 | Industry context | [paper002_industry_context_v0.1.md](paper002_industry_context_v0.1.md) |
