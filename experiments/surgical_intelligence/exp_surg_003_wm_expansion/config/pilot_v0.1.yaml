@@ -1,4 +1,4 @@
-# EXP-SURG-003 mock pilot v0.2 — tuning pass (MPC · Arm D · softer Ep2)
+# EXP-SURG-003 mock pilot v0.3 — CV drift mode F1 · gate fix
 
 pilot:
   max_steps: 80

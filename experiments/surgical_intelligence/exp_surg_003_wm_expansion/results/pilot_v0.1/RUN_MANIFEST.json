@@ -1,11 +1,11 @@
 {
   "experiment": "EXP-SURG-003-pilot-mock",
   "tier": "pilot",
-  "timestamp_utc": "2026-07-29T09:19:42.681046+00:00",
+  "timestamp_utc": "2026-07-29T09:40:56.042068+00:00",
   "summary": {
     "A": {
       "n_ep2": 5,
-      "mean_prediction_error_h10": 0.1624068979085,
+      "mean_prediction_error_h10": 0.1825638299323195,
       "success_rate_ep2": 1.0,
       "mean_final_distance_ep2": 0.009152093108974737,
       "success_rate_static": 1.0,
@@ -13,7 +13,7 @@
     },
     "B": {
       "n_ep2": 5,
-      "mean_prediction_error_h10": 0.1631654018730941,
+      "mean_prediction_error_h10": 0.1874509865413843,
       "success_rate_ep2": 1.0,
       "mean_final_distance_ep2": 0.009152093108974737,
       "success_rate_static": 1.0,
@@ -21,7 +21,7 @@
     },
     "C": {
       "n_ep2": 5,
-      "mean_prediction_error_h10": 0.1618610576893711,
+      "mean_prediction_error_h10": 0.1091961645127528,
       "success_rate_ep2": 1.0,
       "mean_final_distance_ep2": 0.009152093108974737,
       "success_rate_static": 1.0,
@@ -29,18 +29,18 @@
     },
     "D": {
       "n_ep2": 5,
-      "mean_prediction_error_h10": 0.16041956256863404,
+      "mean_prediction_error_h10": 0.12161417427007107,
       "success_rate_ep2": 1.0,
       "mean_final_distance_ep2": 0.009152093108974737,
       "success_rate_static": 1.0,
       "gate_fire_rate": 0.0
     },
     "C_vs_B": {
-      "delta_prediction_error": 0.0013043441837230219,
+      "delta_prediction_error": 0.07825482202863152,
       "delta_success_rate": 0.0
     },
     "C_vs_D": {
-      "delta_prediction_error": -0.0014414951207370463,
+      "delta_prediction_error": 0.012418009757318271,
       "delta_success_rate": 0.0
     }
   }

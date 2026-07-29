@@ -80,7 +80,7 @@ def evaluate_gate(
 
     repairs_failed = (
         len(repair_residuals) >= thresholds.K_repairs
-        and all(r > thresholds.tau_error for r in repair_residuals[-thresholds.K_repairs :])
+        and repair_residuals[-1] > thresholds.tau_error
     )
 
     reasons = {

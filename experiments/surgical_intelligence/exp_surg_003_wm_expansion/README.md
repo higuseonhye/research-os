@@ -41,6 +41,17 @@ bash scripts/run_exp_surg_003_vessl.sh
 
 Pull results locally: `bash scripts/copy_exp_surg_003_from_vessl.sh all`
 
+## Pilot v0.3 (CV drift mode F1)
+
+| Metric | 5-seed result |
+| --- | --- |
+| Ep2 success | 100% all arms |
+| **C vs B ΔPE** | **+0.078 (~42% relative)** |
+| A / B / C / D PE | 0.183 / 0.187 / **0.109** / 0.122 |
+| Gate fire (ep2 log) | tune · H4 controls next |
+
+F1 = **constant-velocity target mode** (direction-agnostic) · not fixed bias.
+
 ## Pilot v0.2 tuning (local)
 
 | Change | Why |

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 
@@ -19,6 +19,7 @@ OBS_DIM = 6
 ACT_DIM = 2
 LATENT_DIM = 8
 HIDDEN_DIM = 32
+TARGET_SLICE = slice(4, 6)
 
 
 class GRUDynamicsCore(nn.Module):
@@ -44,21 +45,32 @@ class GRUDynamicsCore(nn.Module):
 
 
 class DriftExpert(nn.Module):
-    """F1: adds learnable drift bias in observation space after GRU prediction."""
+    """F1: constant-velocity target mode — missing dynamics class, not fixed direction.
+
+    When selected, target channels follow observed velocity extrapolation:
+        target_{t+1} ≈ target_t + (target_t - target_{t-1})
+    Optional learned gain and GRU residual on non-target dims.
+    """
 
     def __init__(self, core: GRUDynamicsCore) -> None:
         super().__init__()
         self.core = core
-        self.drift_bias = nn.Parameter(torch.zeros(core.obs_dim))
+        self.drift_gain = nn.Parameter(torch.ones(1))
+        self.target_correction = nn.Linear(HIDDEN_DIM, 2)
 
     def forward_step(
         self,
         obs: torch.Tensor,
         action: torch.Tensor,
         h: torch.Tensor,
+        prev_target: torch.Tensor | None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         pred, h_next = self.core.forward_step(obs, action, h)
-        pred = pred + self.drift_bias
+        pred = pred.clone()
+        if prev_target is not None:
+            vel = obs[..., TARGET_SLICE] - prev_target
+            cv_target = obs[..., TARGET_SLICE] + self.drift_gain * vel
+            pred[..., TARGET_SLICE] = cv_target + self.target_correction(h_next)
         return pred, h_next
 
 
@@ -81,6 +93,7 @@ class ModeGate(nn.Module):
 @dataclass
 class WMState:
     h: torch.Tensor
+    prev_target: torch.Tensor | None = field(default=None)
 
 
 class StaticWorldModel:
@@ -106,7 +119,12 @@ class StaticWorldModel:
         with torch.no_grad():
             pred, h_next = self.f0.forward_step(obs_t, act_t, state.h)
         residual = float(torch.norm(pred - obs_t).item())
-        return pred.squeeze(0).cpu().numpy(), WMState(h=h_next), residual
+        prev_t = obs_t[:, TARGET_SLICE].detach()
+        return (
+            pred.squeeze(0).cpu().numpy(),
+            WMState(h=h_next, prev_target=prev_t),
+            residual,
+        )
 
     def train_on_trajectory(
         self,
@@ -153,7 +171,6 @@ class ModularWorldModel:
             list(self.f1.parameters()) + list(self.gate.parameters()),
             lr=1e-3,
         )
-        # F0 frozen by default for L3 arm
         for p in self.f0.parameters():
             p.requires_grad = False
 
@@ -170,9 +187,10 @@ class ModularWorldModel:
     ) -> tuple[np.ndarray, WMState, float, np.ndarray]:
         obs_t = torch.as_tensor(obs, dtype=torch.float32, device=self.device).unsqueeze(0)
         act_t = torch.as_tensor(action, dtype=torch.float32, device=self.device).unsqueeze(0)
+        prev_target = state.prev_target
         with torch.no_grad():
             pred0, h0 = self.f0.forward_step(obs_t, act_t, state.h)
-            pred1, h1 = self.f1.forward_step(obs_t, act_t, state.h)
+            pred1, h1 = self.f1.forward_step(obs_t, act_t, state.h, prev_target)
             res_norm = torch.norm(pred0 - obs_t, dim=-1)
             if force_expert == 0:
                 w = torch.tensor([[1.0, 0.0]], device=self.device)
@@ -183,9 +201,10 @@ class ModularWorldModel:
             pred = w[:, 0:1] * pred0 + w[:, 1:2] * pred1
             h_next = w[:, 0:1] * h0 + w[:, 1:2] * h1
         residual = float(torch.norm(pred - obs_t).item())
+        prev_t = obs_t[:, TARGET_SLICE].detach()
         return (
             pred.squeeze(0).cpu().numpy(),
-            WMState(h=h_next),
+            WMState(h=h_next, prev_target=prev_t),
             residual,
             w.squeeze(0).cpu().numpy(),
         )
@@ -205,16 +224,18 @@ class ModularWorldModel:
         for _ in range(steps):
             self.opt.zero_grad()
             h = torch.zeros(1, HIDDEN_DIM, device=self.device)
+            prev_target: torch.Tensor | None = obs_t[0:1, TARGET_SLICE]
             loss = torch.tensor(0.0, device=self.device)
             for i in range(n):
                 obs_i = obs_t[i : i + 1]
                 act_i = act_t[i : i + 1]
                 pred0, _ = self.f0.forward_step(obs_i, act_i, h)
-                pred1, h = self.f1.forward_step(obs_i, act_i, h)
+                pred1, h = self.f1.forward_step(obs_i, act_i, h, prev_target)
                 res_norm = torch.norm(pred0 - obs_i, dim=-1)
                 w = self.gate(obs_i, res_norm)
                 pred = w[:, 0:1] * pred0 + w[:, 1:2] * pred1
                 loss = loss + F.mse_loss(pred, obs_t[i + 1 : i + 2])
+                prev_target = obs_i[:, TARGET_SLICE].detach()
             loss = loss / n
             loss.backward()
             self.opt.step()
@@ -232,12 +253,14 @@ def multi_step_prediction_error(
     """PE_H on target position channels (last 2 dims of obs)."""
     if len(obs_seq) < horizon + 1:
         return float("nan")
-    state = wm.init_state()
     errors: list[float] = []
-    # warm-start with first observation
     for start in range(0, len(obs_seq) - horizon - 1, max(1, horizon // 2)):
         state = wm.init_state()
         obs = obs_seq[start]
+        if isinstance(wm, ModularWorldModel):
+            state.prev_target = torch.as_tensor(
+                obs[TARGET_SLICE], dtype=torch.float32, device=wm.device
+            ).unsqueeze(0)
         total = 0.0
         for h in range(horizon):
             idx = start + h
@@ -248,7 +271,6 @@ def multi_step_prediction_error(
             else:
                 pred, state, _ = wm.predict_step(obs, act_seq[idx], state)
             true_next = obs_seq[idx + 1]
-            # target channels = obs[4:6]
             err = float(np.linalg.norm(pred[4:6] - true_next[4:6]))
             total += err
             obs = true_next
