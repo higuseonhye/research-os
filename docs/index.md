@@ -42,7 +42,7 @@ Mock→physics design → [archived](paper002/archive/mock_to_physics/README.md)
 | --- | --- |
 | **Paper 001** | [docs/paper1/](paper1/README.md) |
 | **Paper 002** | [docs/paper002/](paper002/README.md) |
-| **Mismatch Lab** | [docs/mismatch_lab/](mismatch_lab/README.md) |
+| **Mismatch Lab** | [docs/mismatch_lab/](mismatch_lab/README.md) · [Diff demo](mismatch_lab/diff_explorer_v0.1.html) |
 | **Study 002** | [docs/stage2/](stage2/README.md) |
 | **Naming** | [NAMING.md](NAMING.md) |
 | **Repo** | [github.com/higuseonhye/research-os](https://github.com/higuseonhye/research-os) |

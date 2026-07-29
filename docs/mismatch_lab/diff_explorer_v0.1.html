@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mismatch Lab — Robot Diff Explorer v0.1</title>
+  <meta name="description" content="Compare robot rollouts and explore when differences imply model inadequacy. Static demo from EXP-SURG-003 mock pilot design." />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --warn: #d29922;
+      --danger: #f85149;
+      --ok: #3fb950;
+      --font: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    a { color: var(--accent); }
+    header, main, footer {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 1rem 1.25rem;
+    }
+    header { border-bottom: 1px solid var(--border); }
+    h1 { font-size: 1.35rem; margin: 0 0 0.25rem; font-weight: 600; }
+    .sub { color: var(--muted); font-size: 0.9rem; margin: 0; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 720px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .card h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin: 0 0 0.75rem;
+      font-weight: 600;
+    }
+    .case-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .case-tabs button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .case-tabs button.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .stat label { display: block; color: var(--muted); font-size: 0.7rem; }
+    .stat span { font-weight: 600; }
+    .pill {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: 1px solid var(--border);
+    }
+    .pill.warn { border-color: var(--warn); color: var(--warn); }
+    .pill.info { border-color: var(--accent); color: var(--accent); }
+    .pill.neutral { color: var(--muted); }
+    .evidence { margin: 0.75rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.85rem; }
+    .evidence li { margin: 0.25rem 0; }
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
+    .pins { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .pins button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    svg.chart { width: 100%; height: 140px; display: block; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .actions button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.35rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: default;
+    }
+    footer {
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .reach-svg { width: 100%; height: 180px; background: #0d1117; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mismatch Lab — Robot Diff Explorer</h1>
+    <p class="sub">Static demo v0.1 · synthetic data aligned with EXP-SURG-003 mock pilot · <a href="README.md">spec</a></p>
+  </header>
+
+  <main>
+    <p><strong>What changed between these two robot runs?</strong> Scrub the timeline · compare prediction vs observation · optional adequacy hint.</p>
+
+    <div class="case-tabs" id="caseTabs"></div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>2D reach view</h2>
+        <svg class="reach-svg" id="reachSvg" viewBox="0 0 320 180"></svg>
+      </div>
+      <div class="card">
+        <h2>Diff summary · <span id="adequacyPill" class="pill neutral">none</span></h2>
+        <p id="caseQuestion" style="margin:0 0 0.75rem;font-weight:600;"></p>
+        <div class="stats">
+          <div class="stat"><label>Max divergence</label><span id="maxDiv">—</span></div>
+          <div class="stat"><label>Onset step</label><span id="onsetStep">—</span></div>
+          <div class="stat"><label>Classification</label><span id="classification">—</span></div>
+          <div class="stat"><label>Shifts found</label><span id="shifts">—</span></div>
+        </div>
+        <ul class="evidence" id="evidence"></ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h2>Timeline</h2>
+      <input type="range" id="timeline" min="0" max="79" value="24" />
+      <div class="pins">
+        <button type="button" data-pin="8">Pin t=8</button>
+        <button type="button" data-pin="24">Pin t=24</button>
+        <button type="button" data-pin="45">Pin t=45</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h2>One-step prediction error</h2>
+      <svg class="chart" id="chartPe" viewBox="0 0 400 140"></svg>
+    </div>
+    <div class="card" style="margin-top:1rem;">
+      <h2>Run difference |A − B|</h2>
+      <svg class="chart" id="chartDiff" viewBox="0 0 400 140"></svg>
+    </div>
+    <div class="card" style="margin-top:1rem;" id="repairCard">
+      <h2>Repair residual (L1 attempts)</h2>
+      <svg class="chart" id="chartRepair" viewBox="0 0 400 140"></svg>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h2>Counterfactual actions (preview only)</h2>
+      <div class="actions">
+        <button>Continue</button><button>Repair</button><button>Replan</button><button>Expand</button><button>Escalate</button>
+      </div>
+      <p class="sub" style="margin:0.5rem 0 0;">v0.1 shows expected outcomes · does not control a live robot</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>Research evidence: <a href="../paper002/README.md">Paper 002</a> · <a href="v0.1_spec.md">Mismatch Lab spec</a> · <a href="https://github.com/higuseonhye/research-os">research-os</a></p>
+    <p>Preliminary pilot only — not a product deployment or generalization claim.</p>
+  </footer>
+
+  <script>
+    const CASES = {
+      policy_ablation: {
+        title: "Policy A vs B",
+        question: "What changed after my ablation?",
+        adequacy: "none",
+        classification: "policy_shift",
+        onset: 99,
+        drift: false,
+        maxDiv: "0.012",
+        shifts: "2",
+        evidence: ["Behavior shift without sustained prediction gap", "No repair plateau"],
+      },
+      drift_onset: {
+        title: "Drift onset",
+        question: "When did predictions diverge from reality?",
+        adequacy: "watch",
+        classification: "persistent_drift",
+        onset: 8,
+        drift: true,
+        maxDiv: "0.028",
+        shifts: "3",
+        evidence: ["Divergence opens at drift onset (t=8)", "Autocorrelation rising — monitor before retuning"],
+      },
+      repair_plateau: {
+        title: "Repair plateau",
+        question: "Why didn't retuning fix it?",
+        adequacy: "structural_review",
+        classification: "persistent_drift",
+        onset: 8,
+        drift: true,
+        maxDiv: "0.041",
+        shifts: "3",
+        evidence: [
+          "Prediction error persisted after three parameter repair attempts",
+          "Residual autocorrelation above threshold",
+          "Recommended: add drift-mode counterfactual",
+        ],
+      },
+      drift_vs_noise: {
+        title: "Drift vs noise",
+        question: "Sensor noise or real dynamics change?",
+        adequacy: "structural_review",
+        classification: "persistent_drift",
+        onset: 8,
+        drift: true,
+        maxDiv: "0.035",
+        shifts: "3",
+        evidence: ["Drift arm: sustained residual · Noise arm: high autocorr only", "Gate fires on drift · not on noise (H4)"],
+      },
+    };
+
+    let activeCase = "repair_plateau";
+    let step = 24;
+
+    function genSeries(steps, onset, drift) {
+      const pe = [], diff = [], repair = [];
+      for (let t = 0; t < steps; t++) {
+        const base = 0.008 + (t > onset && drift ? (t - onset) * 0.0012 : 0);
+        pe.push(base + Math.sin(t * 0.4) * 0.002);
+        diff.push(t > onset && drift ? (t - onset) * 0.0015 : 0.001);
+        repair.push(t < 20 ? 0.11 : t < 40 ? 0.11 - (t - 20) * 0.002 : 0.035);
+      }
+      return { pe, diff, repair };
+    }
+
+    function drawLineChart(svgId, data, color, refY, step) {
+      const svg = document.getElementById(svgId);
+      const w = 400, h = 140, pad = 28;
+      const max = Math.max(...data, refY || 0) * 1.1;
+      const min = 0;
+      const xs = (i) => pad + (i / (data.length - 1)) * (w - 2 * pad);
+      const ys = (v) => h - pad - ((v - min) / (max - min)) * (h - 2 * pad);
+      let path = "";
+      data.forEach((v, i) => { path += (i ? "L" : "M") + xs(i).toFixed(1) + "," + ys(v).toFixed(1); });
+      let ref = "";
+      if (refY != null) {
+        const y = ys(refY);
+        ref = `<line x1="${pad}" y1="${y}" x2="${w - pad}" y2="${y}" stroke="#f85149" stroke-dasharray="4 3" stroke-width="1"/>`;
+      }
+      const cx = xs(step), cy = ys(data[step]);
+      svg.innerHTML = `
+        <rect width="${w}" height="${h}" fill="#161b22"/>
+        <path d="${path}" fill="none" stroke="${color}" stroke-width="2"/>
+        ${ref}
+        <circle cx="${cx}" cy="${cy}" r="4" fill="#d29922"/>
+        <text x="${pad}" y="16" fill="#8b949e" font-size="10">${svgId.includes("Pe") ? "error" : svgId.includes("Diff") ? "|A-B|" : "residual"}</text>
+      `;
+    }
+
+    function drawReach(step) {
+      const svg = document.getElementById("reachSvg");
+      const px = 20 + step * 3.5;
+      const py = 140 - step * 1.2;
+      svg.innerHTML = `
+        <rect width="320" height="180" fill="#0d1117"/>
+        <polyline fill="none" stroke="#58a6ff" stroke-width="2"
+          points="20,140 60,120 100,100 140,85 180,70 220,58 260,48 300,42"/>
+        <polyline fill="none" stroke="#8b949e" stroke-width="2" stroke-dasharray="6 4"
+          points="20,145 60,128 100,112 140,98 180,88 220,82 260,78 300,76"/>
+        <circle cx="${px}" cy="${py}" r="6" fill="#d29922"/>
+        <text x="12" y="16" fill="#8b949e" font-size="11">Run A solid · Run B dashed · t=${step}</text>
+      `;
+    }
+
+    function render() {
+      const c = CASES[activeCase];
+      const series = genSeries(80, c.onset, c.drift);
+
+      document.getElementById("caseQuestion").textContent = c.question;
+      document.getElementById("maxDiv").textContent = c.maxDiv;
+      document.getElementById("onsetStep").textContent = c.onset === 99 ? "—" : String(c.onset);
+      document.getElementById("classification").textContent = c.classification;
+      document.getElementById("shifts").textContent = c.shifts;
+
+      const pill = document.getElementById("adequacyPill");
+      pill.textContent = c.adequacy;
+      pill.className = "pill " + (c.adequacy === "structural_review" ? "warn" : c.adequacy === "watch" ? "info" : "neutral");
+
+      const ul = document.getElementById("evidence");
+      ul.innerHTML = c.evidence.map((e) => `<li>${e}</li>`).join("");
+
+      document.getElementById("repairCard").style.display = activeCase === "repair_plateau" ? "block" : "none";
+
+      document.getElementById("timeline").value = step;
+      drawReach(step);
+      drawLineChart("chartPe", series.pe, "#58a6ff", null, step);
+      drawLineChart("chartDiff", series.diff, "#d29922", null, step);
+      if (activeCase === "repair_plateau") {
+        drawLineChart("chartRepair", series.repair, "#8b949e", 0.012, step);
+      }
+
+      document.querySelectorAll(".case-tabs button").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.case === activeCase);
+      });
+    }
+
+    const tabs = document.getElementById("caseTabs");
+    Object.entries(CASES).forEach(([id, c]) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.case = id;
+      b.textContent = c.title;
+      b.onclick = () => {
+        activeCase = id;
+        step = id === "repair_plateau" ? 24 : 12;
+        render();
+      };
+      tabs.appendChild(b);
+    });
+
+    document.getElementById("timeline").oninput = (e) => {
+      step = Number(e.target.value);
+      render();
+    };
+    document.querySelectorAll(".pins button").forEach((btn) => {
+      btn.onclick = () => {
+        step = Number(btn.dataset.pin);
+        render();
+      };
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -28,6 +28,7 @@
 | Doc | Purpose |
 | --- | --- |
 | [**v0.1 spec**](v0.1_spec.md) | Product spec · 4 cases · Diff UI · 4–6 week build plan |
+| [**Diff Explorer (live demo)**](diff_explorer_v0.1.html) | Static interactive wireframe · GitHub Pages |
 | [**API schema**](api_schema_v0.1.json) | `mismatch.diff` · `mismatch.analyze` · report JSON |
 | [**Homepage v0.1**](homepage_v0.1.md) | Hero · CTAs · demo copy · pilot waitlist |
 | [**Benchmark spec**](benchmark_spec_v0.1.md) | Adequacy benchmark · negative controls · scoring |

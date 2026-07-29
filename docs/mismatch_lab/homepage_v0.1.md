@@ -14,7 +14,7 @@
 
 > Mismatch Lab helps teams understand robot behavior — and spot when a difference means the model no longer fits reality.
 
-**Primary CTA:** Try Robot Diff  
+**Primary CTA:** [Try Robot Diff](diff_explorer_v0.1.html)  
 **Secondary CTAs:** Explore cases · Run the benchmark · Read the research
 
 ---
