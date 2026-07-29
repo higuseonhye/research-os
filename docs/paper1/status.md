@@ -1,6 +1,6 @@
 # Paper 1 — evidence status (public)
 
-> **Updated:** 2026-07-28 · **Working paper:** [`paper001_recoverability_complete.pdf`](paper001_recoverability_complete.pdf)  
+> **Updated:** 2026-07-29 · **Working paper:** [`paper001_recoverability_complete.pdf`](paper001_recoverability_complete.pdf)  
 > **Program:** publication-grade proper run · [`phase_c_proper_run_prereg_v2.0.md`](phase_c_proper_run_prereg_v2.0.md)
 
 ---
@@ -21,7 +21,7 @@
 | **C v2.0** | D1–D3 baselines + control | ✅ **2026-07-24** VESSL |
 | **Lit v2** | Positioning | ✅ |
 | **Next** | Working paper · venue · Fig baseline overlay | ⏭ [`paper001_recoverability_complete.pdf`](paper001_recoverability_complete.pdf) |
-| **Paper 002** | Mock→physics validation · pre-results MS | 🔄 **under review** · [`../paper002/status.md`](../paper002/status.md) |
+| **Paper 002** | WM expansion design · L1 vs L3 · Ep1/Ep2 | 🔄 pre-reg draft · [`../paper002/status.md`](../paper002/status.md) |
 
 ---
 

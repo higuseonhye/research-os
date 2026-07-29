@@ -1,7 +1,7 @@
 # EXP-SURG-002 / EXP-SURG-003 — Dream curriculum
 
 > **Study 002 (pilot):** Phase 1–2 complete · Tier B · archived  
-> **Paper 002 (confirmatory):** pre-reg frozen · [`docs/paper002/`](../../../docs/paper002/) · config `sandbox_v0.4.yaml` · **MS under review**  
+> **Paper 002:** WM structural expansion · design v0.1 · [`docs/paper002/`](../../../docs/paper002/) · mock→physics [**archived**](../../../docs/paper002/archive/mock_to_physics/)  
 > **Parent:** EXP-SURG-001 perturbation taxonomy + mock reach
 
 ## Quick start (no GPU)
@@ -63,18 +63,10 @@ Promote full `isaac_aggregate.json` from pod: [`scripts/copy_study2_results_from
 - **Not** full ReSYNC / IVNTR — perturbation-param dreaming only (v0.1)
 - Public repo: frozen design + tier-labeled results only (see [`PUBLIC_BOUNDARY.md`](../../../docs/PUBLIC_BOUNDARY.md))
 
-## Paper 002 confirmatory (execute next)
+## Paper 002 — WM expansion (design · not mock confirmatory)
 
-Pre-reg: [`paper002_prereg_v0.1.md`](../../../docs/paper002/paper002_prereg_v0.1.md) · protocol: [`paper002_run_protocol_v0.1.md`](../../../docs/paper002/paper002_run_protocol_v0.1.md)
+Docs: [`paper002_description_wm_expansion_v0.1.md`](../../../docs/paper002/paper002_description_wm_expansion_v0.1.md) · [`paper002_wm_system_expansion_v0.1.md`](../../../docs/paper002/paper002_wm_system_expansion_v0.1.md)
 
-```bash
-# Mock (CPU) — after LLM curricula generated
-python scripts/run_study2_dream_curriculum_mock.py \
-  --config experiments/surgical_intelligence/exp_surg_002_dream_curriculum/config/sandbox_v0.3.yaml \
-  --compare --episodes 128 --seed 43 --agent rule --promote-label mock_confirmatory_v0.1
+Mock→physics confirmatory GPU **cancelled** · see [archive](../../../docs/paper002/archive/mock_to_physics/).
 
-# Isaac (GPU) — see run protocol Leg 5
-export STUDY2_CONFIG=experiments/surgical_intelligence/exp_surg_002_dream_curriculum/config/sandbox_v0.3.yaml
-export STUDY2_TOP_K=10
-export STUDY2_ISAAC_SEEDS=0,1,2,3,4,5,6,7
-```
+Engineering spike (drift mode · Ep1/Ep2): TBD · config path after pre-reg freeze.

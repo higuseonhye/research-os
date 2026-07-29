@@ -18,9 +18,9 @@ This repository contains **promoted research evidence only**—research question
 
 ## Research direction
 
-**Long-term vision:** Physical AI for the Non-Average World.
+**Long-term (L0):** When reality cannot be explained by the current **model class**, how should an embodied system revise the **architecture and composition** of its world-modeling system?
 
-**Near-term program:** build measurable protocols for recognizing and resolving task-relevant mismatch, with emphasis on recoverability, intervention choice, timing, and human–AI collaboration.
+**Near-term program:** failure-driven representation reconstruction · latent as **observation** · recoverability as **measurement window** · Isaac/ORBIT embodied sim.
 
 **Current scope:** controlled simulation studies. This repository does not claim clinical deployment, a complete theory of exception-aware intelligence, or a general recoverability estimator.
 
@@ -61,7 +61,7 @@ Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper
 | Paper 001 hub | [`docs/paper1/README.md`](docs/paper1/README.md) |
 | Paper 002 hub | [`docs/paper002/README.md`](docs/paper002/README.md) |
 | Study 002 hub | [`docs/stage2/README.md`](docs/stage2/README.md) |
-| Pre-results PDF (002) | [`docs/paper002/paper002_pre_results_v1.2.pdf`](docs/paper002/paper002_pre_results_v1.2.pdf) · *under review* |
+| Pre-results PDF (002 · archived) | [`docs/paper002/archive/mock_to_physics/`](docs/paper002/archive/mock_to_physics/) |
 | Research question v1.0 | [`docs/paper1/research_question.md`](docs/paper1/research_question.md) |
 | EXP-SURG-001 | [`experiments/.../exp_surg_001_execute_or_defer/README.md`](experiments/surgical_intelligence/exp_surg_001_execute_or_defer/README.md) |
 | EXP-SURG-002 | [`experiments/.../exp_surg_002_dream_curriculum/README.md`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/README.md) |
@@ -111,7 +111,7 @@ Bootstrap: [`scripts/bootstrap_orbit_surgical_runpod.sh`](scripts/bootstrap_orbi
 | `experiments/surgical_intelligence/exp_surg_001_*` | Paper 1 configs · reports · Tier B/C results |
 | `experiments/surgical_intelligence/exp_surg_002_*` | Study 2 dream curriculum · mock + Isaac summaries |
 | `docs/paper1/` | Paper 001 RQ · status · working paper |
-| `docs/paper002/` | Paper 002 pre-reg · pre-results PDF · protocols |
+| `docs/paper002/` | Paper 002 WM expansion · archive/mock→physics |
 | `docs/stage2/` | Study 002 pilot · archived |
 | `scripts/` | Mock + RunPod entry points |
 
