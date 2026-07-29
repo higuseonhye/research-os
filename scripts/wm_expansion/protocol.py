@@ -30,6 +30,10 @@ class PilotConfig:
     mpc_candidates: int = 17
     ep1_velocity: tuple[float, float] = (0.012, 0.0)
     ep2_velocity: tuple[float, float] = (0.0, 0.007)
+    ep1_onset_step: int = 8
+    ep2_onset_step: int = 12
+    ep1_duration_steps: int = 35
+    ep2_duration_steps: int = 35
     behavior_policy: str = "scripted"  # scripted | mpc — pilot uses scripted for task success
     gate: GateThresholds = field(default_factory=GateThresholds)
     device: str = "cpu"
@@ -72,13 +76,14 @@ def _run_episode_mpc(
     target_start: np.ndarray,
     drift: DriftSpec | None,
     force_expert: int | None = None,
+    until_max_steps: bool = False,
 ) -> tuple[list[np.ndarray], list[np.ndarray], bool, float]:
     env = ReachDriftEnv(max_steps=cfg.max_steps, success_tol=cfg.success_tol)
     obs = env.reset(seed=seed, target_start=target_start, drift=drift)
     state = wm.init_state()
     obs_seq = [obs.copy()]
     act_seq: list[np.ndarray] = []
-    while not env.done:
+    while True:
         if cfg.behavior_policy == "scripted":
             action = env.scripted_action_toward_observed_target()
         else:
@@ -90,28 +95,54 @@ def _run_episode_mpc(
                 horizon=cfg.mpc_horizon,
                 force_expert=force_expert,
             )
-        obs, _, done, info = env.step(action)
+        obs, _, _, info = env.step(action)
         act_seq.append(action.copy())
         obs_seq.append(obs.copy())
+        if until_max_steps and env.done and env.t < cfg.max_steps:
+            env.done = False
+        if until_max_steps:
+            if env.t >= cfg.max_steps:
+                break
+        elif env.done:
+            break
     return obs_seq[:-1], act_seq, bool(info.get("success", False)), float(info["distance"])
 
 
-def _ep1_drift_spec(cfg: PilotConfig, onset: int = 20) -> DriftSpec:
+def _ep1_drift_spec(cfg: PilotConfig) -> DriftSpec:
     return DriftSpec(
         mode=TargetMode.DRIFT,
-        onset_step=onset,
+        onset_step=cfg.ep1_onset_step,
         velocity=np.array(cfg.ep1_velocity, dtype=np.float64),
-        duration_steps=35,
+        duration_steps=cfg.ep1_duration_steps,
     )
 
 
-def _ep2_drift_spec(cfg: PilotConfig, ep1: DriftSpec) -> DriftSpec:
+def _ep2_drift_spec(cfg: PilotConfig) -> DriftSpec:
     return DriftSpec(
         mode=TargetMode.DRIFT,
-        onset_step=max(8, ep1.onset_step - 8),
+        onset_step=cfg.ep2_onset_step,
         velocity=np.array(cfg.ep2_velocity, dtype=np.float64),
-        duration_steps=ep1.duration_steps,
+        duration_steps=cfg.ep2_duration_steps,
     )
+
+
+def _evaluate_gate_with_f1_probe(
+    wm: StaticWorldModel,
+    obs: np.ndarray,
+    act: np.ndarray,
+    repair_residuals: list[float],
+    cfg: PilotConfig,
+) -> GateResult:
+    """Full gate evaluation including F1 probe ΔNLL (shared by run_arm and H4 controls)."""
+    gate = evaluate_gate(wm, obs, act, repair_residuals, cfg.gate)
+    wm_probe = ModularWorldModel(wm.clone_f0(), device=cfg.device)
+    wm_probe.train_expansion(obs, act, steps=cfg.expansion_steps // 2)
+    nll_f0 = float(np.mean(repair_residuals)) if repair_residuals else 0.0
+    nll_f1 = measure_f1_nll_proxy(wm, obs, act, wm_probe)
+    gate.delta_nll = nll_f0 - nll_f1
+    gate.reasons["delta_nll_high"] = gate.delta_nll > cfg.gate.tau_delta_nll
+    gate.fired = all(gate.reasons.values())
+    return gate
 
 
 def _target_for_seed(seed: int, ep2: bool = False) -> np.ndarray:
@@ -130,12 +161,14 @@ def run_arm(
 ) -> tuple[list[EpisodeResult], dict[str, Any]]:
     """Run full protocol for one arm on one seed."""
     ep1_drift = _ep1_drift_spec(cfg)
-    ep2_drift = _ep2_drift_spec(cfg, ep1_drift)
+    ep2_drift = _ep2_drift_spec(cfg)
     target_ep1 = _target_for_seed(seed, ep2=False)
     target_ep2 = _target_for_seed(seed, ep2=True)
 
-    # Ep1 data collection with W0 (shared evidence)
-    ep1_obs, ep1_act, _, _ = _run_episode_mpc(wm_static, cfg, seed, target_ep1, ep1_drift)
+    # Ep1 adaptation roll-out: collect through drift window (ignore early success)
+    ep1_obs, ep1_act, _, _ = _run_episode_mpc(
+        wm_static, cfg, seed, target_ep1, ep1_drift, until_max_steps=True
+    )
 
     # Phase 2: K L1 repairs
     wm_b = StaticWorldModel(device=cfg.device)
@@ -145,23 +178,9 @@ def run_arm(
         wm_b.train_on_trajectory(np.asarray(ep1_obs), np.asarray(ep1_act), steps=cfg.repair_steps)
         repair_residuals.append(mean_step_residual(wm_b, np.asarray(ep1_obs), np.asarray(ep1_act)))
 
-    # Quick F1 candidate for gate delta NLL
-    wm_probe = ModularWorldModel(wm_b.clone_f0(), device=cfg.device)
-    wm_probe.train_expansion(np.asarray(ep1_obs), np.asarray(ep1_act), steps=cfg.expansion_steps // 2)
-    nll_f0 = float(np.mean(repair_residuals)) if repair_residuals else 0.0
-    nll_f1 = measure_f1_nll_proxy(wm_b, np.asarray(ep1_obs), np.asarray(ep1_act), wm_probe)
-
-    gate = evaluate_gate(
-        wm_b,
-        np.asarray(ep1_obs),
-        np.asarray(ep1_act),
-        repair_residuals,
-        cfg.gate,
+    gate = _evaluate_gate_with_f1_probe(
+        wm_b, np.asarray(ep1_obs), np.asarray(ep1_act), repair_residuals, cfg
     )
-    # Patch delta_nll with measured values
-    gate.delta_nll = nll_f0 - nll_f1
-    gate.reasons["delta_nll_high"] = gate.delta_nll > cfg.gate.tau_delta_nll
-    gate.fired = all(gate.reasons.values())
 
     # Phase 4: arm intervention
     if arm == "A":
@@ -244,14 +263,24 @@ def run_gate_controls(cfg: PilotConfig, wm: StaticWorldModel, seed: int) -> list
     ]
     out: list[dict[str, Any]] = []
     for name, spec in controls:
-        obs, act, _, _ = _run_episode_mpc(wm, cfg, seed + hash(name) % 1000, _target_for_seed(seed), spec)
+        collect_full = name == "drift_M1"
+        obs, act, _, _ = _run_episode_mpc(
+            wm,
+            cfg,
+            seed + hash(name) % 1000,
+            _target_for_seed(seed),
+            spec,
+            until_max_steps=collect_full,
+        )
         repair_residuals = []
         wm_local = StaticWorldModel(device=cfg.device)
         wm_local.f0.load_state_dict(wm.f0.state_dict())
         for _ in range(cfg.K_repairs):
             wm_local.train_on_trajectory(np.asarray(obs), np.asarray(act), steps=cfg.repair_steps)
             repair_residuals.append(mean_step_residual(wm_local, np.asarray(obs), np.asarray(act)))
-        gate = evaluate_gate(wm_local, np.asarray(obs), np.asarray(act), repair_residuals, cfg.gate)
+        gate = _evaluate_gate_with_f1_probe(
+            wm_local, np.asarray(obs), np.asarray(act), repair_residuals, cfg
+        )
         out.append({"control": name, "seed": seed, "gate_fired": gate.fired, "gate": asdict(gate)})
     return out
 
@@ -275,6 +304,7 @@ def run_pilot(cfg: PilotConfig, arms: list[str] | None = None, seeds: list[int] 
         arm_meta[f"gate_controls_{seed}"] = run_gate_controls(cfg, wm0, seed)
 
     summary = _aggregate(all_results, arms)
+    summary["H4_gate_controls"] = _aggregate_h4(arm_meta, seeds)
     return {
         "experiment": "EXP-SURG-003-pilot-mock",
         "tier": "pilot",
@@ -315,6 +345,28 @@ def _aggregate(results: list[EpisodeResult], arms: list[str]) -> dict[str, Any]:
             "delta_success_rate": summary["C"]["success_rate_ep2"] - summary["D"]["success_rate_ep2"],
         }
     return summary
+
+
+def _aggregate_h4(arm_meta: dict[str, Any], seeds: list[int]) -> dict[str, Any]:
+    """H4: gate fire rate by negative/positive control condition."""
+    by_control: dict[str, list[bool]] = {}
+    for seed in seeds:
+        key = f"gate_controls_{seed}"
+        for row in arm_meta.get(key, []):
+            by_control.setdefault(row["control"], []).append(bool(row["gate_fired"]))
+    out: dict[str, Any] = {}
+    for control, fired in sorted(by_control.items()):
+        n = len(fired)
+        rate = float(np.mean(fired)) if n else 0.0
+        out[control] = {"n": n, "gate_fire_rate": rate, "gate_fired_count": int(sum(fired))}
+    negatives = [out[c]["gate_fire_rate"] for c in ("static", "noise_N1", "impulse_N2") if c in out]
+    positive = out.get("drift_M1", {}).get("gate_fire_rate")
+    out["H4_pass_heuristic"] = bool(
+        positive is not None
+        and positive >= 0.8
+        and all(r <= 0.2 for r in negatives)
+    )
+    return out
 
 
 def write_pilot_artifacts(out_dir: Path, payload: dict[str, Any]) -> None:

@@ -1,10 +1,10 @@
-# EXP-SURG-003 mock pilot v0.3 — CV drift mode F1 · gate fix
+# EXP-SURG-003 mock pilot v0.4 — ep1 drift timing · H4 gate aggregation
 
 pilot:
   max_steps: 80
   pretrain_static_episodes: 40
   pretrain_steps: 300
-  repair_steps: 80
+  repair_steps: 50
   expansion_steps: 800
   K_repairs: 3
   prediction_horizon: 10
@@ -17,7 +17,7 @@ pilot:
 gate:
   tau_error: 0.012
   tau_autocorr: 0.35
-  tau_delta_nll: 0.002
+  tau_delta_nll: 0.003
   K_repairs: 3
 
 arms: [A, B, C, D]
@@ -25,7 +25,7 @@ confirmatory_seeds: [0, 1, 2, 3, 4]
 
 drift:
   ep1:
-    onset_step: 20
+    onset_step: 8
     velocity: [0.016, 0.0]
     duration_steps: 35
   ep2:

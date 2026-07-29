@@ -43,8 +43,10 @@ def cfg_from_yaml(data: dict) -> PilotConfig:
     gate = data.get("gate", {})
     pilot = data.get("pilot", {})
     drift = data.get("drift", {})
-    ep1_v = drift.get("ep1", {}).get("velocity", [0.012, 0.0])
-    ep2_v = drift.get("ep2", {}).get("velocity", [0.0, 0.007])
+    ep1 = drift.get("ep1", {})
+    ep2 = drift.get("ep2", {})
+    ep1_v = ep1.get("velocity", [0.012, 0.0])
+    ep2_v = ep2.get("velocity", [0.0, 0.007])
     return PilotConfig(
         max_steps=int(pilot.get("max_steps", 80)),
         pretrain_static_episodes=int(pilot.get("pretrain_static_episodes", 40)),
@@ -57,6 +59,10 @@ def cfg_from_yaml(data: dict) -> PilotConfig:
         mpc_candidates=int(pilot.get("mpc_candidates", 17)),
         ep1_velocity=(float(ep1_v[0]), float(ep1_v[1])),
         ep2_velocity=(float(ep2_v[0]), float(ep2_v[1])),
+        ep1_onset_step=int(ep1.get("onset_step", 8)),
+        ep2_onset_step=int(ep2.get("onset_step", 12)),
+        ep1_duration_steps=int(ep1.get("duration_steps", 35)),
+        ep2_duration_steps=int(ep2.get("duration_steps", 35)),
         behavior_policy=str(pilot.get("behavior_policy", "scripted")),
         gate=GateThresholds(
             tau_error=float(gate.get("tau_error", 0.015)),
@@ -94,8 +100,8 @@ def main() -> None:
         cfg.expansion_steps = 80
         cfg.mpc_horizon = 8
         cfg.mpc_candidates = 13
-        cfg.gate.tau_error = 0.008
-        cfg.gate.tau_delta_nll = 0.0005
+        cfg.gate.tau_error = 0.012
+        cfg.gate.tau_delta_nll = 0.003
         seeds = [0, 1]
     else:
         seeds = [int(x.strip()) for x in args.seeds.split(",") if x.strip()]
