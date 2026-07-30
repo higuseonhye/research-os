@@ -19,7 +19,7 @@ Static retention and all gate-specificity controls passed.
 | Document | Purpose |
 | --- | --- |
 | [Manuscript v1.1](paper002_manuscript_model_order_v1.1.md) · [LaTeX](paper002_manuscript_model_order_v1.1.tex) · [PDF](paper002_manuscript_model_order_v1.1.pdf) | Submission-oriented review manuscript |
-| [Supplement v1.1](paper002_supplement_model_order_v1.1.md) · [LaTeX](paper002_supplement_model_order_v1.1.tex) · [PDF](paper002_supplement_model_order_v1.1.pdf) | Conditions, validity audit, full tables, and provenance |
+| [Supplement v1.1](paper002_supplement_model_order_v1.1.md) · [LaTeX](paper002_supplement_model_order_v1.1.tex) · [PDF](paper002_supplement_model_order_v1.1.pdf) | Conditions, validity audit, full tables, and statistical details |
 | [Overleaf main ZIP](paper002_overleaf_main_v1.1.zip) · [supplement ZIP](paper002_overleaf_supplement_v1.1.zip) | Root-`main.tex` upload packages for separate Overleaf projects |
 | [BibTeX](paper002_references_v1.1.bib) | Verified submission bibliography |
 | [Status](status.md) | Current phase, decisions, and next publication work |

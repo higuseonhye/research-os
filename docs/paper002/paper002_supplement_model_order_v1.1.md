@@ -1,11 +1,5 @@
 # Supplement: Failure-Conditioned Model-Order Expansion for Embodied Control
 
-> Author: Seonhye Gu
->
-> Affiliation: AI-Based Surgical Robot Innovation Lab
->
-> Research status: Independent personal research; affiliation is provided for identification only.
-
 ## S1. Protocol Summary
 
 The confirmatory experiment tests whether a structured target-motion residual
@@ -13,21 +7,13 @@ that persists after zero-order parameter repair warrants activation of a
 prepared velocity state. All design choices in this supplement were fixed before
 the fresh candidate seeds were executed.
 
-```text
-fixed candidates 300:339
-  -> static eligibility, before treatment
-  -> select first 10 eligible in numeric order
-  -> replay shared Episode 1 evidence in each arm
-  -> reproduce parameter lock and adequacy gate
-  -> fresh Isaac process for each seed x arm x condition cell
-  -> aggregate complete 10 x 4 x 10 dynamic grid
-  -> run 10 x 2 static-retention cells
-  -> apply conjunctive confirmatory decision
-```
-
-The selected seeds were 300, 301, 302, 303, 304, 305, 307, 308, 310, and 311.
-Thirty-four of 40 candidate seeds passed static eligibility. Dynamic-treatment
-outcomes did not influence inclusion.
+Candidate seeds were fixed as 300-339. Static eligibility was evaluated before
+dynamic treatment, and the first 10 eligible seeds in numeric order were
+selected: 300, 301, 302, 303, 304, 305, 307, 308, 310, and 311. Thirty-four of
+40 candidates passed. Each selected seed was evaluated in a fresh Isaac process
+for every arm-condition cell, producing a complete 10-seed by 4-arm by
+10-condition dynamic grid plus 20 static-retention cells. Dynamic outcomes did
+not influence seed inclusion.
 
 ## S2. Exact Model Definitions
 
@@ -212,13 +198,13 @@ not activate on the static target, so C reduces exactly to repaired zero order.
 
 For each continuous endpoint, form a 10 by 10 matrix of paired C-minus-B
 differences indexed by selected seed and fresh condition. For bootstrap replicate
-b:
+b, independently sample 10 seed indices and 10 condition indices with
+replacement and compute
 
-```text
-sample 10 seed indices with replacement
-sample 10 condition indices with replacement
-take the 10 x 10 crossed submatrix
-store its mean
+```math
+\bar{\Delta}^{*(b)}
+  &= \frac{1}{100}\sum_{a=1}^{10}\sum_{c=1}^{10}
+     \Delta_{I_a^{(b)},J_c^{(b)}}.
 ```
 
 The reported interval is the 2.5th and 97.5th percentile of 10,000 stored means.
@@ -227,33 +213,16 @@ than treating 100 cells as independent. The success-rate contrast is resampled
 identically but remains secondary. Wilson score intervals summarize individual
 gate rates.
 
-## S11. Software And Artifact Provenance
+## S11. Reproducibility Environment
 
-| Item | Frozen value |
+| Item | Setting |
 | --- | --- |
-| Container | `ghcr.io/higuseonhye/vessl-isaac-sim:4.1.0-v2` |
 | Simulator | Isaac Sim 4.1 |
+| Framework | Isaac Lab 1.0.0 and ORBIT-Surgical |
 | Task | `Isaac-Reach-Dual-STAR-IK-Rel-Play-v0` |
-| GPU | NVIDIA A100 SXM x1 |
-| CPU / memory | 11 vCPU / 128 GB RAM |
 | Fabric | Disabled |
 | Preregistration tag | `paper002-model-order-confirmatory-v1.0` |
-| Result commit | `73a7e16` |
 | Bootstrap draws / seed | 10,000 / 20260730 |
-
-Canonical files:
-
-- config: `experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_confirmatory_v1.0.json`
-- result summary and records: `isaac_model_order_results.json`
-- trajectories: `isaac_model_order_trajectories.json`
-- selection manifest: `selection_manifest.json`
-- process manifest: `orchestration_manifest.json`
-- raw checksum file: `SHA256SUMS`
-- derived figure checksum file: `docs/paper002/figures/manifest.json`
-
-The result directory's `git_commit.txt` identifies the preregistered source used
-for execution. `SHA256SUMS` covers the committed result package. The figure
-manifest covers both source JSON files and every generated figure and CSV table.
 
 ## S12. Simulator Warnings And Scope
 
@@ -268,17 +237,3 @@ mass-property, or hardware behavior.
 No human participants, animals, patient data, or clinical procedures were
 involved. The surgical context names the robot benchmark. It is not evidence of
 clinical safety or efficacy.
-
-## S13. Reproduction Commands
-
-CPU-only checks and derived-material generation:
-
-```bash
-PYTHONPATH=scripts python -m unittest scripts/test_exp_surg_003_target_dynamics.py
-python scripts/plot_paper002_model_order.py
-python scripts/build_paper002_submission_pdf.py
-```
-
-The simulator run itself requires the frozen Isaac/VESSL environment. It should
-not be rerun on an unvalidated local installation merely to regenerate figures;
-all derived paper materials are computed from the frozen JSON artifacts.
