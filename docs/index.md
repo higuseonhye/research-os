@@ -29,7 +29,16 @@ Isaac Sim 4.1 · ORBIT Reach · 3D embodied sim.
 
 **Paper 001 headline (D0 · n=20):** REPLAN **19/20** vs CONTINUE **0/20** → [status](paper1/status.md)
 
-**Paper 002 (now):** gated constant-velocity expansion beat repaired zero order on H=10 prediction and fixed-horizon control; static retention and gate controls passed · [status](paper002/status.md)
+**Paper 002 (now):** a preregistered **400/400-cell** Isaac Sim confirmatory
+grid found that gated constant-velocity expansion reduced H=10 prediction error
+by **10.806 mm** and fixed-horizon final distance by **13.304 mm** relative to
+repaired zero order. Static retention passed, and the gate fired on 100/100
+persistent-drift trials and 0/100 static, noise, and impulse controls.
+
+[Manuscript v1.1](paper002/paper002_manuscript_model_order_v1.1.md) ·
+[review PDF](paper002/paper002_manuscript_model_order_v1.1.pdf) ·
+[supplement](paper002/paper002_supplement_model_order_v1.1.pdf) ·
+[status](paper002/status.md)
 
 **Mismatch Lab:** Robot Diff · model adequacy public spec · [hub](mismatch_lab/README.md)
 
