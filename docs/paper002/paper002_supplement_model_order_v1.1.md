@@ -1,18 +1,10 @@
 # Supplement: Failure-Conditioned Model-Order Expansion for Embodied Control
 
-> Supplementary material v1.1
->
 > Author: Seonhye Gu
 >
 > Affiliation: AI-Based Surgical Robot Innovation Lab
 >
 > Research status: Independent personal research; affiliation is provided for identification only.
->
-> Main manuscript: [`paper002_manuscript_model_order_v1.1.md`](paper002_manuscript_model_order_v1.1.md)
->
-> Frozen design: `paper002-model-order-confirmatory-v1.0`
->
-> Confirmatory artifact: `73a7e16`
 
 ## S1. Protocol Summary
 
