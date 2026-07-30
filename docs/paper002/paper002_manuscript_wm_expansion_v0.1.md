@@ -1,6 +1,7 @@
 # Paper 002 — Manuscript skeleton · WM expansion v0.1
 
-> **Status:** pre-results · fill Results tables after confirmatory run  
+> **Status:** SUPERSEDED after model-order confirmatory
+> **Current manuscript:** [paper002_manuscript_model_order_v1.0.md](paper002_manuscript_model_order_v1.0.md)
 > **Supersedes:** [paper002_manuscript_pre_results_v0.1.md](paper002_manuscript_pre_results_v0.1.md) (mock→physics · archived)  
 > **Companion:** [description](paper002_description_wm_expansion_v0.1.md) · [confirmatory spec](paper002_confirmatory_spec_v0.1.md) · [pre-reg draft](paper002_prereg_wm_expansion_v0.1.md) · [analysis plan v0.3](paper002_analysis_plan_v0.3.md)
 

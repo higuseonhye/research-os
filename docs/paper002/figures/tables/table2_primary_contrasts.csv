@@ -1,0 +1,4 @@
+endpoint,c_minus_b,ci_low,ci_high,c_favorable_pair_rate,confirmatory_gate_pass
+mean_prediction_error_h10_mm,-10.805513816898198,-11.359510674150282,-10.330611902964792,1.0,True
+mean_final_distance_mm,-13.304234214592725,-13.599479902884923,-12.982135506754275,1.0,True
+success_rate,0.24,0.08,0.45,0.24,secondary

@@ -2,6 +2,10 @@
 
 > **When to use:** Local laptop too slow · RunPod SSH/proxy unstable  
 > **Same infra as Study 2:** [vessl_isaac_setup_v0.1.md](../stage2/vessl_isaac_setup_v0.1.md) · custom Isaac image · `/workspace` mount
+>
+> **Current state:** model-order confirmatory v1.0 completed and pushed as
+> `73a7e16`; the VESSL workspace may remain paused. Use this runbook for audit
+> or an exact reproduction, not for additional confirmatory sampling.
 
 ---
 
