@@ -27,7 +27,7 @@ args=(
 if [ "${EXP_SURG_003_SKIP_BOOTSTRAP:-0}" = "1" ]; then
   args+=(--skip-bootstrap)
 fi
-if [ "${EXP_SURG_003_ZERO_AGENT:-1}" = "0" ]; then
+if [ "${EXP_SURG_003_ZERO_AGENT:-0}" = "0" ]; then
   args+=(--skip-zero-agent)
 fi
 if [ "${DISABLE_FABRIC:-0}" = "1" ]; then
