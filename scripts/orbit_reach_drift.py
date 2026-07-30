@@ -7,6 +7,7 @@ Launched via isaaclab.sh (see scripts/run_exp_surg_003_drift_runpod.sh).
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -136,6 +137,21 @@ def _capture_branch_state(env: Any, command_name: str) -> dict[str, Any]:
     }
 
 
+def _state_fingerprint(state: dict[str, Any]) -> str:
+    digest = hashlib.sha256()
+    for group_name in ("articulations", "rigid_objects"):
+        for asset_name, values in sorted(state[group_name].items()):
+            digest.update(group_name.encode("utf-8"))
+            digest.update(asset_name.encode("utf-8"))
+            for value_name, value in sorted(values.items()):
+                digest.update(value_name.encode("utf-8"))
+                array = value.detach().cpu().numpy()
+                digest.update(np.ascontiguousarray(array).tobytes())
+    command = state["command"].detach().cpu().numpy()
+    digest.update(np.ascontiguousarray(command).tobytes())
+    return digest.hexdigest()
+
+
 def _restore_branch_state(env: Any, command_name: str, state: dict[str, Any]) -> None:
     base = env.unwrapped
     for name, saved in state["articulations"].items():
@@ -180,7 +196,9 @@ def _prepare_branch_state(
 ) -> dict[str, Any]:
     torch.manual_seed(seed)
     env.reset(seed=seed)
-    static_command = _get_command(env, command_name)
+    reset_state = _capture_branch_state(env, command_name)
+    static_command = reset_state["command"].clone()
+    reset_state_fingerprint = _state_fingerprint(reset_state)
     stable_steps = 0
     prefix_steps = 0
     prefix_final_distance = None
@@ -219,6 +237,8 @@ def _prepare_branch_state(
             "prefix_steps": prefix_steps,
             "prefix_stable_steps": stable_steps,
             "prefix_final_distance_m": prefix_final_distance,
+            "reset_state_fingerprint": reset_state_fingerprint,
+            "reset_command": static_command[0, :3].detach().cpu().numpy().tolist(),
         }
     )
     return state
@@ -239,7 +259,7 @@ def run_drift_branch(
     forbidden_half = np.array([0.04, 0.04, 0.04], dtype=np.float64)
 
     frozen_command = branch_state["command"].clone()
-    true_command = frozen_command.clone()
+    evaluation_command = frozen_command.clone()
     path = 0.0
     prev_ee = None
     violation = False
@@ -257,19 +277,21 @@ def run_drift_branch(
 
     for rel in range(branch_horizon_steps):
         t = prefix_steps + rel
-        if rel < args_cli.drift_duration:
-            true_command[:, :3] += drift_step
-        policy_command = true_command if policy == "TRACK_DRIFTING" else frozen_command
+        if policy != "STATIC_CONTROL" and rel < args_cli.drift_duration:
+            evaluation_command[:, :3] += drift_step
+        policy_command = (
+            evaluation_command if policy == "TRACK_DRIFTING" else frozen_command
+        )
         _set_command(env, command_name, policy_command)
 
         with torch.no_grad():
             act = scripted_action(
                 env, robot_name, command_name, args_cli.gain, body_index, args_cli.max_delta
             )
-            _set_command(env, command_name, true_command)
+            _set_command(env, command_name, evaluation_command)
             step_result = env.step(act)
 
-        _set_command(env, command_name, true_command)
+        _set_command(env, command_name, evaluation_command)
         unexpected_reset = _step_reset(step_result)
         dist, ee, des = ee_distance(env, robot_name, command_name, body_index)
         if prev_ee is not None:
@@ -304,10 +326,11 @@ def run_drift_branch(
         else classify(success and not violation, violation, completion >= branch_timeout_step)
     )
 
+    evaluation_target = "STATIC" if policy == "STATIC_CONTROL" else "PERSISTENT_DRIFT"
     return {
         "seed": seed,
         "policy": policy,
-        "evaluation_target": "PERSISTENT_DRIFT",
+        "evaluation_target": evaluation_target,
         "policy_target": policy,
         "branch_source": "shared_pre_drift_snapshot",
         "branch_start_ee": branch_start_ee.tolist(),
@@ -319,6 +342,8 @@ def run_drift_branch(
         "prefix_steps": prefix_steps,
         "prefix_stable_steps": branch_state["prefix_stable_steps"],
         "prefix_final_distance_m": branch_state["prefix_final_distance_m"],
+        "reset_state_fingerprint": branch_state["reset_state_fingerprint"],
+        "reset_command": branch_state["reset_command"],
         "configured_minimum_onset_step": args_cli.onset,
         "minimum_completion_steps": min_completion_steps,
         "onset_step": prefix_steps,
@@ -328,6 +353,7 @@ def run_drift_branch(
         "drift_axis": args_cli.drift_axis,
         "drift_duration_steps": args_cli.drift_duration,
         "final_distance_m": dist,
+        "max_distance_m": max(row["distance_m"] for row in trajectory),
         "path_length_m": path,
         "completion_steps": completion,
         "forbidden_violation": violation,
@@ -346,7 +372,8 @@ def _summarize_records(
     preconditions: list[dict[str, Any]],
 ) -> dict[str, Any]:
     by_policy = {}
-    for policy in ("TRACK_DRIFTING", "TRACK_FROZEN"):
+    policies = ("STATIC_CONTROL", "TRACK_DRIFTING", "TRACK_FROZEN")
+    for policy in policies:
         rows = [row for row in records if row["policy"] == policy]
         by_policy[policy] = {
             "n": len(rows),
@@ -367,31 +394,47 @@ def _summarize_records(
 
     ee_gaps = []
     command_gaps = []
+    complete_branch_count = 0
     for seed in seeds:
         pair = {row["policy"]: row for row in records if row["seed"] == seed}
-        if set(pair) != {"TRACK_DRIFTING", "TRACK_FROZEN"}:
+        if set(pair) != set(policies):
             continue
+        complete_branch_count += 1
         drifting = pair["TRACK_DRIFTING"]
         frozen = pair["TRACK_FROZEN"]
-        ee_gaps.append(
-            float(np.linalg.norm(np.asarray(drifting["branch_start_ee"]) - frozen["branch_start_ee"]))
-        )
-        command_gaps.append(
-            float(
-                np.linalg.norm(
-                    np.asarray(drifting["branch_start_command"])
-                    - frozen["branch_start_command"]
+        for other in (frozen, pair["STATIC_CONTROL"]):
+            ee_gaps.append(
+                float(
+                    np.linalg.norm(
+                        np.asarray(drifting["branch_start_ee"])
+                        - other["branch_start_ee"]
+                    )
                 )
             )
-        )
+            command_gaps.append(
+                float(
+                    np.linalg.norm(
+                        np.asarray(drifting["branch_start_command"])
+                        - other["branch_start_command"]
+                    )
+                )
+            )
 
     max_ee_gap = max(ee_gaps, default=None)
     max_command_gap = max(command_gaps, default=None)
     ready_seeds = [row["seed"] for row in preconditions if row["prefix_ready"]]
     failed_seeds = [row["seed"] for row in preconditions if not row["prefix_ready"]]
-    complete_pair_count = len(ee_gaps)
+    complete_pair_count = complete_branch_count
     branch_start_distances = [row["branch_start_distance_m"] for row in records]
     max_branch_start_distance = max(branch_start_distances, default=None)
+    static_rows = [row for row in records if row["policy"] == "STATIC_CONTROL"]
+    static_control_pass = bool(
+        len(static_rows) == len(seeds)
+        and all(
+            row["successful_resolution"] and row["max_distance_m"] <= args_cli.tol_m
+            for row in static_rows
+        )
+    )
     validity = {
         "requested_seed_count": len(seeds),
         "ready_seed_count": len(ready_seeds),
@@ -399,11 +442,12 @@ def _summarize_records(
         "failed_readiness_seeds": failed_seeds,
         "all_requested_seeds_ready": len(ready_seeds) == len(seeds),
         "complete_pair_count": complete_pair_count,
+        "complete_branch_count": complete_branch_count,
         "max_branch_start_ee_gap_m": max_ee_gap,
         "max_branch_start_command_gap_m": max_command_gap,
         "paired_start_tolerance_m": args_cli.paired_start_tol_m,
         "paired_start_pass": bool(
-            complete_pair_count == len(seeds)
+            complete_branch_count == len(seeds)
             and max_ee_gap is not None
             and max_command_gap is not None
             and max_ee_gap <= args_cli.paired_start_tol_m
@@ -413,13 +457,13 @@ def _summarize_records(
         "branch_start_distance_limit_m": args_cli.tol_m
         + args_cli.paired_start_tol_m,
         "all_branch_starts_ready": bool(
-            len(branch_start_distances) == 2 * len(seeds)
+            len(branch_start_distances) == len(policies) * len(seeds)
             and max_branch_start_distance is not None
             and max_branch_start_distance
             <= args_cli.tol_m + args_cli.paired_start_tol_m
         ),
         "all_drift_exposed": bool(
-            len(records) == 2 * len(seeds)
+            len(records) == len(policies) * len(seeds)
             and all(
                 row["completion_steps"] >= row["minimum_completion_steps"]
                 for row in records
@@ -428,6 +472,7 @@ def _summarize_records(
         "no_unexpected_env_resets": bool(
             all(not row["unexpected_env_reset"] for row in records)
         ),
+        "static_control_pass": static_control_pass,
     }
     validity["valid_pilot"] = bool(
         validity["all_requested_seeds_ready"]
@@ -435,6 +480,7 @@ def _summarize_records(
         and validity["all_branch_starts_ready"]
         and validity["all_drift_exposed"]
         and validity["no_unexpected_env_resets"]
+        and validity["static_control_pass"]
     )
     return {"by_policy": by_policy, "validity": validity}
 
@@ -457,18 +503,6 @@ def main() -> None:
     out_dir = Path(args_cli.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    env_cfg = parse_env_cfg(
-        args_cli.task,
-        num_envs=args_cli.num_envs,
-        use_fabric=not args_cli.disable_fabric,
-    )
-    if hasattr(env_cfg, "episode_length_s"):
-        env_cfg.episode_length_s = float(args_cli.episode_length_s)
-    env = gym.make(args_cli.task, cfg=env_cfg)
-    robot_name = find_robot_name(env.unwrapped.scene)
-    body_index = resolve_ee_body_index(env.unwrapped.scene[robot_name], args_cli.body_index)
-    command_name = "ee_1_pose"
-
     if str(args_cli.seeds).strip():
         seed_list = [int(x.strip()) for x in str(args_cli.seeds).split(",") if x.strip()]
     else:
@@ -477,33 +511,54 @@ def main() -> None:
     records = []
     preconditions = []
     for seed in seed_list:
-        branch_state = _prepare_branch_state(
-            env, robot_name, command_name, body_index, seed
+        env_cfg = parse_env_cfg(
+            args_cli.task,
+            num_envs=args_cli.num_envs,
+            use_fabric=not args_cli.disable_fabric,
         )
-        precondition = {
-            "seed": seed,
-            "prefix_ready": branch_state["prefix_ready"],
-            "prefix_failure_reason": branch_state["prefix_failure_reason"],
-            "prefix_steps": branch_state["prefix_steps"],
-            "prefix_stable_steps": branch_state["prefix_stable_steps"],
-            "prefix_final_distance_m": branch_state["prefix_final_distance_m"],
-        }
-        preconditions.append(precondition)
-        print(json.dumps({"precondition": precondition}), flush=True)
-        if not branch_state["prefix_ready"]:
-            continue
-        for policy in ("TRACK_DRIFTING", "TRACK_FROZEN"):
-            rec = run_drift_branch(
-                env,
-                robot_name,
-                command_name,
-                body_index,
-                seed,
-                policy,
-                branch_state,
+        if hasattr(env_cfg, "episode_length_s"):
+            env_cfg.episode_length_s = float(args_cli.episode_length_s)
+        env = gym.make(args_cli.task, cfg=env_cfg)
+        try:
+            robot_name = find_robot_name(env.unwrapped.scene)
+            body_index = resolve_ee_body_index(
+                env.unwrapped.scene[robot_name], args_cli.body_index
             )
-            records.append(rec)
-            print(json.dumps({k: rec[k] for k in rec if k != "trajectory"}), flush=True)
+            command_name = "ee_1_pose"
+            branch_state = _prepare_branch_state(
+                env, robot_name, command_name, body_index, seed
+            )
+            precondition = {
+                "seed": seed,
+                "prefix_ready": branch_state["prefix_ready"],
+                "prefix_failure_reason": branch_state["prefix_failure_reason"],
+                "prefix_steps": branch_state["prefix_steps"],
+                "prefix_stable_steps": branch_state["prefix_stable_steps"],
+                "prefix_final_distance_m": branch_state["prefix_final_distance_m"],
+                "reset_state_fingerprint": branch_state["reset_state_fingerprint"],
+                "reset_command": branch_state["reset_command"],
+            }
+            preconditions.append(precondition)
+            print(json.dumps({"precondition": precondition}), flush=True)
+            if not branch_state["prefix_ready"]:
+                continue
+            for policy in ("STATIC_CONTROL", "TRACK_DRIFTING", "TRACK_FROZEN"):
+                rec = run_drift_branch(
+                    env,
+                    robot_name,
+                    command_name,
+                    body_index,
+                    seed,
+                    policy,
+                    branch_state,
+                )
+                records.append(rec)
+                print(
+                    json.dumps({k: rec[k] for k in rec if k != "trajectory"}),
+                    flush=True,
+                )
+        finally:
+            env.close()
 
     summary = {
         "experiment": args_cli.experiment_id,
@@ -515,6 +570,7 @@ def main() -> None:
         "records": [{k: r[k] for k in r if k != "trajectory"} for r in records],
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "target_dynamics": "persistent_drift",
+        "fresh_environment_per_seed": True,
     }
     out_json = out_dir / "isaac_drift_results.json"
     out_json.write_text(json.dumps(summary, indent=2), encoding="utf-8")
@@ -522,7 +578,6 @@ def main() -> None:
         json.dumps(records, indent=2), encoding="utf-8"
     )
     print(f"[INFO] wrote {out_json}")
-    env.close()
 
 
 if __name__ == "__main__":
