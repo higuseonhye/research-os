@@ -62,11 +62,9 @@ from orbit_reach_common import (  # noqa: E402
     classify,
     ee_distance,
     find_robot_name,
-    get_command_xyz,
     in_forbidden,
     resolve_ee_body_index,
     scripted_action,
-    set_command_xyz,
 )
 
 
@@ -77,48 +75,154 @@ def drift_vector(device: torch.device) -> torch.Tensor:
     return v
 
 
-def run_drift_episode(
+def _get_command(env: Any, command_name: str) -> torch.Tensor:
+    return env.unwrapped.command_manager.get_command(command_name).clone()
+
+
+def _set_command(env: Any, command_name: str, command: torch.Tensor) -> None:
+    env.unwrapped.command_manager.get_command(command_name)[:] = command
+
+
+def _step_reset(step_result: tuple[Any, ...]) -> bool:
+    terminated, truncated = step_result[2], step_result[3]
+    for value in (terminated, truncated):
+        if torch.is_tensor(value):
+            if bool(value.any().item()):
+                return True
+        elif bool(np.asarray(value).any()):
+            return True
+    return False
+
+
+def _capture_branch_state(env: Any, command_name: str) -> dict[str, Any]:
+    base = env.unwrapped
+    articulations = {}
+    for name, asset in base.scene.articulations.items():
+        articulations[name] = {
+            "root_state": asset.data.root_state_w.clone(),
+            "joint_position": asset.data.joint_pos.clone(),
+            "joint_velocity": asset.data.joint_vel.clone(),
+            "joint_position_target": asset.data.joint_pos_target.clone(),
+            "joint_velocity_target": asset.data.joint_vel_target.clone(),
+            "joint_effort_target": asset.data.joint_effort_target.clone(),
+        }
+
+    rigid_objects = {}
+    for name, asset in base.scene.rigid_objects.items():
+        rigid_objects[name] = {"root_state": asset.data.root_state_w.clone()}
+
+    return {
+        "articulations": articulations,
+        "rigid_objects": rigid_objects,
+        "command": _get_command(env, command_name),
+    }
+
+
+def _restore_branch_state(env: Any, command_name: str, state: dict[str, Any]) -> None:
+    base = env.unwrapped
+    for name, saved in state["articulations"].items():
+        asset = base.scene.articulations[name]
+        root_state = saved["root_state"]
+        asset.write_root_pose_to_sim(root_state[:, :7])
+        asset.write_root_velocity_to_sim(root_state[:, 7:])
+        asset.write_joint_state_to_sim(saved["joint_position"], saved["joint_velocity"])
+        asset.set_joint_position_target(saved["joint_position_target"])
+        asset.set_joint_velocity_target(saved["joint_velocity_target"])
+        asset.set_joint_effort_target(saved["joint_effort_target"])
+
+    for name, saved in state["rigid_objects"].items():
+        asset = base.scene.rigid_objects[name]
+        root_state = saved["root_state"]
+        asset.write_root_pose_to_sim(root_state[:, :7])
+        asset.write_root_velocity_to_sim(root_state[:, 7:])
+
+    _set_command(env, command_name, state["command"])
+    base.scene.write_data_to_sim()
+    base.sim.step(render=False)
+    base.scene.update(dt=base.physics_dt)
+
+    env_ids = torch.arange(base.num_envs, dtype=torch.int64, device=base.device)
+    for manager_name in ("action_manager", "reward_manager", "termination_manager"):
+        manager = getattr(base, manager_name, None)
+        if manager is not None:
+            manager.reset(env_ids)
+    for buffer_name in ("episode_length_buf", "reset_buf", "reset_terminated", "reset_time_outs"):
+        buffer = getattr(base, buffer_name, None)
+        if buffer is not None:
+            buffer.zero_()
+    _set_command(env, command_name, state["command"])
+
+
+def _prepare_branch_state(
+    env: Any,
+    robot_name: str,
+    command_name: str,
+    body_index: int,
+    seed: int,
+) -> dict[str, Any]:
+    torch.manual_seed(seed)
+    env.reset(seed=seed)
+    static_command = _get_command(env, command_name)
+
+    for _ in range(args_cli.onset):
+        _set_command(env, command_name, static_command)
+        with torch.no_grad():
+            action = scripted_action(
+                env, robot_name, command_name, args_cli.gain, body_index, args_cli.max_delta
+            )
+            _set_command(env, command_name, static_command)
+            step_result = env.step(action)
+        _set_command(env, command_name, static_command)
+        if _step_reset(step_result):
+            raise RuntimeError(f"environment auto-reset during shared prefix for seed {seed}")
+
+    return _capture_branch_state(env, command_name)
+
+
+def run_drift_branch(
     env: Any,
     robot_name: str,
     command_name: str,
     body_index: int,
     seed: int,
     policy: str,
+    branch_state: dict[str, Any],
 ) -> dict[str, Any]:
-    torch.manual_seed(seed)
-    env.reset()
-    device = env.unwrapped.device
-    drift_step = drift_vector(device)
+    _restore_branch_state(env, command_name, branch_state)
+    drift_step = drift_vector(env.unwrapped.device)
     forbidden_center = np.array([0.45, 0.0, 0.15], dtype=np.float64)
     forbidden_half = np.array([0.04, 0.04, 0.04], dtype=np.float64)
 
-    frozen_xyz = None
-    cmd_xyz = None
+    frozen_command = branch_state["command"].clone()
+    true_command = frozen_command.clone()
     path = 0.0
     prev_ee = None
     violation = False
     trajectory: list[dict[str, Any]] = []
+    min_completion_steps = args_cli.onset + args_cli.drift_duration
+    _, branch_start_ee, branch_start_command = ee_distance(
+        env, robot_name, command_name, body_index
+    )
+    success = False
+    unexpected_reset = False
+    completion = args_cli.max_steps
 
-    for t in range(args_cli.max_steps):
-        if t == args_cli.onset:
-            frozen_xyz = get_command_xyz(env, command_name)
-            cmd_xyz = frozen_xyz.clone()
-
-        if t >= args_cli.onset and cmd_xyz is not None:
-            rel = t - args_cli.onset
-            if rel < args_cli.drift_duration:
-                cmd_xyz = cmd_xyz + drift_step
-            if policy == "TRACK_DRIFTING":
-                set_command_xyz(env, command_name, cmd_xyz)
-            else:
-                set_command_xyz(env, command_name, frozen_xyz)
+    for rel in range(args_cli.max_steps - args_cli.onset):
+        t = args_cli.onset + rel
+        if rel < args_cli.drift_duration:
+            true_command[:, :3] += drift_step
+        policy_command = true_command if policy == "TRACK_DRIFTING" else frozen_command
+        _set_command(env, command_name, policy_command)
 
         with torch.no_grad():
             act = scripted_action(
                 env, robot_name, command_name, args_cli.gain, body_index, args_cli.max_delta
             )
-            env.step(act)
+            _set_command(env, command_name, true_command)
+            step_result = env.step(act)
 
+        _set_command(env, command_name, true_command)
+        unexpected_reset = _step_reset(step_result)
         dist, ee, des = ee_distance(env, robot_name, command_name, body_index)
         if prev_ee is not None:
             path += float(np.linalg.norm(ee - prev_ee))
@@ -129,24 +233,38 @@ def run_drift_episode(
         trajectory.append(
             {
                 "t": t,
+                "drift_exposure_complete": t + 1 >= min_completion_steps,
                 "distance_m": dist,
                 "ee": ee.tolist(),
                 "command": des.tolist(),
+                "policy_command": policy_command[0, :3].detach().cpu().numpy().tolist(),
                 "policy": policy,
             }
         )
 
-        if dist <= args_cli.tol_m and not violation:
+        if unexpected_reset:
+            completion = t + 1
+            break
+        if t + 1 >= min_completion_steps and dist <= args_cli.tol_m and not violation:
             success = True
             completion = t + 1
             break
-    else:
-        success = False
-        completion = args_cli.max_steps
+
+    terminal = (
+        "unexpected_env_reset"
+        if unexpected_reset
+        else classify(success and not violation, violation, completion >= args_cli.max_steps)
+    )
 
     return {
         "seed": seed,
         "policy": policy,
+        "evaluation_target": "PERSISTENT_DRIFT",
+        "policy_target": policy,
+        "branch_source": "shared_pre_drift_snapshot",
+        "branch_start_ee": branch_start_ee.tolist(),
+        "branch_start_command": branch_start_command.tolist(),
+        "minimum_completion_steps": min_completion_steps,
         "onset_step": args_cli.onset,
         "drift_speed_m_per_step": args_cli.drift_speed,
         "drift_axis": args_cli.drift_axis,
@@ -155,15 +273,74 @@ def run_drift_episode(
         "path_length_m": path,
         "completion_steps": completion,
         "forbidden_violation": violation,
-        "successful_resolution": bool(success and not violation),
-        "terminal_category": classify(success and not violation, violation, completion >= args_cli.max_steps),
+        "unexpected_env_reset": unexpected_reset,
+        "successful_resolution": bool(success and not violation and not unexpected_reset),
+        "terminal_category": terminal,
         "trajectory": trajectory,
         "mode": "isaac",
         "experiment_id": args_cli.experiment_id,
     }
 
 
+def _summarize_records(records: list[dict[str, Any]], seeds: list[int]) -> dict[str, Any]:
+    by_policy = {}
+    for policy in ("TRACK_DRIFTING", "TRACK_FROZEN"):
+        rows = [row for row in records if row["policy"] == policy]
+        by_policy[policy] = {
+            "n": len(rows),
+            "success_rate": float(np.mean([row["successful_resolution"] for row in rows])),
+            "mean_final_distance_m": float(np.mean([row["final_distance_m"] for row in rows])),
+            "mean_completion_steps": float(np.mean([row["completion_steps"] for row in rows])),
+            "forbidden_violations": int(sum(row["forbidden_violation"] for row in rows)),
+            "unexpected_env_resets": int(sum(row["unexpected_env_reset"] for row in rows)),
+        }
+
+    ee_gaps = []
+    command_gaps = []
+    for seed in seeds:
+        pair = {row["policy"]: row for row in records if row["seed"] == seed}
+        drifting = pair["TRACK_DRIFTING"]
+        frozen = pair["TRACK_FROZEN"]
+        ee_gaps.append(
+            float(np.linalg.norm(np.asarray(drifting["branch_start_ee"]) - frozen["branch_start_ee"]))
+        )
+        command_gaps.append(
+            float(
+                np.linalg.norm(
+                    np.asarray(drifting["branch_start_command"])
+                    - frozen["branch_start_command"]
+                )
+            )
+        )
+
+    max_ee_gap = max(ee_gaps, default=float("inf"))
+    max_command_gap = max(command_gaps, default=float("inf"))
+    validity = {
+        "max_branch_start_ee_gap_m": max_ee_gap,
+        "max_branch_start_command_gap_m": max_command_gap,
+        "paired_start_pass": bool(max_ee_gap <= 1e-4 and max_command_gap <= 1e-6),
+        "all_drift_exposed": bool(
+            all(row["completion_steps"] >= row["minimum_completion_steps"] for row in records)
+        ),
+        "no_unexpected_env_resets": bool(
+            all(not row["unexpected_env_reset"] for row in records)
+        ),
+    }
+    validity["valid_pilot"] = bool(
+        validity["paired_start_pass"]
+        and validity["all_drift_exposed"]
+        and validity["no_unexpected_env_resets"]
+    )
+    return {"by_policy": by_policy, "validity": validity}
+
+
 def main() -> None:
+    min_steps = args_cli.onset + args_cli.drift_duration
+    if args_cli.max_steps < min_steps:
+        raise ValueError(
+            f"max_steps={args_cli.max_steps} must cover onset+duration={min_steps}"
+        )
+
     out_dir = Path(args_cli.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -186,8 +363,19 @@ def main() -> None:
 
     records = []
     for seed in seed_list:
+        branch_state = _prepare_branch_state(
+            env, robot_name, command_name, body_index, seed
+        )
         for policy in ("TRACK_DRIFTING", "TRACK_FROZEN"):
-            rec = run_drift_episode(env, robot_name, command_name, body_index, seed, policy)
+            rec = run_drift_branch(
+                env,
+                robot_name,
+                command_name,
+                body_index,
+                seed,
+                policy,
+                branch_state,
+            )
             records.append(rec)
             print(json.dumps({k: rec[k] for k in rec if k != "trajectory"}), flush=True)
 
@@ -196,6 +384,7 @@ def main() -> None:
         "mode": "isaac",
         "n_records": len(records),
         "seeds": seed_list,
+        "summary": _summarize_records(records, seed_list),
         "records": [{k: r[k] for k in r if k != "trajectory"} for r in records],
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "target_dynamics": "persistent_drift",
