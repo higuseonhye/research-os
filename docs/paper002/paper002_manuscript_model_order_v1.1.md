@@ -2,13 +2,19 @@
 
 > Venue-neutral review manuscript v1.1
 >
-> Author and affiliation block intentionally omitted until a submission venue is selected.
+> Author: Seonhye Gu
+>
+> Affiliation: AI-Based Surgical Robot Innovation Lab
+>
+> Research status: Independent personal research; affiliation is provided for identification only.
 >
 > Frozen design: `paper002-model-order-confirmatory-v1.0`
 >
 > Confirmatory artifact: `73a7e16`
 >
-> Results are frozen. Version 1.1 changes exposition, positioning, and bibliography only.
+> Results are frozen. Version 1.1 updates exposition, positioning, bibliography,
+> mathematical typesetting, and submission metadata; it does not change the
+> preregistered design or confirmatory results.
 
 ## Abstract
 
@@ -569,6 +575,28 @@ activation on three negative controls. Failure after parameter repair can
 therefore support a restricted model-adequacy decision when the alternative
 class is prepared and the claim is guarded by prediction, control, retention,
 and specificity tests.
+
+## Declarations
+
+**Independent research and affiliation.** This work was independently conducted
+by Seonhye Gu as personal research while affiliated with the AI-Based Surgical
+Robot Innovation Lab. The affiliation is provided for identification purposes
+only and does not imply official laboratory output, institutional endorsement,
+or sponsorship.
+
+**Funding and competing interests.** This study was conducted as independent
+personal research and does not claim institutional sponsorship. The author
+declares no competing interests related to this work.
+
+**Author contributions.** Seonhye Gu was responsible for conceptualization,
+methodology, software, validation, formal analysis, investigation, data
+curation, visualization, manuscript preparation and revision, and project
+administration.
+
+**AI-assisted tools.** AI-assisted tools supported software development and
+manuscript editing. The author reviewed the generated material, verified the
+reported analyses against the committed artifacts, and accepts full
+responsibility for the work.
 
 ## Ethics, Data, Code, And Reproducibility
 

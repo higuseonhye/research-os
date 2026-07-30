@@ -40,6 +40,12 @@ INLINE_MATH_RE = re.compile(r"(?<!\\)\$([^$\n]+)\$")
 LIST_RE = re.compile(r"^(?P<indent>\s*)(?P<mark>-|\d+\.)\s+(?P<text>.*)$")
 TABLE_SEPARATOR_RE = re.compile(r"^:?-{3,}:?$")
 TOKEN_SEQUENCE = count()
+AUTHOR_METADATA_PREFIXES = (
+    "Author:",
+    "Affiliation:",
+    "Research status:",
+    "Author and affiliation",
+)
 
 
 @dataclass(frozen=True)
@@ -358,7 +364,9 @@ def preamble(title: str, supplement: bool, source_name: str) -> str:
 \\graphicspath{{{{figures/}}}}
 {supplement_numbering}
 \\title{{{inline(title, citations=False)}}}
-\\author{{Author and affiliation omitted pending venue selection}}
+\\author{{Seonhye Gu\\thanks{{This work was independently conducted by the author as personal research while affiliated with the AI-Based Surgical Robot Innovation Lab. The affiliation is provided for identification purposes only and does not imply official laboratory output, institutional endorsement, or sponsorship.}}\\\\
+\\small AI-Based Surgical Robot Innovation Lab\\\\
+\\small\\textit{{Independent personal research}}}}
 \\date{{}}
 \\begin{{document}}
 \\maketitle
@@ -389,14 +397,18 @@ def render_document(source_path: Path, supplement: bool) -> str:
                 in_abstract = False
             clean = strip_heading_number(heading, supplement)
             command = "section" if block.level == 2 else "subsection"
-            if clean == "Ethics, Data, Code, And Reproducibility":
+            if clean in {"Declarations", "Ethics, Data, Code, And Reproducibility"}:
                 command = "section*"
             output.append("\\" + command + "{" + inline(clean, citations=False) + "}")
             index += 1
             continue
 
         if block.kind == "quote":
-            values = [str(value) for value in block.value if not str(value).startswith("Author and affiliation")]
+            values = [
+                str(value)
+                for value in block.value
+                if not str(value).startswith(AUTHOR_METADATA_PREFIXES)
+            ]
             if values:
                 output.extend([r"\begin{center}", r"\small"])
                 output.append(r" \\".join(inline(value) for value in values))
@@ -527,6 +539,15 @@ def validate_tex(tex: str, output_path: Path) -> None:
             raise ValueError(f"invalid blank paragraph in math block in {output_path.name}")
     if re.search(r"\b(?:p_hat|v_hat|p_\(t|alpha \*|beta \*)", tex):
         raise ValueError(f"unconverted pseudo-math notation in {output_path.name}")
+    if "Author and affiliation omitted" in tex:
+        raise ValueError(f"placeholder author metadata in {output_path.name}")
+    for required in (
+        r"\author{Seonhye Gu",
+        "AI-Based Surgical Robot Innovation Lab",
+        "Independent personal research",
+    ):
+        if required not in tex:
+            raise ValueError(f"missing author metadata in {output_path.name}: {required}")
 
 
 def main() -> None:
