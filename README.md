@@ -64,7 +64,7 @@ We have **not** shown general world-model expansion, hardware transfer, a new re
 | **Paper 002 pilot v0.4** | C vs B ΔPE · gate · H4 (preliminary) | [`pilot_v0.1/summary.json`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/pilot_v0.1/summary.json) |
 | **Paper 002 Isaac drift anchor** | Moving target **10/10** vs frozen target **0/10** · 20.250 mm paired improvement | [`RESULTS.md`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/RESULTS.md) |
 | **Paper 002 model-order confirmatory** | C-B prediction **-10.806 mm** · final distance **-13.304 mm** · all gates pass | [`RESULTS.md`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md) |
-| **Paper 002 submission package** | Manuscript + supplement v1.1 · LaTeX · review PDFs · five generated panels · CSV tables | [`manuscript`](docs/paper002/paper002_manuscript_model_order_v1.1.md) · [`LaTeX`](docs/paper002/paper002_manuscript_model_order_v1.1.tex) · [`PDF`](docs/paper002/paper002_manuscript_model_order_v1.1.pdf) · [`supplement`](docs/paper002/paper002_supplement_model_order_v1.1.tex) |
+| **Paper 002 submission package** | Manuscript + supplement v1.1 · LaTeX · Overleaf ZIP · review PDFs · five generated panels · CSV tables | [`manuscript`](docs/paper002/paper002_manuscript_model_order_v1.1.md) · [`LaTeX`](docs/paper002/paper002_manuscript_model_order_v1.1.tex) · [`Overleaf`](docs/paper002/paper002_overleaf_main_v1.1.zip) · [`PDF`](docs/paper002/paper002_manuscript_model_order_v1.1.pdf) · [`supplement`](docs/paper002/paper002_supplement_model_order_v1.1.tex) |
 
 Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper 002 [`docs/paper002/status.md`](docs/paper002/status.md)
 
@@ -93,6 +93,7 @@ Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper
 # Paper 002 confirmatory figures and tables (CPU only)
 python scripts/plot_paper002_model_order.py
 python scripts/build_paper002_submission_tex.py
+python scripts/build_paper002_overleaf_zip.py
 
 # Historical Paper 002 mock smoke (CPU)
 python scripts/run_exp_surg_003_pilot.py --smoke
