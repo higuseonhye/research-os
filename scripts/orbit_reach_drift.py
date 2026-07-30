@@ -507,6 +507,11 @@ def main() -> None:
         seed_list = [int(x.strip()) for x in str(args_cli.seeds).split(",") if x.strip()]
     else:
         seed_list = [args_cli.seed * 100 + ep for ep in range(args_cli.episodes)]
+    if len(seed_list) != 1:
+        raise ValueError(
+            "orbit_reach_drift.py accepts one seed per Isaac process; "
+            "use run_exp_surg_003_drift.sh to orchestrate multiple seeds"
+        )
 
     records = []
     preconditions = []

@@ -68,30 +68,48 @@ FABRIC_ARGS=()
 if [ "$DISABLE_FABRIC" = "1" ]; then
   FABRIC_ARGS+=(--disable_fabric)
 fi
-set +e
-"$ISAACLAB_SH" -p "$REPO/scripts/orbit_reach_drift.py" \
-  --headless \
-  "${FABRIC_ARGS[@]}" \
-  --task "$TASK" \
-  --out-dir "$OUT" \
-  --seeds "$SEEDS" \
-  --onset "$ONSET" \
-  --max-steps "$MAX_STEPS" \
-  --prefix-max-steps "$PREFIX_MAX_STEPS" \
-  --prefix-stable-steps "$PREFIX_STABLE_STEPS" \
-  --paired-start-tol-m "$PAIRED_START_TOL_M" \
-  --drift-speed "$DRIFT_SPEED" \
-  --drift-axis "$DRIFT_AXIS" \
-  --drift-duration "$DRIFT_DURATION" \
-  --experiment-id EXP-SURG-003-drift-pilot | tee "$OUT/isaac_stdout.log"
-isaac_rc=${PIPESTATUS[0]}
-set -e
+: > "$OUT/isaac_stdout.log"
+IFS=',' read -r -a seed_list <<< "$SEEDS"
+for raw_seed in "${seed_list[@]}"; do
+  seed="${raw_seed//[[:space:]]/}"
+  if [[ ! "$seed" =~ ^-?[0-9]+$ ]]; then
+    echo "[FAIL] invalid seed: $raw_seed" >&2
+    exit 1
+  fi
+  seed_out="$OUT/seed_$seed"
+  mkdir -p "$seed_out"
+  echo "== Isolated Isaac seed $seed ==" | tee -a "$OUT/isaac_stdout.log"
+  set +e
+  "$ISAACLAB_SH" -p "$REPO/scripts/orbit_reach_drift.py" \
+    --headless \
+    "${FABRIC_ARGS[@]}" \
+    --task "$TASK" \
+    --out-dir "$seed_out" \
+    --seeds "$seed" \
+    --onset "$ONSET" \
+    --max-steps "$MAX_STEPS" \
+    --prefix-max-steps "$PREFIX_MAX_STEPS" \
+    --prefix-stable-steps "$PREFIX_STABLE_STEPS" \
+    --paired-start-tol-m "$PAIRED_START_TOL_M" \
+    --drift-speed "$DRIFT_SPEED" \
+    --drift-axis "$DRIFT_AXIS" \
+    --drift-duration "$DRIFT_DURATION" \
+    --experiment-id EXP-SURG-003-drift-pilot \
+    | tee "$seed_out/isaac_stdout.log" \
+    | tee -a "$OUT/isaac_stdout.log"
+  isaac_rc=${PIPESTATUS[0]}
+  set -e
+  if [ "$isaac_rc" -ne 0 ]; then
+    echo "[FAIL] orbit_reach_drift seed $seed exited with code $isaac_rc" >&2
+    exit "$isaac_rc"
+  fi
+done
 cd "$REPO"
 
-if [ "$isaac_rc" -ne 0 ]; then
-  echo "[FAIL] orbit_reach_drift exited with code $isaac_rc" >&2
-  exit "$isaac_rc"
-fi
+python3 "$REPO/scripts/aggregate_exp_surg_003_drift.py" \
+  --out-dir "$OUT" \
+  --seeds "$SEEDS" \
+  | tee -a "$OUT/isaac_stdout.log"
 
 if [ ! -f "$OUT/isaac_drift_results.json" ]; then
   echo "[FAIL] isaac_drift_results.json missing" >&2
