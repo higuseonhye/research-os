@@ -1,0 +1,2592 @@
+{
+  "experiment": "EXP-SURG-003-drift-pilot",
+  "mode": "isaac",
+  "n_records": 30,
+  "seeds": [
+    101,
+    102,
+    103,
+    104,
+    105,
+    107,
+    108,
+    109,
+    111,
+    112
+  ],
+  "preconditions": [
+    {
+      "seed": 101,
+      "prefix_ready": true,
+      "prefix_failure_reason": null,
+      "prefix_steps": 125,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.012981119565665722,
+      "reset_state_fingerprint": "7a6013895ad0cad2c4626a12fff534314af4df8923b4a25310922493c6fd04b4",
+      "reset_command": [
+        0.45638948678970337,
+        0.2823198139667511,
+        0.35028210282325745
+      ],
+      "branch_state_fingerprint": "c624cb4618eed935bde377784b784585ebfdfef704f718771b4b054d328ee809",
+      "cross_policy_prefix_match": true,
+      "policy_reset_state_fingerprints": {
+        "STATIC_CONTROL": "7a6013895ad0cad2c4626a12fff534314af4df8923b4a25310922493c6fd04b4",
+        "TRACK_DRIFTING": "7a6013895ad0cad2c4626a12fff534314af4df8923b4a25310922493c6fd04b4",
+        "TRACK_FROZEN": "7a6013895ad0cad2c4626a12fff534314af4df8923b4a25310922493c6fd04b4"
+      },
+      "policy_branch_state_fingerprints": {
+        "STATIC_CONTROL": "c624cb4618eed935bde377784b784585ebfdfef704f718771b4b054d328ee809",
+        "TRACK_DRIFTING": "c624cb4618eed935bde377784b784585ebfdfef704f718771b4b054d328ee809",
+        "TRACK_FROZEN": "c624cb4618eed935bde377784b784585ebfdfef704f718771b4b054d328ee809"
+      },
+      "branch_state_fingerprint_exact_match": true,
+      "policy_prefix_steps": {
+        "STATIC_CONTROL": 125,
+        "TRACK_DRIFTING": 125,
+        "TRACK_FROZEN": 125
+      },
+      "policy_prefix_final_distance_m": {
+        "STATIC_CONTROL": 0.012981119565665722,
+        "TRACK_DRIFTING": 0.012981119565665722,
+        "TRACK_FROZEN": 0.012981119565665722
+      },
+      "policy_readiness": {
+        "STATIC_CONTROL": true,
+        "TRACK_DRIFTING": true,
+        "TRACK_FROZEN": true
+      }
+    },
+    {
+      "seed": 102,
+      "prefix_ready": true,
+      "prefix_failure_reason": null,
+      "prefix_steps": 49,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.014229949563741684,
+      "reset_state_fingerprint": "8cd71769905885b3bed9afcd5aba161fb97792c14fabc99299392ca7a9ee2875",
+      "reset_command": [
+        0.45240330696105957,
+        0.23152966797351837,
+        0.3449839949607849
+      ],
+      "branch_state_fingerprint": "8f4a8f28bcf86abdf3ccad72d73e27607facc461886c520d09df15ae9b1477eb",
+      "cross_policy_prefix_match": true,
+      "policy_reset_state_fingerprints": {
+        "STATIC_CONTROL": "8cd71769905885b3bed9afcd5aba161fb97792c14fabc99299392ca7a9ee2875",
+        "TRACK_DRIFTING": "8cd71769905885b3bed9afcd5aba161fb97792c14fabc99299392ca7a9ee2875",
+        "TRACK_FROZEN": "8cd71769905885b3bed9afcd5aba161fb97792c14fabc99299392ca7a9ee2875"
+      },
+      "policy_branch_state_fingerprints": {
+        "STATIC_CONTROL": "8f4a8f28bcf86abdf3ccad72d73e27607facc461886c520d09df15ae9b1477eb",
+        "TRACK_DRIFTING": "8f4a8f28bcf86abdf3ccad72d73e27607facc461886c520d09df15ae9b1477eb",
+        "TRACK_FROZEN": "8f4a8f28bcf86abdf3ccad72d73e27607facc461886c520d09df15ae9b1477eb"
+      },
+      "branch_state_fingerprint_exact_match": true,
+      "policy_prefix_steps": {
+        "STATIC_CONTROL": 49,
+        "TRACK_DRIFTING": 49,
+        "TRACK_FROZEN": 49
+      },
+      "policy_prefix_final_distance_m": {
+        "STATIC_CONTROL": 0.014229949563741684,
+        "TRACK_DRIFTING": 0.014229949563741684,
+        "TRACK_FROZEN": 0.014229949563741684
+      },
+      "policy_readiness": {
+        "STATIC_CONTROL": true,
+        "TRACK_DRIFTING": true,
+        "TRACK_FROZEN": true
+      }
+    },
+    {
+      "seed": 103,
+      "prefix_ready": true,
+      "prefix_failure_reason": null,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.006852454971522093,
+      "reset_state_fingerprint": "cdf16ddf8494cbbfbcff4670aad8be1a843b417074aea32841b4770ad5c21d2a",
+      "reset_command": [
+        0.5386285781860352,
+        0.07196521013975143,
+        0.34317806363105774
+      ],
+      "branch_state_fingerprint": "1511d146eb603c315b986f72192c78082b2101f3a7b77859641d68252a58174e",
+      "cross_policy_prefix_match": true,
+      "policy_reset_state_fingerprints": {
+        "STATIC_CONTROL": "cdf16ddf8494cbbfbcff4670aad8be1a843b417074aea32841b4770ad5c21d2a",
+        "TRACK_DRIFTING": "cdf16ddf8494cbbfbcff4670aad8be1a843b417074aea32841b4770ad5c21d2a",
+        "TRACK_FROZEN": "cdf16ddf8494cbbfbcff4670aad8be1a843b417074aea32841b4770ad5c21d2a"
+      },
+      "policy_branch_state_fingerprints": {
+        "STATIC_CONTROL": "1511d146eb603c315b986f72192c78082b2101f3a7b77859641d68252a58174e",
+        "TRACK_DRIFTING": "1511d146eb603c315b986f72192c78082b2101f3a7b77859641d68252a58174e",
+        "TRACK_FROZEN": "1511d146eb603c315b986f72192c78082b2101f3a7b77859641d68252a58174e"
+      },
+      "branch_state_fingerprint_exact_match": true,
+      "policy_prefix_steps": {
+        "STATIC_CONTROL": 44,
+        "TRACK_DRIFTING": 44,
+        "TRACK_FROZEN": 44
+      },
+      "policy_prefix_final_distance_m": {
+        "STATIC_CONTROL": 0.006852454971522093,
+        "TRACK_DRIFTING": 0.006852454971522093,
+        "TRACK_FROZEN": 0.006852454971522093
+      },
+      "policy_readiness": {
+        "STATIC_CONTROL": true,
+        "TRACK_DRIFTING": true,
+        "TRACK_FROZEN": true
+      }
+    },
+    {
+      "seed": 104,
+      "prefix_ready": true,
+      "prefix_failure_reason": null,
+      "prefix_steps": 45,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013835983350872993,
+      "reset_state_fingerprint": "6a291b6609b577e8f57332811918e66b18a6607ac99d3a0f2acb838df73c95d6",
+      "reset_command": [
+        0.5485000014305115,
+        0.20845751464366913,
+        0.28527161478996277
+      ],
+      "branch_state_fingerprint": "0971ddd9fe986a1f4a079c1d2ebff19f9681068256801b10e40b3e70ef27654e",
+      "cross_policy_prefix_match": true,
+      "policy_reset_state_fingerprints": {
+        "STATIC_CONTROL": "6a291b6609b577e8f57332811918e66b18a6607ac99d3a0f2acb838df73c95d6",
+        "TRACK_DRIFTING": "6a291b6609b577e8f57332811918e66b18a6607ac99d3a0f2acb838df73c95d6",
+        "TRACK_FROZEN": "6a291b6609b577e8f57332811918e66b18a6607ac99d3a0f2acb838df73c95d6"
+      },
+      "policy_branch_state_fingerprints": {
+        "STATIC_CONTROL": "0971ddd9fe986a1f4a079c1d2ebff19f9681068256801b10e40b3e70ef27654e",
+        "TRACK_DRIFTING": "0971ddd9fe986a1f4a079c1d2ebff19f9681068256801b10e40b3e70ef27654e",
+        "TRACK_FROZEN": "0971ddd9fe986a1f4a079c1d2ebff19f9681068256801b10e40b3e70ef27654e"
+      },
+      "branch_state_fingerprint_exact_match": true,
+      "policy_prefix_steps": {
+        "STATIC_CONTROL": 45,
+        "TRACK_DRIFTING": 45,
+        "TRACK_FROZEN": 45
+      },
+      "policy_prefix_final_distance_m": {
+        "STATIC_CONTROL": 0.013835983350872993,
+        "TRACK_DRIFTING": 0.013835983350872993,
+        "TRACK_FROZEN": 0.013835983350872993
+      },
+      "policy_readiness": {
+        "STATIC_CONTROL": true,
+        "TRACK_DRIFTING": true,
+        "TRACK_FROZEN": true
+      }
+    },
+    {
+      "seed": 105,
+      "prefix_ready": true,
+      "prefix_failure_reason": null,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.007936281152069569,
+      "reset_state_fingerprint": "3dc832eafe0ec378604512658a66cc2edffcbadd36c1abc5cc083f62fa46d9ac",
+      "reset_command": [
+        0.468997061252594,
+        0.17247362434864044,
+        0.3814500570297241
+      ],
+      "branch_state_fingerprint": "a970e14c41f20c3eea5b7e8125fe17bcce2ccd94cd5f9762173481ba885c3bce",
+      "cross_policy_prefix_match": true,
+      "policy_reset_state_fingerprints": {
+        "STATIC_CONTROL": "3dc832eafe0ec378604512658a66cc2edffcbadd36c1abc5cc083f62fa46d9ac",
+        "TRACK_DRIFTING": "3dc832eafe0ec378604512658a66cc2edffcbadd36c1abc5cc083f62fa46d9ac",
+        "TRACK_FROZEN": "3dc832eafe0ec378604512658a66cc2edffcbadd36c1abc5cc083f62fa46d9ac"
+      },
+      "policy_branch_state_fingerprints": {
+        "STATIC_CONTROL": "a970e14c41f20c3eea5b7e8125fe17bcce2ccd94cd5f9762173481ba885c3bce",
+        "TRACK_DRIFTING": "a970e14c41f20c3eea5b7e8125fe17bcce2ccd94cd5f9762173481ba885c3bce",
+        "TRACK_FROZEN": "a970e14c41f20c3eea5b7e8125fe17bcce2ccd94cd5f9762173481ba885c3bce"
+      },
+      "branch_state_fingerprint_exact_match": true,
+      "policy_prefix_steps": {
+        "STATIC_CONTROL": 44,
+        "TRACK_DRIFTING": 44,
+        "TRACK_FROZEN": 44
+      },
+      "policy_prefix_final_distance_m": {
+        "STATIC_CONTROL": 0.007936281152069569,
+        "TRACK_DRIFTING": 0.007936281152069569,
+        "TRACK_FROZEN": 0.007936281152069569
+      },
+      "policy_readiness": {
+        "STATIC_CONTROL": true,
+        "TRACK_DRIFTING": true,
+        "TRACK_FROZEN": true
+      }
+    },
+    {
+      "seed": 107,
+      "prefix_ready": true,
+      "prefix_failure_reason": null,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.011559002101421356,
+      "reset_state_fingerprint": "8fe4affec3fc13e95789178bb45f4ee934754cdd961ddd16d79f1bbf59312719",
+      "reset_command": [
+        0.522883951663971,
+        0.185650035738945,
+        0.3731972277164459
+      ],
+      "branch_state_fingerprint": "e3e81a70664c5cc3e7003a17c1602995688ff8a3e7d727b7b5044d8be376df64",
+      "cross_policy_prefix_match": true,
+      "policy_reset_state_fingerprints": {
+        "STATIC_CONTROL": "8fe4affec3fc13e95789178bb45f4ee934754cdd961ddd16d79f1bbf59312719",
+        "TRACK_DRIFTING": "8fe4affec3fc13e95789178bb45f4ee934754cdd961ddd16d79f1bbf59312719",
+        "TRACK_FROZEN": "8fe4affec3fc13e95789178bb45f4ee934754cdd961ddd16d79f1bbf59312719"
+      },
+      "policy_branch_state_fingerprints": {
+        "STATIC_CONTROL": "e3e81a70664c5cc3e7003a17c1602995688ff8a3e7d727b7b5044d8be376df64",
+        "TRACK_DRIFTING": "e3e81a70664c5cc3e7003a17c1602995688ff8a3e7d727b7b5044d8be376df64",
+        "TRACK_FROZEN": "e3e81a70664c5cc3e7003a17c1602995688ff8a3e7d727b7b5044d8be376df64"
+      },
+      "branch_state_fingerprint_exact_match": true,
+      "policy_prefix_steps": {
+        "STATIC_CONTROL": 44,
+        "TRACK_DRIFTING": 44,
+        "TRACK_FROZEN": 44
+      },
+      "policy_prefix_final_distance_m": {
+        "STATIC_CONTROL": 0.011559002101421356,
+        "TRACK_DRIFTING": 0.011559002101421356,
+        "TRACK_FROZEN": 0.011559002101421356
+      },
+      "policy_readiness": {
+        "STATIC_CONTROL": true,
+        "TRACK_DRIFTING": true,
+        "TRACK_FROZEN": true
+      }
+    },
+    {
+      "seed": 108,
+      "prefix_ready": true,
+      "prefix_failure_reason": null,
+      "prefix_steps": 88,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013879337348043919,
+      "reset_state_fingerprint": "6956d05079b39ee376f602c0c7bed8ef72b72e52b9317d68b4009566066a204b",
+      "reset_command": [
+        0.5405505895614624,
+        0.1071777418255806,
+        0.3466132581233978
+      ],
+      "branch_state_fingerprint": "c5ad2544b14e5121ca5933bba3f770aeca1795923229f0c42c820904145a0e32",
+      "cross_policy_prefix_match": true,
+      "policy_reset_state_fingerprints": {
+        "STATIC_CONTROL": "6956d05079b39ee376f602c0c7bed8ef72b72e52b9317d68b4009566066a204b",
+        "TRACK_DRIFTING": "6956d05079b39ee376f602c0c7bed8ef72b72e52b9317d68b4009566066a204b",
+        "TRACK_FROZEN": "6956d05079b39ee376f602c0c7bed8ef72b72e52b9317d68b4009566066a204b"
+      },
+      "policy_branch_state_fingerprints": {
+        "STATIC_CONTROL": "c5ad2544b14e5121ca5933bba3f770aeca1795923229f0c42c820904145a0e32",
+        "TRACK_DRIFTING": "c5ad2544b14e5121ca5933bba3f770aeca1795923229f0c42c820904145a0e32",
+        "TRACK_FROZEN": "c5ad2544b14e5121ca5933bba3f770aeca1795923229f0c42c820904145a0e32"
+      },
+      "branch_state_fingerprint_exact_match": true,
+      "policy_prefix_steps": {
+        "STATIC_CONTROL": 88,
+        "TRACK_DRIFTING": 88,
+        "TRACK_FROZEN": 88
+      },
+      "policy_prefix_final_distance_m": {
+        "STATIC_CONTROL": 0.013879337348043919,
+        "TRACK_DRIFTING": 0.013879337348043919,
+        "TRACK_FROZEN": 0.013879337348043919
+      },
+      "policy_readiness": {
+        "STATIC_CONTROL": true,
+        "TRACK_DRIFTING": true,
+        "TRACK_FROZEN": true
+      }
+    },
+    {
+      "seed": 109,
+      "prefix_ready": true,
+      "prefix_failure_reason": null,
+      "prefix_steps": 70,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013353337533771992,
+      "reset_state_fingerprint": "a4ef0c60c5eed98f09a0cb9474604acc6e755cf8344b708779246c59e0951445",
+      "reset_command": [
+        0.49509674310684204,
+        0.1601535677909851,
+        0.3545258343219757
+      ],
+      "branch_state_fingerprint": "70523920ea6132f7709f14c219677a4d387398f2edbfca220c230a44b0af7999",
+      "cross_policy_prefix_match": true,
+      "policy_reset_state_fingerprints": {
+        "STATIC_CONTROL": "a4ef0c60c5eed98f09a0cb9474604acc6e755cf8344b708779246c59e0951445",
+        "TRACK_DRIFTING": "a4ef0c60c5eed98f09a0cb9474604acc6e755cf8344b708779246c59e0951445",
+        "TRACK_FROZEN": "a4ef0c60c5eed98f09a0cb9474604acc6e755cf8344b708779246c59e0951445"
+      },
+      "policy_branch_state_fingerprints": {
+        "STATIC_CONTROL": "70523920ea6132f7709f14c219677a4d387398f2edbfca220c230a44b0af7999",
+        "TRACK_DRIFTING": "70523920ea6132f7709f14c219677a4d387398f2edbfca220c230a44b0af7999",
+        "TRACK_FROZEN": "70523920ea6132f7709f14c219677a4d387398f2edbfca220c230a44b0af7999"
+      },
+      "branch_state_fingerprint_exact_match": true,
+      "policy_prefix_steps": {
+        "STATIC_CONTROL": 70,
+        "TRACK_DRIFTING": 70,
+        "TRACK_FROZEN": 70
+      },
+      "policy_prefix_final_distance_m": {
+        "STATIC_CONTROL": 0.013353337533771992,
+        "TRACK_DRIFTING": 0.013353337533771992,
+        "TRACK_FROZEN": 0.013353337533771992
+      },
+      "policy_readiness": {
+        "STATIC_CONTROL": true,
+        "TRACK_DRIFTING": true,
+        "TRACK_FROZEN": true
+      }
+    },
+    {
+      "seed": 111,
+      "prefix_ready": true,
+      "prefix_failure_reason": null,
+      "prefix_steps": 53,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.012352803722023964,
+      "reset_state_fingerprint": "5401934286245892afbbf710d13a38d65ab31a85fb664f34e7709be569b42da4",
+      "reset_command": [
+        0.4687982201576233,
+        0.22370927035808563,
+        0.3869973123073578
+      ],
+      "branch_state_fingerprint": "b5102b429d86447316f8eef5dbcf82a4f0ab014aaf5ce62d46e7ca97a8ac32f6",
+      "cross_policy_prefix_match": true,
+      "policy_reset_state_fingerprints": {
+        "STATIC_CONTROL": "5401934286245892afbbf710d13a38d65ab31a85fb664f34e7709be569b42da4",
+        "TRACK_DRIFTING": "5401934286245892afbbf710d13a38d65ab31a85fb664f34e7709be569b42da4",
+        "TRACK_FROZEN": "5401934286245892afbbf710d13a38d65ab31a85fb664f34e7709be569b42da4"
+      },
+      "policy_branch_state_fingerprints": {
+        "STATIC_CONTROL": "b5102b429d86447316f8eef5dbcf82a4f0ab014aaf5ce62d46e7ca97a8ac32f6",
+        "TRACK_DRIFTING": "b5102b429d86447316f8eef5dbcf82a4f0ab014aaf5ce62d46e7ca97a8ac32f6",
+        "TRACK_FROZEN": "b5102b429d86447316f8eef5dbcf82a4f0ab014aaf5ce62d46e7ca97a8ac32f6"
+      },
+      "branch_state_fingerprint_exact_match": true,
+      "policy_prefix_steps": {
+        "STATIC_CONTROL": 53,
+        "TRACK_DRIFTING": 53,
+        "TRACK_FROZEN": 53
+      },
+      "policy_prefix_final_distance_m": {
+        "STATIC_CONTROL": 0.012352803722023964,
+        "TRACK_DRIFTING": 0.012352803722023964,
+        "TRACK_FROZEN": 0.012352803722023964
+      },
+      "policy_readiness": {
+        "STATIC_CONTROL": true,
+        "TRACK_DRIFTING": true,
+        "TRACK_FROZEN": true
+      }
+    },
+    {
+      "seed": 112,
+      "prefix_ready": true,
+      "prefix_failure_reason": null,
+      "prefix_steps": 57,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013051116839051247,
+      "reset_state_fingerprint": "cae54c6ce94d787adb35a534052ed11ac25f6cf3ff7598d9837e49a34c74eaeb",
+      "reset_command": [
+        0.47256797552108765,
+        0.2653653919696808,
+        0.3509700894355774
+      ],
+      "branch_state_fingerprint": "a77e5fa7fcb6b0bfa1e84327fa22fef7178a7885562b4e69453708fbc85ea49a",
+      "cross_policy_prefix_match": true,
+      "policy_reset_state_fingerprints": {
+        "STATIC_CONTROL": "cae54c6ce94d787adb35a534052ed11ac25f6cf3ff7598d9837e49a34c74eaeb",
+        "TRACK_DRIFTING": "cae54c6ce94d787adb35a534052ed11ac25f6cf3ff7598d9837e49a34c74eaeb",
+        "TRACK_FROZEN": "cae54c6ce94d787adb35a534052ed11ac25f6cf3ff7598d9837e49a34c74eaeb"
+      },
+      "policy_branch_state_fingerprints": {
+        "STATIC_CONTROL": "a77e5fa7fcb6b0bfa1e84327fa22fef7178a7885562b4e69453708fbc85ea49a",
+        "TRACK_DRIFTING": "a77e5fa7fcb6b0bfa1e84327fa22fef7178a7885562b4e69453708fbc85ea49a",
+        "TRACK_FROZEN": "a77e5fa7fcb6b0bfa1e84327fa22fef7178a7885562b4e69453708fbc85ea49a"
+      },
+      "branch_state_fingerprint_exact_match": true,
+      "policy_prefix_steps": {
+        "STATIC_CONTROL": 57,
+        "TRACK_DRIFTING": 57,
+        "TRACK_FROZEN": 57
+      },
+      "policy_prefix_final_distance_m": {
+        "STATIC_CONTROL": 0.013051116839051247,
+        "TRACK_DRIFTING": 0.013051116839051247,
+        "TRACK_FROZEN": 0.013051116839051247
+      },
+      "policy_readiness": {
+        "STATIC_CONTROL": true,
+        "TRACK_DRIFTING": true,
+        "TRACK_FROZEN": true
+      }
+    }
+  ],
+  "summary": {
+    "by_policy": {
+      "STATIC_CONTROL": {
+        "n": 10,
+        "success_rate": 1.0,
+        "mean_final_distance_m": 7.510295722568116e-06,
+        "mean_completion_steps": 221.9,
+        "forbidden_violations": 0,
+        "unexpected_env_resets": 0
+      },
+      "TRACK_DRIFTING": {
+        "n": 10,
+        "success_rate": 1.0,
+        "mean_final_distance_m": 0.0037503896281123163,
+        "mean_completion_steps": 141.9,
+        "forbidden_violations": 0,
+        "unexpected_env_resets": 0
+      },
+      "TRACK_FROZEN": {
+        "n": 10,
+        "success_rate": 0.0,
+        "mean_final_distance_m": 0.024000056087970734,
+        "mean_completion_steps": 221.9,
+        "forbidden_violations": 0,
+        "unexpected_env_resets": 0
+      }
+    },
+    "validity": {
+      "requested_seed_count": 10,
+      "ready_seed_count": 10,
+      "ready_seeds": [
+        101,
+        102,
+        103,
+        104,
+        105,
+        107,
+        108,
+        109,
+        111,
+        112
+      ],
+      "failed_readiness_seeds": [],
+      "all_requested_seeds_ready": true,
+      "complete_pair_count": 10,
+      "complete_branch_count": 10,
+      "cross_policy_prefix_pass": true,
+      "max_branch_start_ee_gap_m": 0.0,
+      "max_branch_start_command_gap_m": 0.0,
+      "paired_start_tolerance_m": 0.001,
+      "paired_start_pass": true,
+      "max_branch_start_distance_m": 0.014229949563741684,
+      "branch_start_distance_limit_m": 0.021,
+      "all_branch_starts_ready": true,
+      "all_drift_exposed": true,
+      "no_unexpected_env_resets": true,
+      "static_control_pass": true,
+      "max_static_frozen_ee_gap_m": 0.0,
+      "max_static_frozen_action_gap": 0.0,
+      "evaluation_isolation_tolerance": 0.001,
+      "evaluation_isolation_overlap_steps": {
+        "101": 160,
+        "102": 160,
+        "103": 160,
+        "104": 160,
+        "105": 160,
+        "107": 160,
+        "108": 160,
+        "109": 160,
+        "111": 160,
+        "112": 160
+      },
+      "evaluation_isolation_expected_steps": {
+        "101": 160,
+        "102": 160,
+        "103": 160,
+        "104": 160,
+        "105": 160,
+        "107": 160,
+        "108": 160,
+        "109": 160,
+        "111": 160,
+        "112": 160
+      },
+      "evaluation_isolation_pass": true,
+      "valid_pilot": true,
+      "selection_protocol": "static_control_first_fixed_order_quota_v0.2",
+      "candidate_seed_count": 40,
+      "eligible_seed_count": 29,
+      "required_eligible_seed_count": 10,
+      "selection_quota_met": true,
+      "selection_locked_before_treatment": true
+    }
+  },
+  "records": [
+    {
+      "seed": 101,
+      "policy": "STATIC_CONTROL",
+      "evaluation_target": "STATIC",
+      "policy_target": "STATIC_CONTROL",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.45609796047210693,
+        0.2815120816230774,
+        0.3632347881793976
+      ],
+      "branch_start_command": [
+        0.45638948678970337,
+        0.2823198139667511,
+        0.35028210282325745
+      ],
+      "branch_start_distance_m": 0.012981119565665722,
+      "prefix_ready": true,
+      "prefix_steps": 125,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.012981119565665722,
+      "reset_state_fingerprint": "7a6013895ad0cad2c4626a12fff534314af4df8923b4a25310922493c6fd04b4",
+      "branch_state_fingerprint": "c624cb4618eed935bde377784b784585ebfdfef704f718771b4b054d328ee809",
+      "reset_command": [
+        0.45638948678970337,
+        0.2823198139667511,
+        0.35028210282325745
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 205,
+      "onset_step": 125,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 285,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 3.856954663206125e-06,
+      "max_distance_m": 0.01188039779663086,
+      "path_length_m": 0.011912561681270972,
+      "completion_steps": 285,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 101,
+      "policy": "TRACK_DRIFTING",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_DRIFTING",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.45609796047210693,
+        0.2815120816230774,
+        0.3632347881793976
+      ],
+      "branch_start_command": [
+        0.45638948678970337,
+        0.2823198139667511,
+        0.35028210282325745
+      ],
+      "branch_start_distance_m": 0.012981119565665722,
+      "prefix_ready": true,
+      "prefix_steps": 125,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.012981119565665722,
+      "reset_state_fingerprint": "7a6013895ad0cad2c4626a12fff534314af4df8923b4a25310922493c6fd04b4",
+      "branch_state_fingerprint": "c624cb4618eed935bde377784b784585ebfdfef704f718771b4b054d328ee809",
+      "reset_command": [
+        0.45638948678970337,
+        0.2823198139667511,
+        0.35028210282325745
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 205,
+      "onset_step": 125,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 285,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.0036238401662558317,
+      "max_distance_m": 0.011896010488271713,
+      "path_length_m": 0.028324599436018616,
+      "completion_steps": 205,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 101,
+      "policy": "TRACK_FROZEN",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_FROZEN",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.45609796047210693,
+        0.2815120816230774,
+        0.3632347881793976
+      ],
+      "branch_start_command": [
+        0.45638948678970337,
+        0.2823198139667511,
+        0.35028210282325745
+      ],
+      "branch_start_distance_m": 0.012981119565665722,
+      "prefix_ready": true,
+      "prefix_steps": 125,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.012981119565665722,
+      "reset_state_fingerprint": "7a6013895ad0cad2c4626a12fff534314af4df8923b4a25310922493c6fd04b4",
+      "branch_state_fingerprint": "c624cb4618eed935bde377784b784585ebfdfef704f718771b4b054d328ee809",
+      "reset_command": [
+        0.45638948678970337,
+        0.2823198139667511,
+        0.35028210282325745
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 205,
+      "onset_step": 125,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 285,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.02400192618370056,
+      "max_distance_m": 0.02400321140885353,
+      "path_length_m": 0.011912561681270972,
+      "completion_steps": 285,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": false,
+      "terminal_category": "timeout_failure",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 102,
+      "policy": "STATIC_CONTROL",
+      "evaluation_target": "STATIC",
+      "policy_target": "STATIC_CONTROL",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.4545729458332062,
+        0.22042177617549896,
+        0.35360947251319885
+      ],
+      "branch_start_command": [
+        0.45240330696105957,
+        0.23152966797351837,
+        0.3449839949607849
+      ],
+      "branch_start_distance_m": 0.014229949563741684,
+      "prefix_ready": true,
+      "prefix_steps": 49,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.014229949563741684,
+      "reset_state_fingerprint": "8cd71769905885b3bed9afcd5aba161fb97792c14fabc99299392ca7a9ee2875",
+      "branch_state_fingerprint": "8f4a8f28bcf86abdf3ccad72d73e27607facc461886c520d09df15ae9b1477eb",
+      "reset_command": [
+        0.45240330696105957,
+        0.23152966797351837,
+        0.3449839949607849
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 129,
+      "onset_step": 49,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 209,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 5.5472360145358834e-06,
+      "max_distance_m": 0.013031618669629097,
+      "path_length_m": 0.013232726662153027,
+      "completion_steps": 209,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 102,
+      "policy": "TRACK_DRIFTING",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_DRIFTING",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.4545729458332062,
+        0.22042177617549896,
+        0.35360947251319885
+      ],
+      "branch_start_command": [
+        0.45240330696105957,
+        0.23152966797351837,
+        0.3449839949607849
+      ],
+      "branch_start_distance_m": 0.014229949563741684,
+      "prefix_ready": true,
+      "prefix_steps": 49,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.014229949563741684,
+      "reset_state_fingerprint": "8cd71769905885b3bed9afcd5aba161fb97792c14fabc99299392ca7a9ee2875",
+      "branch_state_fingerprint": "8f4a8f28bcf86abdf3ccad72d73e27607facc461886c520d09df15ae9b1477eb",
+      "reset_command": [
+        0.45240330696105957,
+        0.23152966797351837,
+        0.3449839949607849
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 129,
+      "onset_step": 49,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 209,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.0036061229184269905,
+      "max_distance_m": 0.012992682866752148,
+      "path_length_m": 0.028723723138682544,
+      "completion_steps": 129,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 102,
+      "policy": "TRACK_FROZEN",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_FROZEN",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.4545729458332062,
+        0.22042177617549896,
+        0.35360947251319885
+      ],
+      "branch_start_command": [
+        0.45240330696105957,
+        0.23152966797351837,
+        0.3449839949607849
+      ],
+      "branch_start_distance_m": 0.014229949563741684,
+      "prefix_ready": true,
+      "prefix_steps": 49,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.014229949563741684,
+      "reset_state_fingerprint": "8cd71769905885b3bed9afcd5aba161fb97792c14fabc99299392ca7a9ee2875",
+      "branch_state_fingerprint": "8f4a8f28bcf86abdf3ccad72d73e27607facc461886c520d09df15ae9b1477eb",
+      "reset_command": [
+        0.45240330696105957,
+        0.23152966797351837,
+        0.3449839949607849
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 129,
+      "onset_step": 49,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 209,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.023995012044906616,
+      "max_distance_m": 0.023997724056243896,
+      "path_length_m": 0.013232726662153027,
+      "completion_steps": 209,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": false,
+      "terminal_category": "timeout_failure",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 103,
+      "policy": "STATIC_CONTROL",
+      "evaluation_target": "STATIC",
+      "policy_target": "STATIC_CONTROL",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5327102541923523,
+        0.06978249549865723,
+        0.34050124883651733
+      ],
+      "branch_start_command": [
+        0.5386285781860352,
+        0.07196521013975143,
+        0.34317806363105774
+      ],
+      "branch_start_distance_m": 0.006852454971522093,
+      "prefix_ready": true,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.006852454971522093,
+      "reset_state_fingerprint": "cdf16ddf8494cbbfbcff4670aad8be1a843b417074aea32841b4770ad5c21d2a",
+      "branch_state_fingerprint": "1511d146eb603c315b986f72192c78082b2101f3a7b77859641d68252a58174e",
+      "reset_command": [
+        0.5386285781860352,
+        0.07196521013975143,
+        0.34317806363105774
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 124,
+      "onset_step": 44,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 204,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 1.8074464605888352e-05,
+      "max_distance_m": 0.006284377072006464,
+      "path_length_m": 0.009301500080411529,
+      "completion_steps": 204,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 103,
+      "policy": "TRACK_DRIFTING",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_DRIFTING",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5327102541923523,
+        0.06978249549865723,
+        0.34050124883651733
+      ],
+      "branch_start_command": [
+        0.5386285781860352,
+        0.07196521013975143,
+        0.34317806363105774
+      ],
+      "branch_start_distance_m": 0.006852454971522093,
+      "prefix_ready": true,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.006852454971522093,
+      "reset_state_fingerprint": "cdf16ddf8494cbbfbcff4670aad8be1a843b417074aea32841b4770ad5c21d2a",
+      "branch_state_fingerprint": "1511d146eb603c315b986f72192c78082b2101f3a7b77859641d68252a58174e",
+      "reset_command": [
+        0.5386285781860352,
+        0.07196521013975143,
+        0.34317806363105774
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 124,
+      "onset_step": 44,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 204,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.0037780781276524067,
+      "max_distance_m": 0.006528415717184544,
+      "path_length_m": 0.02681995095917955,
+      "completion_steps": 124,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 103,
+      "policy": "TRACK_FROZEN",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_FROZEN",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5327102541923523,
+        0.06978249549865723,
+        0.34050124883651733
+      ],
+      "branch_start_command": [
+        0.5386285781860352,
+        0.07196521013975143,
+        0.34317806363105774
+      ],
+      "branch_start_distance_m": 0.006852454971522093,
+      "prefix_ready": true,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.006852454971522093,
+      "reset_state_fingerprint": "cdf16ddf8494cbbfbcff4670aad8be1a843b417074aea32841b4770ad5c21d2a",
+      "branch_state_fingerprint": "1511d146eb603c315b986f72192c78082b2101f3a7b77859641d68252a58174e",
+      "reset_command": [
+        0.5386285781860352,
+        0.07196521013975143,
+        0.34317806363105774
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 124,
+      "onset_step": 44,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 204,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.02399713359773159,
+      "max_distance_m": 0.024107135832309723,
+      "path_length_m": 0.009301500080411529,
+      "completion_steps": 204,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": false,
+      "terminal_category": "timeout_failure",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 104,
+      "policy": "STATIC_CONTROL",
+      "evaluation_target": "STATIC",
+      "policy_target": "STATIC_CONTROL",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5387994050979614,
+        0.19911694526672363,
+        0.28209567070007324
+      ],
+      "branch_start_command": [
+        0.5485000014305115,
+        0.20845751464366913,
+        0.28527161478996277
+      ],
+      "branch_start_distance_m": 0.013835982419550419,
+      "prefix_ready": true,
+      "prefix_steps": 45,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013835983350872993,
+      "reset_state_fingerprint": "6a291b6609b577e8f57332811918e66b18a6607ac99d3a0f2acb838df73c95d6",
+      "branch_state_fingerprint": "0971ddd9fe986a1f4a079c1d2ebff19f9681068256801b10e40b3e70ef27654e",
+      "reset_command": [
+        0.5485000014305115,
+        0.20845751464366913,
+        0.28527161478996277
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 125,
+      "onset_step": 45,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 205,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 8.101970706775319e-06,
+      "max_distance_m": 0.012637452222406864,
+      "path_length_m": 0.014887860436118672,
+      "completion_steps": 205,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 104,
+      "policy": "TRACK_DRIFTING",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_DRIFTING",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5387994050979614,
+        0.19911694526672363,
+        0.28209567070007324
+      ],
+      "branch_start_command": [
+        0.5485000014305115,
+        0.20845751464366913,
+        0.28527161478996277
+      ],
+      "branch_start_distance_m": 0.013835982419550419,
+      "prefix_ready": true,
+      "prefix_steps": 45,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013835983350872993,
+      "reset_state_fingerprint": "6a291b6609b577e8f57332811918e66b18a6607ac99d3a0f2acb838df73c95d6",
+      "branch_state_fingerprint": "0971ddd9fe986a1f4a079c1d2ebff19f9681068256801b10e40b3e70ef27654e",
+      "reset_command": [
+        0.5485000014305115,
+        0.20845751464366913,
+        0.28527161478996277
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 125,
+      "onset_step": 45,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 205,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.0037297450471669436,
+      "max_distance_m": 0.012838462367653847,
+      "path_length_m": 0.032566544046858326,
+      "completion_steps": 125,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 104,
+      "policy": "TRACK_FROZEN",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_FROZEN",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5387994050979614,
+        0.19911694526672363,
+        0.28209567070007324
+      ],
+      "branch_start_command": [
+        0.5485000014305115,
+        0.20845751464366913,
+        0.28527161478996277
+      ],
+      "branch_start_distance_m": 0.013835982419550419,
+      "prefix_ready": true,
+      "prefix_steps": 45,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013835983350872993,
+      "reset_state_fingerprint": "6a291b6609b577e8f57332811918e66b18a6607ac99d3a0f2acb838df73c95d6",
+      "branch_state_fingerprint": "0971ddd9fe986a1f4a079c1d2ebff19f9681068256801b10e40b3e70ef27654e",
+      "reset_command": [
+        0.5485000014305115,
+        0.20845751464366913,
+        0.28527161478996277
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 125,
+      "onset_step": 45,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 205,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.024001898244023323,
+      "max_distance_m": 0.024092303588986397,
+      "path_length_m": 0.014887860436118672,
+      "completion_steps": 205,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": false,
+      "terminal_category": "timeout_failure",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 105,
+      "policy": "STATIC_CONTROL",
+      "evaluation_target": "STATIC",
+      "policy_target": "STATIC_CONTROL",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.46924954652786255,
+        0.16463999450206757,
+        0.3802030384540558
+      ],
+      "branch_start_command": [
+        0.468997061252594,
+        0.17247362434864044,
+        0.3814500570297241
+      ],
+      "branch_start_distance_m": 0.007936281152069569,
+      "prefix_ready": true,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.007936281152069569,
+      "reset_state_fingerprint": "3dc832eafe0ec378604512658a66cc2edffcbadd36c1abc5cc083f62fa46d9ac",
+      "branch_state_fingerprint": "a970e14c41f20c3eea5b7e8125fe17bcce2ccd94cd5f9762173481ba885c3bce",
+      "reset_command": [
+        0.468997061252594,
+        0.17247362434864044,
+        0.3814500570297241
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 124,
+      "onset_step": 44,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 204,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 4.7471135076193605e-06,
+      "max_distance_m": 0.007224369328469038,
+      "path_length_m": 0.011174923560986372,
+      "completion_steps": 204,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 105,
+      "policy": "TRACK_DRIFTING",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_DRIFTING",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.46924954652786255,
+        0.16463999450206757,
+        0.3802030384540558
+      ],
+      "branch_start_command": [
+        0.468997061252594,
+        0.17247362434864044,
+        0.3814500570297241
+      ],
+      "branch_start_distance_m": 0.007936281152069569,
+      "prefix_ready": true,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.007936281152069569,
+      "reset_state_fingerprint": "3dc832eafe0ec378604512658a66cc2edffcbadd36c1abc5cc083f62fa46d9ac",
+      "branch_state_fingerprint": "a970e14c41f20c3eea5b7e8125fe17bcce2ccd94cd5f9762173481ba885c3bce",
+      "reset_command": [
+        0.468997061252594,
+        0.17247362434864044,
+        0.3814500570297241
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 124,
+      "onset_step": 44,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 204,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.0037344421725720167,
+      "max_distance_m": 0.007216777186840773,
+      "path_length_m": 0.02524714553146623,
+      "completion_steps": 124,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 105,
+      "policy": "TRACK_FROZEN",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_FROZEN",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.46924954652786255,
+        0.16463999450206757,
+        0.3802030384540558
+      ],
+      "branch_start_command": [
+        0.468997061252594,
+        0.17247362434864044,
+        0.3814500570297241
+      ],
+      "branch_start_distance_m": 0.007936281152069569,
+      "prefix_ready": true,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.007936281152069569,
+      "reset_state_fingerprint": "3dc832eafe0ec378604512658a66cc2edffcbadd36c1abc5cc083f62fa46d9ac",
+      "branch_state_fingerprint": "a970e14c41f20c3eea5b7e8125fe17bcce2ccd94cd5f9762173481ba885c3bce",
+      "reset_command": [
+        0.468997061252594,
+        0.17247362434864044,
+        0.3814500570297241
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 124,
+      "onset_step": 44,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 204,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.0240023136138916,
+      "max_distance_m": 0.02410879358649254,
+      "path_length_m": 0.011174923560986372,
+      "completion_steps": 204,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": false,
+      "terminal_category": "timeout_failure",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 107,
+      "policy": "STATIC_CONTROL",
+      "evaluation_target": "STATIC",
+      "policy_target": "STATIC_CONTROL",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5190637707710266,
+        0.17495933175086975,
+        0.37102338671684265
+      ],
+      "branch_start_command": [
+        0.522883951663971,
+        0.185650035738945,
+        0.3731972277164459
+      ],
+      "branch_start_distance_m": 0.011559002101421356,
+      "prefix_ready": true,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.011559002101421356,
+      "reset_state_fingerprint": "8fe4affec3fc13e95789178bb45f4ee934754cdd961ddd16d79f1bbf59312719",
+      "branch_state_fingerprint": "e3e81a70664c5cc3e7003a17c1602995688ff8a3e7d727b7b5044d8be376df64",
+      "reset_command": [
+        0.522883951663971,
+        0.185650035738945,
+        0.3731972277164459
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 124,
+      "onset_step": 44,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 204,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 2.0683863112935796e-05,
+      "max_distance_m": 0.01054867822676897,
+      "path_length_m": 0.014141820665713567,
+      "completion_steps": 204,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 107,
+      "policy": "TRACK_DRIFTING",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_DRIFTING",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5190637707710266,
+        0.17495933175086975,
+        0.37102338671684265
+      ],
+      "branch_start_command": [
+        0.522883951663971,
+        0.185650035738945,
+        0.3731972277164459
+      ],
+      "branch_start_distance_m": 0.011559002101421356,
+      "prefix_ready": true,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.011559002101421356,
+      "reset_state_fingerprint": "8fe4affec3fc13e95789178bb45f4ee934754cdd961ddd16d79f1bbf59312719",
+      "branch_state_fingerprint": "e3e81a70664c5cc3e7003a17c1602995688ff8a3e7d727b7b5044d8be376df64",
+      "reset_command": [
+        0.522883951663971,
+        0.185650035738945,
+        0.3731972277164459
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 124,
+      "onset_step": 44,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 204,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.003899088129401207,
+      "max_distance_m": 0.010642900131642818,
+      "path_length_m": 0.029459738318109885,
+      "completion_steps": 124,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 107,
+      "policy": "TRACK_FROZEN",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_FROZEN",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5190637707710266,
+        0.17495933175086975,
+        0.37102338671684265
+      ],
+      "branch_start_command": [
+        0.522883951663971,
+        0.185650035738945,
+        0.3731972277164459
+      ],
+      "branch_start_distance_m": 0.011559002101421356,
+      "prefix_ready": true,
+      "prefix_steps": 44,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.011559002101421356,
+      "reset_state_fingerprint": "8fe4affec3fc13e95789178bb45f4ee934754cdd961ddd16d79f1bbf59312719",
+      "branch_state_fingerprint": "e3e81a70664c5cc3e7003a17c1602995688ff8a3e7d727b7b5044d8be376df64",
+      "reset_command": [
+        0.522883951663971,
+        0.185650035738945,
+        0.3731972277164459
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 124,
+      "onset_step": 44,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 204,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.023996300995349884,
+      "max_distance_m": 0.024260388687253,
+      "path_length_m": 0.014141820665713567,
+      "completion_steps": 204,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": false,
+      "terminal_category": "timeout_failure",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 108,
+      "policy": "STATIC_CONTROL",
+      "evaluation_target": "STATIC",
+      "policy_target": "STATIC_CONTROL",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5472421646118164,
+        0.11779234558343887,
+        0.3406812250614166
+      ],
+      "branch_start_command": [
+        0.5405505895614624,
+        0.1071777418255806,
+        0.3466132581233978
+      ],
+      "branch_start_distance_m": 0.013879337348043919,
+      "prefix_ready": true,
+      "prefix_steps": 88,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013879337348043919,
+      "reset_state_fingerprint": "6956d05079b39ee376f602c0c7bed8ef72b72e52b9317d68b4009566066a204b",
+      "branch_state_fingerprint": "c5ad2544b14e5121ca5933bba3f770aeca1795923229f0c42c820904145a0e32",
+      "reset_command": [
+        0.5405505895614624,
+        0.1071777418255806,
+        0.3466132581233978
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 168,
+      "onset_step": 88,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 248,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 2.770904984572553e-06,
+      "max_distance_m": 0.012768485583364964,
+      "path_length_m": 0.015730955560627535,
+      "completion_steps": 248,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 108,
+      "policy": "TRACK_DRIFTING",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_DRIFTING",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5472421646118164,
+        0.11779234558343887,
+        0.3406812250614166
+      ],
+      "branch_start_command": [
+        0.5405505895614624,
+        0.1071777418255806,
+        0.3466132581233978
+      ],
+      "branch_start_distance_m": 0.013879337348043919,
+      "prefix_ready": true,
+      "prefix_steps": 88,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013879337348043919,
+      "reset_state_fingerprint": "6956d05079b39ee376f602c0c7bed8ef72b72e52b9317d68b4009566066a204b",
+      "branch_state_fingerprint": "c5ad2544b14e5121ca5933bba3f770aeca1795923229f0c42c820904145a0e32",
+      "reset_command": [
+        0.5405505895614624,
+        0.1071777418255806,
+        0.3466132581233978
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 168,
+      "onset_step": 88,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 248,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.0038435973692685366,
+      "max_distance_m": 0.012634096667170525,
+      "path_length_m": 0.02671535142872017,
+      "completion_steps": 168,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 108,
+      "policy": "TRACK_FROZEN",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_FROZEN",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.5472421646118164,
+        0.11779234558343887,
+        0.3406812250614166
+      ],
+      "branch_start_command": [
+        0.5405505895614624,
+        0.1071777418255806,
+        0.3466132581233978
+      ],
+      "branch_start_distance_m": 0.013879337348043919,
+      "prefix_ready": true,
+      "prefix_steps": 88,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013879337348043919,
+      "reset_state_fingerprint": "6956d05079b39ee376f602c0c7bed8ef72b72e52b9317d68b4009566066a204b",
+      "branch_state_fingerprint": "c5ad2544b14e5121ca5933bba3f770aeca1795923229f0c42c820904145a0e32",
+      "reset_command": [
+        0.5405505895614624,
+        0.1071777418255806,
+        0.3466132581233978
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 168,
+      "onset_step": 88,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 248,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.024000108242034912,
+      "max_distance_m": 0.024140700697898865,
+      "path_length_m": 0.015730955560627535,
+      "completion_steps": 248,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": false,
+      "terminal_category": "timeout_failure",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 109,
+      "policy": "STATIC_CONTROL",
+      "evaluation_target": "STATIC",
+      "policy_target": "STATIC_CONTROL",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.4948198199272156,
+        0.1600145697593689,
+        0.3411760926246643
+      ],
+      "branch_start_command": [
+        0.49509674310684204,
+        0.1601535677909851,
+        0.3545258343219757
+      ],
+      "branch_start_distance_m": 0.013353337533771992,
+      "prefix_ready": true,
+      "prefix_steps": 70,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013353337533771992,
+      "reset_state_fingerprint": "a4ef0c60c5eed98f09a0cb9474604acc6e755cf8344b708779246c59e0951445",
+      "branch_state_fingerprint": "70523920ea6132f7709f14c219677a4d387398f2edbfca220c230a44b0af7999",
+      "reset_command": [
+        0.49509674310684204,
+        0.1601535677909851,
+        0.3545258343219757
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 150,
+      "onset_step": 70,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 230,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 4.323494522395777e-06,
+      "max_distance_m": 0.012185958214104176,
+      "path_length_m": 0.016886288165977703,
+      "completion_steps": 230,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 109,
+      "policy": "TRACK_DRIFTING",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_DRIFTING",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.4948198199272156,
+        0.1600145697593689,
+        0.3411760926246643
+      ],
+      "branch_start_command": [
+        0.49509674310684204,
+        0.1601535677909851,
+        0.3545258343219757
+      ],
+      "branch_start_distance_m": 0.013353337533771992,
+      "prefix_ready": true,
+      "prefix_steps": 70,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013353337533771992,
+      "reset_state_fingerprint": "a4ef0c60c5eed98f09a0cb9474604acc6e755cf8344b708779246c59e0951445",
+      "branch_state_fingerprint": "70523920ea6132f7709f14c219677a4d387398f2edbfca220c230a44b0af7999",
+      "reset_command": [
+        0.49509674310684204,
+        0.1601535677909851,
+        0.3545258343219757
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 150,
+      "onset_step": 70,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 230,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.0038353789132088423,
+      "max_distance_m": 0.012189936824142933,
+      "path_length_m": 0.029367761657340452,
+      "completion_steps": 150,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 109,
+      "policy": "TRACK_FROZEN",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_FROZEN",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.4948198199272156,
+        0.1600145697593689,
+        0.3411760926246643
+      ],
+      "branch_start_command": [
+        0.49509674310684204,
+        0.1601535677909851,
+        0.3545258343219757
+      ],
+      "branch_start_distance_m": 0.013353337533771992,
+      "prefix_ready": true,
+      "prefix_steps": 70,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013353337533771992,
+      "reset_state_fingerprint": "a4ef0c60c5eed98f09a0cb9474604acc6e755cf8344b708779246c59e0951445",
+      "branch_state_fingerprint": "70523920ea6132f7709f14c219677a4d387398f2edbfca220c230a44b0af7999",
+      "reset_command": [
+        0.49509674310684204,
+        0.1601535677909851,
+        0.3545258343219757
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 150,
+      "onset_step": 70,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 230,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.02400222420692444,
+      "max_distance_m": 0.02417951263487339,
+      "path_length_m": 0.016886288165977703,
+      "completion_steps": 230,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": false,
+      "terminal_category": "timeout_failure",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 111,
+      "policy": "STATIC_CONTROL",
+      "evaluation_target": "STATIC",
+      "policy_target": "STATIC_CONTROL",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.47357454895973206,
+        0.21561382710933685,
+        0.37898218631744385
+      ],
+      "branch_start_command": [
+        0.4687982201576233,
+        0.22370927035808563,
+        0.3869973123073578
+      ],
+      "branch_start_distance_m": 0.012352803722023964,
+      "prefix_ready": true,
+      "prefix_steps": 53,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.012352803722023964,
+      "reset_state_fingerprint": "5401934286245892afbbf710d13a38d65ab31a85fb664f34e7709be569b42da4",
+      "branch_state_fingerprint": "b5102b429d86447316f8eef5dbcf82a4f0ab014aaf5ce62d46e7ca97a8ac32f6",
+      "reset_command": [
+        0.4687982201576233,
+        0.22370927035808563,
+        0.3869973123073578
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 133,
+      "onset_step": 53,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 213,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 4.007498318969738e-06,
+      "max_distance_m": 0.011073613539338112,
+      "path_length_m": 0.011891804483482815,
+      "completion_steps": 213,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 111,
+      "policy": "TRACK_DRIFTING",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_DRIFTING",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.47357454895973206,
+        0.21561382710933685,
+        0.37898218631744385
+      ],
+      "branch_start_command": [
+        0.4687982201576233,
+        0.22370927035808563,
+        0.3869973123073578
+      ],
+      "branch_start_distance_m": 0.012352803722023964,
+      "prefix_ready": true,
+      "prefix_steps": 53,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.012352803722023964,
+      "reset_state_fingerprint": "5401934286245892afbbf710d13a38d65ab31a85fb664f34e7709be569b42da4",
+      "branch_state_fingerprint": "b5102b429d86447316f8eef5dbcf82a4f0ab014aaf5ce62d46e7ca97a8ac32f6",
+      "reset_command": [
+        0.4687982201576233,
+        0.22370927035808563,
+        0.3869973123073578
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 133,
+      "onset_step": 53,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 213,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.003626563586294651,
+      "max_distance_m": 0.010958204045891762,
+      "path_length_m": 0.027864823539857753,
+      "completion_steps": 133,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 111,
+      "policy": "TRACK_FROZEN",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_FROZEN",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.47357454895973206,
+        0.21561382710933685,
+        0.37898218631744385
+      ],
+      "branch_start_command": [
+        0.4687982201576233,
+        0.22370927035808563,
+        0.3869973123073578
+      ],
+      "branch_start_distance_m": 0.012352803722023964,
+      "prefix_ready": true,
+      "prefix_steps": 53,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.012352803722023964,
+      "reset_state_fingerprint": "5401934286245892afbbf710d13a38d65ab31a85fb664f34e7709be569b42da4",
+      "branch_state_fingerprint": "b5102b429d86447316f8eef5dbcf82a4f0ab014aaf5ce62d46e7ca97a8ac32f6",
+      "reset_command": [
+        0.4687982201576233,
+        0.22370927035808563,
+        0.3869973123073578
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 133,
+      "onset_step": 53,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 213,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.02400219440460205,
+      "max_distance_m": 0.024006254971027374,
+      "path_length_m": 0.011891804483482815,
+      "completion_steps": 213,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": false,
+      "terminal_category": "timeout_failure",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 112,
+      "policy": "STATIC_CONTROL",
+      "evaluation_target": "STATIC",
+      "policy_target": "STATIC_CONTROL",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.4721890091896057,
+        0.2561854422092438,
+        0.3417009711265564
+      ],
+      "branch_start_command": [
+        0.47256797552108765,
+        0.2653653919696808,
+        0.3509700894355774
+      ],
+      "branch_start_distance_m": 0.013051116839051247,
+      "prefix_ready": true,
+      "prefix_steps": 57,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013051116839051247,
+      "reset_state_fingerprint": "cae54c6ce94d787adb35a534052ed11ac25f6cf3ff7598d9837e49a34c74eaeb",
+      "branch_state_fingerprint": "a77e5fa7fcb6b0bfa1e84327fa22fef7178a7885562b4e69453708fbc85ea49a",
+      "reset_command": [
+        0.47256797552108765,
+        0.2653653919696808,
+        0.3509700894355774
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 137,
+      "onset_step": 57,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 217,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 2.989456788782263e-06,
+      "max_distance_m": 0.011839927174150944,
+      "path_length_m": 0.01667952785085447,
+      "completion_steps": 217,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 112,
+      "policy": "TRACK_DRIFTING",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_DRIFTING",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.4721890091896057,
+        0.2561854422092438,
+        0.3417009711265564
+      ],
+      "branch_start_command": [
+        0.47256797552108765,
+        0.2653653919696808,
+        0.3509700894355774
+      ],
+      "branch_start_distance_m": 0.013051116839051247,
+      "prefix_ready": true,
+      "prefix_steps": 57,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013051116839051247,
+      "reset_state_fingerprint": "cae54c6ce94d787adb35a534052ed11ac25f6cf3ff7598d9837e49a34c74eaeb",
+      "branch_state_fingerprint": "a77e5fa7fcb6b0bfa1e84327fa22fef7178a7885562b4e69453708fbc85ea49a",
+      "reset_command": [
+        0.47256797552108765,
+        0.2653653919696808,
+        0.3509700894355774
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 137,
+      "onset_step": 57,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 217,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.0038270398508757353,
+      "max_distance_m": 0.011846336536109447,
+      "path_length_m": 0.030058068528887816,
+      "completion_steps": 137,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": true,
+      "terminal_category": "successful_resolution",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    },
+    {
+      "seed": 112,
+      "policy": "TRACK_FROZEN",
+      "evaluation_target": "PERSISTENT_DRIFT",
+      "policy_target": "TRACK_FROZEN",
+      "branch_source": "isolated_process_deterministic_prefix",
+      "branch_start_ee": [
+        0.4721890091896057,
+        0.2561854422092438,
+        0.3417009711265564
+      ],
+      "branch_start_command": [
+        0.47256797552108765,
+        0.2653653919696808,
+        0.3509700894355774
+      ],
+      "branch_start_distance_m": 0.013051116839051247,
+      "prefix_ready": true,
+      "prefix_steps": 57,
+      "prefix_stable_steps": 5,
+      "prefix_final_distance_m": 0.013051116839051247,
+      "reset_state_fingerprint": "cae54c6ce94d787adb35a534052ed11ac25f6cf3ff7598d9837e49a34c74eaeb",
+      "branch_state_fingerprint": "a77e5fa7fcb6b0bfa1e84327fa22fef7178a7885562b4e69453708fbc85ea49a",
+      "reset_command": [
+        0.47256797552108765,
+        0.2653653919696808,
+        0.3509700894355774
+      ],
+      "configured_minimum_onset_step": 40,
+      "minimum_completion_steps": 137,
+      "onset_step": 57,
+      "branch_horizon_steps": 160,
+      "branch_timeout_step": 217,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80,
+      "final_distance_m": 0.02400144934654236,
+      "max_distance_m": 0.024195300415158272,
+      "path_length_m": 0.01667952785085447,
+      "completion_steps": 217,
+      "forbidden_violation": false,
+      "unexpected_env_reset": false,
+      "successful_resolution": false,
+      "terminal_category": "timeout_failure",
+      "mode": "isaac",
+      "experiment_id": "EXP-SURG-003-drift-pilot"
+    }
+  ],
+  "timestamp_utc": "2026-07-30T03:03:21.966886+00:00",
+  "target_dynamics": "persistent_drift",
+  "fresh_environment_per_seed": true,
+  "isolated_isaac_process_per_seed": true,
+  "isolated_isaac_process_per_policy": true,
+  "source_result_dirs": [
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_101/STATIC_CONTROL",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_101/TRACK_DRIFTING",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_101/TRACK_FROZEN",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_102/STATIC_CONTROL",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_102/TRACK_DRIFTING",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_102/TRACK_FROZEN",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_103/STATIC_CONTROL",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_103/TRACK_DRIFTING",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_103/TRACK_FROZEN",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_104/STATIC_CONTROL",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_104/TRACK_DRIFTING",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_104/TRACK_FROZEN",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_105/STATIC_CONTROL",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_105/TRACK_DRIFTING",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_105/TRACK_FROZEN",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_107/STATIC_CONTROL",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_107/TRACK_DRIFTING",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_107/TRACK_FROZEN",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_108/STATIC_CONTROL",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_108/TRACK_DRIFTING",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_108/TRACK_FROZEN",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_109/STATIC_CONTROL",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_109/TRACK_DRIFTING",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_109/TRACK_FROZEN",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_111/STATIC_CONTROL",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_111/TRACK_DRIFTING",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_111/TRACK_FROZEN",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_112/STATIC_CONTROL",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_112/TRACK_DRIFTING",
+    "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/seed_112/TRACK_FROZEN"
+  ],
+  "selection": {
+    "protocol": "static_control_first_fixed_order_quota_v0.2",
+    "candidate_seeds": [
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139
+    ],
+    "required_eligible_seed_count": 10,
+    "eligible_seeds": [
+      101,
+      102,
+      103,
+      104,
+      105,
+      107,
+      108,
+      109,
+      111,
+      112,
+      113,
+      114,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      124,
+      128,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      138,
+      139
+    ],
+    "selected_seeds": [
+      101,
+      102,
+      103,
+      104,
+      105,
+      107,
+      108,
+      109,
+      111,
+      112
+    ],
+    "selection_quota_met": true,
+    "selection_locked_before_treatment": true,
+    "eligibility_rate": 0.725,
+    "eligibility_tolerance_m": 0.02,
+    "locked_parameters": {
+      "onset": 40,
+      "max_steps": 200,
+      "tol_m": 0.02,
+      "prefix_max_steps": 200,
+      "prefix_stable_steps": 5,
+      "paired_start_tol_m": 0.001,
+      "drift_speed_m_per_step": 0.0003,
+      "drift_axis": "x",
+      "drift_duration_steps": 80
+    },
+    "analysis_contract": {
+      "moving_min_success_rate": 0.8,
+      "frozen_max_success_rate": 0.2,
+      "require_positive_mean_final_distance_improvement": true,
+      "max_forbidden_violations": 0
+    },
+    "candidate_evaluations": [
+      {
+        "seed": 100,
+        "eligible": false,
+        "reasons": [
+          "static_control_failure",
+          "static_control_exceeded_tolerance"
+        ],
+        "prefix_steps": 44,
+        "prefix_final_distance_m": 0.004419772420078516,
+        "reset_state_fingerprint": "ba402f2d13c28d92360dae9faf2b9503689bb7efca2e4683e4873766bc74000a",
+        "branch_state_fingerprint": "b8da52315fd847a7276a3742256adb207137f6accb2d7e5486ed3d8b77bada6b",
+        "static_final_distance_m": 0.09487668424844742,
+        "static_max_distance_m": 0.0950772762298584
+      },
+      {
+        "seed": 101,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 125,
+        "prefix_final_distance_m": 0.012981119565665722,
+        "reset_state_fingerprint": "7a6013895ad0cad2c4626a12fff534314af4df8923b4a25310922493c6fd04b4",
+        "branch_state_fingerprint": "c624cb4618eed935bde377784b784585ebfdfef704f718771b4b054d328ee809",
+        "static_final_distance_m": 3.856954663206125e-06,
+        "static_max_distance_m": 0.01188039779663086
+      },
+      {
+        "seed": 102,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 49,
+        "prefix_final_distance_m": 0.014229949563741684,
+        "reset_state_fingerprint": "8cd71769905885b3bed9afcd5aba161fb97792c14fabc99299392ca7a9ee2875",
+        "branch_state_fingerprint": "8f4a8f28bcf86abdf3ccad72d73e27607facc461886c520d09df15ae9b1477eb",
+        "static_final_distance_m": 5.5472360145358834e-06,
+        "static_max_distance_m": 0.013031618669629097
+      },
+      {
+        "seed": 103,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 44,
+        "prefix_final_distance_m": 0.006852454971522093,
+        "reset_state_fingerprint": "cdf16ddf8494cbbfbcff4670aad8be1a843b417074aea32841b4770ad5c21d2a",
+        "branch_state_fingerprint": "1511d146eb603c315b986f72192c78082b2101f3a7b77859641d68252a58174e",
+        "static_final_distance_m": 1.8074464605888352e-05,
+        "static_max_distance_m": 0.006284377072006464
+      },
+      {
+        "seed": 104,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 45,
+        "prefix_final_distance_m": 0.013835983350872993,
+        "reset_state_fingerprint": "6a291b6609b577e8f57332811918e66b18a6607ac99d3a0f2acb838df73c95d6",
+        "branch_state_fingerprint": "0971ddd9fe986a1f4a079c1d2ebff19f9681068256801b10e40b3e70ef27654e",
+        "static_final_distance_m": 8.101970706775319e-06,
+        "static_max_distance_m": 0.012637452222406864
+      },
+      {
+        "seed": 105,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 44,
+        "prefix_final_distance_m": 0.007936281152069569,
+        "reset_state_fingerprint": "3dc832eafe0ec378604512658a66cc2edffcbadd36c1abc5cc083f62fa46d9ac",
+        "branch_state_fingerprint": "a970e14c41f20c3eea5b7e8125fe17bcce2ccd94cd5f9762173481ba885c3bce",
+        "static_final_distance_m": 4.7471135076193605e-06,
+        "static_max_distance_m": 0.007224369328469038
+      },
+      {
+        "seed": 106,
+        "eligible": false,
+        "reasons": [
+          "static_control_failure",
+          "static_control_exceeded_tolerance"
+        ],
+        "prefix_steps": 44,
+        "prefix_final_distance_m": 0.00876033678650856,
+        "reset_state_fingerprint": "c47d201b2f6d3dac59f0c97133b17a5b7abac2fc728d5d8aea900b993ca71429",
+        "branch_state_fingerprint": "f23d0c2aebb7d28ae437e1c66577a45ed1db33cee4782277edfe97ba3d6cfe4e",
+        "static_final_distance_m": 0.1174587830901146,
+        "static_max_distance_m": 0.13437721133232117
+      },
+      {
+        "seed": 107,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 44,
+        "prefix_final_distance_m": 0.011559002101421356,
+        "reset_state_fingerprint": "8fe4affec3fc13e95789178bb45f4ee934754cdd961ddd16d79f1bbf59312719",
+        "branch_state_fingerprint": "e3e81a70664c5cc3e7003a17c1602995688ff8a3e7d727b7b5044d8be376df64",
+        "static_final_distance_m": 2.0683863112935796e-05,
+        "static_max_distance_m": 0.01054867822676897
+      },
+      {
+        "seed": 108,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 88,
+        "prefix_final_distance_m": 0.013879337348043919,
+        "reset_state_fingerprint": "6956d05079b39ee376f602c0c7bed8ef72b72e52b9317d68b4009566066a204b",
+        "branch_state_fingerprint": "c5ad2544b14e5121ca5933bba3f770aeca1795923229f0c42c820904145a0e32",
+        "static_final_distance_m": 2.770904984572553e-06,
+        "static_max_distance_m": 0.012768485583364964
+      },
+      {
+        "seed": 109,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 70,
+        "prefix_final_distance_m": 0.013353337533771992,
+        "reset_state_fingerprint": "a4ef0c60c5eed98f09a0cb9474604acc6e755cf8344b708779246c59e0951445",
+        "branch_state_fingerprint": "70523920ea6132f7709f14c219677a4d387398f2edbfca220c230a44b0af7999",
+        "static_final_distance_m": 4.323494522395777e-06,
+        "static_max_distance_m": 0.012185958214104176
+      },
+      {
+        "seed": 110,
+        "eligible": false,
+        "reasons": [
+          "static_control_failure",
+          "static_control_exceeded_tolerance"
+        ],
+        "prefix_steps": 47,
+        "prefix_final_distance_m": 0.011456623673439026,
+        "reset_state_fingerprint": "7a8ce302e1b5d104dddab0c32e12719cc83a1661b9d5b024d706ac93b6990a70",
+        "branch_state_fingerprint": "ed279d663a5fe0effd5b4a84eab28f4f6220d1acb156eeb90f04c9e05e0377a6",
+        "static_final_distance_m": 0.04406657814979553,
+        "static_max_distance_m": 0.04406657814979553
+      },
+      {
+        "seed": 111,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 53,
+        "prefix_final_distance_m": 0.012352803722023964,
+        "reset_state_fingerprint": "5401934286245892afbbf710d13a38d65ab31a85fb664f34e7709be569b42da4",
+        "branch_state_fingerprint": "b5102b429d86447316f8eef5dbcf82a4f0ab014aaf5ce62d46e7ca97a8ac32f6",
+        "static_final_distance_m": 4.007498318969738e-06,
+        "static_max_distance_m": 0.011073613539338112
+      },
+      {
+        "seed": 112,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 57,
+        "prefix_final_distance_m": 0.013051116839051247,
+        "reset_state_fingerprint": "cae54c6ce94d787adb35a534052ed11ac25f6cf3ff7598d9837e49a34c74eaeb",
+        "branch_state_fingerprint": "a77e5fa7fcb6b0bfa1e84327fa22fef7178a7885562b4e69453708fbc85ea49a",
+        "static_final_distance_m": 2.989456788782263e-06,
+        "static_max_distance_m": 0.011839927174150944
+      },
+      {
+        "seed": 113,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 45,
+        "prefix_final_distance_m": 0.013868819922208786,
+        "reset_state_fingerprint": "64f0685236f1aabc1e0ad0f98ba859f32d0ba065c074abd3ea5d4065a09d4a2a",
+        "branch_state_fingerprint": "726b6a8421c83ae25721c4779171cf1533fc7c3928161ff7d0c07cc7e1e5b69f",
+        "static_final_distance_m": 4.601636646839324e-06,
+        "static_max_distance_m": 0.012666397728025913
+      },
+      {
+        "seed": 114,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 86,
+        "prefix_final_distance_m": 0.014338565059006214,
+        "reset_state_fingerprint": "280d9b40fb1800f4c6ddee66d7dcb707236e5ebc50557d1c8b1e4e720be671c6",
+        "branch_state_fingerprint": "5b20a811eb87a01d36dc07ec123e626029cff0e8bb3d6e786624706c60a7561b",
+        "static_final_distance_m": 5.603515091934241e-06,
+        "static_max_distance_m": 0.013236667960882187
+      },
+      {
+        "seed": 115,
+        "eligible": false,
+        "reasons": [
+          "static_control_failure",
+          "static_control_exceeded_tolerance"
+        ],
+        "prefix_steps": 66,
+        "prefix_final_distance_m": 0.013069615699350834,
+        "reset_state_fingerprint": "2e1fd9b02185b2e29ddf30eb459b1c342791f59b5aad4760bd1a487529573438",
+        "branch_state_fingerprint": "00e05302a49fe728c3aad07be6b29c6976cc9e52e79be2fa154d416abf5e4ca9",
+        "static_final_distance_m": 0.28790971636772156,
+        "static_max_distance_m": 0.29273438453674316
+      },
+      {
+        "seed": 116,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 49,
+        "prefix_final_distance_m": 0.013405730947852135,
+        "reset_state_fingerprint": "011bcb26f74e05077ca830918fd77c400b67e4c80b2386518c904278b09fc220",
+        "branch_state_fingerprint": "ef62433c3f4445449d2481fe80ba72fd3700e21e85e1c34a486f9bff38b32bcc",
+        "static_final_distance_m": 2.2205689674592577e-05,
+        "static_max_distance_m": 0.012331726960837841
+      },
+      {
+        "seed": 117,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 65,
+        "prefix_final_distance_m": 0.012843011878430843,
+        "reset_state_fingerprint": "1bca6f0e4c9ad90be2d7c468a3a449a41ae61ff213e122dc79fc676c64a6232e",
+        "branch_state_fingerprint": "2a78c2b7bd846fb8401c95a4f347fea9623303f6949e9fc227d6185162b02081",
+        "static_final_distance_m": 1.0740853213064838e-05,
+        "static_max_distance_m": 0.011692407540977001
+      },
+      {
+        "seed": 118,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 53,
+        "prefix_final_distance_m": 0.0132213793694973,
+        "reset_state_fingerprint": "2d70c414dada7525673d68f5f5bedb22f825660df7b4b02efb3471b69f9714af",
+        "branch_state_fingerprint": "c604d91a6c809ce4cbd63a3d6a2fbc1a4f5e8a94f37c5d95e1eca14564318240",
+        "static_final_distance_m": 6.024567483109422e-06,
+        "static_max_distance_m": 0.012001460418105125
+      },
+      {
+        "seed": 119,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 97,
+        "prefix_final_distance_m": 0.01399481762200594,
+        "reset_state_fingerprint": "0e2096c36e040153fa30e1da8979ac1509802c88884d449357b36baa2bfcc57a",
+        "branch_state_fingerprint": "4286b51bb1a5ae10a3cd136ae09ec6e698c20592acb7c0394a3029142f617155",
+        "static_final_distance_m": 4.956624252372421e-06,
+        "static_max_distance_m": 0.012921519577503204
+      },
+      {
+        "seed": 120,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 57,
+        "prefix_final_distance_m": 0.013706785626709461,
+        "reset_state_fingerprint": "7e8d1d95a988a2f09a37ef41362cb1046b9a3a2b420d84807182a393832521ed",
+        "branch_state_fingerprint": "8c084bed86174591b511c572d679ec56001bc550a1a9deb756fcbf233b9cdbe9",
+        "static_final_distance_m": 4.351955340098357e-06,
+        "static_max_distance_m": 0.012473015114665031
+      },
+      {
+        "seed": 121,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 59,
+        "prefix_final_distance_m": 0.013205773197114468,
+        "reset_state_fingerprint": "13e124c43cb90bfbc86b4b7b85c6c661769a30233dcedc3a04b983bb32c8062e",
+        "branch_state_fingerprint": "d67e458070eacd020225ccb4516e05ecba6ecf753604c99ff1b34524949b93a7",
+        "static_final_distance_m": 2.6261579932906898e-06,
+        "static_max_distance_m": 0.012099658139050007
+      },
+      {
+        "seed": 122,
+        "eligible": false,
+        "reasons": [
+          "static_target_not_reached"
+        ],
+        "prefix_steps": 200,
+        "prefix_final_distance_m": 0.47309014201164246,
+        "reset_state_fingerprint": "8a80bccfac8f1d3b3c692231a61ca965e686f75f6e89d35dbaa667d3eee0358e",
+        "branch_state_fingerprint": "e99b5d30bd015d20278d414fa4cb9c3705413172130f5967bffd8ef0cd39a68e",
+        "static_final_distance_m": null,
+        "static_max_distance_m": null
+      },
+      {
+        "seed": 123,
+        "eligible": false,
+        "reasons": [
+          "static_control_failure",
+          "static_control_exceeded_tolerance"
+        ],
+        "prefix_steps": 44,
+        "prefix_final_distance_m": 0.004548721481114626,
+        "reset_state_fingerprint": "5e24190f3c948b59cc6b3283a091e174027527b2640d45a654c819b568d6ea0c",
+        "branch_state_fingerprint": "f99b21e8b7824cd641f7bfd254bae645ea34fe63694520c5cda36873ba341740",
+        "static_final_distance_m": 0.17627772688865662,
+        "static_max_distance_m": 0.17627772688865662
+      },
+      {
+        "seed": 124,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 80,
+        "prefix_final_distance_m": 0.014781695790588856,
+        "reset_state_fingerprint": "3db0901341b50c21c4916df4eee70abdb5f88ad7ad4d96cde8d3ff8199f632b5",
+        "branch_state_fingerprint": "88087af3bad619709f7b122dbf3a6d325f3e6fde5b8e12f0f9c4b8d7702bcdca",
+        "static_final_distance_m": 3.3139592687803088e-06,
+        "static_max_distance_m": 0.013763987459242344
+      },
+      {
+        "seed": 125,
+        "eligible": false,
+        "reasons": [
+          "static_control_failure",
+          "static_control_exceeded_tolerance"
+        ],
+        "prefix_steps": 44,
+        "prefix_final_distance_m": 0.002419527154415846,
+        "reset_state_fingerprint": "d490ae5452d75be1fb33a75b9de80753ce20a992ad7941daf16c7310ac66d899",
+        "branch_state_fingerprint": "11bd9e424a47946c9b2f83267ad2c7e44f849ec0f9530d4fa977cb884cdfdced",
+        "static_final_distance_m": 0.15077254176139832,
+        "static_max_distance_m": 0.15077254176139832
+      },
+      {
+        "seed": 126,
+        "eligible": false,
+        "reasons": [
+          "static_target_not_reached"
+        ],
+        "prefix_steps": 200,
+        "prefix_final_distance_m": 0.4406384825706482,
+        "reset_state_fingerprint": "3472907a5f9b6c536cba8ba2afda3cf882b598261886d928bf722ff64dc0c5d6",
+        "branch_state_fingerprint": "5e4f3b0ab9cc76bd84f235167d1f75c312729656a84b6b073e4e82420e06b533",
+        "static_final_distance_m": null,
+        "static_max_distance_m": null
+      },
+      {
+        "seed": 127,
+        "eligible": false,
+        "reasons": [
+          "static_target_not_reached"
+        ],
+        "prefix_steps": 200,
+        "prefix_final_distance_m": 0.13794724643230438,
+        "reset_state_fingerprint": "56a8f149b2111d578cb4615792845a1817a7c61885b672a831fbe74fa0cfd2ca",
+        "branch_state_fingerprint": "6e358f96141829355f19b90ca86c0563c488f43b8a3d6b81742a382f7f3f1734",
+        "static_final_distance_m": null,
+        "static_max_distance_m": null
+      },
+      {
+        "seed": 128,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 146,
+        "prefix_final_distance_m": 0.013615652918815613,
+        "reset_state_fingerprint": "49201cb95cc43c2c0d82fe0c2b5c25050fafd45477eeb25d50722e440bb4b9d1",
+        "branch_state_fingerprint": "5c753949ad6f639768035054aca488e807bbbfa6ec4afea60e4434ec6464e86d",
+        "static_final_distance_m": 5.241227881924715e-06,
+        "static_max_distance_m": 0.012422635219991207
+      },
+      {
+        "seed": 129,
+        "eligible": false,
+        "reasons": [
+          "static_control_failure",
+          "static_control_exceeded_tolerance"
+        ],
+        "prefix_steps": 44,
+        "prefix_final_distance_m": 0.012980004772543907,
+        "reset_state_fingerprint": "dfd76ec71230fbecffa921b5f4d2aeac41b7aa8d4e9e22cbbed6ee325266bc4d",
+        "branch_state_fingerprint": "caf70d8fbe9526984ea89da77be5018c1fbb9961429aba8f5dbc5fdea034fe2e",
+        "static_final_distance_m": 0.10312149673700333,
+        "static_max_distance_m": 0.1031249538064003
+      },
+      {
+        "seed": 130,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 46,
+        "prefix_final_distance_m": 0.012625327333807945,
+        "reset_state_fingerprint": "edafd02c7a60a87e6c22d0ad9f8b3bc818ab8ff22624bc441cb11eb9ead3767b",
+        "branch_state_fingerprint": "cd27558c0ad248ea1453f7238a8688842046e899a5026b6b9df8d3835c343cb6",
+        "static_final_distance_m": 2.0761071937158704e-05,
+        "static_max_distance_m": 0.011485234834253788
+      },
+      {
+        "seed": 131,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 102,
+        "prefix_final_distance_m": 0.01474215928465128,
+        "reset_state_fingerprint": "3ed67d1c01a053a0f4e80561046af723c6abfcf69217349f4d7b9c8db13631b9",
+        "branch_state_fingerprint": "d0824e58dd6b2fce5fcc8a99d89445d6cdb686c0ad93b05211cbe109ca12d52c",
+        "static_final_distance_m": 0.0185678880661726,
+        "static_max_distance_m": 0.0185678880661726
+      },
+      {
+        "seed": 132,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 120,
+        "prefix_final_distance_m": 0.013525084592401981,
+        "reset_state_fingerprint": "7468a64fdf0acef496350d6eaabe06d5d0db67dd027feeb5168b957036dc207f",
+        "branch_state_fingerprint": "f23efcd61c83001a77bb833cc55fea649bf3451b9f5ee915ec539876d4fa107b",
+        "static_final_distance_m": 3.829946308542276e-06,
+        "static_max_distance_m": 0.012470548041164875
+      },
+      {
+        "seed": 133,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 122,
+        "prefix_final_distance_m": 0.014532121829688549,
+        "reset_state_fingerprint": "1502e67e0697fc25e67af7b97b36026d53a6a75f3516b2ad16b6b0d7618bcb8d",
+        "branch_state_fingerprint": "36883abe2110abc0f81f7872f8319b1336626ed989a5f6bf5261fbabacc739e4",
+        "static_final_distance_m": 7.431064204865834e-06,
+        "static_max_distance_m": 0.013561993837356567
+      },
+      {
+        "seed": 134,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 75,
+        "prefix_final_distance_m": 0.01243202481418848,
+        "reset_state_fingerprint": "354b7317b1b7a31e25c599a8a66c0aeb2bb990714e9c14959ba8db546754a389",
+        "branch_state_fingerprint": "648af90709d635c737e0afe436ec911295bde16423c694c3185233828b0507b9",
+        "static_final_distance_m": 5.415255145635456e-06,
+        "static_max_distance_m": 0.011239972896873951
+      },
+      {
+        "seed": 135,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 92,
+        "prefix_final_distance_m": 0.014039222151041031,
+        "reset_state_fingerprint": "2599a957cec6f22453abd5e19248f26b735fe9afeab4732a120a8333053ddc23",
+        "branch_state_fingerprint": "36489d98ba20b806e36efb9f05170b1a42e1067c246d687d39a1beb3bedba13d",
+        "static_final_distance_m": 3.8949092413531616e-05,
+        "static_max_distance_m": 0.0130521971732378
+      },
+      {
+        "seed": 136,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 58,
+        "prefix_final_distance_m": 0.013306785374879837,
+        "reset_state_fingerprint": "8d06cc96c50fca8d36a678d9be614da31cd4724572de7cfad353ca3afcd11ac6",
+        "branch_state_fingerprint": "1ad030eeed470dfebecbea5e0dfff05a2b13dde01122798039d6cd8a121438fb",
+        "static_final_distance_m": 6.830780876043718e-06,
+        "static_max_distance_m": 0.012167451903223991
+      },
+      {
+        "seed": 137,
+        "eligible": false,
+        "reasons": [
+          "static_control_failure",
+          "static_control_exceeded_tolerance"
+        ],
+        "prefix_steps": 44,
+        "prefix_final_distance_m": 0.002470616018399596,
+        "reset_state_fingerprint": "725936de4b7b474e257ccee7f303d98f6c0641d18d9f44d8c58a76c974f649c6",
+        "branch_state_fingerprint": "717e9416b13280351f68d0ff4e6f9e178f5bbfe7113b5d8c138fa79857ff31e2",
+        "static_final_distance_m": 0.047253504395484924,
+        "static_max_distance_m": 0.04725361987948418
+      },
+      {
+        "seed": 138,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 61,
+        "prefix_final_distance_m": 0.013560546562075615,
+        "reset_state_fingerprint": "9bf4e9fcf26bb92a74faa57a0bddb8f0e7f7ceedec7ed4ed4c42fb0232abae53",
+        "branch_state_fingerprint": "8487a9c1e993178c0d46b0bb5719395c4c1fdf418c85b94824db16607cafd727",
+        "static_final_distance_m": 1.1742984497686848e-05,
+        "static_max_distance_m": 0.012378225103020668
+      },
+      {
+        "seed": 139,
+        "eligible": true,
+        "reasons": [],
+        "prefix_steps": 70,
+        "prefix_final_distance_m": 0.013744844123721123,
+        "reset_state_fingerprint": "b6409d183d154e7c8892f75af7d3081e6423f0599248bfa2d97c061f907b392b",
+        "branch_state_fingerprint": "1ddef2346705f36400c93bffcb559cd9f1a5c6307219bce7a52e4a149e8d0b3f",
+        "static_final_distance_m": 8.672885087435134e-06,
+        "static_max_distance_m": 0.012563235126435757
+      }
+    ],
+    "git_commit": "ccf9bb0620a74b098d79ba34c538b20abd8b70e2",
+    "timestamp_utc": "2026-07-30T02:58:08.427358+00:00"
+  },
+  "effect": {
+    "mean_final_distance_improvement_m": 0.020249666459858418,
+    "paired_final_distance_improvements_m": [
+      0.02037808601744473,
+      0.020388889126479626,
+      0.020219055470079184,
+      0.02027215319685638,
+      0.020267871441319585,
+      0.020097212865948677,
+      0.020156510872766376,
+      0.020166845293715596,
+      0.0203756308183074,
+      0.020174409495666623
+    ],
+    "moving_better_seed_count": 10,
+    "moving_better_seed_rate": 1.0,
+    "success_rate_difference": 1.0,
+    "gates": {
+      "moving_success_rate_pass": true,
+      "frozen_success_rate_pass": true,
+      "mean_final_distance_improvement_pass": true,
+      "forbidden_violations_pass": true
+    },
+    "effect_gate_pass": true
+  },
+  "confirmatory_pass": true
+}
