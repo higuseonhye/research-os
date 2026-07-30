@@ -4,7 +4,7 @@
 >
 > Scientific phase: confirmatory complete
 >
-> Writing phase: manuscript v1.0 complete; venue formatting and citation audit remain
+> Writing phase: venue-neutral manuscript and supplement v1.1 built; venue conversion and author review remain
 
 ## Decision
 
@@ -23,7 +23,9 @@ core evidence package is complete enough for a full paper draft.
 | H2 fixed-horizon behavior | Passed |
 | H3 static retention | Passed |
 | H4 drift/control gate validity | Passed |
-| Manuscript v1.0 | Complete draft |
+| Manuscript v1.1 | Submission-oriented review draft and PDF built |
+| Supplement v1.1 | Complete review draft and PDF built |
+| Bibliography | Citation audit complete; BibTeX added |
 | Figures and CSV tables | Generated and hash-manifested |
 
 ## Primary Evidence
@@ -51,11 +53,10 @@ Exact report:
 
 ## Publication Work Remaining
 
-1. Verify and format the linked bibliography for the selected venue.
-2. Choose venue template and convert the Markdown manuscript to its source format.
-3. Perform author, affiliation, acknowledgements, and disclosure pass.
-4. Decide whether hardware validation is a supplement, follow-up, or explicit limitation.
-5. Freeze a submission tag after review; do not alter the raw confirmatory artifact.
+1. Choose the target venue and convert v1.1 to its official template.
+2. Perform the author, affiliation, acknowledgements, and disclosure pass.
+3. Run one independent scientific and editorial review cycle.
+4. Freeze a submission tag after review; do not alter the raw confirmatory artifact.
 
 ## Claim Boundary
 

@@ -1,6 +1,6 @@
 # Paper 002: Failure-Conditioned Model-Order Expansion
 
-> Status: confirmatory complete; manuscript v1.0 drafted
+> Status: confirmatory complete; venue-neutral submission package v1.1 built
 >
 > Frozen preregistration: `paper002-model-order-confirmatory-v1.0`
 >
@@ -18,7 +18,9 @@ Static retention and all gate-specificity controls passed.
 
 | Document | Purpose |
 | --- | --- |
-| [Manuscript v1.0](paper002_manuscript_model_order_v1.0.md) | Complete confirmatory paper draft |
+| [Manuscript v1.1](paper002_manuscript_model_order_v1.1.md) · [PDF](paper002_manuscript_model_order_v1.1.pdf) | Submission-oriented review manuscript |
+| [Supplement v1.1](paper002_supplement_model_order_v1.1.md) · [PDF](paper002_supplement_model_order_v1.1.pdf) | Conditions, validity audit, full tables, and provenance |
+| [BibTeX](paper002_references_v1.1.bib) | Verified submission bibliography |
 | [Status](status.md) | Current phase, decisions, and next publication work |
 | [Frozen preregistration](paper002_model_order_confirmatory_prereg_v1.0.md) | Fresh sample, endpoints, and locked decision rules |
 | [Confirmatory result](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md) | Exact accounting, estimates, intervals, and provenance |
@@ -63,6 +65,7 @@ No simulator or GPU is required to recreate the paper figures and CSV tables:
 
 ```bash
 python scripts/plot_paper002_model_order.py
+python scripts/build_paper002_submission_pdf.py
 ```
 
 The Isaac experiment itself should run only on the documented VESSL image and
