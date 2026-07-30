@@ -208,6 +208,7 @@ def main() -> None:
 
     records = []
     trajectories = []
+    ep2_preconditions = []
     preconditions: dict[tuple[int, str], dict[str, Any]] = {}
     for seed in selected_seeds:
         for arm in EP2_ARMS:
@@ -231,10 +232,12 @@ def main() -> None:
                     raise ValueError(f"condition ID mismatch in {condition_dir}")
                 records.append(record)
                 trajectories.append(trajectory)
+                ep2_preconditions.append({"policy": arm, **precondition})
                 preconditions[(seed, f"{condition_id}:{arm}")] = precondition
 
     retention_records = []
     retention_trajectories = []
+    retention_preconditions = []
     for seed in selected_seeds:
         for arm in RETENTION_ARMS:
             arm_dir = args.out_dir / "retention" / f"seed_{seed}" / arm
@@ -243,6 +246,11 @@ def main() -> None:
                 raise ValueError(f"expected one retention record in {arm_dir}")
             retention_records.append(result["records"][0])
             retention_trajectories.append(arm_trajectories[0])
+            if len(result["preconditions"]) != 1:
+                raise ValueError(f"expected one retention precondition in {arm_dir}")
+            retention_preconditions.append(
+                {"policy": arm, **result["preconditions"][0]}
+            )
 
     expected_ep2 = len(selected_seeds) * len(condition_ids) * len(EP2_ARMS)
     expected_retention = len(selected_seeds) * len(RETENTION_ARMS)
@@ -343,6 +351,14 @@ def main() -> None:
         for seed in selected_seeds
         for condition in condition_ids
     }
+    final_distance_differences = {
+        (seed, condition): row_map[(seed, condition, "C_L3_CONSTANT_VELOCITY")][
+            "final_distance_m"
+        ]
+        - row_map[(seed, condition, "B_L1_ZERO_ORDER")]["final_distance_m"]
+        for seed in selected_seeds
+        for condition in condition_ids
+    }
     rng = np.random.default_rng(20260730)
     primary_effect = {
         "contrast": "C_L3_CONSTANT_VELOCITY_minus_B_L1_ZERO_ORDER",
@@ -354,10 +370,19 @@ def main() -> None:
         "success_rate_difference_crossed_bootstrap_95_ci": _crossed_bootstrap_ci(
             success_differences, selected_seeds, condition_ids, rng
         ),
+        "mean_final_distance_difference_m": fmean(
+            final_distance_differences.values()
+        ),
+        "final_distance_difference_crossed_bootstrap_95_ci_m": _crossed_bootstrap_ci(
+            final_distance_differences, selected_seeds, condition_ids, rng
+        ),
         "l3_lower_prediction_error_pair_rate": fmean(
             value < 0 for value in prediction_differences.values()
         ),
         "l3_success_better_pair_rate": fmean(value > 0 for value in success_differences.values()),
+        "l3_lower_final_distance_pair_rate": fmean(
+            value < 0 for value in final_distance_differences.values()
+        ),
     }
 
     retention_by_arm = _arm_summary(retention_records, RETENTION_ARMS)
@@ -430,13 +455,22 @@ def main() -> None:
         "validity": validity,
         "ep1_diagnostics": ep1,
         "ep2_by_arm": by_arm,
+        "ep2_by_condition": {
+            condition_id: _arm_summary(
+                [row for row in records if row["condition_id"] == condition_id],
+                EP2_ARMS,
+            )
+            for condition_id in condition_ids
+        },
         "primary_effect": primary_effect,
         "static_retention": retention,
         "h4_gate_controls": h4,
         "pilot_decisions": decisions,
         "pilot_pass": pilot_pass,
         "records": records,
+        "ep2_preconditions": ep2_preconditions,
         "retention_records": retention_records,
+        "retention_preconditions": retention_preconditions,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
     }
     args.out_dir.mkdir(parents=True, exist_ok=True)
