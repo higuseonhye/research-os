@@ -1,0 +1,292 @@
+{
+  "protocol": "static_control_first_fixed_order_quota_model_order_v0.2",
+  "experiment_id": "EXP-SURG-003-model-order-pilot-v0.3",
+  "candidate_seeds": [
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209,
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    219
+  ],
+  "required_eligible_seed_count": 5,
+  "eligible_seeds": [
+    200,
+    201,
+    202,
+    203,
+    205,
+    206,
+    208,
+    209,
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    217,
+    218,
+    219
+  ],
+  "selected_seeds": [
+    200,
+    201,
+    202,
+    203,
+    205
+  ],
+  "selection_quota_met": true,
+  "selection_locked_before_treatment": true,
+  "eligibility_rate": 0.85,
+  "eligibility_tolerance_m": 0.02,
+  "candidate_evaluations": [
+    {
+      "seed": 200,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 108,
+      "prefix_final_distance_m": 0.014271058142185211,
+      "reset_state_fingerprint": "60b10fee59d1789b02c9b776c1d400b3822f4a42e76a0fa7173dcc0fdd06bf37",
+      "branch_state_fingerprint": "ecd8ab5738561dab78f98e50eeffbbc87aad6969c94c5eb2ceb33d5b259ec269",
+      "static_final_distance_m": 0.002348523121327162,
+      "static_max_distance_m": 0.01327324379235506
+    },
+    {
+      "seed": 201,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 61,
+      "prefix_final_distance_m": 0.01341395266354084,
+      "reset_state_fingerprint": "7dc6e827e44d5c93856044524d4486628619d77e3eac3bfdf7951140ec96593e",
+      "branch_state_fingerprint": "563d9a0f8c2536d295ede97b93eed2fca46ef14ee2a1558577ec1f4c8032a9ad",
+      "static_final_distance_m": 0.00042659990140236914,
+      "static_max_distance_m": 0.012234474532306194
+    },
+    {
+      "seed": 202,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 46,
+      "prefix_final_distance_m": 0.01307725626975298,
+      "reset_state_fingerprint": "9561df83dd312f7ea8712ff566ed23f1d6f84ea76c1c1f65e913904451c51a6d",
+      "branch_state_fingerprint": "85a594bcfbffd8355aa26d3b78cbeb38fb3d731cdb8e1b18d3ea97e2918b62cd",
+      "static_final_distance_m": 0.0004943354288116097,
+      "static_max_distance_m": 0.01198583748191595
+    },
+    {
+      "seed": 203,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 44,
+      "prefix_final_distance_m": 0.00579786067828536,
+      "reset_state_fingerprint": "3fd3ba4b21da75667351e91fee046ce5e9b8cf03f5ea6467495043ceb32292bc",
+      "branch_state_fingerprint": "2e43d963c9ae18b7932de39a0ad88c0767a0ae267ae2b1a984a71ddeff07e45c",
+      "static_final_distance_m": 0.0008569855708628893,
+      "static_max_distance_m": 0.005285097286105156
+    },
+    {
+      "seed": 204,
+      "eligible": false,
+      "reasons": [
+        "static_target_not_reached",
+        "static_record_missing"
+      ],
+      "prefix_steps": 200,
+      "prefix_final_distance_m": 0.5942702293395996,
+      "reset_state_fingerprint": "b416455be156484d9b5d6592d768b7cc8f77e8685f88a150ded5b1e860ab19c7",
+      "branch_state_fingerprint": "ddb8fb685109cf0c1c426fe0c7f3a33eb935ad0eb245c8800f41d455896c8c01",
+      "static_final_distance_m": null,
+      "static_max_distance_m": null
+    },
+    {
+      "seed": 205,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 116,
+      "prefix_final_distance_m": 0.014398847706615925,
+      "reset_state_fingerprint": "e80564a260f2bb0610c5b67ab861b4dd9908fa65ce8fcae30cec3d4944fc95ac",
+      "branch_state_fingerprint": "474a2512521597075fa190173b0dbc9f27a4b5c69d8f6e1f3840401d49cfad98",
+      "static_final_distance_m": 0.002700167242437601,
+      "static_max_distance_m": 0.013276424258947372
+    },
+    {
+      "seed": 206,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 59,
+      "prefix_final_distance_m": 0.013964562676846981,
+      "reset_state_fingerprint": "2285a885db2a7e5c188f5ae999ad1ed5e286d4d7f9eed0cd2b5cc255a58cb994",
+      "branch_state_fingerprint": "a425553b07e2e804dba6ad8367b002f715c4ddd2a39184fda74dbaae31f8765c",
+      "static_final_distance_m": 0.0011351096909493208,
+      "static_max_distance_m": 0.012801206670701504
+    },
+    {
+      "seed": 207,
+      "eligible": false,
+      "reasons": [
+        "static_target_not_reached",
+        "static_record_missing"
+      ],
+      "prefix_steps": 200,
+      "prefix_final_distance_m": 0.6959186792373657,
+      "reset_state_fingerprint": "e1e0b8ea0ba371fd463701aeb7c064bfa4f897aefc82407c3a391258b5b3e320",
+      "branch_state_fingerprint": "1334f9237f2418279abe9bf4cae0f420262fae0e5b9f6e7becc4f59c55b7752a",
+      "static_final_distance_m": null,
+      "static_max_distance_m": null
+    },
+    {
+      "seed": 208,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 50,
+      "prefix_final_distance_m": 0.013232788071036339,
+      "reset_state_fingerprint": "adc4c73d86997fa8f769720bee76a5d769aa5943d4cf966b3bf6e8dddbf0ce0a",
+      "branch_state_fingerprint": "4043e88f1e05a59f9cddfacfd3cfae60cf01f79de451cba9121f8b84e75aa79b",
+      "static_final_distance_m": 0.001268750405870378,
+      "static_max_distance_m": 0.012084916234016418
+    },
+    {
+      "seed": 209,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 44,
+      "prefix_final_distance_m": 0.009691211394965649,
+      "reset_state_fingerprint": "3ef5fb7afae2bb422a32e98d6e9b61dbf7a2f30712847ee994819e65f9ce69b7",
+      "branch_state_fingerprint": "238cf153ad90421a3307b00423d13cfc94061d6f4c45cf1e4d9eb80a3c4f80f5",
+      "static_final_distance_m": 0.0006713023758493364,
+      "static_max_distance_m": 0.008969605900347233
+    },
+    {
+      "seed": 210,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 91,
+      "prefix_final_distance_m": 0.014640885405242443,
+      "reset_state_fingerprint": "d6fbb2e16eb3cfcff493e9c011a7525a6dc7acbcf9746aa2662631a3637cefd3",
+      "branch_state_fingerprint": "b7e265628384853fc7712fe28fb4a29c38f57e660d49a2e0e26614ec9bd71be9",
+      "static_final_distance_m": 0.002108456799760461,
+      "static_max_distance_m": 0.0135688791051507
+    },
+    {
+      "seed": 211,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 44,
+      "prefix_final_distance_m": 0.009997113607823849,
+      "reset_state_fingerprint": "2963c534c85c43c8ebce615fef54f58c76f56d205a50b489105adcf60f7f1732",
+      "branch_state_fingerprint": "9718c12e46dc8ee711ba9fe040e838c24a373239b509edd8d87fdafc5508e4c7",
+      "static_final_distance_m": 0.0010786844650283456,
+      "static_max_distance_m": 0.009135604836046696
+    },
+    {
+      "seed": 212,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 44,
+      "prefix_final_distance_m": 0.013337872922420502,
+      "reset_state_fingerprint": "da1fb46d8264cb7edd66dd7d0ed81c6ce36815b39dc18151c1dd788a919e0025",
+      "branch_state_fingerprint": "ade2a56fcca3f1397931decc00af0db649971c9e754e552b01608f3af57a166a",
+      "static_final_distance_m": 0.001012994209304452,
+      "static_max_distance_m": 0.012273170985281467
+    },
+    {
+      "seed": 213,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 44,
+      "prefix_final_distance_m": 0.006510513368993998,
+      "reset_state_fingerprint": "10052cb81757e176496274f08e2c6fedc8081acb37516f08578111e3bb1942cb",
+      "branch_state_fingerprint": "6e2ceee832cd31903841d65d36eb24e076e6c825c0618093e639be6c8d447fec",
+      "static_final_distance_m": 0.0015515334671363235,
+      "static_max_distance_m": 0.005898776464164257
+    },
+    {
+      "seed": 214,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 95,
+      "prefix_final_distance_m": 0.014547687023878098,
+      "reset_state_fingerprint": "2810176a66dde2d2f4993136ded77d24b0b7e540e5891dc52f02b7dcd7705820",
+      "branch_state_fingerprint": "5f60653d5e84e463748b4782407c32e6a1fb24bab9b79444229d6719fbedc20f",
+      "static_final_distance_m": 0.001875375397503376,
+      "static_max_distance_m": 0.013451283797621727
+    },
+    {
+      "seed": 215,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 44,
+      "prefix_final_distance_m": 0.0038850903511047363,
+      "reset_state_fingerprint": "5092e7a5cba40459e99de836da65b6680848161f3156f0a79ba854996e275284",
+      "branch_state_fingerprint": "afcfba8cc1008c413fbb586bae669a364d04b1a24b6b0f0a359e910ebb5d888f",
+      "static_final_distance_m": 0.000468504149466753,
+      "static_max_distance_m": 0.003526420332491398
+    },
+    {
+      "seed": 216,
+      "eligible": false,
+      "reasons": [
+        "static_target_not_reached",
+        "static_record_missing"
+      ],
+      "prefix_steps": 200,
+      "prefix_final_distance_m": 0.5640407800674438,
+      "reset_state_fingerprint": "c0eea9490dd11e3037ea354df1f386972ffa69d45e99936a7f17fc771e4c0d0a",
+      "branch_state_fingerprint": "36350f95d6c2e757535ae712326092480dbfaa8f3e938e541cf858ae007fa1da",
+      "static_final_distance_m": null,
+      "static_max_distance_m": null
+    },
+    {
+      "seed": 217,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 44,
+      "prefix_final_distance_m": 0.005329429171979427,
+      "reset_state_fingerprint": "b002329cea593496163fa47186fded9072f72b5d0635b26cbb119fef792399a1",
+      "branch_state_fingerprint": "0713c9a9b4113272783acd76aedaa877a53f41378797c0e27b01f39343ead9e2",
+      "static_final_distance_m": 0.0007937192567624152,
+      "static_max_distance_m": 0.005015572067350149
+    },
+    {
+      "seed": 218,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 122,
+      "prefix_final_distance_m": 0.01526783499866724,
+      "reset_state_fingerprint": "d7f05dc22cddd176c88b188d52edc8cf70657633aaf9895538d12b91f401bda9",
+      "branch_state_fingerprint": "defcd844030b9cee65b8190f3a62f1f1a6b19e44ffb15bd271d7e29ad4d187d2",
+      "static_final_distance_m": 0.002224888186901808,
+      "static_max_distance_m": 0.014447417110204697
+    },
+    {
+      "seed": 219,
+      "eligible": true,
+      "reasons": [],
+      "prefix_steps": 51,
+      "prefix_final_distance_m": 0.015666455030441284,
+      "reset_state_fingerprint": "87dd1eb0e3062b693a301ebe9ba7c8bfe9b99791ef962112317258dfdab9529d",
+      "branch_state_fingerprint": "f0fba44100366462c0e0e0802b43cb161260223908178ee9b3b4251feb68e5b2",
+      "static_final_distance_m": 0.0018208121182397008,
+      "static_max_distance_m": 0.01481072697788477
+    }
+  ],
+  "config_path": "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_pilot_v0.3.json",
+  "config_sha256": "9823a078d77aa9fe8aca939f29a5718e2b4cfae934bba5df8bec445da8f5ad8d",
+  "git_commit": "59430cdec02d8cf97bf689a6147dab138b98b40b",
+  "timestamp_utc": "2026-07-30T06:35:55.622270+00:00"
+}

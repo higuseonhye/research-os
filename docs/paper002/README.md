@@ -1,74 +1,83 @@
-# Paper 002 — Representation reconstruction (WM expansion)
+# Paper 002: Failure-Conditioned Model-Order Expansion
 
-> **L0:** Model-class / system-composition reconstruction when current WM cannot explain failure · [taxonomy](paper002_wm_system_expansion_v0.1.md)  
-> **Status:** design v0.1 · Isaac drift anchor **passed** · L3-vs-L1 pre-reg freeze next
-> **Recoverability:** measurement window · not program center
+> Status: confirmatory complete; manuscript v1.0 drafted
+>
+> Frozen preregistration: `paper002-model-order-confirmatory-v1.0`
+>
+> Result artifact: `73a7e16`
 
----
+## Headline Result
 
-## Start here
+In a complete 400-cell Isaac Sim confirmatory grid, the gated
+constant-velocity model reduced H=10 prediction error by 10.806 mm and
+fixed-horizon final distance by 13.304 mm relative to repaired zero order.
+Both crossed-bootstrap 95% intervals cleared the preregistered 5 mm criterion.
+Static retention and all gate-specificity controls passed.
 
-| Doc | Purpose |
+## Start Here
+
+| Document | Purpose |
 | --- | --- |
-| [**Status**](status.md) | Phase · pivot note |
-| [**Description v0.1**](paper002_description_wm_expansion_v0.1.md) | RQ · minimal cell · claims |
-| [**Confirmatory spec v0.1**](paper002_confirmatory_spec_v0.1.md) | Runnable minimum · phases · arms · outcomes |
-| [**Pre-reg v0.1 (draft)**](paper002_prereg_wm_expansion_v0.1.md) | H1–H4 · gate · sample size |
-| [**Analysis plan v0.3**](paper002_analysis_plan_v0.3.md) | C vs B · non-inferiority · H4 |
-| [**Related work v0.2**](paper002_related_work_v0.2.md) | TMoW · MuSix · Worldscape-MoE · LMC · adequacy wedge |
-| [**Physical validation roadmap**](paper002_physical_validation_roadmap_v0.1.md) | L1/L2/L3 · parallel tracks · Go gates for confirmatory |
-| [**VESSL runbook v0.1**](vessl_runbook_v0.1.md) | Mock + Isaac drift on VESSL |
-| [**Isaac drift anchor result**](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/RESULTS.md) | Static-first selection · 10 paired fresh seeds · scoped confirmatory pass |
-| [**Mismatch Lab v0.1**](../mismatch_lab/README.md) | Robot Diff · public lab spec · API · benchmark |
-| [**Manuscript skeleton v0.1**](paper002_manuscript_wm_expansion_v0.1.md) | Pre-results MS · WM expansion · fill T1–T6 after confirmatory |
-| [**Industry context**](paper002_industry_context_v0.1.md) | Introduction · deployment-stack landscape (Paper 002) |
-| [**WM system · taxonomy**](paper002_wm_system_expansion_v0.1.md) | L0 v2 · levels L1–L4 · diffusion role · operator menu |
-| [**Archive: mock→physics**](archive/mock_to_physics/README.md) | Superseded mock→physics docs (ARCHIVED banners · do not cite) |
+| [Manuscript v1.0](paper002_manuscript_model_order_v1.0.md) | Complete confirmatory paper draft |
+| [Status](status.md) | Current phase, decisions, and next publication work |
+| [Frozen preregistration](paper002_model_order_confirmatory_prereg_v1.0.md) | Fresh sample, endpoints, and locked decision rules |
+| [Confirmatory result](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md) | Exact accounting, estimates, intervals, and provenance |
+| [Figures and CSV tables](figures/README.md) | Reproducible manuscript panels and machine-readable tables |
+| [Process-isolated pilot](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.3/RESULTS.md) | Excluded engineering calibration |
+| [Model-order protocol v0.3](paper002_model_order_protocol_v0.3.md) | Isolation amendment that closed simulator carryover |
+| [Related work v0.2](paper002_related_work_v0.2.md) | Positioning and bibliography checklist |
+| [Physical validation roadmap](paper002_physical_validation_roadmap_v0.1.md) | Deferred hardware evidence track |
 
----
-
-## One-line claim
-
-> **Failure-conditioned model-adequacy test:** after L1 repair fails on Ep1, prepared L3 expansion beats parameter-only update on Ep2 novel drift — without static regression · latent = mechanistic panel.
-
----
-
-## Minimal experiment
+## Confirmatory Design
 
 ```text
-Phase 0: train W0 on M0 static only
-Ep1:     persistent drift → L1 repair × K fails
-Arms:    A none | B repair F0 | C add F1+G (+ D oracle diagnostic)
-Ep2:     novel drift (direction · speed · onset · pose)
-Primary: multi-step prediction error (H=10) · task success
-Safety:  static retention · gate on noise/impulse (H4)
+Static-first seed selection
+  -> shared Ep1 persistent drift
+  -> best allowed zero-order parameter repair
+  -> persistent/directional/CV-explainable residual gate
+  -> A frozen order 0 | B repaired order 0 | C gated order 1 | D oracle
+  -> 10 fresh seeds x 10 fresh drift conditions x 4 arms
+  -> static retention and gate controls
 ```
 
-Package: [`exp_surg_003_wm_expansion`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md)
+All arms use the same scripted Cartesian controller. The model's H=10 forecast
+is the controller target. Every seed-arm-condition cell runs in a fresh Isaac
+process.
 
-**Completed prerequisite:** the Isaac persistent-drift regime and policy isolation passed a static-first, 10-pair fresh-seed anchor.
+## Confirmatory Summary
 
-**Blocking milestone:** L1 fails · L3 explains held-out drift · pre-reg freeze and the actual intervention study remain next. The drift anchor is not evidence for this comparison.
+| Endpoint | B repaired zero order | C gated constant velocity | C-B |
+| --- | ---: | ---: | ---: |
+| H=10 prediction error | 18.401 mm | 7.595 mm | -10.806 mm, 95% CI [-11.360, -10.331] |
+| Fixed-horizon final distance | 18.905 mm | 5.601 mm | -13.304 mm, 95% CI [-13.599, -12.982] |
+| 20 mm resolution rate | 76% | 100% | +0.24, secondary |
+| Static retention | 10/10 | 10/10 | non-inferior |
 
----
+Gate activation was 100/100 on persistent drift and 0/100 on each of static,
+observation-noise, and single-impulse controls. There were no missing cells,
+unexpected resets, or forbidden-region violations.
 
-## Program (non-sequential)
+## Reproduce Derived Materials
 
-```text
-Paper 001  Recoverability @ S (complete · optional credential)
-Paper 002  Missing dynamic mode — expand & validate  ← NOW
-Next       Missing relations · causal variables
-Later      Human-in-the-loop representation · surgical exceptions
+No simulator or GPU is required to recreate the paper figures and CSV tables:
+
+```bash
+python scripts/plot_paper002_model_order.py
 ```
 
-Study 002 = Tier B pilot · archived · [stage2/](../stage2/)
+The Isaac experiment itself should run only on the documented VESSL image and
+frozen source/config. See [the VESSL runbook](vessl_runbook_v0.1.md).
 
----
+## Claim Boundary
 
-## Not claimed
+Supported: in the specified Isaac target-drift family, structured failure after
+zero-order repair warrants a prepared velocity-state expansion that improves
+prediction-linked control without static regression.
 
-- Expert addition alone (TMoW · Worldscape-MoE · LMC precedent)
-- Autonomous invention of arbitrary concepts  
-- General WM expansion solved  
-- Clinical OR deployment  
-- Mock→physics proxy validation (archived)
+Not supported: unconstrained model invention, arbitrary world-model expansion,
+tissue/contact validity, hardware transfer, clinical efficacy, or operating-
+room deployment.
+
+Historical mock-to-physics documents remain under
+[`archive/mock_to_physics`](archive/mock_to_physics/README.md) and must not be
+cited as Paper 002 evidence.

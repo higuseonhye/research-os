@@ -1,5 +1,21 @@
 # Scripts — EXP-SURG-001 repro
 
+## EXP-SURG-003 (Paper 002 model-order expansion)
+
+| Script | Purpose |
+| --- | --- |
+| `run_exp_surg_003_model_order.py` | Static-first selection and process-isolated Isaac orchestration |
+| `aggregate_exp_surg_003_model_order.py` | Validity audit and crossed-bootstrap confirmatory analysis |
+| `select_exp_surg_003_model_order_candidates.py` | Treatment-blind static eligibility selection |
+| `orbit_reach_drift.py` | Single-cell Isaac target-drift runner |
+| `plot_paper002_model_order.py` | CPU-only publication figures, CSV tables, and hash manifest |
+
+The model-order confirmatory v1.0 is complete. Do not rerun it for paper
+figures; regenerate derived materials from the committed JSON with
+`python scripts/plot_paper002_model_order.py`.
+
+---
+
 | Script | Purpose |
 | --- | --- |
 | `run_study1a.py` | Local mock pipeline |

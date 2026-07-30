@@ -46,6 +46,13 @@ parser.add_argument(
 parser.add_argument("--drift-speed", type=float, default=0.01, help="m/s per step (sim units)")
 parser.add_argument("--drift-axis", type=str, default="x", choices=["x", "y", "z"])
 parser.add_argument("--drift-duration", type=int, default=40, help="steps of drift after onset")
+parser.add_argument("--drift-delay", type=int, default=0, help="static branch steps before drift")
+parser.add_argument(
+    "--drift-vector",
+    type=str,
+    default="",
+    help="optional x,y,z displacement per step; overrides drift-axis and drift-speed",
+)
 parser.add_argument("--tol-m", type=float, default=0.02)
 parser.add_argument("--gain", type=float, default=1.0)
 parser.add_argument("--max-delta", type=float, default=0.08)
@@ -55,9 +62,39 @@ parser.add_argument(
     "--policy",
     type=str,
     default="TRACK_DRIFTING",
-    choices=["STATIC_CONTROL", "TRACK_DRIFTING", "TRACK_FROZEN"],
+    choices=[
+        "STATIC_CONTROL",
+        "TRACK_DRIFTING",
+        "TRACK_FROZEN",
+        "A_ZERO_ORDER_FROZEN",
+        "B_L1_ZERO_ORDER",
+        "C_L3_CONSTANT_VELOCITY",
+        "D_ORACLE_VELOCITY",
+    ],
     help="single policy arm to execute in this isolated Isaac process",
 )
+parser.add_argument(
+    "--target-mode",
+    choices=["auto", "static", "persistent_drift"],
+    default="auto",
+)
+parser.add_argument("--condition-id", default="default")
+parser.add_argument(
+    "--conditions-config",
+    default="",
+    help="optional JSON config whose conditions are run sequentially in one process",
+)
+parser.add_argument("--prediction-horizon", type=int, default=10)
+parser.add_argument("--a-position-alpha", type=float, default=0.5)
+parser.add_argument("--l1-position-alpha", type=float, default=1.0)
+parser.add_argument("--l3-position-alpha", type=float, default=1.0)
+parser.add_argument("--l3-velocity-alpha", type=float, default=1.0)
+parser.add_argument("--gate-window", type=int, default=8)
+parser.add_argument("--gate-min-deltas", type=int, default=4)
+parser.add_argument("--gate-speed-floor", type=float, default=0.0005)
+parser.add_argument("--gate-min-active-fraction", type=float, default=0.75)
+parser.add_argument("--gate-min-directional-consistency", type=float, default=0.90)
+parser.add_argument("--gate-min-cv-improvement", type=float, default=0.50)
 parser.add_argument("--out-dir", type=str, required=True)
 parser.add_argument("--disable_fabric", action="store_true", default=False)
 AppLauncher.add_app_launcher_args(parser)
@@ -85,13 +122,58 @@ from orbit_reach_common import (  # noqa: E402
     resolve_ee_body_index,
     scripted_action,
 )
+from wm_expansion.target_dynamics import (  # noqa: E402
+    ConstantVelocityTargetModel,
+    GateThresholds,
+    ZeroOrderTargetModel,
+)
 
 
 def drift_vector(device: torch.device) -> torch.Tensor:
+    if str(args_cli.drift_vector).strip():
+        values = [
+            float(value.strip())
+            for value in str(args_cli.drift_vector).split(",")
+            if value.strip()
+        ]
+        if len(values) != 3:
+            raise ValueError("drift-vector must contain exactly three comma-separated values")
+        return torch.tensor([values], dtype=torch.float32, device=device)
     axis = {"x": 0, "y": 1, "z": 2}[args_cli.drift_axis]
     v = torch.zeros(1, 3, device=device)
     v[:, axis] = args_cli.drift_speed
     return v
+
+
+def _target_mode(policy: str) -> str:
+    if args_cli.target_mode != "auto":
+        return str(args_cli.target_mode)
+    return "static" if policy == "STATIC_CONTROL" else "persistent_drift"
+
+
+def _gate_thresholds() -> GateThresholds:
+    return GateThresholds(
+        min_deltas=args_cli.gate_min_deltas,
+        speed_floor_m_per_step=args_cli.gate_speed_floor,
+        min_active_fraction=args_cli.gate_min_active_fraction,
+        min_directional_consistency=args_cli.gate_min_directional_consistency,
+        min_cv_error_improvement=args_cli.gate_min_cv_improvement,
+    )
+
+
+def _target_model(policy: str) -> ZeroOrderTargetModel | None:
+    if policy == "A_ZERO_ORDER_FROZEN":
+        return ZeroOrderTargetModel(position_alpha=args_cli.a_position_alpha)
+    if policy == "B_L1_ZERO_ORDER":
+        return ZeroOrderTargetModel(position_alpha=args_cli.l1_position_alpha)
+    if policy == "C_L3_CONSTANT_VELOCITY":
+        return ConstantVelocityTargetModel(
+            position_alpha=args_cli.l3_position_alpha,
+            velocity_alpha=args_cli.l3_velocity_alpha,
+            gate_thresholds=_gate_thresholds(),
+            gate_window=args_cli.gate_window,
+        )
+    return None
 
 
 def _get_command(env: Any, command_name: str) -> torch.Tensor:
@@ -221,18 +303,29 @@ def run_drift_branch(
     branch_state: dict[str, Any],
 ) -> dict[str, Any]:
     drift_step = drift_vector(env.unwrapped.device)
+    drift_step_np = drift_step[0, :3].detach().cpu().numpy().astype(np.float64)
+    target_mode = _target_mode(policy)
+    is_static_target = target_mode == "static"
+    model = _target_model(policy)
     forbidden_center = np.array([0.45, 0.0, 0.15], dtype=np.float64)
     forbidden_half = np.array([0.04, 0.04, 0.04], dtype=np.float64)
 
     frozen_command = branch_state["command"].clone()
     evaluation_command = frozen_command.clone()
+    if model is not None:
+        model.observe(
+            frozen_command[0, :3].detach().cpu().numpy().astype(np.float64)
+        )
     path = 0.0
     prev_ee = None
     violation = False
     trajectory: list[dict[str, Any]] = []
+    prediction_errors: list[float] = []
+    gate_states: list[bool] = []
     prefix_steps = int(branch_state["prefix_steps"])
     branch_horizon_steps = args_cli.max_steps - args_cli.onset
-    min_completion_steps = prefix_steps + args_cli.drift_duration
+    exposure_steps = args_cli.drift_delay + args_cli.drift_duration
+    min_completion_steps = prefix_steps + exposure_steps
     branch_timeout_step = prefix_steps + branch_horizon_steps
     _, branch_start_ee, branch_start_command = ee_distance(
         env, robot_name, command_name, body_index
@@ -243,10 +336,44 @@ def run_drift_branch(
 
     for rel in range(branch_horizon_steps):
         t = prefix_steps + rel
-        if policy != "STATIC_CONTROL" and rel < args_cli.drift_duration:
+        drift_active = bool(
+            not is_static_target
+            and args_cli.drift_delay <= rel
+            and rel < exposure_steps
+        )
+        if drift_active:
             evaluation_command[:, :3] += drift_step
-        policy_command = (
-            evaluation_command if policy == "TRACK_DRIFTING" else frozen_command
+
+        observed_xyz = (
+            evaluation_command[0, :3].detach().cpu().numpy().astype(np.float64)
+        )
+        gate_fired = False
+        gate_metrics = None
+        if model is not None:
+            model.observe(observed_xyz)
+            predicted_xyz = model.predict(args_cli.prediction_horizon)
+            if isinstance(model, ConstantVelocityTargetModel):
+                gate_fired = model.gate_fired
+                gate_metrics = model.gate_decision.to_dict()
+        elif policy == "D_ORACLE_VELOCITY":
+            gate_fired = drift_active
+            predicted_xyz = observed_xyz + (
+                float(args_cli.prediction_horizon) * drift_step_np
+                if drift_active
+                else 0.0
+            )
+        elif policy == "TRACK_DRIFTING":
+            predicted_xyz = observed_xyz.copy()
+        elif policy in {"TRACK_FROZEN", "STATIC_CONTROL"}:
+            predicted_xyz = (
+                frozen_command[0, :3].detach().cpu().numpy().astype(np.float64)
+            )
+        else:
+            raise ValueError(f"unsupported policy: {policy}")
+
+        policy_command = evaluation_command.clone()
+        policy_command[:, :3] = torch.as_tensor(
+            predicted_xyz, dtype=policy_command.dtype, device=policy_command.device
         )
         _set_command(env, command_name, policy_command)
 
@@ -266,6 +393,21 @@ def run_drift_branch(
         if in_forbidden(ee, forbidden_center, forbidden_half):
             violation = True
 
+        prediction_error = None
+        if is_static_target:
+            prediction_error = float(np.linalg.norm(predicted_xyz - observed_xyz))
+        elif drift_active:
+            drift_index = rel - args_cli.drift_delay
+            if drift_index + args_cli.prediction_horizon < args_cli.drift_duration:
+                actual_future = (
+                    observed_xyz
+                    + float(args_cli.prediction_horizon) * drift_step_np
+                )
+                prediction_error = float(np.linalg.norm(predicted_xyz - actual_future))
+        if prediction_error is not None:
+            prediction_errors.append(prediction_error)
+        gate_states.append(gate_fired)
+
         trajectory.append(
             {
                 "t": t,
@@ -274,8 +416,15 @@ def run_drift_branch(
                 "ee": ee.tolist(),
                 "command": des.tolist(),
                 "policy_command": policy_command[0, :3].detach().cpu().numpy().tolist(),
+                "predicted_target_horizon": np.asarray(predicted_xyz).tolist(),
+                "prediction_error_horizon_m": prediction_error,
+                "prediction_horizon_steps": args_cli.prediction_horizon,
+                "gate_fired": gate_fired,
+                "gate_metrics": gate_metrics,
                 "action": act[0].detach().cpu().numpy().tolist(),
                 "policy": policy,
+                "condition_id": args_cli.condition_id,
+                "target_mode": target_mode,
             }
         )
 
@@ -283,7 +432,7 @@ def run_drift_branch(
             completion = t + 1
             break
         if (
-            policy != "STATIC_CONTROL"
+            not is_static_target
             and t + 1 >= min_completion_steps
             and dist <= args_cli.tol_m
             and not violation
@@ -293,7 +442,7 @@ def run_drift_branch(
             break
 
     max_distance = max(row["distance_m"] for row in trajectory)
-    if policy == "STATIC_CONTROL" and not unexpected_reset:
+    if is_static_target and not unexpected_reset:
         success = bool(
             dist <= args_cli.tol_m
             and max_distance <= args_cli.tol_m
@@ -307,10 +456,17 @@ def run_drift_branch(
         else classify(success and not violation, violation, completion >= branch_timeout_step)
     )
 
-    evaluation_target = "STATIC" if policy == "STATIC_CONTROL" else "PERSISTENT_DRIFT"
+    evaluation_target = "STATIC" if is_static_target else "PERSISTENT_DRIFT"
+    final_gate_metrics = (
+        model.gate_decision.to_dict()
+        if isinstance(model, ConstantVelocityTargetModel)
+        else None
+    )
     return {
         "seed": seed,
         "policy": policy,
+        "condition_id": args_cli.condition_id,
+        "target_mode": target_mode,
         "evaluation_target": evaluation_target,
         "policy_target": policy,
         "branch_source": "isolated_process_deterministic_prefix",
@@ -327,13 +483,23 @@ def run_drift_branch(
         "branch_state_fingerprint": branch_state["branch_state_fingerprint"],
         "reset_command": branch_state["reset_command"],
         "configured_minimum_onset_step": args_cli.onset,
+        "drift_delay_steps": args_cli.drift_delay,
         "minimum_completion_steps": min_completion_steps,
         "onset_step": prefix_steps,
         "branch_horizon_steps": branch_horizon_steps,
         "branch_timeout_step": branch_timeout_step,
-        "drift_speed_m_per_step": args_cli.drift_speed,
+        "drift_speed_m_per_step": float(np.linalg.norm(drift_step_np)),
+        "drift_vector_m_per_step": drift_step_np.tolist(),
         "drift_axis": args_cli.drift_axis,
         "drift_duration_steps": args_cli.drift_duration,
+        "prediction_horizon_steps": args_cli.prediction_horizon,
+        "mean_prediction_error_horizon_m": (
+            float(np.mean(prediction_errors)) if prediction_errors else None
+        ),
+        "n_prediction_windows": len(prediction_errors),
+        "gate_fired_any": any(gate_states),
+        "gate_fire_rate": float(np.mean(gate_states)) if gate_states else 0.0,
+        "final_gate_metrics": final_gate_metrics,
         "final_distance_m": dist,
         "max_distance_m": max_distance,
         "path_length_m": path,
@@ -468,11 +634,6 @@ def _summarize_records(
 
 
 def main() -> None:
-    min_steps = args_cli.onset + args_cli.drift_duration
-    if args_cli.max_steps < min_steps:
-        raise ValueError(
-            f"max_steps={args_cli.max_steps} must cover onset+duration={min_steps}"
-        )
     if args_cli.prefix_max_steps < args_cli.onset:
         raise ValueError(
             f"prefix_max_steps={args_cli.prefix_max_steps} must be >= onset={args_cli.onset}"
@@ -481,6 +642,31 @@ def main() -> None:
         raise ValueError("prefix_stable_steps must be >= 1")
     if args_cli.paired_start_tol_m <= 0:
         raise ValueError("paired_start_tol_m must be > 0")
+    if args_cli.drift_delay < 0:
+        raise ValueError("drift_delay must be >= 0")
+    if args_cli.drift_duration < 1:
+        raise ValueError("drift_duration must be >= 1")
+    if args_cli.prediction_horizon < 1:
+        raise ValueError("prediction_horizon must be >= 1")
+    _gate_thresholds().validate()
+
+    if str(args_cli.conditions_config).strip():
+        condition_config = json.loads(
+            Path(args_cli.conditions_config).read_text(encoding="utf-8")
+        )
+        conditions = condition_config.get("conditions", [])
+        if not conditions:
+            raise ValueError("conditions-config contains no conditions")
+    else:
+        conditions = [
+            {
+                "id": args_cli.condition_id,
+                "drift_vector_m_per_step": None,
+                "delay_steps": args_cli.drift_delay,
+                "duration_steps": args_cli.drift_duration,
+                "max_steps": args_cli.max_steps,
+            }
+        ]
 
     out_dir = Path(args_cli.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -495,8 +681,8 @@ def main() -> None:
             "use run_exp_surg_003_drift.sh to orchestrate multiple seeds"
         )
 
-    records = []
-    preconditions = []
+    records: list[dict[str, Any]] = []
+    preconditions: list[dict[str, Any]] = []
     for seed in seed_list:
         env_cfg = parse_env_cfg(
             args_cli.task,
@@ -512,40 +698,70 @@ def main() -> None:
                 env.unwrapped.scene[robot_name], args_cli.body_index
             )
             command_name = "ee_1_pose"
-            branch_state = _prepare_branch_state(
-                env, robot_name, command_name, body_index, seed
-            )
-            precondition = {
-                "seed": seed,
-                "prefix_ready": branch_state["prefix_ready"],
-                "prefix_failure_reason": branch_state["prefix_failure_reason"],
-                "prefix_steps": branch_state["prefix_steps"],
-                "prefix_stable_steps": branch_state["prefix_stable_steps"],
-                "prefix_final_distance_m": branch_state["prefix_final_distance_m"],
-                "reset_state_fingerprint": branch_state["reset_state_fingerprint"],
-                "reset_command": branch_state["reset_command"],
-                "branch_state_fingerprint": branch_state[
-                    "branch_state_fingerprint"
-                ],
-            }
-            preconditions.append(precondition)
-            print(json.dumps({"precondition": precondition}), flush=True)
-            if not branch_state["prefix_ready"]:
-                continue
-            rec = run_drift_branch(
-                env,
-                robot_name,
-                command_name,
-                body_index,
-                seed,
-                args_cli.policy,
-                branch_state,
-            )
-            records.append(rec)
-            print(
-                json.dumps({k: rec[k] for k in rec if k != "trajectory"}),
-                flush=True,
-            )
+            for condition in conditions:
+                args_cli.condition_id = str(condition["id"])
+                vector = condition.get("drift_vector_m_per_step")
+                if vector is not None:
+                    args_cli.drift_vector = ",".join(str(value) for value in vector)
+                args_cli.drift_delay = int(condition["delay_steps"])
+                args_cli.drift_duration = int(condition["duration_steps"])
+                args_cli.max_steps = int(
+                    condition.get(
+                        "max_steps",
+                        args_cli.onset
+                        + args_cli.drift_delay
+                        + args_cli.drift_duration,
+                    )
+                )
+                if args_cli.drift_delay < 0:
+                    raise ValueError("drift_delay must be >= 0")
+                if args_cli.drift_duration < 1:
+                    raise ValueError("drift_duration must be >= 1")
+                minimum_steps = (
+                    args_cli.onset + args_cli.drift_delay + args_cli.drift_duration
+                )
+                if args_cli.max_steps < minimum_steps:
+                    raise ValueError(
+                        f"max_steps={args_cli.max_steps} must cover "
+                        f"onset+delay+duration={minimum_steps}"
+                    )
+                _ = drift_vector(torch.device("cpu"))
+
+                branch_state = _prepare_branch_state(
+                    env, robot_name, command_name, body_index, seed
+                )
+                precondition = {
+                    "seed": seed,
+                    "condition_id": args_cli.condition_id,
+                    "prefix_ready": branch_state["prefix_ready"],
+                    "prefix_failure_reason": branch_state["prefix_failure_reason"],
+                    "prefix_steps": branch_state["prefix_steps"],
+                    "prefix_stable_steps": branch_state["prefix_stable_steps"],
+                    "prefix_final_distance_m": branch_state["prefix_final_distance_m"],
+                    "reset_state_fingerprint": branch_state["reset_state_fingerprint"],
+                    "reset_command": branch_state["reset_command"],
+                    "branch_state_fingerprint": branch_state[
+                        "branch_state_fingerprint"
+                    ],
+                }
+                preconditions.append(precondition)
+                print(json.dumps({"precondition": precondition}), flush=True)
+                if not branch_state["prefix_ready"]:
+                    continue
+                rec = run_drift_branch(
+                    env,
+                    robot_name,
+                    command_name,
+                    body_index,
+                    seed,
+                    args_cli.policy,
+                    branch_state,
+                )
+                records.append(rec)
+                print(
+                    json.dumps({k: rec[k] for k in rec if k != "trajectory"}),
+                    flush=True,
+                )
         finally:
             env.close()
 
@@ -558,7 +774,8 @@ def main() -> None:
         "summary": _summarize_records(records, seed_list, preconditions),
         "records": [{k: r[k] for k in r if k != "trajectory"} for r in records],
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-        "target_dynamics": "persistent_drift",
+        "target_dynamics": _target_mode(args_cli.policy),
+        "condition_ids": [str(condition["id"]) for condition in conditions],
         "fresh_environment_per_seed": True,
         "isolated_policy_process": args_cli.policy,
     }

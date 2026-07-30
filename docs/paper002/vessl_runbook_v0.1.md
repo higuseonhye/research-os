@@ -2,6 +2,10 @@
 
 > **When to use:** Local laptop too slow · RunPod SSH/proxy unstable  
 > **Same infra as Study 2:** [vessl_isaac_setup_v0.1.md](../stage2/vessl_isaac_setup_v0.1.md) · custom Isaac image · `/workspace` mount
+>
+> **Current state:** model-order confirmatory v1.0 completed and pushed as
+> `73a7e16`; the VESSL workspace may remain paused. Use this runbook for audit
+> or an exact reproduction, not for additional confirmatory sampling.
 
 ---
 
@@ -121,6 +125,65 @@ bash scripts/run_exp_surg_003_vessl.sh
 | `EXP_SURG_003_ZERO_AGENT` | `1` | Set `0` to skip after scripted_smoke passed |
 
 **Output:** `results/isaac_drift_pilot_v0.1/isaac_drift_results.json`
+
+---
+
+## Step 3B - L1-vs-L3 model-order pilot (GPU)
+
+This is the active Paper 002 experiment. It uses static-first seed selection,
+paired A/B/C/D arms, H=10 target prediction, static retention, and H4 controls.
+Each Ep2 seed-arm-condition cell runs in a fresh Isaac process. This v0.3
+isolation closes the arm-dependent reset carryover found in v0.2.
+
+```bash
+cd /workspace/research-os
+git switch codex/paper002-l1-l3-confirmatory
+git pull --ff-only
+
+export DISABLE_FABRIC=1
+unset EXP_SURG_003_SKIP_BOOTSTRAP
+export EXP_SURG_003_ZERO_AGENT=0
+bash scripts/run_exp_surg_003_model_order_vessl.sh --smoke
+
+export EXP_SURG_003_SKIP_BOOTSTRAP=1
+export EXP_SURG_003_ZERO_AGENT=0
+bash scripts/run_exp_surg_003_model_order_vessl.sh
+```
+
+The run is resumable. Final decision output:
+
+```bash
+python3 -c "import json; d=json.load(open('experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.3/isaac_model_order_results.json')); print(json.dumps({k:d[k] for k in ['validity','ep2_by_arm','primary_effect','static_retention','h4_gate_controls','pilot_decisions','pilot_pass']},indent=2))"
+```
+
+Protocol and decision rules:
+[paper002_model_order_protocol_v0.3.md](paper002_model_order_protocol_v0.3.md).
+Do not run confirmatory seeds until this pilot is audited and the preregistration
+is frozen.
+
+## Step 3C - Frozen model-order confirmatory v1.0
+
+Run only from the immutable preregistration tag. The confirmatory uses fresh
+candidate seeds 300-339, selects the first 10 static-eligible seeds before
+treatment, and executes 400 process-isolated Ep2 cells.
+
+```bash
+cd /workspace/research-os
+git fetch origin --tags
+git switch codex/paper002-l1-l3-confirmatory
+git pull --ff-only
+git describe --tags --exact-match
+
+export CONFIG="$PWD/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_confirmatory_v1.0.json"
+export OUT="$PWD/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0"
+EXP_SURG_003_SKIP_BOOTSTRAP=1 EXP_SURG_003_ZERO_AGENT=0 DISABLE_FABRIC=1 \
+  bash scripts/run_exp_surg_003_model_order_vessl.sh
+```
+
+The exact tag must be `paper002-model-order-confirmatory-v1.0`. Do not alter
+the config, seed list, conditions, endpoints, or decision thresholds after
+starting the run. See
+[the frozen preregistration](paper002_model_order_confirmatory_prereg_v1.0.md).
 
 ---
 

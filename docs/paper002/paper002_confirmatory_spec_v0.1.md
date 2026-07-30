@@ -1,5 +1,8 @@
 # Paper 002 — Confirmatory experiment spec v0.1
 
+> Superseded before confirmatory data by
+> [model-order confirmatory preregistration v1.0](paper002_model_order_confirmatory_prereg_v1.0.md).
+
 > **Status:** design · runnable minimum · **not frozen**  
 > **Pre-reg:** [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md)  
 > **Experiment package:** [`exp_surg_003_wm_expansion`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md)

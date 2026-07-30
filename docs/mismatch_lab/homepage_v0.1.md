@@ -83,7 +83,7 @@ Each card opens interactive Diff viewer with timeline slider.
 
 - Paper 001 — recoverability at fixed mismatch
 - Paper 002 — failure-conditioned model adequacy (EXP-SURG-003)
-- Preliminary mock pilot · confirmatory sim next
+- Model-order confirmatory passed · 400/400 valid Isaac cells · scoped simulation evidence
 
 Links: Research OS · prereg · benchmark spec
 

@@ -1,0 +1,25 @@
+{
+  "experiment_id": "EXP-SURG-003-model-order-confirmatory-v1.0",
+  "analysis_phase": "confirmatory",
+  "confirmatory_pass": true,
+  "source_files": {
+    "experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/isaac_model_order_results.json": "023723aab0d90741f983e633b13e43bb9d38c5352639d0df022adac84f2fd00d",
+    "experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/isaac_model_order_trajectories.json": "931747a9e7322c4840c74c210692dd39cead050738915bbc752ca85f1930e71f"
+  },
+  "generated_files": {
+    "fig1_confirmatory_protocol.png": "f89b0e1865dee525aba299cfca043b34d154a30881a4391393c10966ed701323",
+    "fig2_confirmatory_outcomes.png": "4c35b668838430dd27a2cf59c635bef2829e9081fd2bf8c5a4aadc9ad35e38aa",
+    "fig3_condition_effects.png": "5cb94a4da71965a154d94da8293b3aeb456040988154c49a3d424ac16baa9d6c",
+    "fig4_representative_trajectory.png": "fd1afaf386f6d8c37c25088a9a42e8c6fcd8269aef26a47371c32acd1f5c9255",
+    "fig5_gate_and_retention.png": "b61111ada19679639b70cb242673090baf941c0c05b0463a30dcde9c891b5b8e",
+    "README.md": "dbb0659230cb92ccd2b76a48b9531fd571dcdebb57f59611a615c125ba672d85",
+    "tables/table1_arm_results.csv": "a4558c2476cf54f601150f62feb28bb086d98c395dbd2e62503edaab119535f1",
+    "tables/table2_primary_contrasts.csv": "0346d20bb3d1ed1891f037426771dedf6f2a4aa5e3d32cfaa45b9e2c127ad4ba",
+    "tables/table3_condition_effects.csv": "4ce1900107a5e34228af8f8d5c395687d714c669230ba51039c1343ca5074b2d",
+    "tables/table4_gate_and_retention.csv": "f63a76bfdd9de0d0e4f3fc0709d94bc3935f03e24dceca8421e80463e01e4c0e"
+  },
+  "representative_trajectory": {
+    "seed": 300,
+    "condition_id": "C04"
+  }
+}

@@ -1,5 +1,8 @@
 # Paper 002 — Analysis plan v0.3 (WM expansion confirmatory)
 
+> Superseded before confirmatory data by
+> [model-order confirmatory preregistration v1.0](paper002_model_order_confirmatory_prereg_v1.0.md).
+
 > **Spec:** [paper002_confirmatory_spec_v0.1.md](paper002_confirmatory_spec_v0.1.md)  
 > **Pre-reg:** [paper002_prereg_wm_expansion_v0.1.md](paper002_prereg_wm_expansion_v0.1.md)  
 > **Supersedes:** [v0.2](paper002_analysis_plan_v0.2.md) (mock→physics · archived)

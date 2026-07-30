@@ -1,0 +1,61 @@
+{
+  "experiment_id": "EXP-SURG-003-model-order-pilot-v0.3",
+  "status": "engineering_pilot_not_confirmatory",
+  "execution_isolation": "fresh_isaac_process_per_seed_arm_condition",
+  "task": "Isaac-Reach-Dual-STAR-IK-Rel-Play-v0",
+  "candidate_seeds": [200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219],
+  "required_eligible_seeds": 5,
+  "shared": {
+    "onset": 40,
+    "prefix_max_steps": 200,
+    "prefix_stable_steps": 5,
+    "paired_start_tolerance_m": 0.001,
+    "success_tolerance_m": 0.02,
+    "prediction_horizon_steps": 10,
+    "gain": 1.0,
+    "max_delta": 0.08
+  },
+  "models": {
+    "A_ZERO_ORDER_FROZEN": {"position_alpha": 0.5, "model_order": 0},
+    "B_L1_ZERO_ORDER": {"position_alpha": 1.0, "model_order": 0},
+    "C_L3_CONSTANT_VELOCITY": {"position_alpha": 1.0, "velocity_alpha": 1.0, "model_order": 1},
+    "D_ORACLE_VELOCITY": {"diagnostic_only": true}
+  },
+  "ep1_adaptation": {
+    "drift_vector_m_per_step": [0.0015, 0.0, 0.0],
+    "steps": 40,
+    "held_out_start_step": 20,
+    "parameter_candidates": [0.25, 0.5, 0.75, 1.0]
+  },
+  "gate": {
+    "window": 8,
+    "min_deltas": 4,
+    "speed_floor_m_per_step": 0.0005,
+    "min_active_fraction": 0.75,
+    "min_directional_consistency": 0.9,
+    "min_cv_error_improvement": 0.5,
+    "negative_control_noise_sigma_m": 0.0002
+  },
+  "conditions": [
+    {"id": "P01", "drift_vector_m_per_step": [0.0016, 0.0, 0.0], "delay_steps": 0, "duration_steps": 24},
+    {"id": "P02", "drift_vector_m_per_step": [0.0018, 0.0, 0.0], "delay_steps": 3, "duration_steps": 22},
+    {"id": "P03", "drift_vector_m_per_step": [0.0020, 0.0, 0.0], "delay_steps": 5, "duration_steps": 20},
+    {"id": "P04", "drift_vector_m_per_step": [-0.0017, 0.0, 0.0], "delay_steps": 0, "duration_steps": 24},
+    {"id": "P05", "drift_vector_m_per_step": [-0.0019, 0.0, 0.0], "delay_steps": 3, "duration_steps": 21},
+    {"id": "P06", "drift_vector_m_per_step": [0.0, 0.0016, 0.0], "delay_steps": 5, "duration_steps": 24},
+    {"id": "P07", "drift_vector_m_per_step": [0.0, -0.0018, 0.0], "delay_steps": 0, "duration_steps": 22},
+    {"id": "P08", "drift_vector_m_per_step": [0.001273, 0.001273, 0.0], "delay_steps": 3, "duration_steps": 22},
+    {"id": "P09", "drift_vector_m_per_step": [-0.001344, 0.001344, 0.0], "delay_steps": 5, "duration_steps": 21},
+    {"id": "P10", "drift_vector_m_per_step": [0.001414, -0.001414, 0.0], "delay_steps": 0, "duration_steps": 20}
+  ],
+  "pilot_decision_rules": {
+    "validity_required": true,
+    "oracle_min_success_rate": 0.8,
+    "l3_min_success_rate": 0.7,
+    "l1_max_success_rate": 0.5,
+    "l3_vs_l1_prediction_error_improvement_required": true,
+    "static_retention_min_success_rate": 0.95,
+    "gate_drift_min_rate": 0.9,
+    "gate_control_max_rate": 0.1
+  }
+}

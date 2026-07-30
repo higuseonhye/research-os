@@ -1,0 +1,10 @@
+{
+  "experiment_id": "EXP-SURG-003-model-order-pilot-v0.3",
+  "config_path": "/workspace/research-os/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_pilot_v0.3.json",
+  "config_sha256": "9823a078d77aa9fe8aca939f29a5718e2b4cfae934bba5df8bec445da8f5ad8d",
+  "git_commit": "59430cdec02d8cf97bf689a6147dab138b98b40b",
+  "repo": "/workspace/research-os",
+  "isaaclab_path": "/workspace/IsaacLab",
+  "orbit_surgical_path": "/workspace/orbit-surgical",
+  "execution_isolation": "fresh_isaac_process_per_seed_arm_condition"
+}
