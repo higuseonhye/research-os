@@ -58,6 +58,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--seeds", required=True)
+    parser.add_argument("--selection-manifest", type=Path)
     args = parser.parse_args()
 
     seeds = [int(value.strip()) for value in args.seeds.split(",") if value.strip()]
@@ -176,6 +177,7 @@ def main() -> None:
     isolation_ee_gaps = []
     isolation_action_gaps = []
     isolation_overlap_steps = {}
+    isolation_expected_steps = {}
     for seed in complete_seeds:
         drifting = records_by_seed_policy[(seed, "TRACK_DRIFTING")]
         for policy in ("STATIC_CONTROL", "TRACK_FROZEN"):
@@ -191,6 +193,9 @@ def main() -> None:
         ee_gap, overlap = _trajectory_gap(static_trace, frozen_trace, "ee")
         action_gap, _ = _trajectory_gap(static_trace, frozen_trace, "action")
         isolation_overlap_steps[str(seed)] = overlap
+        isolation_expected_steps[str(seed)] = records_by_seed_policy[
+            (seed, "STATIC_CONTROL")
+        ]["branch_horizon_steps"]
         isolation_ee_gaps.append(ee_gap)
         isolation_action_gaps.append(action_gap)
 
@@ -214,6 +219,7 @@ def main() -> None:
         and max_isolation_action_gap is not None
         and max_isolation_ee_gap <= paired_start_tolerance
         and max_isolation_action_gap <= paired_start_tolerance
+        and isolation_overlap_steps == isolation_expected_steps
     )
 
     validity = {
@@ -257,6 +263,7 @@ def main() -> None:
         "max_static_frozen_action_gap": max_isolation_action_gap,
         "evaluation_isolation_tolerance": paired_start_tolerance,
         "evaluation_isolation_overlap_steps": isolation_overlap_steps,
+        "evaluation_isolation_expected_steps": isolation_expected_steps,
         "evaluation_isolation_pass": evaluation_isolation_pass,
     }
     validity["valid_pilot"] = bool(
@@ -270,6 +277,71 @@ def main() -> None:
         and validity["evaluation_isolation_pass"]
     )
 
+    selection = None
+    if args.selection_manifest is not None:
+        selection = json.loads(args.selection_manifest.read_text(encoding="utf-8"))
+        if selection["selected_seeds"] != seeds:
+            raise ValueError("selection manifest does not match aggregated seed order")
+        validity["selection_protocol"] = selection["protocol"]
+        validity["candidate_seed_count"] = len(selection["candidate_seeds"])
+        validity["eligible_seed_count"] = len(selection["eligible_seeds"])
+        validity["required_eligible_seed_count"] = selection[
+            "required_eligible_seed_count"
+        ]
+        validity["selection_quota_met"] = selection["selection_quota_met"]
+        validity["selection_locked_before_treatment"] = selection[
+            "selection_locked_before_treatment"
+        ]
+        validity["valid_pilot"] = bool(
+            validity["valid_pilot"]
+            and validity["selection_quota_met"]
+            and validity["selection_locked_before_treatment"]
+        )
+
+    by_policy = _policy_summary(records)
+    effect = None
+    confirmatory_pass = None
+    if selection is not None:
+        moving = by_policy["TRACK_DRIFTING"]
+        frozen = by_policy["TRACK_FROZEN"]
+        contract = selection["analysis_contract"]
+        moving_by_seed = {
+            row["seed"]: row for row in records if row["policy"] == "TRACK_DRIFTING"
+        }
+        frozen_by_seed = {
+            row["seed"]: row for row in records if row["policy"] == "TRACK_FROZEN"
+        }
+        paired_improvements = [
+            frozen_by_seed[seed]["final_distance_m"]
+            - moving_by_seed[seed]["final_distance_m"]
+            for seed in seeds
+        ]
+        effect = {
+            "mean_final_distance_improvement_m": fmean(paired_improvements),
+            "paired_final_distance_improvements_m": paired_improvements,
+            "moving_better_seed_count": sum(value > 0 for value in paired_improvements),
+            "moving_better_seed_rate": fmean(value > 0 for value in paired_improvements),
+            "success_rate_difference": moving["success_rate"]
+            - frozen["success_rate"],
+            "gates": {
+                "moving_success_rate_pass": moving["success_rate"]
+                >= contract["moving_min_success_rate"],
+                "frozen_success_rate_pass": frozen["success_rate"]
+                <= contract["frozen_max_success_rate"],
+                "mean_final_distance_improvement_pass": fmean(paired_improvements)
+                > 0,
+                "forbidden_violations_pass": (
+                    moving["forbidden_violations"]
+                    + frozen["forbidden_violations"]
+                    <= contract["max_forbidden_violations"]
+                ),
+            },
+        }
+        effect["effect_gate_pass"] = all(effect["gates"].values())
+        confirmatory_pass = bool(
+            validity["valid_pilot"] and effect["effect_gate_pass"]
+        )
+
     combined = {
         "experiment": arm_results[0]["experiment"],
         "mode": "isaac",
@@ -277,7 +349,7 @@ def main() -> None:
         "seeds": seeds,
         "preconditions": preconditions,
         "summary": {
-            "by_policy": _policy_summary(records),
+            "by_policy": by_policy,
             "validity": validity,
         },
         "records": records,
@@ -288,6 +360,10 @@ def main() -> None:
         "isolated_isaac_process_per_policy": True,
         "source_result_dirs": source_dirs,
     }
+    if selection is not None:
+        combined["selection"] = selection
+        combined["effect"] = effect
+        combined["confirmatory_pass"] = confirmatory_pass
     args.out_dir.mkdir(parents=True, exist_ok=True)
     result_path = args.out_dir / "isaac_drift_results.json"
     result_path.write_text(json.dumps(combined, indent=2), encoding="utf-8")
