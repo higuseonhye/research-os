@@ -70,39 +70,43 @@ if [ "$DISABLE_FABRIC" = "1" ]; then
 fi
 : > "$OUT/isaac_stdout.log"
 IFS=',' read -r -a seed_list <<< "$SEEDS"
+POLICIES=(STATIC_CONTROL TRACK_DRIFTING TRACK_FROZEN)
 for raw_seed in "${seed_list[@]}"; do
   seed="${raw_seed//[[:space:]]/}"
   if [[ ! "$seed" =~ ^-?[0-9]+$ ]]; then
     echo "[FAIL] invalid seed: $raw_seed" >&2
     exit 1
   fi
-  seed_out="$OUT/seed_$seed"
-  mkdir -p "$seed_out"
-  echo "== Isolated Isaac seed $seed ==" | tee -a "$OUT/isaac_stdout.log"
-  set +e
-  "$ISAACLAB_SH" -p "$REPO/scripts/orbit_reach_drift.py" \
-    --headless \
-    "${FABRIC_ARGS[@]}" \
-    --task "$TASK" \
-    --out-dir "$seed_out" \
-    --seeds "$seed" \
-    --onset "$ONSET" \
-    --max-steps "$MAX_STEPS" \
-    --prefix-max-steps "$PREFIX_MAX_STEPS" \
-    --prefix-stable-steps "$PREFIX_STABLE_STEPS" \
-    --paired-start-tol-m "$PAIRED_START_TOL_M" \
-    --drift-speed "$DRIFT_SPEED" \
-    --drift-axis "$DRIFT_AXIS" \
-    --drift-duration "$DRIFT_DURATION" \
-    --experiment-id EXP-SURG-003-drift-pilot \
-    | tee "$seed_out/isaac_stdout.log" \
-    | tee -a "$OUT/isaac_stdout.log"
-  isaac_rc=${PIPESTATUS[0]}
-  set -e
-  if [ "$isaac_rc" -ne 0 ]; then
-    echo "[FAIL] orbit_reach_drift seed $seed exited with code $isaac_rc" >&2
-    exit "$isaac_rc"
-  fi
+  for policy in "${POLICIES[@]}"; do
+    arm_out="$OUT/seed_$seed/$policy"
+    mkdir -p "$arm_out"
+    echo "== Isolated Isaac seed $seed policy $policy ==" | tee -a "$OUT/isaac_stdout.log"
+    set +e
+    "$ISAACLAB_SH" -p "$REPO/scripts/orbit_reach_drift.py" \
+      --headless \
+      "${FABRIC_ARGS[@]}" \
+      --task "$TASK" \
+      --out-dir "$arm_out" \
+      --seeds "$seed" \
+      --policy "$policy" \
+      --onset "$ONSET" \
+      --max-steps "$MAX_STEPS" \
+      --prefix-max-steps "$PREFIX_MAX_STEPS" \
+      --prefix-stable-steps "$PREFIX_STABLE_STEPS" \
+      --paired-start-tol-m "$PAIRED_START_TOL_M" \
+      --drift-speed "$DRIFT_SPEED" \
+      --drift-axis "$DRIFT_AXIS" \
+      --drift-duration "$DRIFT_DURATION" \
+      --experiment-id EXP-SURG-003-drift-pilot \
+      | tee "$arm_out/isaac_stdout.log" \
+      | tee -a "$OUT/isaac_stdout.log"
+    isaac_rc=${PIPESTATUS[0]}
+    set -e
+    if [ "$isaac_rc" -ne 0 ]; then
+      echo "[FAIL] seed $seed policy $policy exited with code $isaac_rc" >&2
+      exit "$isaac_rc"
+    fi
+  done
 done
 cd "$REPO"
 

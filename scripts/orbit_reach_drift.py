@@ -55,8 +55,8 @@ parser.add_argument(
     "--policy",
     type=str,
     default="TRACK_DRIFTING",
-    choices=["TRACK_DRIFTING", "TRACK_FROZEN"],
-    help="TRACK_DRIFTING follows moving command; TRACK_FROZEN keeps pre-drift command (failure mode)",
+    choices=["STATIC_CONTROL", "TRACK_DRIFTING", "TRACK_FROZEN"],
+    help="single policy arm to execute in this isolated Isaac process",
 )
 parser.add_argument("--out-dir", type=str, required=True)
 parser.add_argument("--disable_fabric", action="store_true", default=False)
@@ -152,41 +152,6 @@ def _state_fingerprint(state: dict[str, Any]) -> str:
     return digest.hexdigest()
 
 
-def _restore_branch_state(env: Any, command_name: str, state: dict[str, Any]) -> None:
-    base = env.unwrapped
-    for name, saved in state["articulations"].items():
-        asset = base.scene.articulations[name]
-        root_state = saved["root_state"]
-        asset.write_root_pose_to_sim(root_state[:, :7])
-        asset.write_root_velocity_to_sim(root_state[:, 7:])
-        asset.write_joint_state_to_sim(saved["joint_position"], saved["joint_velocity"])
-        asset.set_joint_position_target(saved["joint_position_target"])
-        asset.set_joint_velocity_target(saved["joint_velocity_target"])
-        asset.set_joint_effort_target(saved["joint_effort_target"])
-
-    for name, saved in state["rigid_objects"].items():
-        asset = base.scene.rigid_objects[name]
-        root_state = saved["root_state"]
-        asset.write_root_pose_to_sim(root_state[:, :7])
-        asset.write_root_velocity_to_sim(root_state[:, 7:])
-
-    _set_command(env, command_name, state["command"])
-    base.scene.write_data_to_sim()
-    base.sim.step(render=False)
-    base.scene.update(dt=base.physics_dt)
-
-    env_ids = torch.arange(base.num_envs, dtype=torch.int64, device=base.device)
-    for manager_name in ("action_manager", "reward_manager", "termination_manager"):
-        manager = getattr(base, manager_name, None)
-        if manager is not None:
-            manager.reset(env_ids)
-    for buffer_name in ("episode_length_buf", "reset_buf", "reset_terminated", "reset_time_outs"):
-        buffer = getattr(base, buffer_name, None)
-        if buffer is not None:
-            buffer.zero_()
-    _set_command(env, command_name, state["command"])
-
-
 def _prepare_branch_state(
     env: Any,
     robot_name: str,
@@ -230,6 +195,7 @@ def _prepare_branch_state(
             break
 
     state = _capture_branch_state(env, command_name)
+    branch_state_fingerprint = _state_fingerprint(state)
     state.update(
         {
             "prefix_ready": not failure_reason,
@@ -239,6 +205,7 @@ def _prepare_branch_state(
             "prefix_final_distance_m": prefix_final_distance,
             "reset_state_fingerprint": reset_state_fingerprint,
             "reset_command": static_command[0, :3].detach().cpu().numpy().tolist(),
+            "branch_state_fingerprint": branch_state_fingerprint,
         }
     )
     return state
@@ -253,7 +220,6 @@ def run_drift_branch(
     policy: str,
     branch_state: dict[str, Any],
 ) -> dict[str, Any]:
-    _restore_branch_state(env, command_name, branch_state)
     drift_step = drift_vector(env.unwrapped.device)
     forbidden_center = np.array([0.45, 0.0, 0.15], dtype=np.float64)
     forbidden_half = np.array([0.04, 0.04, 0.04], dtype=np.float64)
@@ -308,6 +274,7 @@ def run_drift_branch(
                 "ee": ee.tolist(),
                 "command": des.tolist(),
                 "policy_command": policy_command[0, :3].detach().cpu().numpy().tolist(),
+                "action": act[0].detach().cpu().numpy().tolist(),
                 "policy": policy,
             }
         )
@@ -332,7 +299,7 @@ def run_drift_branch(
         "policy": policy,
         "evaluation_target": evaluation_target,
         "policy_target": policy,
-        "branch_source": "shared_pre_drift_snapshot",
+        "branch_source": "isolated_process_deterministic_prefix",
         "branch_start_ee": branch_start_ee.tolist(),
         "branch_start_command": branch_start_command.tolist(),
         "branch_start_distance_m": float(
@@ -343,6 +310,7 @@ def run_drift_branch(
         "prefix_stable_steps": branch_state["prefix_stable_steps"],
         "prefix_final_distance_m": branch_state["prefix_final_distance_m"],
         "reset_state_fingerprint": branch_state["reset_state_fingerprint"],
+        "branch_state_fingerprint": branch_state["branch_state_fingerprint"],
         "reset_command": branch_state["reset_command"],
         "configured_minimum_onset_step": args_cli.onset,
         "minimum_completion_steps": min_completion_steps,
@@ -542,26 +510,28 @@ def main() -> None:
                 "prefix_final_distance_m": branch_state["prefix_final_distance_m"],
                 "reset_state_fingerprint": branch_state["reset_state_fingerprint"],
                 "reset_command": branch_state["reset_command"],
+                "branch_state_fingerprint": branch_state[
+                    "branch_state_fingerprint"
+                ],
             }
             preconditions.append(precondition)
             print(json.dumps({"precondition": precondition}), flush=True)
             if not branch_state["prefix_ready"]:
                 continue
-            for policy in ("STATIC_CONTROL", "TRACK_DRIFTING", "TRACK_FROZEN"):
-                rec = run_drift_branch(
-                    env,
-                    robot_name,
-                    command_name,
-                    body_index,
-                    seed,
-                    policy,
-                    branch_state,
-                )
-                records.append(rec)
-                print(
-                    json.dumps({k: rec[k] for k in rec if k != "trajectory"}),
-                    flush=True,
-                )
+            rec = run_drift_branch(
+                env,
+                robot_name,
+                command_name,
+                body_index,
+                seed,
+                args_cli.policy,
+                branch_state,
+            )
+            records.append(rec)
+            print(
+                json.dumps({k: rec[k] for k in rec if k != "trajectory"}),
+                flush=True,
+            )
         finally:
             env.close()
 
@@ -576,6 +546,7 @@ def main() -> None:
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "target_dynamics": "persistent_drift",
         "fresh_environment_per_seed": True,
+        "isolated_policy_process": args_cli.policy,
     }
     out_json = out_dir / "isaac_drift_results.json"
     out_json.write_text(json.dumps(summary, indent=2), encoding="utf-8")
