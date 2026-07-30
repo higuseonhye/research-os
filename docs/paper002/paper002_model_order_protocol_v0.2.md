@@ -95,11 +95,20 @@ cd /workspace/research-os
 git switch codex/paper002-l1-l3-confirmatory
 git pull --ff-only
 
+export DISABLE_FABRIC=1
+unset EXP_SURG_003_SKIP_BOOTSTRAP
+export EXP_SURG_003_ZERO_AGENT=1
+bash scripts/run_exp_surg_003_model_order_vessl.sh --smoke
+
 export EXP_SURG_003_SKIP_BOOTSTRAP=1
 export EXP_SURG_003_ZERO_AGENT=0
-export DISABLE_FABRIC=1
 bash scripts/run_exp_surg_003_model_order_vessl.sh
 ```
+
+Run the one-seed smoke first. It uses previously exposed seed 101 only for
+infrastructure validation and is excluded from both pilot and confirmatory
+analysis. Start the full pilot only after the smoke produces a complete valid
+grid.
 
 The command is resumable. Completed isolated outputs are skipped. The final
 files are:

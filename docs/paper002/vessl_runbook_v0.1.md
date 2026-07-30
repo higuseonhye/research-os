@@ -136,9 +136,13 @@ cd /workspace/research-os
 git switch codex/paper002-l1-l3-confirmatory
 git pull --ff-only
 
+export DISABLE_FABRIC=1
+unset EXP_SURG_003_SKIP_BOOTSTRAP
+export EXP_SURG_003_ZERO_AGENT=1
+bash scripts/run_exp_surg_003_model_order_vessl.sh --smoke
+
 export EXP_SURG_003_SKIP_BOOTSTRAP=1
 export EXP_SURG_003_ZERO_AGENT=0
-export DISABLE_FABRIC=1
 bash scripts/run_exp_surg_003_model_order_vessl.sh
 ```
 

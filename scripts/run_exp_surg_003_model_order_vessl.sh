@@ -4,8 +4,15 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO="${REPO:-$ROOT_DIR}"
-CONFIG="${CONFIG:-$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_pilot_v0.2.json}"
-OUT="${OUT:-$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.2}"
+if [ "${1:-}" = "--smoke" ]; then
+  default_config="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_smoke_v0.2.json"
+  default_out="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_smoke_v0.2"
+else
+  default_config="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_pilot_v0.2.json"
+  default_out="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.2"
+fi
+CONFIG="${CONFIG:-$default_config}"
+OUT="${OUT:-$default_out}"
 ISAACLAB_PATH="${IsaacLab_PATH:-/workspace/IsaacLab}"
 ORBIT_SURGICAL_PATH="${ORBIT_SURGICAL_PATH:-/workspace/orbit-surgical}"
 
