@@ -8,6 +8,9 @@ OUT="${OUT:-$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/re
 SEEDS="${SEEDS:-0,1,2,3,4}"
 ONSET="${ONSET:-20}"
 MAX_STEPS="${MAX_STEPS:-160}"
+PREFIX_MAX_STEPS="${PREFIX_MAX_STEPS:-200}"
+PREFIX_STABLE_STEPS="${PREFIX_STABLE_STEPS:-5}"
+PAIRED_START_TOL_M="${PAIRED_START_TOL_M:-0.001}"
 DRIFT_SPEED="${DRIFT_SPEED:-0.01}"
 DRIFT_AXIS="${DRIFT_AXIS:-x}"
 DRIFT_DURATION="${DRIFT_DURATION:-40}"
@@ -28,6 +31,7 @@ echo "== EXP-SURG-003 Isaac drift =="
 echo "commit: $commit_sha"
 echo "out: $OUT"
 echo "seeds: $SEEDS onset: $ONSET drift: $DRIFT_AXIS @ $DRIFT_SPEED m/step x $DRIFT_DURATION steps"
+echo "readiness: <= tolerance for $PREFIX_STABLE_STEPS steps (max prefix $PREFIX_MAX_STEPS); paired start <= $PAIRED_START_TOL_M m"
 
 if [ "$SKIP_BOOTSTRAP" != "1" ]; then
   bash "$REPO/scripts/bootstrap_orbit_surgical_runpod.sh"
@@ -73,6 +77,9 @@ set +e
   --seeds "$SEEDS" \
   --onset "$ONSET" \
   --max-steps "$MAX_STEPS" \
+  --prefix-max-steps "$PREFIX_MAX_STEPS" \
+  --prefix-stable-steps "$PREFIX_STABLE_STEPS" \
+  --paired-start-tol-m "$PAIRED_START_TOL_M" \
   --drift-speed "$DRIFT_SPEED" \
   --drift-axis "$DRIFT_AXIS" \
   --drift-duration "$DRIFT_DURATION" \

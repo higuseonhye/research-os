@@ -24,6 +24,24 @@ parser.add_argument("--experiment-id", type=str, default="EXP-SURG-003-drift")
 parser.add_argument("--episodes", type=int, default=5)
 parser.add_argument("--onset", type=int, default=20)
 parser.add_argument("--max-steps", type=int, default=160)
+parser.add_argument(
+    "--prefix-max-steps",
+    type=int,
+    default=200,
+    help="maximum shared-prefix steps allowed while waiting for a reachable static target",
+)
+parser.add_argument(
+    "--prefix-stable-steps",
+    type=int,
+    default=5,
+    help="consecutive in-tolerance shared-prefix steps required before branching",
+)
+parser.add_argument(
+    "--paired-start-tol-m",
+    type=float,
+    default=0.001,
+    help="maximum EE gap allowed between restored policy branches",
+)
 parser.add_argument("--drift-speed", type=float, default=0.01, help="m/s per step (sim units)")
 parser.add_argument("--drift-axis", type=str, default="x", choices=["x", "y", "z"])
 parser.add_argument("--drift-duration", type=int, default=40, help="steps of drift after onset")
@@ -163,8 +181,12 @@ def _prepare_branch_state(
     torch.manual_seed(seed)
     env.reset(seed=seed)
     static_command = _get_command(env, command_name)
+    stable_steps = 0
+    prefix_steps = 0
+    prefix_final_distance = None
+    failure_reason = "static_target_not_reached"
 
-    for _ in range(args_cli.onset):
+    for prefix_step in range(args_cli.prefix_max_steps):
         _set_command(env, command_name, static_command)
         with torch.no_grad():
             action = scripted_action(
@@ -173,10 +195,33 @@ def _prepare_branch_state(
             _set_command(env, command_name, static_command)
             step_result = env.step(action)
         _set_command(env, command_name, static_command)
+        prefix_steps = prefix_step + 1
         if _step_reset(step_result):
-            raise RuntimeError(f"environment auto-reset during shared prefix for seed {seed}")
+            failure_reason = "unexpected_env_reset"
+            break
 
-    return _capture_branch_state(env, command_name)
+        prefix_final_distance, _, _ = ee_distance(
+            env, robot_name, command_name, body_index
+        )
+        if prefix_steps >= args_cli.onset and prefix_final_distance <= args_cli.tol_m:
+            stable_steps += 1
+        else:
+            stable_steps = 0
+        if stable_steps >= args_cli.prefix_stable_steps:
+            failure_reason = ""
+            break
+
+    state = _capture_branch_state(env, command_name)
+    state.update(
+        {
+            "prefix_ready": not failure_reason,
+            "prefix_failure_reason": failure_reason or None,
+            "prefix_steps": prefix_steps,
+            "prefix_stable_steps": stable_steps,
+            "prefix_final_distance_m": prefix_final_distance,
+        }
+    )
+    return state
 
 
 def run_drift_branch(
@@ -199,16 +244,19 @@ def run_drift_branch(
     prev_ee = None
     violation = False
     trajectory: list[dict[str, Any]] = []
-    min_completion_steps = args_cli.onset + args_cli.drift_duration
+    prefix_steps = int(branch_state["prefix_steps"])
+    branch_horizon_steps = args_cli.max_steps - args_cli.onset
+    min_completion_steps = prefix_steps + args_cli.drift_duration
+    branch_timeout_step = prefix_steps + branch_horizon_steps
     _, branch_start_ee, branch_start_command = ee_distance(
         env, robot_name, command_name, body_index
     )
     success = False
     unexpected_reset = False
-    completion = args_cli.max_steps
+    completion = branch_timeout_step
 
-    for rel in range(args_cli.max_steps - args_cli.onset):
-        t = args_cli.onset + rel
+    for rel in range(branch_horizon_steps):
+        t = prefix_steps + rel
         if rel < args_cli.drift_duration:
             true_command[:, :3] += drift_step
         policy_command = true_command if policy == "TRACK_DRIFTING" else frozen_command
@@ -253,7 +301,7 @@ def run_drift_branch(
     terminal = (
         "unexpected_env_reset"
         if unexpected_reset
-        else classify(success and not violation, violation, completion >= args_cli.max_steps)
+        else classify(success and not violation, violation, completion >= branch_timeout_step)
     )
 
     return {
@@ -264,8 +312,18 @@ def run_drift_branch(
         "branch_source": "shared_pre_drift_snapshot",
         "branch_start_ee": branch_start_ee.tolist(),
         "branch_start_command": branch_start_command.tolist(),
+        "branch_start_distance_m": float(
+            np.linalg.norm(branch_start_ee - branch_start_command)
+        ),
+        "prefix_ready": branch_state["prefix_ready"],
+        "prefix_steps": prefix_steps,
+        "prefix_stable_steps": branch_state["prefix_stable_steps"],
+        "prefix_final_distance_m": branch_state["prefix_final_distance_m"],
+        "configured_minimum_onset_step": args_cli.onset,
         "minimum_completion_steps": min_completion_steps,
-        "onset_step": args_cli.onset,
+        "onset_step": prefix_steps,
+        "branch_horizon_steps": branch_horizon_steps,
+        "branch_timeout_step": branch_timeout_step,
         "drift_speed_m_per_step": args_cli.drift_speed,
         "drift_axis": args_cli.drift_axis,
         "drift_duration_steps": args_cli.drift_duration,
@@ -282,15 +340,27 @@ def run_drift_branch(
     }
 
 
-def _summarize_records(records: list[dict[str, Any]], seeds: list[int]) -> dict[str, Any]:
+def _summarize_records(
+    records: list[dict[str, Any]],
+    seeds: list[int],
+    preconditions: list[dict[str, Any]],
+) -> dict[str, Any]:
     by_policy = {}
     for policy in ("TRACK_DRIFTING", "TRACK_FROZEN"):
         rows = [row for row in records if row["policy"] == policy]
         by_policy[policy] = {
             "n": len(rows),
-            "success_rate": float(np.mean([row["successful_resolution"] for row in rows])),
-            "mean_final_distance_m": float(np.mean([row["final_distance_m"] for row in rows])),
-            "mean_completion_steps": float(np.mean([row["completion_steps"] for row in rows])),
+            "success_rate": (
+                float(np.mean([row["successful_resolution"] for row in rows]))
+                if rows
+                else None
+            ),
+            "mean_final_distance_m": (
+                float(np.mean([row["final_distance_m"] for row in rows])) if rows else None
+            ),
+            "mean_completion_steps": (
+                float(np.mean([row["completion_steps"] for row in rows])) if rows else None
+            ),
             "forbidden_violations": int(sum(row["forbidden_violation"] for row in rows)),
             "unexpected_env_resets": int(sum(row["unexpected_env_reset"] for row in rows)),
         }
@@ -299,6 +369,8 @@ def _summarize_records(records: list[dict[str, Any]], seeds: list[int]) -> dict[
     command_gaps = []
     for seed in seeds:
         pair = {row["policy"]: row for row in records if row["seed"] == seed}
+        if set(pair) != {"TRACK_DRIFTING", "TRACK_FROZEN"}:
+            continue
         drifting = pair["TRACK_DRIFTING"]
         frozen = pair["TRACK_FROZEN"]
         ee_gaps.append(
@@ -313,21 +385,54 @@ def _summarize_records(records: list[dict[str, Any]], seeds: list[int]) -> dict[
             )
         )
 
-    max_ee_gap = max(ee_gaps, default=float("inf"))
-    max_command_gap = max(command_gaps, default=float("inf"))
+    max_ee_gap = max(ee_gaps, default=None)
+    max_command_gap = max(command_gaps, default=None)
+    ready_seeds = [row["seed"] for row in preconditions if row["prefix_ready"]]
+    failed_seeds = [row["seed"] for row in preconditions if not row["prefix_ready"]]
+    complete_pair_count = len(ee_gaps)
+    branch_start_distances = [row["branch_start_distance_m"] for row in records]
+    max_branch_start_distance = max(branch_start_distances, default=None)
     validity = {
+        "requested_seed_count": len(seeds),
+        "ready_seed_count": len(ready_seeds),
+        "ready_seeds": ready_seeds,
+        "failed_readiness_seeds": failed_seeds,
+        "all_requested_seeds_ready": len(ready_seeds) == len(seeds),
+        "complete_pair_count": complete_pair_count,
         "max_branch_start_ee_gap_m": max_ee_gap,
         "max_branch_start_command_gap_m": max_command_gap,
-        "paired_start_pass": bool(max_ee_gap <= 1e-4 and max_command_gap <= 1e-6),
+        "paired_start_tolerance_m": args_cli.paired_start_tol_m,
+        "paired_start_pass": bool(
+            complete_pair_count == len(seeds)
+            and max_ee_gap is not None
+            and max_command_gap is not None
+            and max_ee_gap <= args_cli.paired_start_tol_m
+            and max_command_gap <= 1e-6
+        ),
+        "max_branch_start_distance_m": max_branch_start_distance,
+        "branch_start_distance_limit_m": args_cli.tol_m
+        + args_cli.paired_start_tol_m,
+        "all_branch_starts_ready": bool(
+            len(branch_start_distances) == 2 * len(seeds)
+            and max_branch_start_distance is not None
+            and max_branch_start_distance
+            <= args_cli.tol_m + args_cli.paired_start_tol_m
+        ),
         "all_drift_exposed": bool(
-            all(row["completion_steps"] >= row["minimum_completion_steps"] for row in records)
+            len(records) == 2 * len(seeds)
+            and all(
+                row["completion_steps"] >= row["minimum_completion_steps"]
+                for row in records
+            )
         ),
         "no_unexpected_env_resets": bool(
             all(not row["unexpected_env_reset"] for row in records)
         ),
     }
     validity["valid_pilot"] = bool(
-        validity["paired_start_pass"]
+        validity["all_requested_seeds_ready"]
+        and validity["paired_start_pass"]
+        and validity["all_branch_starts_ready"]
         and validity["all_drift_exposed"]
         and validity["no_unexpected_env_resets"]
     )
@@ -340,6 +445,14 @@ def main() -> None:
         raise ValueError(
             f"max_steps={args_cli.max_steps} must cover onset+duration={min_steps}"
         )
+    if args_cli.prefix_max_steps < args_cli.onset:
+        raise ValueError(
+            f"prefix_max_steps={args_cli.prefix_max_steps} must be >= onset={args_cli.onset}"
+        )
+    if args_cli.prefix_stable_steps < 1:
+        raise ValueError("prefix_stable_steps must be >= 1")
+    if args_cli.paired_start_tol_m <= 0:
+        raise ValueError("paired_start_tol_m must be > 0")
 
     out_dir = Path(args_cli.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -362,10 +475,23 @@ def main() -> None:
         seed_list = [args_cli.seed * 100 + ep for ep in range(args_cli.episodes)]
 
     records = []
+    preconditions = []
     for seed in seed_list:
         branch_state = _prepare_branch_state(
             env, robot_name, command_name, body_index, seed
         )
+        precondition = {
+            "seed": seed,
+            "prefix_ready": branch_state["prefix_ready"],
+            "prefix_failure_reason": branch_state["prefix_failure_reason"],
+            "prefix_steps": branch_state["prefix_steps"],
+            "prefix_stable_steps": branch_state["prefix_stable_steps"],
+            "prefix_final_distance_m": branch_state["prefix_final_distance_m"],
+        }
+        preconditions.append(precondition)
+        print(json.dumps({"precondition": precondition}), flush=True)
+        if not branch_state["prefix_ready"]:
+            continue
         for policy in ("TRACK_DRIFTING", "TRACK_FROZEN"):
             rec = run_drift_branch(
                 env,
@@ -384,7 +510,8 @@ def main() -> None:
         "mode": "isaac",
         "n_records": len(records),
         "seeds": seed_list,
-        "summary": _summarize_records(records, seed_list),
+        "preconditions": preconditions,
+        "summary": _summarize_records(records, seed_list, preconditions),
         "records": [{k: r[k] for k in r if k != "trajectory"} for r in records],
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "target_dynamics": "persistent_drift",
