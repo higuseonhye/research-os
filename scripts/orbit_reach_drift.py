@@ -282,10 +282,24 @@ def run_drift_branch(
         if unexpected_reset:
             completion = t + 1
             break
-        if t + 1 >= min_completion_steps and dist <= args_cli.tol_m and not violation:
+        if (
+            policy != "STATIC_CONTROL"
+            and t + 1 >= min_completion_steps
+            and dist <= args_cli.tol_m
+            and not violation
+        ):
             success = True
             completion = t + 1
             break
+
+    max_distance = max(row["distance_m"] for row in trajectory)
+    if policy == "STATIC_CONTROL" and not unexpected_reset:
+        success = bool(
+            dist <= args_cli.tol_m
+            and max_distance <= args_cli.tol_m
+            and not violation
+        )
+        completion = branch_timeout_step
 
     terminal = (
         "unexpected_env_reset"
@@ -321,7 +335,7 @@ def run_drift_branch(
         "drift_axis": args_cli.drift_axis,
         "drift_duration_steps": args_cli.drift_duration,
         "final_distance_m": dist,
-        "max_distance_m": max(row["distance_m"] for row in trajectory),
+        "max_distance_m": max_distance,
         "path_length_m": path,
         "completion_steps": completion,
         "forbidden_violation": violation,
