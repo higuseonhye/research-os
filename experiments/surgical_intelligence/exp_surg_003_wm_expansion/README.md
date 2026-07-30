@@ -1,7 +1,7 @@
 # EXP-SURG-003 — Paper 002 WM expansion confirmatory
 
 > **Paper:** [docs/paper002/](../../../docs/paper002/) · [confirmatory spec](../../../docs/paper002/paper002_confirmatory_spec_v0.1.md)  
-> **Status:** mock pilot **v0.4** · preliminary G1 + H4 pass · pre-reg not frozen  
+> **Status:** Isaac drift anchor confirmatory **pass** (10 paired seeds) · Paper 002 L3-vs-L1 pre-reg not frozen
 > **Public lab:** [Mismatch Lab spec](../../../docs/mismatch_lab/README.md)  
 > **Parent:** EXP-SURG-001 ORBIT reach pipeline
 
@@ -37,6 +37,27 @@ Fixes in v0.4: full Ep1 drift window · unified F1-probe gate · H4 aggregation 
 → [`results/pilot_v0.1/summary.json`](results/pilot_v0.1/summary.json)
 
 **Tier:** B+ preliminary · not confirmatory · not behavior (MPC) claim.
+
+---
+
+## Isaac drift anchor (VESSL · confirmatory)
+
+Fresh seeds `100–139` were screened using static control only. The protocol locked the first 10 eligible seeds before either treatment policy ran, then executed every `(seed, policy)` arm in a separate Isaac process.
+
+| Metric | Result |
+| --- | --- |
+| Static-control eligibility | **29/40** candidates |
+| Locked paired seeds | **10** (`101,102,103,104,105,107,108,109,111,112`) |
+| `TRACK_DRIFTING` success | **10/10** |
+| `TRACK_FROZEN` success | **0/10** |
+| Mean paired final-distance improvement | **20.250 mm** |
+| Moving policy better | **10/10** seeds |
+| Forbidden violations / unexpected resets | **0 / 0** |
+| Protocol and effect gates | **PASS / PASS** |
+
+→ [Result record and trajectories](results/isaac_static_first_confirmatory_v0.2/RESULTS.md)
+
+This confirms the persistent-drift tracking anchor and evaluation isolation. It does **not** test the Paper 002 L3 structural-expansion vs L1 parameter-repair hypotheses.
 
 ---
 
@@ -95,6 +116,7 @@ bash scripts/run_exp_surg_003_drift_runpod.sh
 | Label | Tier | Note |
 | --- | --- | --- |
 | [`pilot_v0.1/`](results/pilot_v0.1/) | B+ | 5-seed v0.4 · G1 + H4 preliminary |
+| [`isaac_static_first_confirmatory_v0.2/`](results/isaac_static_first_confirmatory_v0.2/) | Isaac anchor confirmatory | Static-first selection · 10 paired fresh seeds · all locked gates pass |
 
 ---
 
@@ -102,6 +124,7 @@ bash scripts/run_exp_surg_003_drift_runpod.sh
 
 - Not Paper 001 confirmatory  
 - Not mock→physics (archived)  
+- Isaac drift anchor is an environment/control validation, not the Paper 002 L3-vs-L1 confirmatory
 - Oracle arm D = diagnostic only · excluded from primary contrasts  
 - Public: frozen design + tier-labeled results per [`PUBLIC_BOUNDARY.md`](../../../docs/PUBLIC_BOUNDARY.md)
 

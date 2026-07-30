@@ -5,7 +5,7 @@
 | Package | Role | Status |
 | --- | --- | --- |
 | [**EXP-SURG-001**](surgical_intelligence/exp_surg_001_execute_or_defer/README.md) | Paper 1 · same-state CF · 001A–D | Tier B smoke · **Tier C complete** |
-| [**EXP-SURG-003**](surgical_intelligence/exp_surg_003_wm_expansion/README.md) | Paper 002 confirmatory · drift WM expansion | Scaffold · pilot pending |
+| [**EXP-SURG-003**](surgical_intelligence/exp_surg_003_wm_expansion/README.md) | Paper 002 · drift WM expansion | Isaac drift anchor passed · L3-vs-L1 pre-reg next |
 | [**EXP-SURG-002**](surgical_intelligence/exp_surg_002_dream_curriculum/README.md) | Study 002 pilot (archived) | Tier B · mock curriculum |
 
 See [`../docs/PUBLIC_BOUNDARY.md`](../docs/PUBLIC_BOUNDARY.md).

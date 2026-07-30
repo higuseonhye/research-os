@@ -1,1 +1,2 @@
 *.sh text eol=lf
+experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/* text eol=lf

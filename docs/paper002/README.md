@@ -1,7 +1,7 @@
 # Paper 002 — Representation reconstruction (WM expansion)
 
 > **L0:** Model-class / system-composition reconstruction when current WM cannot explain failure · [taxonomy](paper002_wm_system_expansion_v0.1.md)  
-> **Status:** design v0.1 · mock pilot **v0.4 preliminary** · confirmatory GPU not started  
+> **Status:** design v0.1 · Isaac drift anchor **passed** · L3-vs-L1 pre-reg freeze next
 > **Recoverability:** measurement window · not program center
 
 ---
@@ -18,6 +18,7 @@
 | [**Related work v0.2**](paper002_related_work_v0.2.md) | TMoW · MuSix · Worldscape-MoE · LMC · adequacy wedge |
 | [**Physical validation roadmap**](paper002_physical_validation_roadmap_v0.1.md) | L1/L2/L3 · parallel tracks · Go gates for confirmatory |
 | [**VESSL runbook v0.1**](vessl_runbook_v0.1.md) | Mock + Isaac drift on VESSL |
+| [**Isaac drift anchor result**](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/RESULTS.md) | Static-first selection · 10 paired fresh seeds · scoped confirmatory pass |
 | [**Mismatch Lab v0.1**](../mismatch_lab/README.md) | Robot Diff · public lab spec · API · benchmark |
 | [**Manuscript skeleton v0.1**](paper002_manuscript_wm_expansion_v0.1.md) | Pre-results MS · WM expansion · fill T1–T6 after confirmatory |
 | [**Industry context**](paper002_industry_context_v0.1.md) | Introduction · deployment-stack landscape (Paper 002) |
@@ -45,7 +46,9 @@ Safety:  static retention · gate on noise/impulse (H4)
 
 Package: [`exp_surg_003_wm_expansion`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md)
 
-**Blocking milestone:** L1 fails · L3 explains held-out drift · **pilot v0.4 mechanism pass (preliminary)** · pre-reg freeze next.
+**Completed prerequisite:** the Isaac persistent-drift regime and policy isolation passed a static-first, 10-pair fresh-seed anchor.
+
+**Blocking milestone:** L1 fails · L3 explains held-out drift · pre-reg freeze and the actual intervention study remain next. The drift anchor is not evidence for this comparison.
 
 ---
 
