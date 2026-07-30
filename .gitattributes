@@ -11,4 +11,5 @@ docs/paper002/*.bib text eol=lf
 docs/paper002/*.json text eol=lf
 docs/paper002/*.tex text eol=lf
 docs/paper002/*.pdf binary
+docs/paper002/*.zip binary
 scripts/*.py text eol=lf

@@ -10,6 +10,7 @@
 | `orbit_reach_drift.py` | Single-cell Isaac target-drift runner |
 | `plot_paper002_model_order.py` | CPU-only publication figures, CSV tables, and hash manifest |
 | `build_paper002_submission_tex.py` | Generate and validate standalone LaTeX manuscript and supplement sources |
+| `build_paper002_overleaf_zip.py` | Package root-`main.tex` Overleaf upload ZIPs with BibTeX and figures |
 | `build_paper002_submission_pdf.py` | CPU-only venue-neutral manuscript and supplement PDF build |
 
 The model-order confirmatory v1.0 is complete. Do not rerun it for paper
@@ -18,6 +19,7 @@ figures; regenerate derived materials from the committed JSON with
 
 Build LaTeX sources with `python scripts/build_paper002_submission_tex.py` and
 verify committed outputs with `python scripts/build_paper002_submission_tex.py --check`.
+Build Overleaf upload archives with `python scripts/build_paper002_overleaf_zip.py`.
 Build the review PDFs with `python scripts/build_paper002_submission_pdf.py`.
 
 ---
