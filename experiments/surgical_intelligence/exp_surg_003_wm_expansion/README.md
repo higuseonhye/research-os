@@ -59,6 +59,24 @@ Fresh seeds `100–139` were screened using static control only. The protocol lo
 
 This confirms the persistent-drift tracking anchor and evaluation isolation. It does **not** test the Paper 002 L3 structural-expansion vs L1 parameter-repair hypotheses.
 
+## Active pilot: explicit model order v0.2
+
+The active pilot replaces the non-identifying GRU comparison with an explicit
+zero-order versus constant-velocity model-order test. H=10 predictions drive
+the Isaac controller target, so prediction gains must transfer to behavior.
+
+```bash
+export EXP_SURG_003_SKIP_BOOTSTRAP=1
+export EXP_SURG_003_ZERO_AGENT=0
+export DISABLE_FABRIC=1
+bash scripts/run_exp_surg_003_model_order_vessl.sh
+```
+
+The static-first protocol selects five of 20 pilot candidates before treatment,
+then runs 10 paired conditions across A/B/C/D plus B/C static retention. The
+pilot is excluded from confirmatory analysis. See the
+[v0.2 protocol](../../../docs/paper002/paper002_model_order_protocol_v0.2.md).
+
 ---
 
 ## Quick start (local CPU)
@@ -96,6 +114,7 @@ bash scripts/run_exp_surg_003_drift_runpod.sh
 | --- | --- |
 | [`config/pilot_v0.1.yaml`](config/pilot_v0.1.yaml) | Mock pilot v0.4 hyperparameters |
 | [`config/confirmatory_v0.1.yaml`](config/confirmatory_v0.1.yaml) | Confirmatory design contract |
+| [`config/model_order_pilot_v0.2.json`](config/model_order_pilot_v0.2.json) | Active Isaac model-order pilot contract |
 
 ## Implementation
 
@@ -108,6 +127,9 @@ bash scripts/run_exp_surg_003_drift_runpod.sh
 | Pilot protocol | `scripts/wm_expansion/protocol.py` |
 | Orchestrator | `scripts/run_exp_surg_003_pilot.py` |
 | Isaac drift runner | `scripts/orbit_reach_drift.py` |
+| Model-order target models | `scripts/wm_expansion/target_dynamics.py` |
+| Model-order VESSL orchestrator | `scripts/run_exp_surg_003_model_order.py` |
+| Model-order aggregation | `scripts/aggregate_exp_surg_003_model_order.py` |
 
 ---
 

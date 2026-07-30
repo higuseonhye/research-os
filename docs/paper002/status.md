@@ -19,6 +19,7 @@
 | Mismatch Lab v0.1 spec | ✅ [../mismatch_lab/README.md](../mismatch_lab/README.md) |
 | Pre-reg v0.1 | 🔄 draft · freeze after pilot thresholds locked |
 | Isaac drift anchor | ✅ VESSL · static-first fresh-seed confirmatory · 10 paired seeds |
+| L1-vs-L3 model-order pilot | ✅ Code ready · VESSL execution pending · confirmatory seeds untouched |
 | Physical anchor (SO-101) | 🔄 Track B · observability · parallel with sim |
 | EXP-REAL-001 confirmatory | ⏸ after sim Go gates · [physical roadmap](paper002_physical_validation_roadmap_v0.1.md) |
 | Confirmatory GPU | ⏳ after pre-reg freeze |
@@ -62,6 +63,24 @@ This run validates the persistent-drift task regime, paired policy isolation, an
 → [Exact results, trajectories, and checksums](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/RESULTS.md)
 
 **Claim boundary:** this is a confirmatory Isaac **drift anchor**, not evidence that L3 structural expansion outperforms L1 parameter repair. It does not evaluate H=10 world-model prediction error or the full H1–H4 intervention protocol.
+
+## Next experiment: model-order pilot v0.2
+
+The original GRU scaffold allowed L1 to learn target drift within the same
+model class, so it could not cleanly test structural inadequacy. The replacement
+pilot compares a zero-order target model against a gated constant-velocity
+state expansion and connects the H=10 prediction directly to the Isaac control
+target.
+
+Protocol: [paper002_model_order_protocol_v0.2.md](paper002_model_order_protocol_v0.2.md)
+
+```bash
+EXP_SURG_003_SKIP_BOOTSTRAP=1 EXP_SURG_003_ZERO_AGENT=0 DISABLE_FABRIC=1 \
+  bash scripts/run_exp_surg_003_model_order_vessl.sh
+```
+
+This pilot is calibration only. Confirmatory seeds remain untouched until the
+pilot audit and preregistration freeze.
 
 ---
 

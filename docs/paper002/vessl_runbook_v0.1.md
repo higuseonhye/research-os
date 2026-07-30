@@ -124,6 +124,37 @@ bash scripts/run_exp_surg_003_vessl.sh
 
 ---
 
+## Step 3B - L1-vs-L3 model-order pilot (GPU)
+
+This is the active Paper 002 experiment. It uses static-first seed selection,
+paired A/B/C/D arms, H=10 target prediction, static retention, and H4 controls.
+All Ep2 conditions for one seed-policy pair are batched inside one Isaac
+process to reduce workspace time.
+
+```bash
+cd /workspace/research-os
+git switch codex/paper002-l1-l3-confirmatory
+git pull --ff-only
+
+export EXP_SURG_003_SKIP_BOOTSTRAP=1
+export EXP_SURG_003_ZERO_AGENT=0
+export DISABLE_FABRIC=1
+bash scripts/run_exp_surg_003_model_order_vessl.sh
+```
+
+The run is resumable. Final decision output:
+
+```bash
+python3 -c "import json; d=json.load(open('experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.2/isaac_model_order_results.json')); print(json.dumps({k:d[k] for k in ['validity','ep2_by_arm','primary_effect','static_retention','h4_gate_controls','pilot_decisions','pilot_pass']},indent=2))"
+```
+
+Protocol and decision rules:
+[paper002_model_order_protocol_v0.2.md](paper002_model_order_protocol_v0.2.md).
+Do not run confirmatory seeds until this pilot is audited and the preregistration
+is frozen.
+
+---
+
 ## Step 4 — Pull results to Windows
 
 ```powershell
