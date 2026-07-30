@@ -5,11 +5,11 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO="${REPO:-$ROOT_DIR}"
 if [ "${1:-}" = "--smoke" ]; then
-  default_config="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_smoke_v0.2.json"
-  default_out="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_smoke_v0.2"
+  default_config="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_isolation_smoke_v0.3.json"
+  default_out="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_isolation_smoke_v0.3"
 else
-  default_config="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_pilot_v0.2.json"
-  default_out="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.2"
+  default_config="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_pilot_v0.3.json"
+  default_out="$REPO/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.3"
 fi
 CONFIG="${CONFIG:-$default_config}"
 OUT="${OUT:-$default_out}"

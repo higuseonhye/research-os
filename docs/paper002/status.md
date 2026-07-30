@@ -64,7 +64,7 @@ This run validates the persistent-drift task regime, paired policy isolation, an
 
 **Claim boundary:** this is a confirmatory Isaac **drift anchor**, not evidence that L3 structural expansion outperforms L1 parameter repair. It does not evaluate H=10 world-model prediction error or the full H1–H4 intervention protocol.
 
-## Next experiment: model-order pilot v0.2
+## Next experiment: model-order pilot v0.3
 
 The original GRU scaffold allowed L1 to learn target drift within the same
 model class, so it could not cleanly test structural inadequacy. The replacement
@@ -72,7 +72,11 @@ pilot compares a zero-order target model against a gated constant-velocity
 state expansion and connects the H=10 prediction directly to the Isaac control
 target.
 
-Protocol: [paper002_model_order_protocol_v0.2.md](paper002_model_order_protocol_v0.2.md)
+The v0.2 GPU run was invalidated by condition carryover inside a shared Isaac
+process. Version 0.3 preserves every scientific parameter and moves each
+seed-arm-condition cell into a fresh process.
+
+Protocol: [paper002_model_order_protocol_v0.3.md](paper002_model_order_protocol_v0.3.md)
 
 ```bash
 EXP_SURG_003_SKIP_BOOTSTRAP=1 EXP_SURG_003_ZERO_AGENT=0 DISABLE_FABRIC=1 \

@@ -28,6 +28,7 @@ EP2_ARMS = (
     "D_ORACLE_VELOCITY",
 )
 RETENTION_ARMS = ("B_L1_ZERO_ORDER", "C_L3_CONSTANT_VELOCITY")
+EXECUTION_ISOLATION = "fresh_isaac_process_per_seed_arm_condition"
 
 
 def _sha256(path: Path) -> str:
@@ -196,6 +197,8 @@ def main() -> None:
     args = parser.parse_args()
 
     config = json.loads(args.config.read_text(encoding="utf-8"))
+    if config.get("execution_isolation") != EXECUTION_ISOLATION:
+        raise ValueError("aggregation requires process-isolated condition outputs")
     selection_path = args.out_dir / "selection_manifest.json"
     selection = json.loads(selection_path.read_text(encoding="utf-8"))
     if selection["config_sha256"] != _sha256(args.config):
@@ -209,26 +212,26 @@ def main() -> None:
     for seed in selected_seeds:
         for arm in EP2_ARMS:
             arm_dir = args.out_dir / "ep2" / f"seed_{seed}" / arm
-            result, arm_trajectories = _load_arm(arm_dir, arm)
-            arm_records = result["records"]
-            arm_preconditions = result["preconditions"]
-            if len(arm_records) != len(condition_ids):
-                raise ValueError(f"condition count mismatch in {arm_dir}")
-            records_by_condition = {row["condition_id"]: row for row in arm_records}
-            trajectories_by_condition = {
-                row["condition_id"]: row for row in arm_trajectories
-            }
-            preconditions_by_condition = {
-                row["condition_id"]: row for row in arm_preconditions
-            }
-            if set(records_by_condition) != set(condition_ids):
-                raise ValueError(f"condition IDs mismatch in {arm_dir}")
             for condition_id in condition_ids:
-                records.append(records_by_condition[condition_id])
-                trajectories.append(trajectories_by_condition[condition_id])
-                preconditions[(seed, f"{condition_id}:{arm}")] = (
-                    preconditions_by_condition[condition_id]
-                )
+                condition_dir = arm_dir / f"condition_{condition_id}"
+                result, condition_trajectories = _load_arm(condition_dir, arm)
+                condition_records = result["records"]
+                condition_preconditions = result["preconditions"]
+                if len(condition_records) != 1 or len(condition_preconditions) != 1:
+                    raise ValueError(
+                        f"expected one isolated condition record in {condition_dir}"
+                    )
+                record = condition_records[0]
+                trajectory = condition_trajectories[0]
+                precondition = condition_preconditions[0]
+                if any(
+                    row["condition_id"] != condition_id
+                    for row in (record, trajectory, precondition)
+                ):
+                    raise ValueError(f"condition ID mismatch in {condition_dir}")
+                records.append(record)
+                trajectories.append(trajectory)
+                preconditions[(seed, f"{condition_id}:{arm}")] = precondition
 
     retention_records = []
     retention_trajectories = []
@@ -423,6 +426,7 @@ def main() -> None:
         "selected_seeds": selected_seeds,
         "condition_ids": condition_ids,
         "prediction_horizon_steps": config["shared"]["prediction_horizon_steps"],
+        "execution_isolation": EXECUTION_ISOLATION,
         "validity": validity,
         "ep1_diagnostics": ep1,
         "ep2_by_arm": by_arm,

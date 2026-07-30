@@ -73,9 +73,10 @@ bash scripts/run_exp_surg_003_model_order_vessl.sh
 ```
 
 The static-first protocol selects five of 20 pilot candidates before treatment,
-then runs 10 paired conditions across A/B/C/D plus B/C static retention. The
-pilot is excluded from confirmatory analysis. See the
-[v0.2 protocol](../../../docs/paper002/paper002_model_order_protocol_v0.2.md).
+then runs 10 paired conditions across A/B/C/D plus B/C static retention. Every
+seed-arm-condition cell uses a fresh Isaac process. The pilot is excluded from
+confirmatory analysis. See the
+[v0.3 protocol](../../../docs/paper002/paper002_model_order_protocol_v0.3.md).
 
 ---
 
@@ -114,7 +115,8 @@ bash scripts/run_exp_surg_003_drift_runpod.sh
 | --- | --- |
 | [`config/pilot_v0.1.yaml`](config/pilot_v0.1.yaml) | Mock pilot v0.4 hyperparameters |
 | [`config/confirmatory_v0.1.yaml`](config/confirmatory_v0.1.yaml) | Confirmatory design contract |
-| [`config/model_order_pilot_v0.2.json`](config/model_order_pilot_v0.2.json) | Active Isaac model-order pilot contract |
+| [`config/model_order_pilot_v0.2.json`](config/model_order_pilot_v0.2.json) | Invalidated shared-process pilot contract |
+| [`config/model_order_pilot_v0.3.json`](config/model_order_pilot_v0.3.json) | Active process-isolated model-order pilot contract |
 
 ## Implementation
 

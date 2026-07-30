@@ -128,8 +128,8 @@ bash scripts/run_exp_surg_003_vessl.sh
 
 This is the active Paper 002 experiment. It uses static-first seed selection,
 paired A/B/C/D arms, H=10 target prediction, static retention, and H4 controls.
-All Ep2 conditions for one seed-policy pair are batched inside one Isaac
-process to reduce workspace time.
+Each Ep2 seed-arm-condition cell runs in a fresh Isaac process. This v0.3
+isolation closes the arm-dependent reset carryover found in v0.2.
 
 ```bash
 cd /workspace/research-os
@@ -149,11 +149,11 @@ bash scripts/run_exp_surg_003_model_order_vessl.sh
 The run is resumable. Final decision output:
 
 ```bash
-python3 -c "import json; d=json.load(open('experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.2/isaac_model_order_results.json')); print(json.dumps({k:d[k] for k in ['validity','ep2_by_arm','primary_effect','static_retention','h4_gate_controls','pilot_decisions','pilot_pass']},indent=2))"
+python3 -c "import json; d=json.load(open('experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.3/isaac_model_order_results.json')); print(json.dumps({k:d[k] for k in ['validity','ep2_by_arm','primary_effect','static_retention','h4_gate_controls','pilot_decisions','pilot_pass']},indent=2))"
 ```
 
 Protocol and decision rules:
-[paper002_model_order_protocol_v0.2.md](paper002_model_order_protocol_v0.2.md).
+[paper002_model_order_protocol_v0.3.md](paper002_model_order_protocol_v0.3.md).
 Do not run confirmatory seeds until this pilot is audited and the preregistration
 is frozen.
 

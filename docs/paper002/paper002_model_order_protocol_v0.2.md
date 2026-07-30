@@ -1,5 +1,9 @@
 # Paper 002 Model-Order Protocol v0.2
 
+> Superseded by [v0.3](paper002_model_order_protocol_v0.3.md). The v0.2 GPU
+> pilot was invalidated when shared-process condition resets produced
+> arm-dependent prefix failures.
+
 > Status: engineering pilot specification, not confirmatory evidence
 > Date: 2026-07-30
 > Config: `model_order_pilot_v0.2.json`

@@ -19,6 +19,7 @@ EP2_ARMS = (
     "D_ORACLE_VELOCITY",
 )
 RETENTION_ARMS = ("B_L1_ZERO_ORDER", "C_L3_CONSTANT_VELOCITY")
+EXECUTION_ISOLATION = "fresh_isaac_process_per_seed_arm_condition"
 
 
 def _sha256(path: Path) -> str:
@@ -102,6 +103,11 @@ def main() -> None:
     if not config_path.is_file():
         raise FileNotFoundError(config_path)
     config = json.loads(config_path.read_text(encoding="utf-8"))
+    if config.get("execution_isolation") != EXECUTION_ISOLATION:
+        raise ValueError(
+            "model-order runs require fresh process isolation for every "
+            "seed-arm-condition cell"
+        )
     out_dir.mkdir(parents=True, exist_ok=True)
     log_path = out_dir / "orchestrator_stdout.log"
 
@@ -159,6 +165,7 @@ def main() -> None:
         "repo": str(repo),
         "isaaclab_path": str(args.isaaclab_path),
         "orbit_surgical_path": str(args.orbit_surgical_path),
+        "execution_isolation": EXECUTION_ISOLATION,
     }
     (out_dir / "orchestration_manifest.json").write_text(
         json.dumps(run_manifest, indent=2), encoding="utf-8"
@@ -230,43 +237,19 @@ def main() -> None:
         ]
         _stream_command(command, args.orbit_surgical_path, log_path)
 
-    def run_ep2_batch(arm_dir: Path, seed: int, policy: str) -> None:
-        if _complete(arm_dir):
-            print(f"[SKIP] complete: {arm_dir}", flush=True)
-            return
-        arm_dir.mkdir(parents=True, exist_ok=True)
-        first_condition = config["conditions"][0]
-        first_vector = ",".join(
-            str(value) for value in first_condition["drift_vector_m_per_step"]
-        )
-        command = [
-            str(isaaclab_sh),
-            "-p",
-            str(repo / "scripts" / "orbit_reach_drift.py"),
-            *common,
-            "--out-dir",
-            str(arm_dir),
-            "--seeds",
-            str(seed),
-            "--policy",
-            policy,
-            "--target-mode",
-            "persistent_drift",
-            "--conditions-config",
-            str(config_path),
-            f"--drift-vector={first_vector}",
-            "--drift-delay",
-            str(first_condition["delay_steps"]),
-            "--drift-duration",
-            str(first_condition["duration_steps"]),
-            "--max-steps",
-            str(
-                int(shared["onset"])
-                + int(first_condition["delay_steps"])
-                + int(first_condition["duration_steps"])
-            ),
-        ]
-        _stream_command(command, args.orbit_surgical_path, log_path)
+    def run_ep2_isolated(arm_dir: Path, seed: int, policy: str) -> None:
+        for condition in config["conditions"]:
+            condition_id = str(condition["id"])
+            run_arm(
+                arm_dir / f"condition_{condition_id}",
+                seed,
+                policy,
+                "persistent_drift",
+                condition_id,
+                condition["drift_vector_m_per_step"],
+                int(condition["delay_steps"]),
+                int(condition["duration_steps"]),
+            )
 
     retention_steps = max(
         int(condition["delay_steps"]) + int(condition["duration_steps"])
@@ -315,7 +298,7 @@ def main() -> None:
 
     for seed in selected_seeds:
         for arm in EP2_ARMS:
-            run_ep2_batch(out_dir / "ep2" / f"seed_{seed}" / arm, seed, arm)
+            run_ep2_isolated(out_dir / "ep2" / f"seed_{seed}" / arm, seed, arm)
 
     for seed in selected_seeds:
         for arm in RETENTION_ARMS:
