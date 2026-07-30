@@ -36,6 +36,7 @@ CITATION_KEYS = (
 LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 IMAGE_RE = re.compile(r"^!\[([^\]]*)\]\(([^)]+)\)$")
 CITATION_RE = re.compile(r"\[(\d+(?:-\d+)?(?:,\d+)*)\]")
+INLINE_MATH_RE = re.compile(r"(?<!\\)\$([^$\n]+)\$")
 LIST_RE = re.compile(r"^(?P<indent>\s*)(?P<mark>-|\d+\.)\s+(?P<text>.*)$")
 TABLE_SEPARATOR_RE = re.compile(r"^:?-{3,}:?$")
 TOKEN_SEQUENCE = count()
@@ -243,6 +244,11 @@ def inline(value: str, *, citations: bool = True) -> str:
     ):
         value = value.replace(symbol, protect(latex))
 
+    value = INLINE_MATH_RE.sub(
+        lambda match: protect(r"\(" + match.group(1).strip() + r"\)"),
+        value,
+    )
+
     value = LINK_RE.sub(
         lambda match: protect(
             r"\href{\detokenize{" + match.group(2) + "}}{" + link_label(match.group(1)) + "}"
@@ -399,8 +405,21 @@ def render_document(source_path: Path, supplement: bool) -> str:
             continue
 
         if block.kind == "code":
-            _language, code = block.value
-            output.extend([r"\begin{Verbatim}[fontsize=\small]", str(code), r"\end{Verbatim}"])
+            language, code = block.value
+            if language == "math":
+                output.append(
+                    "\n".join([r"\begin{align*}", str(code), r"\end{align*}"])
+                )
+            else:
+                output.append(
+                    "\n".join(
+                        [
+                            r"\begin{Verbatim}[fontsize=\small]",
+                            str(code),
+                            r"\end{Verbatim}",
+                        ]
+                    )
+                )
             index += 1
             continue
 
@@ -503,6 +522,11 @@ def validate_tex(tex: str, output_path: Path) -> None:
         raise ValueError(f"unresolved inline token in {output_path.name}")
     if "```" in tex or re.search(r"(?m)^#{1,3}\s", tex):
         raise ValueError(f"unconverted Markdown marker in {output_path.name}")
+    for body in re.findall(r"\\begin\{align\*\}(.*?)\\end\{align\*\}", tex, re.DOTALL):
+        if not body.strip() or "\n\n" in body:
+            raise ValueError(f"invalid blank paragraph in math block in {output_path.name}")
+    if re.search(r"\b(?:p_hat|v_hat|p_\(t|alpha \*|beta \*)", tex):
+        raise ValueError(f"unconverted pseudo-math notation in {output_path.name}")
 
 
 def main() -> None:

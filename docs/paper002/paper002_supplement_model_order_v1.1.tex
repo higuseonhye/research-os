@@ -38,7 +38,6 @@ Supplementary material v1.1 \\Main manuscript: \href{\detokenize{paper002_manusc
 The confirmatory experiment tests whether a structured target-motion residual that persists after zero-order parameter repair warrants activation of a prepared velocity state. All design choices in this supplement were fixed before the fresh candidate seeds were executed.
 
 \begin{Verbatim}[fontsize=\small]
-
 fixed candidates 300:339
   -> static eligibility, before treatment
   -> select first 10 eligible in numeric order
@@ -48,34 +47,30 @@ fixed candidates 300:339
   -> aggregate complete 10 x 4 x 10 dynamic grid
   -> run 10 x 2 static-retention cells
   -> apply conjunctive confirmatory decision
-
 \end{Verbatim}
 
 The selected seeds were 300, 301, 302, 303, 304, 305, 307, 308, 310, and 311. Thirty-four of 40 candidate seeds passed static eligibility. Dynamic-treatment outcomes did not influence inclusion.
 
 \section{Exact Model Definitions}
 
-Let \(p_t\) be the observed target command and H = 10 the locked prediction horizon. The zero-order model is
+Let \(p_t\) be the observed target command and \(H=10\) the locked prediction horizon. The zero-order model is
 
-\begin{Verbatim}[fontsize=\small]
+\begin{align*}
+\hat p_t &= \alpha p_t + (1-\alpha)\hat p_{t-1}, \\
+\hat p_{t+H} &= \hat p_t.
+\end{align*}
 
-p_hat_t     = alpha * p_t + (1 - alpha) * p_hat_(t-1)
-p_hat_(t+H) = p_hat_t.
-
-\end{Verbatim}
-
-Episode 1 searches alpha in \{0.25, 0.50, 0.75, 1.00\}. The selected repair is alpha = 1.00. This model can reduce current-position lag but cannot produce a nonzero open-loop displacement.
+Episode 1 searches \(\alpha \in \{0.25,0.50,0.75,1.00\}\). The selected repair is \(\alpha=1.00\). This model can reduce current-position lag but cannot produce a nonzero open-loop displacement.
 
 The order-one alternative adds
 
-\begin{Verbatim}[fontsize=\small]
+\begin{align*}
+\hat v_t &= \beta\left(p_t-p_{t-1}\right)
+  +(1-\beta)\hat v_{t-1}, \\
+\hat p_{t+H} &= \hat p_t + H\hat v_t.
+\end{align*}
 
-v_hat_t     = beta * (p_t - p_(t-1)) + (1 - beta) * v_hat_(t-1)
-p_hat_(t+H) = p_hat_t + H * v_hat_t
-
-\end{Verbatim}
-
-after gate activation. The selected coefficients are alpha = beta = 1.00. Before activation, arm C returns the same position-only forecast as arm B. The oracle uses the true injected condition velocity and is never included in the primary contrast.
+after gate activation. The selected coefficients are \(\alpha=\beta=1.00\). Before activation, arm C returns the same position-only forecast as arm B. The oracle uses the true injected condition velocity and is never included in the primary contrast.
 
 \section{Gate Definition And Controls}
 
@@ -88,10 +83,10 @@ The gate uses an eight-step window and requires at least four deltas. It fires i
 \toprule
 Quantity & Locked threshold \\
 \midrule
-Mean target speed & >= 0.5 mm/step \\
-Active-delta fraction & >= 0.75 \\
-Directional consistency & >= 0.90 \\
-Constant-velocity fit improvement & >= 0.50 \\
+Mean target speed & \(\ge 0.5\ \mathrm{mm/step}\) \\
+Active-delta fraction & \(\ge 0.75\) \\
+Directional consistency & \(\ge 0.90\) \\
+Constant-velocity fit improvement & \(\ge 0.50\) \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -109,7 +104,7 @@ Control & Construction & Intended rejection \\
 \midrule
 M0 static & Repeated fixed target & No motion evidence \\
 M1 persistent drift & Fixed nonzero delta each step & Positive structural evidence \\
-N1 observation noise & IID Gaussian noise, sigma = 0.2 mm & High-frequency residual without direction \\
+N1 observation noise & IID Gaussian noise, \(\sigma=0.2\ \mathrm{mm}\) & High-frequency residual without direction \\
 N2 single impulse & One eight-delta jump followed by rest & Transient event without persistence \\
 \bottomrule
 \end{tabularx}
@@ -181,9 +176,9 @@ Candidate selection & Fixed first-eligible order & Pass \\
 Selected seed count & 10 & 10 \\
 Dynamic cells & 400 complete & 400/400 \\
 Static-retention cells & 20 complete & 20/20 \\
-Maximum branch-start EE gap & <= 1 mm & 0 mm \\
-Maximum branch-start command gap & <= 0.001 mm & 0 mm \\
-Maximum branch-start target distance & <= 21 mm & 15.396 mm \\
+Maximum branch-start EE gap & \(\le 1\ \mathrm{mm}\) & 0 mm \\
+Maximum branch-start command gap & \(\le 0.001\ \mathrm{mm}\) & 0 mm \\
+Maximum branch-start target distance & \(\le 21\ \mathrm{mm}\) & 15.396 mm \\
 Prefix readiness & All selected cells & Pass \\
 \(H=10\) windows & Present in every dynamic cell & Pass \\
 Drift exposure & Complete in every dynamic cell & Pass \\
@@ -287,12 +282,10 @@ The B and C static trajectories are identical over their overlap. The gate does 
 For each continuous endpoint, form a 10 by 10 matrix of paired C-minus-B differences indexed by selected seed and fresh condition. For bootstrap replicate b:
 
 \begin{Verbatim}[fontsize=\small]
-
 sample 10 seed indices with replacement
 sample 10 condition indices with replacement
 take the 10 x 10 crossed submatrix
 store its mean
-
 \end{Verbatim}
 
 The reported interval is the 2.5th and 97.5th percentile of 10,000 stored means. The RNG seed is 20260730. This preserves both crossed sampling factors rather than treating 100 cells as independent. The success-rate contrast is resampled identically but remains secondary. Wilson score intervals summarize individual gate rates.
@@ -352,11 +345,9 @@ No human participants, animals, patient data, or clinical procedures were involv
 CPU-only checks and derived-material generation:
 
 \begin{Verbatim}[fontsize=\small]
-
 PYTHONPATH=scripts python -m unittest scripts/test_exp_surg_003_target_dynamics.py
 python scripts/plot_paper002_model_order.py
 python scripts/build_paper002_submission_pdf.py
-
 \end{Verbatim}
 
 The simulator run itself requires the frozen Isaac/VESSL environment. It should not be rerun on an unvalidated local installation merely to regenerate figures; all derived paper materials are computed from the frozen JSON artifacts.
