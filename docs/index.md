@@ -24,12 +24,12 @@ Isaac Sim 4.1 · ORBIT Reach · 3D embodied sim.
 | Program | EXP ID | Phase |
 | --- | --- | --- |
 | **Paper 001** | EXP-SURG-001 | Tier C complete · [working paper](paper1/paper001_recoverability_complete.pdf) |
-| **Paper 002** | EXP-SURG-003 | WM expansion · pilot v0.4 preliminary · pre-reg next |
+| **Paper 002** | EXP-SURG-003 | Isaac drift anchor passed · L3-vs-L1 pre-reg next |
 | **Study 002** | EXP-SURG-002 | Tier B pilot · archived |
 
 **Paper 001 headline (D0 · n=20):** REPLAN **19/20** vs CONTINUE **0/20** → [status](paper1/status.md)
 
-**Paper 002 (now):** hidden motion mode · parameter vs structural expansion · Ep1/Ep2 · mock pilot v0.4 · [status](paper002/status.md)
+**Paper 002 (now):** hidden motion mode · Isaac drift anchor passed · freeze L1-vs-L3 Ep1/Ep2 protocol next · [status](paper002/status.md)
 
 **Mismatch Lab:** Robot Diff · model adequacy public spec · [hub](mismatch_lab/README.md)
 
@@ -58,4 +58,4 @@ Contact: [@higuseonhye](https://github.com/higuseonhye)
 
 ---
 
-*Updated 2026-07-29*
+*Updated 2026-07-30*

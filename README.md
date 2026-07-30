@@ -13,7 +13,7 @@ This repository contains **promoted research evidence only**—research question
 | **Mismatch Lab** | Public lab spec — **Robot Diff** · model adequacy layer · [hub](docs/mismatch_lab/README.md) |
 | **Study 002 (EXP-SURG-002)** | Pilot: dream curriculum (Tier B · archived) |
 
-**Latest (2026-07-29):** **Paper 001** complete. **Paper 002** mock pilot **v0.4** — G1 mechanism + H4 gate pass (5 seeds · preliminary). **Mismatch Lab** v0.1 spec published.
+**Latest (2026-07-30):** **Paper 001** complete. **Paper 002** Isaac drift anchor passed on 10 paired fresh seeds; the L3-vs-L1 pre-registration and confirmatory study remain next. **Mismatch Lab** v0.1 spec published.
 
 ---
 
@@ -49,7 +49,7 @@ Long-term vision (research program only): [docs/mismatch_lab/vision_narrative_v0
 | C | Confirmatory | **Paper 001 D0–D3 executed** (n=20) |
 | B+ | Pilot mechanism | **Paper 002 mock pilot v0.4** · G1 + H4 · not generalization |
 
-We have **not** shown a new recoverability **estimator** or clinical deployment.
+We have **not** shown the Paper 002 L3-vs-L1 confirmatory result, a new recoverability **estimator**, or clinical deployment.
 
 ---
 
@@ -62,6 +62,7 @@ We have **not** shown a new recoverability **estimator** or clinical deployment.
 | **Paper 001 figures** | Profile · baseline overlay · Isaac EE traces | [`docs/paper1/figures/`](docs/paper1/figures/) |
 | **Study 002** | Pilot · mock–Isaac alignment (Tier B) | [`h3_mock_isaac_v0.4`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.4/summary.json) |
 | **Paper 002 pilot v0.4** | C vs B ΔPE · gate · H4 (preliminary) | [`pilot_v0.1/summary.json`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/pilot_v0.1/summary.json) |
+| **Paper 002 Isaac drift anchor** | Moving target **10/10** vs frozen target **0/10** · 20.250 mm paired improvement | [`RESULTS.md`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/RESULTS.md) |
 
 Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper 002 [`docs/paper002/status.md`](docs/paper002/status.md)
 
