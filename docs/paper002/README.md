@@ -18,8 +18,8 @@ Static retention and all gate-specificity controls passed.
 
 | Document | Purpose |
 | --- | --- |
-| [Manuscript v1.1](paper002_manuscript_model_order_v1.1.md) · [PDF](paper002_manuscript_model_order_v1.1.pdf) | Submission-oriented review manuscript |
-| [Supplement v1.1](paper002_supplement_model_order_v1.1.md) · [PDF](paper002_supplement_model_order_v1.1.pdf) | Conditions, validity audit, full tables, and provenance |
+| [Manuscript v1.1](paper002_manuscript_model_order_v1.1.md) · [LaTeX](paper002_manuscript_model_order_v1.1.tex) · [PDF](paper002_manuscript_model_order_v1.1.pdf) | Submission-oriented review manuscript |
+| [Supplement v1.1](paper002_supplement_model_order_v1.1.md) · [LaTeX](paper002_supplement_model_order_v1.1.tex) · [PDF](paper002_supplement_model_order_v1.1.pdf) | Conditions, validity audit, full tables, and provenance |
 | [BibTeX](paper002_references_v1.1.bib) | Verified submission bibliography |
 | [Status](status.md) | Current phase, decisions, and next publication work |
 | [Frozen preregistration](paper002_model_order_confirmatory_prereg_v1.0.md) | Fresh sample, endpoints, and locked decision rules |
@@ -65,8 +65,22 @@ No simulator or GPU is required to recreate the paper figures and CSV tables:
 
 ```bash
 python scripts/plot_paper002_model_order.py
+python scripts/build_paper002_submission_tex.py
 python scripts/build_paper002_submission_pdf.py
 ```
+
+The generated `.tex` files are standalone venue-neutral sources. From
+`docs/paper002`, a standard BibTeX build for the main manuscript is:
+
+```bash
+pdflatex paper002_manuscript_model_order_v1.1.tex
+bibtex paper002_manuscript_model_order_v1.1
+pdflatex paper002_manuscript_model_order_v1.1.tex
+pdflatex paper002_manuscript_model_order_v1.1.tex
+```
+
+The supplement has no bibliography and requires two `pdflatex` passes. No TeX
+engine is bundled with this repository.
 
 The Isaac experiment itself should run only on the documented VESSL image and
 frozen source/config. See [the VESSL runbook](vessl_runbook_v0.1.md).
