@@ -13,7 +13,7 @@ This repository contains **promoted research evidence only**—research question
 | **Mismatch Lab** | Public lab spec — **Robot Diff** · model adequacy layer · [hub](docs/mismatch_lab/README.md) |
 | **Study 002 (EXP-SURG-002)** | Pilot: dream curriculum (Tier B · archived) |
 
-**Latest (2026-07-30):** **Paper 001** complete. **Paper 002** Isaac drift anchor passed on 10 paired fresh seeds; the L3-vs-L1 pre-registration and confirmatory study remain next. **Mismatch Lab** v0.1 spec published.
+**Latest (2026-07-30):** **Paper 001** complete. **Paper 002 model-order confirmatory passed**: 400/400 valid cells, C-B H=10 prediction error -10.806 mm, and C-B fixed-horizon final distance -13.304 mm. Manuscript v1.0 and reproducible figures are published. **Mismatch Lab** v0.1 spec published.
 
 ---
 
@@ -46,10 +46,10 @@ Long-term vision (research program only): [docs/mismatch_lab/vision_narrative_v0
 | --- | --- | --- |
 | A | Scaffold / protocol | Same-state CF pipeline · replay OK |
 | B | Smoke / direction | 001A–D smoke atlas · Study2 desk mock |
-| C | Confirmatory | **Paper 001 D0–D3 executed** (n=20) |
+| C | Confirmatory | **Paper 001 D0–D3 executed** (n=20) · **Paper 002 model-order confirmatory passed** (400 cells) |
 | B+ | Pilot mechanism | **Paper 002 mock pilot v0.4** · G1 + H4 · not generalization |
 
-We have **not** shown the Paper 002 L3-vs-L1 confirmatory result, a new recoverability **estimator**, or clinical deployment.
+We have **not** shown general world-model expansion, hardware transfer, a new recoverability **estimator**, or clinical deployment.
 
 ---
 
@@ -63,6 +63,8 @@ We have **not** shown the Paper 002 L3-vs-L1 confirmatory result, a new recovera
 | **Study 002** | Pilot · mock–Isaac alignment (Tier B) | [`h3_mock_isaac_v0.4`](experiments/surgical_intelligence/exp_surg_002_dream_curriculum/results/h3_mock_isaac_v0.4/summary.json) |
 | **Paper 002 pilot v0.4** | C vs B ΔPE · gate · H4 (preliminary) | [`pilot_v0.1/summary.json`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/pilot_v0.1/summary.json) |
 | **Paper 002 Isaac drift anchor** | Moving target **10/10** vs frozen target **0/10** · 20.250 mm paired improvement | [`RESULTS.md`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/RESULTS.md) |
+| **Paper 002 model-order confirmatory** | C-B prediction **-10.806 mm** · final distance **-13.304 mm** · all gates pass | [`RESULTS.md`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md) |
+| **Paper 002 manuscript + figures** | Complete v1.0 draft · five generated panels · CSV tables | [`manuscript`](docs/paper002/paper002_manuscript_model_order_v1.0.md) · [`figures`](docs/paper002/figures/README.md) |
 
 Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper 002 [`docs/paper002/status.md`](docs/paper002/status.md)
 
@@ -88,9 +90,11 @@ Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper
 ## Quick repro
 
 ```bash
-# Paper 002 mock pilot (CPU)
+# Paper 002 confirmatory figures and tables (CPU only)
+python scripts/plot_paper002_model_order.py
+
+# Historical Paper 002 mock smoke (CPU)
 python scripts/run_exp_surg_003_pilot.py --smoke
-python scripts/run_exp_surg_003_pilot.py --config experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/pilot_v0.1.yaml
 
 # Paper 001
 python scripts/run_study1a.py --mock
@@ -109,8 +113,8 @@ VESSL: [`docs/paper002/vessl_runbook_v0.1.md`](docs/paper002/vessl_runbook_v0.1.
 | --- | --- |
 | `docs/mismatch_lab/` | Public lab spec · API schema · benchmark · homepage copy |
 | `docs/paper1/` | Paper 001 RQ · status · working paper |
-| `docs/paper002/` | Paper 002 WM expansion · confirmatory spec |
-| `experiments/surgical_intelligence/exp_surg_003_*` | Paper 002 mock pilot · Isaac drift |
+| `docs/paper002/` | Paper 002 manuscript · figures · frozen preregistration |
+| `experiments/surgical_intelligence/exp_surg_003_*` | Paper 002 pilot, confirmatory records, and Isaac trajectories |
 | `experiments/surgical_intelligence/exp_surg_001_*` | Paper 1 configs · Tier B/C results |
 | `scripts/wm_expansion/` | Mock env · WM · gate · protocol |
 | `scripts/` | Mock + RunPod + VESSL entry points |
