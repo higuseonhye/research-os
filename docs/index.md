@@ -8,7 +8,7 @@ Research portfolio · [GitHub](https://github.com/higuseonhye/research-os)
 
 **Paper 001 (EXP-SURG-001):** Recoverability @ fixed **S** — complete · optional credential · [hub](paper1/README.md)
 
-**Paper 002 (EXP-SURG-003):** Failure-conditioned target-dynamics model-order expansion — confirmatory complete · [manuscript](paper002/paper002_manuscript_model_order_v1.0.md) · [hub](paper002/README.md)
+**Paper 002 (EXP-SURG-003):** Failure-conditioned target-dynamics model-order expansion — confirmatory complete · [manuscript v1.1](paper002/paper002_manuscript_model_order_v1.1.md) · [review PDF](paper002/paper002_manuscript_model_order_v1.1.pdf) · [hub](paper002/README.md)
 
 **Mismatch Lab (public spec):** Robot Diff · model adequacy · pilot spec — [hub](mismatch_lab/README.md)  
 *(research-os documents two public surfaces only: Research OS + Mismatch Lab spec · no commercial/product company layer in this repo)*
@@ -24,7 +24,7 @@ Isaac Sim 4.1 · ORBIT Reach · 3D embodied sim.
 | Program | EXP ID | Phase |
 | --- | --- | --- |
 | **Paper 001** | EXP-SURG-001 | Tier C complete · [working paper](paper1/paper001_recoverability_complete.pdf) |
-| **Paper 002** | EXP-SURG-003 | Tier C confirmatory passed · 400/400 valid cells · manuscript v1.0 |
+| **Paper 002** | EXP-SURG-003 | Tier C confirmatory passed · 400/400 valid cells · submission package v1.1 |
 | **Study 002** | EXP-SURG-002 | Tier B pilot · archived |
 
 **Paper 001 headline (D0 · n=20):** REPLAN **19/20** vs CONTINUE **0/20** → [status](paper1/status.md)

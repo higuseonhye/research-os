@@ -6,3 +6,8 @@ docs/paper002/figures/*.md text eol=lf
 docs/paper002/figures/*.json text eol=lf
 docs/paper002/figures/tables/*.csv text eol=lf
 docs/paper002/figures/*.png binary
+docs/paper002/*.md text eol=lf
+docs/paper002/*.bib text eol=lf
+docs/paper002/*.json text eol=lf
+docs/paper002/*.pdf binary
+scripts/*.py text eol=lf

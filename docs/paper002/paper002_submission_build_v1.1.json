@@ -1,0 +1,14 @@
+{
+  "version": "paper002-submission-v1.1",
+  "sources": {
+    "docs\\paper002\\paper002_manuscript_model_order_v1.1.md": "111bacb2e5e296d908bc9e639aeb37fecc0a5e932f2f6acf56875ff6d38dd6c1",
+    "docs\\paper002\\paper002_supplement_model_order_v1.1.md": "273b44cd231b57f6b7fb5138a7ddd92f6ec35e2d32345d5e83542cc8177df580"
+  },
+  "bibliography": {
+    "docs\\paper002\\paper002_references_v1.1.bib": "439bd12f4a2addd2a8a6461a241d1b6d2e8a5981763d40377ee318278944bc76"
+  },
+  "outputs": {
+    "docs\\paper002\\paper002_manuscript_model_order_v1.1.pdf": "2885529e9a9390473f06b3e73c15d8c798b7e561f321b6fc72beebd7b78e0095",
+    "docs\\paper002\\paper002_supplement_model_order_v1.1.pdf": "a620a6117a6bc2bfd80e9e67bc7a968d9fccba9d0d6c274af0368b4fc782b704"
+  }
+}
