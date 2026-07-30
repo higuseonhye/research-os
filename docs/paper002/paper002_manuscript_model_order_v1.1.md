@@ -196,13 +196,14 @@ surgical robot-learning tasks for dVRK and STAR platforms [15]. The present
 experiment uses only Cartesian target reaching; it does not evaluate tissue
 interaction, tool contact, or a clinical procedure.
 
-The evaluated end effector follows a target command p_t in three-dimensional
+The evaluated end effector follows a target command $p_t$ in three-dimensional
 Cartesian space. The nominal mode M0 is static. In M1, a delay occurs after the
 locked onset and the target then drifts for a fixed number of steps:
 
-```text
-M0: p_(t+1) = p_t
-M1: p_(t+1) = p_t + v, during the condition-specific drift interval
+```math
+\text{M0:}\quad p_{t+1} &= p_t, \\
+\text{M1:}\quad p_{t+1} &= p_t + v,
+\quad \text{during the condition-specific drift interval}.
 ```
 
 All arms use the same scripted Cartesian controller with gain 1.0, maximum
@@ -216,19 +217,21 @@ prediction error.
 ### 3.2 Candidate Target Models
 
 The zero-order model maintains a filtered position estimate but has no velocity
-state. For position coefficient alpha,
+state. For position coefficient $\alpha$,
 
-```text
-p_hat_t     = alpha * p_t + (1 - alpha) * p_hat_(t-1)
-p_hat_(t+H) = p_hat_t
+```math
+\hat p_t &= \alpha p_t + (1-\alpha)\hat p_{t-1}, \\
+\hat p_{t+H} &= \hat p_t.
 ```
 
-No value of alpha can generate a nonzero open-loop target velocity. The prepared
-order-one model adds a filtered velocity estimate with coefficient beta:
+No value of $\alpha$ can generate a nonzero open-loop target velocity. The prepared
+order-one model adds a filtered velocity estimate with coefficient $\beta$:
 
-```text
-v_hat_t     = beta * (p_t - p_(t-1)) + (1 - beta) * v_hat_(t-1)
-p_hat_(t+H) = p_hat_t + H * v_hat_t, if the gate is active
+```math
+\hat v_t &= \beta\left(p_t-p_{t-1}\right)
+  +(1-\beta)\hat v_{t-1}, \\
+\hat p_{t+H} &= \hat p_t + H\hat v_t,
+  \quad \text{if the gate is active}.
 ```
 
 Before gate activation, the order-one arm returns the same position-only
@@ -238,8 +241,9 @@ and is diagnostic only.
 ### 3.3 Episode 1 Evidence And Parameter Repair
 
 Episode 1 contains 40 steps of +x drift at 1.5 mm per step. The shared evidence
-is identical across arms. Zero-order repair searches alpha in {0.25, 0.50, 0.75,
-1.00} and selects the value with the lowest held-out true H=10 prediction error
+is identical across arms. Zero-order repair searches $\alpha \in
+\{0.25, 0.50, 0.75, 1.00\}$ and selects the value with the lowest held-out true
+$H=10$ prediction error
 from step 20 onward. The expanded model's position and velocity coefficients are
 selected from the same Episode 1 evidence. No Episode 2 confirmatory outcome is
 used for model selection.
@@ -251,15 +255,25 @@ unrepaired comparator.
 
 ### 3.4 Structural Adequacy Gate
 
-The gate operates on an eight-step position window. Let d_t = p_t - p_(t-1)
-denote target deltas and s_t = ||d_t|| their speeds. It computes:
+The gate operates on an eight-step position window $\mathcal{W}_t$. Let
+$d_i=p_i-p_{i-1}$ denote target deltas, $s_i=\lVert d_i\rVert_2$ their speeds,
+and $m=\lvert\mathcal{W}_t\rvert$. It computes:
 
-```text
-active fraction          = mean(s_t >= 0.5 mm/step)
-directional consistency  = ||sum_t d_t|| / sum_t ||d_t||
-zero-order RMSE          = sqrt(mean_t ||d_t||^2)
-constant-velocity RMSE   = sqrt(mean_t ||d_t - d_(t-1)||^2)
-CV improvement           = (zero RMSE - CV RMSE) / zero RMSE
+```math
+f_{\mathrm{active}}
+  &= \frac{1}{m}\sum_{i\in\mathcal{W}_t}
+     \mathbf{1}\!\left[s_i \ge 0.5\ \mathrm{mm/step}\right], \\
+c_{\mathrm{dir}}
+  &= \frac{\left\lVert\sum_{i\in\mathcal{W}_t}d_i\right\rVert_2}
+          {\sum_{i\in\mathcal{W}_t}\lVert d_i\rVert_2}, \\
+\operatorname{RMSE}_{0}
+  &= \sqrt{\frac{1}{m}\sum_{i\in\mathcal{W}_t}\lVert d_i\rVert_2^2}, \\
+\operatorname{RMSE}_{\mathrm{CV}}
+  &= \sqrt{\frac{1}{m-1}\sum_{i\in\mathcal{W}_t\setminus\{i_0\}}
+     \lVert d_i-d_{i-1}\rVert_2^2}, \\
+I_{\mathrm{CV}}
+  &= \frac{\operatorname{RMSE}_{0}-\operatorname{RMSE}_{\mathrm{CV}}}
+          {\operatorname{RMSE}_{0}}.
 ```
 
 The gate fires only after at least four deltas are available and all locked
@@ -274,9 +288,9 @@ impulse followed by rest.
 
 | Arm | Target model | Role |
 | --- | --- | --- |
-| A | Frozen zero order, alpha = 0.5 | Secondary unrepaired baseline |
-| B | Repaired zero order, alpha = 1.0 | Primary comparator |
-| C | Gated constant velocity, alpha = beta = 1.0 | Primary intervention |
+| A | Frozen zero order, $\alpha=0.5$ | Secondary unrepaired baseline |
+| B | Repaired zero order, $\alpha=1.0$ | Primary comparator |
+| C | Gated constant velocity, $\alpha=\beta=1.0$ | Primary intervention |
 | D | Injected true velocity | Diagnostic oracle |
 
 A and B cannot represent velocity. C carries velocity only after the adequacy
@@ -382,8 +396,8 @@ violations. The confirmatory run was valid.
 
 ### 4.2 Episode 1 Reproduced Structural Inadequacy
 
-Zero-order repair selected alpha = 1.0 but retained 15.000 mm held-out H=10
-prediction error. Constant velocity selected alpha = beta = 1.0 and reduced the
+Zero-order repair selected $\alpha=1.0$ but retained 15.000 mm held-out $H=10$
+prediction error. Constant velocity selected $\alpha=\beta=1.0$ and reduced the
 same diagnostic error to numerical zero. The adequacy gate fired with active
 fraction 1.0, directional consistency 1.0, and constant-velocity fit improvement
 1.0. The preregistered parameter and gate locks were reproduced on the fresh
@@ -472,7 +486,7 @@ preregistered confirmatory decision was positive.
 ## 5. Discussion
 
 The experiment isolates a case in which a stronger parameter update is not a
-substitute for a missing state variable. Moving alpha from 0.5 to 1.0 helps the
+substitute for a missing state variable. Moving $\alpha$ from 0.5 to 1.0 helps the
 zero-order model follow current position, improving prediction by 1.680 mm and
 final distance by 1.483 mm relative to frozen zero order. It cannot produce a
 nonzero H-step displacement. Adding a gated velocity state produces a much

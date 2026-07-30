@@ -33,26 +33,27 @@ outcomes did not influence inclusion.
 
 ## S2. Exact Model Definitions
 
-Let p_t be the observed target command and H = 10 the locked prediction horizon.
+Let $p_t$ be the observed target command and $H=10$ the locked prediction horizon.
 The zero-order model is
 
-```text
-p_hat_t     = alpha * p_t + (1 - alpha) * p_hat_(t-1)
-p_hat_(t+H) = p_hat_t.
+```math
+\hat p_t &= \alpha p_t + (1-\alpha)\hat p_{t-1}, \\
+\hat p_{t+H} &= \hat p_t.
 ```
 
-Episode 1 searches alpha in {0.25, 0.50, 0.75, 1.00}. The selected repair is
-alpha = 1.00. This model can reduce current-position lag but cannot produce a
+Episode 1 searches $\alpha \in \{0.25,0.50,0.75,1.00\}$. The selected repair is
+$\alpha=1.00$. This model can reduce current-position lag but cannot produce a
 nonzero open-loop displacement.
 
 The order-one alternative adds
 
-```text
-v_hat_t     = beta * (p_t - p_(t-1)) + (1 - beta) * v_hat_(t-1)
-p_hat_(t+H) = p_hat_t + H * v_hat_t
+```math
+\hat v_t &= \beta\left(p_t-p_{t-1}\right)
+  +(1-\beta)\hat v_{t-1}, \\
+\hat p_{t+H} &= \hat p_t + H\hat v_t.
 ```
 
-after gate activation. The selected coefficients are alpha = beta = 1.00. Before
+after gate activation. The selected coefficients are $\alpha=\beta=1.00$. Before
 activation, arm C returns the same position-only forecast as arm B. The oracle
 uses the true injected condition velocity and is never included in the primary
 contrast.
@@ -64,10 +65,10 @@ all of the following are true:
 
 | Quantity | Locked threshold |
 | --- | ---: |
-| Mean target speed | >= 0.5 mm/step |
-| Active-delta fraction | >= 0.75 |
-| Directional consistency | >= 0.90 |
-| Constant-velocity fit improvement | >= 0.50 |
+| Mean target speed | $\ge 0.5\ \mathrm{mm/step}$ |
+| Active-delta fraction | $\ge 0.75$ |
+| Directional consistency | $\ge 0.90$ |
+| Constant-velocity fit improvement | $\ge 0.50$ |
 
 Directional consistency is the norm of the summed displacement divided by the
 sum of displacement norms. Constant-velocity fit improvement compares the RMSE
@@ -80,7 +81,7 @@ Controls use the same origin and number of steps as the persistent-drift trace:
 | --- | --- | --- |
 | M0 static | Repeated fixed target | No motion evidence |
 | M1 persistent drift | Fixed nonzero delta each step | Positive structural evidence |
-| N1 observation noise | IID Gaussian noise, sigma = 0.2 mm | High-frequency residual without direction |
+| N1 observation noise | IID Gaussian noise, $\sigma=0.2\ \mathrm{mm}$ | High-frequency residual without direction |
 | N2 single impulse | One eight-delta jump followed by rest | Transient event without persistence |
 
 ## S4. Confirmatory Drift Conditions
@@ -136,9 +137,9 @@ simulator lifecycle rather than relying on nominal reset determinism.
 | Selected seed count | 10 | 10 |
 | Dynamic cells | 400 complete | 400/400 |
 | Static-retention cells | 20 complete | 20/20 |
-| Maximum branch-start EE gap | <= 1 mm | 0 mm |
-| Maximum branch-start command gap | <= 0.001 mm | 0 mm |
-| Maximum branch-start target distance | <= 21 mm | 15.396 mm |
+| Maximum branch-start EE gap | $\le 1\ \mathrm{mm}$ | 0 mm |
+| Maximum branch-start command gap | $\le 0.001\ \mathrm{mm}$ | 0 mm |
+| Maximum branch-start target distance | $\le 21\ \mathrm{mm}$ | 15.396 mm |
 | Prefix readiness | All selected cells | Pass |
 | H=10 windows | Present in every dynamic cell | Pass |
 | Drift exposure | Complete in every dynamic cell | Pass |
