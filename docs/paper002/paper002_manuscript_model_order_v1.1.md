@@ -595,24 +595,10 @@ The experiment is entirely simulated. Surgical terminology identifies the
 robot platform and benchmark family and must not be interpreted as clinical
 validation.
 
-- Frozen preregistration:
-  [`paper002_model_order_confirmatory_prereg_v1.0.md`](paper002_model_order_confirmatory_prereg_v1.0.md)
-- Raw artifact commit: `73a7e16`
-- Exact result audit:
-  [`RESULTS.md`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md)
-- Frozen config:
-  [`model_order_confirmatory_v1.0.json`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_confirmatory_v1.0.json)
-- Raw records and trajectories:
-  [`isaac_model_order_confirmatory_v1.0`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/)
-- Figure and table generator:
-  [`plot_paper002_model_order.py`](../../scripts/plot_paper002_model_order.py)
-- Figure/table manifest: [`figures/manifest.json`](figures/manifest.json)
-- Supplement: [`paper002_supplement_model_order_v1.1.md`](paper002_supplement_model_order_v1.1.md)
-- BibTeX: [`paper002_references_v1.1.bib`](paper002_references_v1.1.bib)
-
-All raw artifacts carry SHA-256 checksums. The figure manifest hashes both
-source JSON files and every derived panel and table. Pilot results remain in the
-repository but are excluded from confirmatory estimates.
+The preregistration, frozen configuration, complete records and trajectories,
+analysis code, figure manifest, and checksums are archived in the
+[public research repository](https://github.com/higuseonhye/research-os).
+Pilot results remain archived but are excluded from confirmatory estimates.
 
 ## References
 

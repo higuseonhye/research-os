@@ -222,10 +222,16 @@ def escape_text(value: str) -> str:
     return "".join(replacements.get(char, char) for char in value)
 
 
+def code_span(value: str) -> str:
+    if len(value) >= 32:
+        return r"\nolinkurl{" + value + "}"
+    return r"\texttt{\detokenize{" + value + "}}"
+
+
 def link_label(value: str) -> str:
     code = re.fullmatch(r"`([^`]+)`", value)
     if code:
-        return r"\texttt{\detokenize{" + code.group(1) + "}}"
+        return code_span(code.group(1))
     value = re.sub(r"\*\*([^*]+)\*\*", r"\1", value)
     value = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"\1", value)
     return escape_text(value)
@@ -263,7 +269,7 @@ def inline(value: str, *, citations: bool = True) -> str:
     )
     value = re.sub(
         r"`([^`]+)`",
-        lambda match: protect(r"\texttt{\detokenize{" + match.group(1) + "}}"),
+        lambda match: protect(code_span(match.group(1))),
         value,
     )
     if citations:
@@ -525,6 +531,10 @@ def validate_tex(tex: str, output_path: Path) -> None:
     missing_keys = used_keys - known_keys
     if missing_keys:
         raise ValueError(f"unknown BibTeX keys in {output_path.name}: {sorted(missing_keys)}")
+
+    task_id = "Isaac-Reach-Dual-STAR-IK-Rel-Play-v0"
+    if task_id in tex and rf"\nolinkurl{{{task_id}}}" not in tex:
+        raise ValueError(f"long task identifier is not breakable in {output_path.name}")
 
     for relative in re.findall(r"\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}", tex):
         if not (output_path.parent / relative).exists():

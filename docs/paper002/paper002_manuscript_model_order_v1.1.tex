@@ -95,7 +95,7 @@ Structured world models can factor transition mechanisms so that sparse changes 
 
 \subsection{Environment And Task}
 
-Experiments use Isaac Sim 4.1 and the ORBIT-Surgical dual-arm reach environment \texttt{\detokenize{Isaac-Reach-Dual-STAR-IK-Rel-Play-v0}}. ORBIT-Surgical provides GPU-accelerated surgical robot-learning tasks for dVRK and STAR platforms \cite{yu2024orbit}. The present experiment uses only Cartesian target reaching; it does not evaluate tissue interaction, tool contact, or a clinical procedure.
+Experiments use Isaac Sim 4.1 and the ORBIT-Surgical dual-arm reach environment \nolinkurl{Isaac-Reach-Dual-STAR-IK-Rel-Play-v0}. ORBIT-Surgical provides GPU-accelerated surgical robot-learning tasks for dVRK and STAR platforms \cite{yu2024orbit}. The present experiment uses only Cartesian target reaching; it does not evaluate tissue interaction, tool contact, or a clinical procedure.
 
 The evaluated end effector follows a target command \(p_t\) in three-dimensional Cartesian space. The nominal mode M0 is static. In M1, a delay occurs after the locked onset and the target then drifts for a fixed number of steps:
 
@@ -211,9 +211,9 @@ Seeds and conditions are crossed sampling factors rather than 100 independent re
 
 \subsection{Preregistration, Software, And Compute}
 
-The design, candidate seeds, condition set, selection rule, model candidates, gate thresholds, estimands, and decision criteria were frozen under immutable tag \texttt{\detokenize{paper002-model-order-confirmatory-v1.0}} before seeds 300-339 were executed. Pilot seeds and observations are excluded from every confirmatory estimate. There was no interim efficacy analysis or optional stopping.
+The design, candidate seeds, condition set, selection rule, model candidates, gate thresholds, estimands, and decision criteria were frozen under immutable tag \nolinkurl{paper002-model-order-confirmatory-v1.0} before seeds 300-339 were executed. Pilot seeds and observations are excluded from every confirmatory estimate. There was no interim efficacy analysis or optional stopping.
 
-Execution used container \texttt{\detokenize{ghcr.io/higuseonhye/vessl-isaac-sim:4.1.0-v2}} on one NVIDIA A100 SXM workspace with 11 vCPUs and 128 GB RAM. Isaac Sim ran headlessly with Fabric disabled to preserve the validated ORBIT-Surgical behavior. Derived statistics and figures are CPU reproducible from the committed JSON artifacts.
+Execution used container \nolinkurl{ghcr.io/higuseonhye/vessl-isaac-sim:4.1.0-v2} on one NVIDIA A100 SXM workspace with 11 vCPUs and 128 GB RAM. Isaac Sim ran headlessly with Fabric disabled to preserve the validated ORBIT-Surgical behavior. Derived statistics and figures are CPU reproducible from the committed JSON artifacts.
 
 \section{Results}
 
@@ -346,29 +346,7 @@ In a preregistered, process-isolated embodied-simulation experiment, a repaired 
 
 No human participants, animals, patient data, or clinical workflows were used. The experiment is entirely simulated. Surgical terminology identifies the robot platform and benchmark family and must not be interpreted as clinical validation.
 
-\begin{itemize}[leftmargin=*]
-
-\item Frozen preregistration: \href{\detokenize{paper002_model_order_confirmatory_prereg_v1.0.md}}{\texttt{\detokenize{paper002_model_order_confirmatory_prereg_v1.0.md}}}
-
-\item Raw artifact commit: \texttt{\detokenize{73a7e16}}
-
-\item Exact result audit: \href{\detokenize{../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md}}{\texttt{\detokenize{RESULTS.md}}}
-
-\item Frozen config: \href{\detokenize{../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_confirmatory_v1.0.json}}{\texttt{\detokenize{model_order_confirmatory_v1.0.json}}}
-
-\item Raw records and trajectories: \href{\detokenize{../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/}}{\texttt{\detokenize{isaac_model_order_confirmatory_v1.0}}}
-
-\item Figure and table generator: \href{\detokenize{../../scripts/plot_paper002_model_order.py}}{\texttt{\detokenize{plot_paper002_model_order.py}}}
-
-\item Figure/table manifest: \href{\detokenize{figures/manifest.json}}{\texttt{\detokenize{figures/manifest.json}}}
-
-\item Supplement: \href{\detokenize{paper002_supplement_model_order_v1.1.md}}{\texttt{\detokenize{paper002_supplement_model_order_v1.1.md}}}
-
-\item BibTeX: \href{\detokenize{paper002_references_v1.1.bib}}{\texttt{\detokenize{paper002_references_v1.1.bib}}}
-
-\end{itemize}
-
-All raw artifacts carry SHA-256 checksums. The figure manifest hashes both source JSON files and every derived panel and table. Pilot results remain in the repository but are excluded from confirmatory estimates.
+The preregistration, frozen configuration, complete records and trajectories, analysis code, figure manifest, and checksums are archived in the \href{\detokenize{https://github.com/higuseonhye/research-os}}{public research repository}. Pilot results remain archived but are excluded from confirmatory estimates.
 
 \bibliographystyle{unsrtnat}
 
