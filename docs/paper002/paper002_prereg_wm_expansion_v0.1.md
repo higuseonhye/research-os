@@ -1,5 +1,8 @@
 # Paper 002 — Pre-registration · WM structural expansion v0.1 (DRAFT)
 
+> Superseded before confirmatory data by
+> [model-order confirmatory preregistration v1.0](paper002_model_order_confirmatory_prereg_v1.0.md).
+
 > **Status:** design · **not frozen** · supersedes mock→physics pre-reg v0.3  
 > **Confirmatory spec:** [paper002_confirmatory_spec_v0.1.md](paper002_confirmatory_spec_v0.1.md)  
 > **Analysis:** [paper002_analysis_plan_v0.3.md](paper002_analysis_plan_v0.3.md)

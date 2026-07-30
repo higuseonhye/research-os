@@ -49,3 +49,13 @@ EXP_SURG_003_SKIP_BOOTSTRAP=1 EXP_SURG_003_ZERO_AGENT=0 DISABLE_FABRIC=1 \
 The pilot output is written to
 `results/isaac_model_order_pilot_v0.3/`. Confirmatory seeds remain untouched
 until this engineering pilot is audited and the preregistration is frozen.
+
+## Outcome
+
+The process-isolated pilot completed a valid 200-cell grid. Prediction error
+and fixed-horizon final distance favored L3, while the original 20 mm binary
+success gate saturated and the preregistered pilot pass remained false. See
+the [exact pilot results](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.3/RESULTS.md).
+
+The frozen fresh-data design is
+[confirmatory preregistration v1.0](paper002_model_order_confirmatory_prereg_v1.0.md).

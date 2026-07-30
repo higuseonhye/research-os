@@ -359,22 +359,39 @@ def main() -> None:
         for seed in selected_seeds
         for condition in condition_ids
     }
-    rng = np.random.default_rng(20260730)
+    analysis_config = config.get("analysis", {})
+    bootstrap_seed = int(analysis_config.get("bootstrap_seed", 20260730))
+    bootstrap_repetitions = int(
+        analysis_config.get("bootstrap_repetitions", 10000)
+    )
+    rng = np.random.default_rng(bootstrap_seed)
     primary_effect = {
         "contrast": "C_L3_CONSTANT_VELOCITY_minus_B_L1_ZERO_ORDER",
         "mean_prediction_error_difference_m": fmean(prediction_differences.values()),
         "prediction_error_difference_crossed_bootstrap_95_ci_m": _crossed_bootstrap_ci(
-            prediction_differences, selected_seeds, condition_ids, rng
+            prediction_differences,
+            selected_seeds,
+            condition_ids,
+            rng,
+            bootstrap_repetitions,
         ),
         "success_rate_difference": fmean(success_differences.values()),
         "success_rate_difference_crossed_bootstrap_95_ci": _crossed_bootstrap_ci(
-            success_differences, selected_seeds, condition_ids, rng
+            success_differences,
+            selected_seeds,
+            condition_ids,
+            rng,
+            bootstrap_repetitions,
         ),
         "mean_final_distance_difference_m": fmean(
             final_distance_differences.values()
         ),
         "final_distance_difference_crossed_bootstrap_95_ci_m": _crossed_bootstrap_ci(
-            final_distance_differences, selected_seeds, condition_ids, rng
+            final_distance_differences,
+            selected_seeds,
+            condition_ids,
+            rng,
+            bootstrap_repetitions,
         ),
         "l3_lower_prediction_error_pair_rate": fmean(
             value < 0 for value in prediction_differences.values()
@@ -396,7 +413,7 @@ def main() -> None:
         "by_arm": retention_by_arm,
         "l3_minus_l1_success_rate": fmean(retention_differences.values()),
         "l3_minus_l1_paired_bootstrap_95_ci": _paired_seed_bootstrap_ci(
-            retention_differences, rng
+            retention_differences, rng, bootstrap_repetitions
         ),
         "non_inferiority_margin": -0.05,
     }
@@ -408,7 +425,13 @@ def main() -> None:
     thresholds = _gate_thresholds(config)
     ep1 = _ep1_diagnostics(config, thresholds)
     h4 = _h4_controls(config, selected_seeds, thresholds)
-    rules = config["pilot_decision_rules"]
+    analysis_phase = str(config.get("analysis_phase", "pilot"))
+    if analysis_phase == "confirmatory":
+        rules = config["confirmatory_decision_rules"]
+    elif analysis_phase in {"pilot", "smoke"}:
+        rules = config["pilot_decision_rules"]
+    else:
+        raise ValueError(f"unsupported analysis phase: {analysis_phase}")
     decisions = {
         "validity_pass": validity["valid_run"],
         "ep1_parameter_lock_pass": bool(
@@ -425,13 +448,13 @@ def main() -> None:
         ),
         "oracle_behavior_pass": by_arm["D_ORACLE_VELOCITY"]["success_rate"]
         >= rules["oracle_min_success_rate"],
-        "h1_prediction_pass": primary_effect["mean_prediction_error_difference_m"] < 0,
         "h2_l3_success_floor_pass": by_arm["C_L3_CONSTANT_VELOCITY"]["success_rate"]
         >= rules["l3_min_success_rate"],
-        "h2_l1_failure_regime_pass": by_arm["B_L1_ZERO_ORDER"]["success_rate"]
-        <= rules["l1_max_success_rate"],
-        "h3_static_retention_pass": retention_by_arm["C_L3_CONSTANT_VELOCITY"]["success_rate"]
-        >= rules["static_retention_min_success_rate"],
+        "h3_static_retention_pass": bool(
+            retention_by_arm["C_L3_CONSTANT_VELOCITY"]["success_rate"]
+            >= rules["static_retention_min_success_rate"]
+            and retention["non_inferiority_pass"]
+        ),
         "h4_drift_pass": h4["M1_PERSISTENT_DRIFT"]["gate_fire_rate"]
         >= rules["gate_drift_min_rate"],
         "h4_controls_pass": all(
@@ -439,11 +462,40 @@ def main() -> None:
             for name in ("M0_STATIC", "N1_OBSERVATION_NOISE", "N2_SINGLE_IMPULSE")
         ),
     }
-    pilot_pass = all(decisions.values())
+    if analysis_phase == "confirmatory":
+        decisions.update(
+            {
+                "h1_prediction_ci_pass": primary_effect[
+                    "prediction_error_difference_crossed_bootstrap_95_ci_m"
+                ][1]
+                <= rules["prediction_error_ci_upper_max_m"],
+                "h2_final_distance_ci_pass": primary_effect[
+                    "final_distance_difference_crossed_bootstrap_95_ci_m"
+                ][1]
+                <= rules["final_distance_ci_upper_max_m"],
+            }
+        )
+    else:
+        decisions.update(
+            {
+                "h1_prediction_pass": primary_effect[
+                    "mean_prediction_error_difference_m"
+                ]
+                < 0,
+                "h2_l1_failure_regime_pass": by_arm["B_L1_ZERO_ORDER"][
+                    "success_rate"
+                ]
+                <= rules["l1_max_success_rate"],
+            }
+        )
+    decision_pass = all(decisions.values())
+    decision_key = f"{analysis_phase}_pass"
+    decisions_key = f"{analysis_phase}_decisions"
 
     combined = {
         "experiment_id": config["experiment_id"],
         "status": config["status"],
+        "analysis_phase": analysis_phase,
         "mode": "isaac",
         "config_path": str(args.config),
         "config_sha256": _sha256(args.config),
@@ -451,6 +503,10 @@ def main() -> None:
         "selected_seeds": selected_seeds,
         "condition_ids": condition_ids,
         "prediction_horizon_steps": config["shared"]["prediction_horizon_steps"],
+        "analysis_config": {
+            "bootstrap_seed": bootstrap_seed,
+            "bootstrap_repetitions": bootstrap_repetitions,
+        },
         "execution_isolation": EXECUTION_ISOLATION,
         "validity": validity,
         "ep1_diagnostics": ep1,
@@ -465,8 +521,9 @@ def main() -> None:
         "primary_effect": primary_effect,
         "static_retention": retention,
         "h4_gate_controls": h4,
-        "pilot_decisions": decisions,
-        "pilot_pass": pilot_pass,
+        "decision_rules": rules,
+        decisions_key: decisions,
+        decision_key: decision_pass,
         "records": records,
         "ep2_preconditions": ep2_preconditions,
         "retention_records": retention_records,
@@ -489,8 +546,8 @@ def main() -> None:
         "primary_effect": primary_effect,
         "static_retention": retention,
         "h4_gate_controls": h4,
-        "pilot_decisions": decisions,
-        "pilot_pass": pilot_pass,
+        decisions_key: decisions,
+        decision_key: decision_pass,
     }, indent=2))
 
 

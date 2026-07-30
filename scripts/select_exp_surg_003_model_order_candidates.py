@@ -88,7 +88,10 @@ def main() -> None:
 
     selected = eligible[:required]
     manifest = {
-        "protocol": "static_control_first_fixed_order_quota_model_order_v0.2",
+        "protocol": config.get(
+            "selection_protocol",
+            "static_control_first_fixed_order_quota_model_order_v0.2",
+        ),
         "experiment_id": config["experiment_id"],
         "candidate_seeds": candidates,
         "required_eligible_seed_count": required,

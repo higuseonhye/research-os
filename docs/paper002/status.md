@@ -64,7 +64,7 @@ This run validates the persistent-drift task regime, paired policy isolation, an
 
 **Claim boundary:** this is a confirmatory Isaac **drift anchor**, not evidence that L3 structural expansion outperforms L1 parameter repair. It does not evaluate H=10 world-model prediction error or the full H1–H4 intervention protocol.
 
-## Next experiment: model-order pilot v0.3
+## Model-order pilot v0.3: complete
 
 The original GRU scaffold allowed L1 to learn target drift within the same
 model class, so it could not cleanly test structural inadequacy. The replacement
@@ -83,8 +83,18 @@ EXP_SURG_003_SKIP_BOOTSTRAP=1 EXP_SURG_003_ZERO_AGENT=0 DISABLE_FABRIC=1 \
   bash scripts/run_exp_surg_003_model_order_vessl.sh
 ```
 
-This pilot is calibration only. Confirmatory seeds remain untouched until the
-pilot audit and preregistration freeze.
+The valid process-isolated pilot completed 200 Ep2 cells. L3 reduced H=10
+prediction error by 11.544 mm and fixed-horizon final distance by 11.880 mm
+versus L1; static retention and H4 controls passed. The original pilot success
+gate remained false because the 20 mm binary endpoint saturated. Exact results:
+[RESULTS.md](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.3/RESULTS.md).
+
+## Next experiment: frozen confirmatory v1.0
+
+Fresh seeds 300-339 and fresh balanced conditions C01-C10 are frozen in
+[paper002_model_order_confirmatory_prereg_v1.0.md](paper002_model_order_confirmatory_prereg_v1.0.md).
+The primary H2 endpoint is paired fixed-horizon final distance; binary success
+is secondary. Pilot observations remain excluded.
 
 ---
 

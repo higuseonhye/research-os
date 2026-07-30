@@ -116,7 +116,8 @@ bash scripts/run_exp_surg_003_drift_runpod.sh
 | [`config/pilot_v0.1.yaml`](config/pilot_v0.1.yaml) | Mock pilot v0.4 hyperparameters |
 | [`config/confirmatory_v0.1.yaml`](config/confirmatory_v0.1.yaml) | Confirmatory design contract |
 | [`config/model_order_pilot_v0.2.json`](config/model_order_pilot_v0.2.json) | Invalidated shared-process pilot contract |
-| [`config/model_order_pilot_v0.3.json`](config/model_order_pilot_v0.3.json) | Active process-isolated model-order pilot contract |
+| [`config/model_order_pilot_v0.3.json`](config/model_order_pilot_v0.3.json) | Completed process-isolated engineering pilot |
+| [`config/model_order_confirmatory_v1.0.json`](config/model_order_confirmatory_v1.0.json) | Frozen fresh-seed confirmatory contract |
 
 ## Implementation
 

@@ -1,0 +1,73 @@
+{
+  "experiment_id": "EXP-SURG-003-model-order-confirmatory-v1.0",
+  "status": "preregistered_confirmatory",
+  "analysis_phase": "confirmatory",
+  "execution_isolation": "fresh_isaac_process_per_seed_arm_condition",
+  "selection_protocol": "static_control_first_fixed_order_quota_model_order_v1.0",
+  "task": "Isaac-Reach-Dual-STAR-IK-Rel-Play-v0",
+  "candidate_seed_rule": "fixed_integer_range_300_through_339_first_10_static_eligible",
+  "candidate_seeds": [300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339],
+  "required_eligible_seeds": 10,
+  "shared": {
+    "onset": 40,
+    "prefix_max_steps": 200,
+    "prefix_stable_steps": 5,
+    "paired_start_tolerance_m": 0.001,
+    "success_tolerance_m": 0.02,
+    "prediction_horizon_steps": 10,
+    "gain": 1.0,
+    "max_delta": 0.08
+  },
+  "models": {
+    "A_ZERO_ORDER_FROZEN": {"position_alpha": 0.5, "model_order": 0},
+    "B_L1_ZERO_ORDER": {"position_alpha": 1.0, "model_order": 0},
+    "C_L3_CONSTANT_VELOCITY": {"position_alpha": 1.0, "velocity_alpha": 1.0, "model_order": 1},
+    "D_ORACLE_VELOCITY": {"diagnostic_only": true}
+  },
+  "ep1_adaptation": {
+    "drift_vector_m_per_step": [0.0015, 0.0, 0.0],
+    "steps": 40,
+    "held_out_start_step": 20,
+    "parameter_candidates": [0.25, 0.5, 0.75, 1.0]
+  },
+  "gate": {
+    "window": 8,
+    "min_deltas": 4,
+    "speed_floor_m_per_step": 0.0005,
+    "min_active_fraction": 0.75,
+    "min_directional_consistency": 0.9,
+    "min_cv_error_improvement": 0.5,
+    "negative_control_noise_sigma_m": 0.0002
+  },
+  "condition_generation_rule": "balanced_axes_and_diagonals_with_no_exact_pilot_condition_reuse",
+  "conditions": [
+    {"id": "C01", "drift_vector_m_per_step": [0.0017, 0.0, 0.0], "delay_steps": 1, "duration_steps": 23},
+    {"id": "C02", "drift_vector_m_per_step": [0.0019, 0.0, 0.0], "delay_steps": 4, "duration_steps": 21},
+    {"id": "C03", "drift_vector_m_per_step": [-0.0018, 0.0, 0.0], "delay_steps": 1, "duration_steps": 23},
+    {"id": "C04", "drift_vector_m_per_step": [-0.0020, 0.0, 0.0], "delay_steps": 4, "duration_steps": 20},
+    {"id": "C05", "drift_vector_m_per_step": [0.0, 0.0017, 0.0], "delay_steps": 2, "duration_steps": 23},
+    {"id": "C06", "drift_vector_m_per_step": [0.0, -0.0019, 0.0], "delay_steps": 4, "duration_steps": 21},
+    {"id": "C07", "drift_vector_m_per_step": [0.001202, 0.001202, 0.0], "delay_steps": 1, "duration_steps": 23},
+    {"id": "C08", "drift_vector_m_per_step": [-0.001273, 0.001273, 0.0], "delay_steps": 4, "duration_steps": 22},
+    {"id": "C09", "drift_vector_m_per_step": [0.001344, -0.001344, 0.0], "delay_steps": 2, "duration_steps": 21},
+    {"id": "C10", "drift_vector_m_per_step": [-0.001414, -0.001414, 0.0], "delay_steps": 5, "duration_steps": 20}
+  ],
+  "analysis": {
+    "estimand": "intention_to_treat_all_valid_crossed_seed_condition_cells",
+    "bootstrap": "crossed_resample_seeds_and_conditions_with_replacement",
+    "bootstrap_seed": 20260730,
+    "bootstrap_repetitions": 10000,
+    "oracle_feasible_sensitivity": "descriptive_secondary_only",
+    "success_rate_role": "secondary_thresholded_endpoint"
+  },
+  "confirmatory_decision_rules": {
+    "validity_required": true,
+    "oracle_min_success_rate": 0.8,
+    "l3_min_success_rate": 0.8,
+    "prediction_error_ci_upper_max_m": -0.005,
+    "final_distance_ci_upper_max_m": -0.005,
+    "static_retention_min_success_rate": 0.95,
+    "gate_drift_min_rate": 0.9,
+    "gate_control_max_rate": 0.1
+  }
+}

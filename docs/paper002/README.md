@@ -1,7 +1,7 @@
 # Paper 002 — Representation reconstruction (WM expansion)
 
 > **L0:** Model-class / system-composition reconstruction when current WM cannot explain failure · [taxonomy](paper002_wm_system_expansion_v0.1.md)  
-> **Status:** design v0.1 · Isaac drift anchor **passed** · L3-vs-L1 pre-reg freeze next
+> **Status:** process-isolated pilot complete · model-order confirmatory v1.0 frozen
 > **Recoverability:** measurement window · not program center
 
 ---
@@ -11,6 +11,8 @@
 | Doc | Purpose |
 | --- | --- |
 | [**Status**](status.md) | Phase · pivot note |
+| [**Frozen model-order prereg v1.0**](paper002_model_order_confirmatory_prereg_v1.0.md) | Fresh seeds/conditions · H1–H4 · exact decision rules |
+| [**Model-order pilot result**](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.3/RESULTS.md) | 200-cell process-isolated calibration audit |
 | [**Description v0.1**](paper002_description_wm_expansion_v0.1.md) | RQ · minimal cell · claims |
 | [**Confirmatory spec v0.1**](paper002_confirmatory_spec_v0.1.md) | Runnable minimum · phases · arms · outcomes |
 | [**Pre-reg v0.1 (draft)**](paper002_prereg_wm_expansion_v0.1.md) | H1–H4 · gate · sample size |
@@ -40,7 +42,7 @@ Phase 0: train W0 on M0 static only
 Ep1:     persistent drift → L1 repair × K fails
 Arms:    A none | B repair F0 | C add F1+G (+ D oracle diagnostic)
 Ep2:     novel drift (direction · speed · onset · pose)
-Primary: multi-step prediction error (H=10) · task success
+Primary: multi-step prediction error (H=10) · fixed-horizon final distance
 Safety:  static retention · gate on noise/impulse (H4)
 ```
 
@@ -48,7 +50,9 @@ Package: [`exp_surg_003_wm_expansion`](../../experiments/surgical_intelligence/e
 
 **Completed prerequisite:** the Isaac persistent-drift regime and policy isolation passed a static-first, 10-pair fresh-seed anchor.
 
-**Blocking milestone:** L1 fails · L3 explains held-out drift · pre-reg freeze and the actual intervention study remain next. The drift anchor is not evidence for this comparison.
+**Blocking milestone cleared:** the pilot showed lower prediction error and
+fixed-horizon distance under L3 without static regression. Fresh-seed
+confirmatory execution is next; pilot observations are excluded from it.
 
 ---
 

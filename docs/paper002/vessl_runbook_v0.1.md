@@ -157,6 +157,30 @@ Protocol and decision rules:
 Do not run confirmatory seeds until this pilot is audited and the preregistration
 is frozen.
 
+## Step 3C - Frozen model-order confirmatory v1.0
+
+Run only from the immutable preregistration tag. The confirmatory uses fresh
+candidate seeds 300-339, selects the first 10 static-eligible seeds before
+treatment, and executes 400 process-isolated Ep2 cells.
+
+```bash
+cd /workspace/research-os
+git fetch origin --tags
+git switch codex/paper002-l1-l3-confirmatory
+git pull --ff-only
+git describe --tags --exact-match
+
+export CONFIG="$PWD/experiments/surgical_intelligence/exp_surg_003_wm_expansion/config/model_order_confirmatory_v1.0.json"
+export OUT="$PWD/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0"
+EXP_SURG_003_SKIP_BOOTSTRAP=1 EXP_SURG_003_ZERO_AGENT=0 DISABLE_FABRIC=1 \
+  bash scripts/run_exp_surg_003_model_order_vessl.sh
+```
+
+The exact tag must be `paper002-model-order-confirmatory-v1.0`. Do not alter
+the config, seed list, conditions, endpoints, or decision thresholds after
+starting the run. See
+[the frozen preregistration](paper002_model_order_confirmatory_prereg_v1.0.md).
+
 ---
 
 ## Step 4 — Pull results to Windows
