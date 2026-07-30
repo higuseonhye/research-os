@@ -13,7 +13,7 @@ This repository contains **promoted research evidence only**—research question
 | **Mismatch Lab** | Public lab spec — **Robot Diff** · model adequacy layer · [hub](docs/mismatch_lab/README.md) |
 | **Study 002 (EXP-SURG-002)** | Pilot: dream curriculum (Tier B · archived) |
 
-**Latest (2026-07-30):** **Paper 001** complete. **Paper 002 model-order confirmatory passed**: 400/400 valid cells, C-B H=10 prediction error -10.806 mm, and C-B fixed-horizon final distance -13.304 mm. A venue-neutral manuscript and supplement v1.1, review PDFs, and reproducible figures are published. **Mismatch Lab** v0.1 spec published.
+**Latest (2026-07-30):** **Paper 001** complete. **Paper 002 model-order confirmatory passed**: 400/400 valid cells, C-B H=10 prediction error -10.806 mm, and C-B fixed-horizon final distance -13.304 mm. A venue-neutral manuscript and supplement v1.1, LaTeX sources, review PDFs, and reproducible figures are published. **Mismatch Lab** v0.1 spec published.
 
 ---
 
@@ -64,7 +64,7 @@ We have **not** shown general world-model expansion, hardware transfer, a new re
 | **Paper 002 pilot v0.4** | C vs B ΔPE · gate · H4 (preliminary) | [`pilot_v0.1/summary.json`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/pilot_v0.1/summary.json) |
 | **Paper 002 Isaac drift anchor** | Moving target **10/10** vs frozen target **0/10** · 20.250 mm paired improvement | [`RESULTS.md`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_static_first_confirmatory_v0.2/RESULTS.md) |
 | **Paper 002 model-order confirmatory** | C-B prediction **-10.806 mm** · final distance **-13.304 mm** · all gates pass | [`RESULTS.md`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md) |
-| **Paper 002 submission package** | Manuscript + supplement v1.1 · review PDFs · five generated panels · CSV tables | [`manuscript`](docs/paper002/paper002_manuscript_model_order_v1.1.md) · [`PDF`](docs/paper002/paper002_manuscript_model_order_v1.1.pdf) · [`supplement`](docs/paper002/paper002_supplement_model_order_v1.1.pdf) |
+| **Paper 002 submission package** | Manuscript + supplement v1.1 · LaTeX · review PDFs · five generated panels · CSV tables | [`manuscript`](docs/paper002/paper002_manuscript_model_order_v1.1.md) · [`LaTeX`](docs/paper002/paper002_manuscript_model_order_v1.1.tex) · [`PDF`](docs/paper002/paper002_manuscript_model_order_v1.1.pdf) · [`supplement`](docs/paper002/paper002_supplement_model_order_v1.1.tex) |
 
 Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper 002 [`docs/paper002/status.md`](docs/paper002/status.md)
 
@@ -92,6 +92,7 @@ Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper
 ```bash
 # Paper 002 confirmatory figures and tables (CPU only)
 python scripts/plot_paper002_model_order.py
+python scripts/build_paper002_submission_tex.py
 
 # Historical Paper 002 mock smoke (CPU)
 python scripts/run_exp_surg_003_pilot.py --smoke
