@@ -4,7 +4,7 @@
 >
 > Scientific phase: confirmatory complete
 >
-> Writing phase: venue-neutral manuscript and supplement v1.1 built; venue conversion and author review remain
+> Writing phase: venue-neutral manuscript and supplement v1.1 built; author, affiliation, and independent-research declarations added; venue conversion remains
 
 ## Decision
 
@@ -27,6 +27,7 @@ core evidence package is complete enough for a full paper draft.
 | Supplement v1.1 | Complete review draft and PDF built |
 | Bibliography | Citation audit complete; BibTeX added |
 | Figures and CSV tables | Generated and hash-manifested |
+| Author and disclosure pass | Seonhye Gu; independent personal research; affiliation limitation stated |
 
 ## Primary Evidence
 
@@ -54,7 +55,7 @@ Exact report:
 ## Publication Work Remaining
 
 1. Choose the target venue and convert v1.1 to its official template.
-2. Perform the author, affiliation, acknowledgements, and disclosure pass.
+2. Confirm venue-specific acknowledgements and disclosure wording.
 3. Run one independent scientific and editorial review cycle.
 4. Freeze a submission tag after review; do not alter the raw confirmatory artifact.
 
