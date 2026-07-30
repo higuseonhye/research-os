@@ -365,8 +365,7 @@ def preamble(title: str, supplement: bool, source_name: str) -> str:
 {supplement_numbering}
 \\title{{{inline(title, citations=False)}}}
 \\author{{Seonhye Gu\\thanks{{This work was independently conducted by the author as personal research while affiliated with the AI-Based Surgical Robot Innovation Lab. The affiliation is provided for identification purposes only and does not imply official laboratory output, institutional endorsement, or sponsorship.}}\\\\
-\\small AI-Based Surgical Robot Innovation Lab\\\\
-\\small\\textit{{Independent personal research}}}}
+\\small AI-Based Surgical Robot Innovation Lab}}
 \\date{{}}
 \\begin{{document}}
 \\maketitle
@@ -544,10 +543,21 @@ def validate_tex(tex: str, output_path: Path) -> None:
     for required in (
         r"\author{Seonhye Gu",
         "AI-Based Surgical Robot Innovation Lab",
-        "Independent personal research",
+        "independently conducted by the author as personal research",
     ):
         if required not in tex:
             raise ValueError(f"missing author metadata in {output_path.name}: {required}")
+    for internal_metadata in (
+        "Venue-neutral review manuscript",
+        "Frozen design:",
+        "Confirmatory artifact:",
+        "Results are frozen.",
+    ):
+        if internal_metadata in tex:
+            raise ValueError(
+                f"internal metadata leaked into submission TeX in {output_path.name}: "
+                f"{internal_metadata}"
+            )
 
 
 def main() -> None:

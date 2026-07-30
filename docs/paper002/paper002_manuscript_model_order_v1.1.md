@@ -1,20 +1,10 @@
 # When Parameter Repair Is Not Enough: Failure-Conditioned Model-Order Expansion for Embodied Control
 
-> Venue-neutral review manuscript v1.1
->
 > Author: Seonhye Gu
 >
 > Affiliation: AI-Based Surgical Robot Innovation Lab
 >
 > Research status: Independent personal research; affiliation is provided for identification only.
->
-> Frozen design: `paper002-model-order-confirmatory-v1.0`
->
-> Confirmatory artifact: `73a7e16`
->
-> Results are frozen. Version 1.1 updates exposition, positioning, bibliography,
-> mathematical typesetting, and submission metadata; it does not change the
-> preregistered design or confirmatory results.
 
 ## Abstract
 
@@ -607,6 +597,7 @@ validation.
 
 - Frozen preregistration:
   [`paper002_model_order_confirmatory_prereg_v1.0.md`](paper002_model_order_confirmatory_prereg_v1.0.md)
+- Raw artifact commit: `73a7e16`
 - Exact result audit:
   [`RESULTS.md`](../../experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md)
 - Frozen config:
