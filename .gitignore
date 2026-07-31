@@ -96,3 +96,4 @@ Automations/
 
 # IDE / local tooling (may reference private integrations)
 .cursor/
+.claude/

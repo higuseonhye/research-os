@@ -35,8 +35,15 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] Method / protocol drafted (v0.1)
 - [x] NAMING.md program roadmap updated
 - [x] Lit review — execution-horizon framing vs internal RQ
-- [ ] Environment / simulator choice locked
+- [x] Related work — relational/graph world models, capability-boundary framing precedent
+- [x] Environment / simulator choice locked — Isaac Sim/ORBIT Reach continuation, physical-coupling relation
 - [ ] Prereg
+
+---
+
+## Figures & tables
+
+No results yet (design stage). Once Isaac captures exist, this paper follows [FIGURE_STANDARDS.md](../FIGURE_STANDARDS.md) from the start: real viewport captures only, `figures/README.md` evidence index, and a dedicated `project_page.html` once there's a confirmatory result to show.
 
 ---
 
@@ -52,6 +59,8 @@ General causal discovery · relation invention outside the prepared operator · 
 | --- | --- |
 | [paper003_rq_v0.1.md](paper003_rq_v0.1.md) | Central question, sub-questions, framing note |
 | [paper003_description_v0.1.md](paper003_description_v0.1.md) | Method draft, protocol, capability-threshold metric definition |
-| [paper003_lit_positioning_v0.1.md](paper003_lit_positioning_v0.1.md) | Execution-horizon literature (Garg/Shkurti) vs this RQ, with citations |
+| [paper003_related_work_v0.1.md](paper003_related_work_v0.1.md) | Core novelty comparison — relational/graph world models, capability-boundary framing precedent |
+| [paper003_lit_positioning_v0.1.md](paper003_lit_positioning_v0.1.md) | Execution-horizon literature (Garg/Shkurti) — narrower, entry-framing only |
 | [Paper 002](../paper002/README.md) | Parent method this reuses (two-encounter protocol, expansion gate) |
 | [NAMING.md](../NAMING.md) | Program-level roadmap (Paper 003 row) |
+| [FIGURE_STANDARDS.md](../FIGURE_STANDARDS.md) | Figure/table convention this paper follows once it has results |

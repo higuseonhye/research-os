@@ -15,3 +15,5 @@ python scripts/plot_paper002_model_order.py
 | `fig5_gate_and_retention.png` | H3 retention and H4 gate controls |
 | `tables/*.csv` | Machine-readable manuscript tables |
 | `manifest.json` | Source and output SHA-256 hashes |
+
+Real Isaac Sim viewport frames (teaser image per [figure standards](../../FIGURE_STANDARDS.md)) are not yet captured — `bash scripts/capture_paper002_viewport.sh` is prepared but unrun (needs GPU/Isaac Lab). Sanity-check output before adding to this table.

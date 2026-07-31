@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>When Parameter Repair Is Not Enough — Failure-Conditioned Model-Order Expansion</title>
+  <meta name="description" content="When parameter repair is not enough: failure-conditioned model-order expansion for embodied control. Preregistered Isaac Sim confirmatory result. Seonhye Gu." />
+  <style>
+    :root {
+      --bg: #fbfbfa;
+      --surface: #ffffff;
+      --surface-alt: #f4f4f2;
+      --border: #e2e2dd;
+      --border-strong: #cfcfc8;
+      --text: #1a1a18;
+      --text-soft: #4a4a45;
+      --muted: #7a7a72;
+      --accent: #1b5e8f;
+      --accent-soft: #e8f0f6;
+      --ok: #2d6a4a;
+      --danger: #9c3232;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      --maxw: 760px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #14161a;
+        --surface: #1b1e23;
+        --surface-alt: #21252b;
+        --border: #2e333a;
+        --border-strong: #3d434c;
+        --text: #eceef1;
+        --text-soft: #bcc1c8;
+        --muted: #8b929c;
+        --accent: #7bb8e8;
+        --accent-soft: #1e2a35;
+        --ok: #6ec99a;
+        --danger: #e8837f;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 17px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+    /* ---------- hero ---------- */
+    .hero {
+      text-align: center;
+      padding: 72px 0 44px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 20px;
+      font-weight: 600;
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(30px, 5.2vw, 44px);
+      line-height: 1.18;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      margin: 0 0 14px;
+      text-wrap: balance;
+    }
+    .hero .subtitle {
+      font-family: var(--serif);
+      font-size: clamp(17px, 2.4vw, 21px);
+      color: var(--text-soft);
+      margin: 0 0 26px;
+      font-style: italic;
+      text-wrap: balance;
+    }
+    .authors { font-size: 16px; margin: 0 0 6px; }
+    .authors strong { font-weight: 600; }
+    .affil { font-size: 14px; color: var(--muted); margin: 0 0 24px; }
+
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 0 0 28px; }
+    .badge {
+      font-size: 12.5px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      color: var(--text-soft);
+      background: var(--surface);
+    }
+    .badge.ok { color: var(--ok); border-color: currentColor; }
+    .badge.warn { color: var(--muted); }
+
+    .btns { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14.5px;
+      font-weight: 500;
+      padding: 9px 18px;
+      border-radius: 999px;
+      background: var(--text);
+      color: var(--bg);
+      text-decoration: none;
+      border: 1px solid var(--text);
+      transition: opacity .15s ease, transform .15s ease;
+    }
+    .btn:hover { opacity: .82; transform: translateY(-1px); }
+    .btn.secondary { background: transparent; color: var(--text); border-color: var(--border-strong); }
+    .btn.secondary:hover { border-color: var(--text); opacity: 1; }
+    .btn svg { width: 15px; height: 15px; flex: none; }
+
+    /* ---------- sections ---------- */
+    section { padding: 46px 0; border-bottom: 1px solid var(--border); }
+    section:last-of-type { border-bottom: none; }
+    h2 {
+      font-family: var(--serif);
+      font-size: 15px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--muted);
+      margin: 0 0 22px;
+      text-align: center;
+    }
+    p { margin: 0 0 18px; color: var(--text-soft); }
+    p:last-child { margin-bottom: 0; }
+
+    .lede {
+      font-family: var(--serif);
+      font-size: 20px;
+      line-height: 1.62;
+      color: var(--text);
+      text-align: center;
+      text-wrap: pretty;
+    }
+    blockquote.rq {
+      margin: 0;
+      padding: 24px 28px;
+      background: var(--accent-soft);
+      border-radius: 10px;
+      font-family: var(--serif);
+      font-size: 19px;
+      line-height: 1.58;
+      color: var(--text);
+      text-wrap: pretty;
+    }
+
+    figure { margin: 0 0 26px; }
+    figure img {
+      width: 100%;
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+    figcaption {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin-top: 11px;
+      text-align: center;
+      text-wrap: pretty;
+    }
+    figcaption .num { font-weight: 600; color: var(--text-soft); }
+
+    .table-scroll { overflow-x: auto; margin: 0 0 26px; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 480px; }
+    caption { caption-side: bottom; font-size: 14px; color: var(--muted); padding-top: 11px; text-align: center; }
+    th, td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    thead th {
+      font-size: 11.5px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      border-bottom-color: var(--border-strong);
+      vertical-align: bottom;
+    }
+    td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    tbody tr:last-child td { border-bottom: none; }
+    td strong { font-weight: 600; color: var(--text); }
+    .ci { display: block; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    .boundary { display: grid; gap: 14px; }
+    @media (min-width: 620px) { .boundary { grid-template-columns: 1fr 1fr; } }
+    .bcard {
+      padding: 20px 22px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--border-strong);
+      font-size: 15.5px;
+      line-height: 1.62;
+      color: var(--text-soft);
+    }
+    .bcard.yes { border-top-color: var(--ok); }
+    .bcard.no { border-top-color: var(--danger); }
+    .bcard h3 {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 0 0 10px;
+      font-weight: 600;
+    }
+    .bcard.yes h3 { color: var(--ok); }
+    .bcard.no h3 { color: var(--danger); }
+
+    .note {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: var(--muted);
+      background: var(--surface-alt);
+      border-radius: 8px;
+      padding: 15px 18px;
+      margin: 0;
+    }
+
+    .morelinks { display: grid; gap: 2px; font-size: 15.5px; }
+    .morelinks a { display: block; padding: 11px 0; border-bottom: 1px solid var(--border); text-decoration: none; }
+    .morelinks a:last-child { border-bottom: none; }
+    .morelinks a:hover { color: var(--text); }
+    .morelinks .d { color: var(--muted); font-size: 14px; }
+
+    footer {
+      padding: 34px 0 56px;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--muted);
+      text-align: center;
+    }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Paper 002 &middot; EXP-SURG-003</p>
+      <h1>When Parameter Repair Is Not Enough</h1>
+      <p class="subtitle">Failure-Conditioned Model-Order Expansion for Embodied Control</p>
+      <p class="authors"><strong>Seonhye Gu</strong></p>
+      <p class="affil">Independent personal research</p>
+
+      <div class="badges">
+        <span class="badge ok">Tier C &middot; confirmatory complete</span>
+        <span class="badge">Preregistered</span>
+        <span class="badge">Isaac Sim 4.1 / ORBIT</span>
+        <span class="badge warn">Not peer-reviewed</span>
+      </div>
+
+      <nav class="btns">
+        <a class="btn" href="paper002_manuscript_model_order_v1.1.pdf">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 1.5A1.5 1.5 0 0 1 4.5 0h4.086a1.5 1.5 0 0 1 1.06.44l2.915 2.914A1.5 1.5 0 0 1 13 4.414V14.5a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 14.5v-13Z"/></svg>
+          Manuscript
+        </a>
+        <a class="btn secondary" href="paper002_supplement_model_order_v1.1.pdf">Supplement</a>
+        <a class="btn secondary" href="https://github.com/higuseonhye/research-os/tree/master/docs/paper002">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.05-.49.05-.49.81.06 1.23.83 1.23.83.72 1.22 1.88.87 2.34.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          Code &amp; docs
+        </a>
+        <a class="btn secondary" href="https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md">Results artifact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section>
+      <div class="wrap">
+        <p class="lede">An embodied controller can fail because its parameters are wrong &mdash; or because its model is missing a state variable the dynamics actually depend on. This paper tests, in simulation, whether observed failure evidence can tell those two cases apart.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Central question</h2>
+        <blockquote class="rq">When persistent, structured task failure survives the best repair available inside the current model class, does a prepared increase in model order improve prediction-linked control &mdash; without nominal regression?</blockquote>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Approach</h2>
+        <figure>
+          <img src="figures/fig1_confirmatory_protocol.png" alt="Protocol diagram: static-first seed selection, shared Episode 1 drift evidence, zero-order parameter repair, preregistered adequacy gate, then a four-arm Episode 2 comparison." />
+          <figcaption><span class="num">Figure 1.</span> Preregistered protocol and arms.</figcaption>
+        </figure>
+        <p>In an Isaac Sim surgical-reach environment, a zero-order target model is exposed to persistent drift on a shared Episode&nbsp;1 trace, then repaired within its own model class. A preregistered adequacy gate asks whether the remaining residual is persistent, directional, and better explained by a prepared constant-velocity alternative.</p>
+        <p>Episode&nbsp;2 compares four arms &mdash; frozen zero order, repaired zero order, gated constant velocity, and a velocity oracle &mdash; holding the Cartesian controller fixed across 10 fresh seeds &times; 10 fresh drift conditions, with every seed&ndash;arm&ndash;condition cell in its own Isaac process.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Results</h2>
+        <div class="table-scroll">
+          <table>
+            <caption>Complete confirmatory grid: 400/400 valid cells, no missing data, unexpected resets, or forbidden-region violations.</caption>
+            <thead>
+              <tr>
+                <th>Endpoint</th>
+                <th class="n">B &middot; repaired<br>zero order</th>
+                <th class="n">C &middot; gated<br>const. velocity</th>
+                <th class="n">C &minus; B</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>H=10 prediction error</td>
+                <td class="n">18.401 mm</td>
+                <td class="n">7.595 mm</td>
+                <td class="n"><strong>&minus;10.806 mm</strong><span class="ci">95% CI [&minus;11.360, &minus;10.331]</span></td>
+              </tr>
+              <tr>
+                <td>Fixed-horizon final distance</td>
+                <td class="n">18.905 mm</td>
+                <td class="n">5.601 mm</td>
+                <td class="n"><strong>&minus;13.304 mm</strong><span class="ci">95% CI [&minus;13.599, &minus;12.982]</span></td>
+              </tr>
+              <tr>
+                <td>20&nbsp;mm resolution rate</td>
+                <td class="n">76%</td>
+                <td class="n">100%</td>
+                <td class="n">secondary</td>
+              </tr>
+              <tr>
+                <td>Static retention</td>
+                <td class="n">10/10</td>
+                <td class="n">10/10</td>
+                <td class="n">non-inferior</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <figure>
+          <img src="figures/fig3_condition_effects.png" alt="Per-condition C minus B effect sizes across all ten fresh drift conditions, all favoring the expanded model." />
+          <figcaption><span class="num">Figure 3.</span> C&minus;B effects across all ten fresh conditions &mdash; favorable in 100/100 paired cells on both continuous endpoints.</figcaption>
+        </figure>
+
+        <p>The adequacy gate fired on <strong>100/100</strong> persistent-drift trials and <strong>0/100</strong> on each of the static, observation-noise, and single-impulse controls &mdash; the expansion activated when structure was present and stayed silent when it was not.</p>
+
+        <figure>
+          <img src="figures/fig5_gate_and_retention.png" alt="Gate specificity across drift and three control conditions, alongside static retention results for both models." />
+          <figcaption><span class="num">Figure 5.</span> Gate specificity and static retention.</figcaption>
+        </figure>
+
+        <p class="note"><strong>On figures:</strong> every panel here is plotted directly from the frozen confirmatory artifact. A rendered Isaac&nbsp;Sim viewport teaser is still pending a GPU capture run and is deliberately absent rather than substituted &mdash; see the <a href="../FIGURE_STANDARDS.md">figure standards</a>.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Claim boundary</h2>
+        <div class="boundary">
+          <div class="bcard yes">
+            <h3>Supported</h3>
+            In the specified Isaac target-drift family, structured failure after zero-order repair warrants a prepared velocity-state expansion that improves prediction-linked control without static regression.
+          </div>
+          <div class="bcard no">
+            <h3>Not supported</h3>
+            Unconstrained model invention, arbitrary world-model expansion, tissue or contact validity, hardware transfer, clinical efficacy, or operating-room deployment.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>More</h2>
+        <div class="morelinks">
+          <a href="README.md">Full method, related work, and reproduction<br><span class="d">docs/paper002/README.md</span></a>
+          <a href="paper002_model_order_confirmatory_prereg_v1.0.md">Frozen preregistration<br><span class="d">Endpoints and decision rules, locked before the run</span></a>
+          <a href="../paper003/README.md">Paper 003 &mdash; what comes next<br><span class="d">Missing causal relation; does expansion unlock capability, not just lower error?</span></a>
+          <a href="../NAMING.md">Program roadmap<br><span class="d">How Papers 001&ndash;003 fit together</span></a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Independently conducted as personal research while affiliated with the AI-Based Surgical Robot Innovation Lab. The affiliation is provided for identification only and does not imply sponsorship or institutional endorsement.</p>
+      <p><a href="https://github.com/higuseonhye">@higuseonhye</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
