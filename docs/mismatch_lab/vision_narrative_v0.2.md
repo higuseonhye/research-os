@@ -27,6 +27,16 @@
 
 Documented here for orientation only. **Not** a commitment to ship a platform from research-os.
 
+## Domain generality (orientation only)
+
+> While the present studies use embodied robotic systems as the testbed,
+> the underlying question — when should an autonomous decision-making
+> system revise its model class rather than repair within it — is
+> domain-general and may extend beyond physical robotics.
+
+This framing does not change current scope or claims (see [PUBLIC_BOUNDARY.md](../PUBLIC_BOUNDARY.md)).
+It is documented here only to record the origin of the research question.
+
 ---
 
 ## Three sentences (public-safe)
@@ -137,4 +147,4 @@ Not tied to a single foundation model or simulator.
 
 ---
 
-*Updated 2026-07-29*
+*Updated 2026-07-31*
