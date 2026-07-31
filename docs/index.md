@@ -31,7 +31,7 @@ constant-velocity state expansion.
 [Project page](paper002/project_page.html) | [Manuscript PDF](paper002/paper002_manuscript_model_order_v1.1.pdf) | [Supplement](paper002/paper002_supplement_model_order_v1.1.pdf) | [Results and provenance](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md)
 
 [![Arm-level prediction, control, and success outcomes](paper002/figures/fig2_confirmatory_outcomes.png)](paper002/project_page.html)
-<br><sub>Static plot from frozen result artifact — real Isaac Sim viewport teaser pending GPU capture; see <a href="FIGURE_STANDARDS.md">figure standards</a>.</sub>
+<br><sub>Arm-level prediction, control, and success outcomes across the 400-cell confirmatory grid, plotted from the frozen result artifact.</sub>
 
 ### Confirmatory Result
 
@@ -104,7 +104,6 @@ arm is still given information it will have to estimate online. See the
 - Public code, configurations, trajectories, figures, and checksum manifests
 - Negative and design-stage results are published alongside positive ones, with
   the reasoning that produced them
-- Figures are real captures or plots from frozen artifacts, never generated — see [figure standards](FIGURE_STANDARDS.md)
 
 Paper 002 was independently conducted as personal research while Seonhye Gu
 was affiliated with the AI-Based Surgical Robot Innovation Lab. The affiliation

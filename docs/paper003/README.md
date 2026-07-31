@@ -46,12 +46,6 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 
 ---
 
-## Figures & tables
-
-No results yet (design stage). Once Isaac captures exist, this paper follows [FIGURE_STANDARDS.md](../FIGURE_STANDARDS.md) from the start: real viewport captures only, `figures/README.md` evidence index, and a dedicated `project_page.html` once there's a confirmatory result to show.
-
----
-
 ## Not claiming (public, draft)
 
 General causal discovery · relation invention outside the prepared operator · capability emergence outside the tested task family · clinical or hardware deployment.
@@ -69,4 +63,3 @@ General causal discovery · relation invention outside the prepared operator · 
 | [paper003_lit_positioning_v0.1.md](paper003_lit_positioning_v0.1.md) | Execution-horizon literature (Garg/Shkurti) — narrower, entry-framing only |
 | [Paper 002](../paper002/README.md) | Parent method this reuses (two-encounter protocol, expansion gate) |
 | [NAMING.md](../NAMING.md) | Program-level roadmap (Paper 003 row) |
-| [FIGURE_STANDARDS.md](../FIGURE_STANDARDS.md) | Figure/table convention this paper follows once it has results |

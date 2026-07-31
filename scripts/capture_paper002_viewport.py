@@ -2,8 +2,7 @@
 
 STATUS: prepared 2026-07-31, NOT YET RUN OR VALIDATED — no GPU/Isaac Lab
 available in the authoring session. Sanity-check output before promoting any
-PNG into docs/paper002/figures/ or citing it as a real capture; see
-docs/FIGURE_STANDARDS.md.
+PNG into docs/paper002/figures/ or citing it as a real capture.
 
 Distinct from the frozen confirmatory script (scripts/orbit_reach_drift.py):
 this does NOT touch confirmatory logic, seeds, or results. It is a read-only
@@ -102,7 +101,7 @@ def main() -> None:
                 f'  "capture_steps": {sorted(capture_steps)},\n'
                 f'  "task": "{args_cli.task}",\n'
                 '  "note": "Read-only visualization pass, not confirmatory data. '
-                'Promote selected PNGs to docs/paper002/figures/ per FIGURE_STANDARDS.md."\n'
+                'Review every frame before promoting any into docs/paper002/figures/."\n'
                 '}\n'
             ),
             encoding="utf-8",

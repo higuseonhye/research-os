@@ -16,4 +16,4 @@ python scripts/plot_paper002_model_order.py
 | `tables/*.csv` | Machine-readable manuscript tables |
 | `manifest.json` | Source and output SHA-256 hashes |
 
-Real Isaac Sim viewport frames (teaser image per [figure standards](../../FIGURE_STANDARDS.md)) are not yet captured — `bash scripts/capture_paper002_viewport.sh` is prepared but unrun (needs GPU/Isaac Lab). Sanity-check output before adding to this table.
+Every panel is plotted from the frozen confirmatory artifact. No rendered Isaac Sim viewport frame is included.
