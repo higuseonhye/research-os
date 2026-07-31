@@ -4,8 +4,7 @@
 # STATUS: prepared 2026-07-31, NOT YET RUN — no GPU/Isaac Lab available in the
 # authoring session. Run on VESSL/RunPod (Isaac Sim 4.1 + Isaac Lab, see
 # docs/paper002/vessl_runbook_v0.1.md), then sanity-check every PNG before
-# promoting into docs/paper002/figures/ or docs/index.md. See
-# docs/FIGURE_STANDARDS.md.
+# promoting into docs/paper002/figures/ or docs/index.md.
 #
 # Read-only visualization pass — does NOT touch the frozen confirmatory
 # script (scripts/orbit_reach_drift.py) or its results.

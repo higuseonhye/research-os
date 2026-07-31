@@ -93,7 +93,6 @@ Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper
 | Paper 001 hub | [`docs/paper1/README.md`](docs/paper1/README.md) |
 | Paper 002 hub | [`docs/paper002/README.md`](docs/paper002/README.md) · [project page](docs/paper002/project_page.html) |
 | Paper 003 hub | [`docs/paper003/README.md`](docs/paper003/README.md) |
-| Figure standards | [`docs/FIGURE_STANDARDS.md`](docs/FIGURE_STANDARDS.md) |
 | EXP-SURG-003 | [`experiments/.../exp_surg_003_wm_expansion/README.md`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md) |
 | Study 002 hub | [`docs/stage2/README.md`](docs/stage2/README.md) |
 | Research question v1.0 | [`docs/paper1/research_question.md`](docs/paper1/research_question.md) |
