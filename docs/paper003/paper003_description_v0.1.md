@@ -214,9 +214,9 @@ Success degrades with tolerance for *all* arms simultaneously and never opens a 
 
 In a continuous reach-and-hold task, the binding constraint is not *where the target will be* but *whether the effector can match the target's instantaneous motion*. The target moves ~3.6 mm/step; holding a 2–3 mm tolerance requires velocity matching, which none of the arms do — they all aim at a point. Conversely, at loose tolerance every arm succeeds by hovering near the oscillation's mean, which zero-order tracking finds for free.
 
-**Implication for the design:** a continuous-tracking task cannot express capability threshold crossing here. The metric likely needs a task with a **commitment point** — a moment where the agent must commit an irreversible action (grasp, intercept, place) and a wrong prediction fails outright, rather than being averaged away by continuous re-aiming. Designing that task is the open item that now gates the prereg.
+**Implication for the design:** a continuous-tracking task cannot express capability threshold crossing here. The metric needs a task with a **commitment point** — a moment where the agent must commit an irreversible action (grasp, intercept, place) and a wrong prediction fails outright, rather than being averaged away by continuous re-aiming.
 
-This does not falsify the RQ, but it does mean the central endpoint is **unvalidated**, and the paper should not be preregistered until a task is found that produces the transition.
+**Resolved (same day):** such a task was constructed and does produce the transition — arm B at 0.00, arm D at 1.00. See [paper003_commitment_task_v0.1.md](paper003_commitment_task_v0.1.md). The endpoint is no longer unvalidated, though it remains unimplemented in Isaac and arm D's online estimation of the reference pattern is still untested.
 
 ---
 
@@ -224,7 +224,9 @@ This does not falsify the RQ, but it does mean the central endpoint is **unvalid
 
 - [x] Concrete simulator choice — Isaac Sim / ORBIT Reach, continuing Paper 002 (locked 2026-07-31)
 - [x] Exact form of the relation — physical coupling via an oscillating `reference_object` that sweeps through the target band (locked 2026-07-31; a single pass-by is disqualified, see above)
-- [ ] **A task with a commitment point** — blocking. The first closed-loop probe (above) failed to produce a capability threshold in a continuous reach-and-hold task; a task where a wrong prediction fails outright is needed before the endpoint is credible
+- [x] **A task with a commitment point** — resolved 2026-07-31, see [commitment task doc](paper003_commitment_task_v0.1.md)
+- [ ] **Arm D must estimate the reference pattern online** — in the commitment-task simulation arm D is *given* the tray's burst pattern. Required before any confirmatory run
+- [ ] Isaac implementation of the commit-and-dispense structure (may replace the oscillating-coupling reach world, which was built for the tracking task)
 - [ ] Decide whether the elastic anchor becomes part of the specified environment (it is what makes the phenomenon sustained, but it is intrinsic target dynamics, not the relation itself — arms B and C should arguably be given it too)
 - [ ] Threshold value(s) for capability crossing — needs prereg, not post-hoc
 - [ ] Re-derive gate thresholds from Isaac data — the CPU proxy has no contact noise and gives an unrealistically clean `proximity_contrast` of exactly 1.0
