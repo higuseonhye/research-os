@@ -1,6 +1,6 @@
 # Naming guide — research program
 
-> **Updated:** 2026-07-29 · Independent personal research
+> **Updated:** 2026-07-31 · Independent personal research
 
 ---
 
@@ -28,8 +28,9 @@ Full architecture · expansion levels · taxonomy: [paper002_wm_system_expansion
 
 | Label | Experiment ID | Role | Status |
 | --- | --- | --- | --- |
-| **Paper 002** | **EXP-SURG-003** | **Structural WM expansion** · hidden mode minimal cell | 🔄 design v0.1 |
-| **Paper 003+** | TBD | Missing relations · human representation · surgical exceptions | design |
+| **Paper 002** | **EXP-SURG-003** | **Structural WM expansion** · hidden mode minimal cell | ✅ confirmatory complete · [submission v1.1](paper002/README.md) |
+| **Paper 003** | TBD | **Missing causal relation** · capability-threshold expansion (not just error reduction) | 🔄 design v0.1 · [docs](paper003/README.md) |
+| **Paper 004+** | TBD | Human representation · surgical exceptions | design |
 
 Paper 001 **not required** as logical prerequisite for Paper 002.
 
@@ -44,8 +45,8 @@ Paper 001 **not required** as logical prerequisite for Paper 002.
 | Ep1 fail · Ep2 novel drift | ✅ | — |
 | Expansion gate (parsimony) | ✅ | — |
 | Reality \| Belief figures | ✅ | — |
-| Missing causal variables | — | Paper 003+ |
-| Human-in-the-loop expansion | — | later |
+| Missing causal variables | — | [Paper 003](paper003/README.md) |
+| Human-in-the-loop expansion | — | Paper 004+ |
 | Mock→physics curriculum | — | archived |
 
 ---
