@@ -104,6 +104,26 @@ A physical breakfast robot is a **demonstration and external-validity surface**,
 
 ---
 
+## Live demo tool
+
+[`scripts/demo_commitment_live.py`](../../scripts/demo_commitment_live.py) makes the finding touchable. Two markers under an overhead camera — a plate (target) and a pusher (reference tool). A viewer nudges the plate and presses SPACE at the moment they would release a topping; it lands `latency` frames later, wherever the plate is by then. All three arms' predicted landing points are drawn, and hit/miss tallies accumulate.
+
+Arm D's advantage here is physically real rather than scripted: while the pusher is approaching but not yet touching, B and C both say *the plate will not move*, and D says *contact is imminent, it will*.
+
+```bash
+python scripts/demo_commitment_live.py --source sim      # check it runs, no camera
+python scripts/demo_commitment_live.py --source webcam   # the real thing
+```
+
+**This is a demo, not an experiment** — it collects no preregistered data and must not be cited as evidence. Two specific cautions are built into the tool:
+
+- In `--source sim`, arm D predicts with exactly the coupling model that generates the motion, so its 100% is self-fulfilling. Sim mode only checks that the tool runs.
+- Outside the contact-imminent regime the plate does not move and every arm is trivially right. The overlay states this, and auto-commit only fires inside the regime — otherwise the demo would appear to show a difference that is not there. This is the same posture as the confirmatory design's eligibility screen.
+
+A first synthetic run gave B 50%, C 50%, D 100% under the contact-imminent gate. Committing at uniformly random moments instead gave B 84%, C 100%, D 95% — i.e. **random commit timing hides the effect entirely**, which is worth knowing before anyone stages this.
+
+---
+
 ## What this changes upstream
 
 - The capability-crossing endpoint moves from **unvalidated** to **constructible** — a task shape now exists that produces it.
