@@ -129,11 +129,58 @@ capability_crossing(a) = |{ t in T : success_rate(t, A_baseline) ≈ 0
 
 ---
 
+## CPU-proxy design evidence (2026-07-31)
+
+Implemented in [`scripts/wm_expansion/relation_dynamics.py`](../../scripts/wm_expansion/relation_dynamics.py), pinned by [`scripts/test_paper003_relation_dynamics.py`](../../scripts/test_paper003_relation_dynamics.py). Design-stage only — **not preregistered, not run in Isaac.**
+
+### What the coupling has to look like
+
+The first two coupling designs failed, and the failures are informative:
+
+| Design | Outcome | Why it fails |
+| --- | --- | --- |
+| Reference sweeps past once | Sustained one-directional push (directional consistency 0.92) | Looks like drift → **arm C absorbs it** → no contribution over Paper 002 |
+| Reference oscillates at an offset | Target escapes the band after the first bump | Phenomenon dies out; no sustained signal |
+| **Reference oscillates *through* the target band** | Repeated, direction-alternating bumps | Constant velocity cannot extrapolate it — this is the usable design |
+
+The relation must produce **episodic, direction-varying** motion. A coupling that produces smooth drift is a Paper 002 experiment wearing a different label.
+
+### Gate separation achieved
+
+Two statistics, both required to fire (positive evidence + negative evidence against arm C):
+
+| Case | `proximity_contrast` | `constant_velocity_gain` | Gate fires |
+| --- | ---: | ---: | :---: |
+| **Coupling (relation present)** | +1.000 | −0.641 | **10/10** |
+| Drift (Paper 002 positive) | −1.000 | +0.899 | 0/10 |
+| Static | 0.000 | 0.000 | 0/10 |
+| Observation noise | −1.000 | −9.049 | 0/10 |
+
+The drift row is the important one: the relation gate stays silent on exactly the condition Paper 002's gate fires on.
+
+### The finding that constrains the endpoint
+
+Open-loop H=10 prediction error under coupling, 10 seeds:
+
+| Arm | Error |
+| --- | ---: |
+| B zero-order | 9.35 mm |
+| C constant velocity | 9.96 mm (worse than B — CV actively hurts) |
+| **D relation** | **8.21 mm** |
+
+Arm D wins, but by **~1.1 mm** — against Paper 002's 10.8 mm C−B gap and its 5 mm preregistered criterion. Sweeping coupling gain 0.4→0.8 and geometry *shrinks* the advantage (best observed −1.66 mm), because a stronger push ejects the target from the interaction zone faster and makes the forward roll-out less accurate.
+
+**Consequence:** Paper 003 cannot rest on a Paper-002-style prediction-error contrast. This is not a setback for the RQ — it is the RQ. The paper's claim was always about achievable-task space rather than error reduction, and this result says that framing is *required*, not optional. It also raises the stakes: the capability-crossing effect must be demonstrated in closed loop, and it has not been yet.
+
+---
+
 ## Open design questions (to resolve before prereg)
 
 - [x] Concrete simulator choice — Isaac Sim / ORBIT Reach, continuing Paper 002 (locked 2026-07-31)
-- [x] Exact form of the relation — physical coupling via `reference_object` (locked 2026-07-31)
+- [x] Exact form of the relation — physical coupling via an oscillating `reference_object` that sweeps through the target band (locked 2026-07-31; a single pass-by is disqualified, see above)
+- [ ] **Closed-loop capability variants** — the open question that now matters most: construct graded task variants and show a 0% → achievable transition under arm D that arms B and C do not reach
 - [ ] Threshold value(s) for capability crossing — needs prereg, not post-hoc
+- [ ] Re-derive gate thresholds from Isaac data — the CPU proxy has no contact noise and gives an unrealistically clean `proximity_contrast` of exactly 1.0
 - [ ] Whether Arm C (mode expansion) needs its own sub-gate or can reuse Paper 002's trained expert directly
 
 ---

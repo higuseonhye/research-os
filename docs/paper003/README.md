@@ -37,6 +37,9 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] Lit review — execution-horizon framing vs internal RQ
 - [x] Related work — relational/graph world models, capability-boundary framing precedent
 - [x] Environment / simulator choice locked — Isaac Sim/ORBIT Reach continuation, physical-coupling relation
+- [x] Relation module + gate implemented and separated on a CPU proxy ([`relation_dynamics.py`](../../scripts/wm_expansion/relation_dynamics.py), 10 tests)
+- [ ] **Closed-loop capability variants** — demonstrate a 0% → achievable transition (open-loop prediction gain is only ~1 mm, so this must carry the claim)
+- [ ] Re-derive gate thresholds from Isaac data
 - [ ] Prereg
 
 ---
