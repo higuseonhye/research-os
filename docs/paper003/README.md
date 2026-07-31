@@ -37,6 +37,11 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] Lit review — execution-horizon framing vs internal RQ
 - [x] Related work — relational/graph world models, capability-boundary framing precedent
 - [x] Environment / simulator choice locked — Isaac Sim/ORBIT Reach continuation, physical-coupling relation
+- [x] Relation module + gate implemented and separated on a CPU proxy ([`relation_dynamics.py`](../../scripts/wm_expansion/relation_dynamics.py), 10 tests)
+- [x] **Capability threshold crossing — constructed.** A continuous reach-and-hold task produced no gap; a [commitment-point task](paper003_commitment_task_v0.1.md) does (arm B 0.00, arm D 1.00, arm B's lockout speed predicted exactly from task geometry).
+- [ ] Arm D must **estimate** the reference pattern online — it is currently given it
+- [ ] Isaac implementation of the commit-and-dispense structure
+- [ ] Re-derive gate thresholds from Isaac data
 - [ ] Prereg
 
 ---
@@ -59,6 +64,7 @@ General causal discovery · relation invention outside the prepared operator · 
 | --- | --- |
 | [paper003_rq_v0.1.md](paper003_rq_v0.1.md) | Central question, sub-questions, framing note |
 | [paper003_description_v0.1.md](paper003_description_v0.1.md) | Method draft, protocol, capability-threshold metric definition |
+| [paper003_commitment_task_v0.1.md](paper003_commitment_task_v0.1.md) | The task shape that makes capability threshold crossing measurable, and the breakfast-domain scope boundary |
 | [paper003_related_work_v0.1.md](paper003_related_work_v0.1.md) | Core novelty comparison — relational/graph world models, capability-boundary framing precedent |
 | [paper003_lit_positioning_v0.1.md](paper003_lit_positioning_v0.1.md) | Execution-horizon literature (Garg/Shkurti) — narrower, entry-framing only |
 | [Paper 002](../paper002/README.md) | Parent method this reuses (two-encounter protocol, expansion gate) |
