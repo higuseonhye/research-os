@@ -1,8 +1,10 @@
 # research-os
 
-> Public Physical AI research portfolio — Paper 001 recoverability @ S (Tier C) · Paper 002 WM adequacy (EXP-SURG-003) · **Mismatch Lab** (public product spec)
+> Public research portfolio — [program](docs/program/README.md) · Paper 001 recoverability @ S (Tier C) · Paper 002 model-order expansion (Tier C) · Paper 003 relational expansion (design) · **Mismatch Lab** (public spec)
 
-**Public research portfolio** for a focused question in Physical AI: how embodied systems should respond when reality no longer matches their expectations.
+**Program question:** when should an intelligent system decide that its current understanding of the world is no longer sufficient — and how should it construct a better one? See [`docs/program/README.md`](docs/program/README.md).
+
+**Physical AI is the current testbed, not the boundary of the question.** Embodiment is used because it makes mismatch, timing, intervention, and recovery observable and consequential. The same question is stated domain-generally in the [vision narrative](docs/mismatch_lab/vision_narrative_v0.2.md#domain-generality-orientation-only).
 
 This repository contains **promoted research evidence only**—research questions, reproducible experiments, protocols, figures, and clearly tiered claims. It is not a career diary, lab notebook, or private strategy workspace.
 
@@ -10,10 +12,11 @@ This repository contains **promoted research evidence only**—research question
 | --- | --- |
 | **Paper 001 (EXP-SURG-001)** | After mismatch @ **S**, how do **intervention choice** and **timing** determine **successful resolution**? |
 | **Paper 002 (EXP-SURG-003)** | After K failed L1 repairs, does **L3 structural expansion** beat parameter repair on novel drift — with **adequacy gate** validity (H4)? |
+| **Paper 003** (design) | When the gap is a missing **relation** rather than a mode, does expansion open **task capability** that repair cannot reach? |
 | **Mismatch Lab** | Public lab spec — **Robot Diff** · model adequacy layer · [hub](docs/mismatch_lab/README.md) |
 | **Study 002 (EXP-SURG-002)** | Pilot: dream curriculum (Tier B · archived) |
 
-**Latest (2026-07-30):** **Paper 001** complete. **Paper 002 model-order confirmatory passed**: 400/400 valid cells, C-B H=10 prediction error -10.806 mm, and C-B fixed-horizon final distance -13.304 mm. A venue-neutral manuscript and supplement v1.1, LaTeX sources, review PDFs, and reproducible figures are published. **Mismatch Lab** v0.1 spec published.
+**Latest (2026-07-31):** **Paper 003** design advanced — relation module and adequacy gate implemented, and a capability threshold crossing constructed on a commitment-point task (arm B 0.00 vs arm D 1.00, with arm B's lockout speed predicted from task geometry). Not preregistered, not run in Isaac. **Paper 002** submission package v1.1 published (400/400 valid cells; C−B H=10 prediction error −10.806 mm, final distance −13.304 mm). **Paper 001** complete. **Mismatch Lab** v0.1 spec published.
 
 ---
 
@@ -30,9 +33,19 @@ Long-term vision (research program only): [docs/mismatch_lab/vision_narrative_v0
 
 ## Research direction
 
-**Long-term (L0):** When reality cannot be explained by the current **model class**, how should an embodied system revise the **architecture and composition** of its world-modeling system?
+```text
+Program question   When is the current understanding insufficient, and how should a better one be built?
+        ↓
+Testbed (now)      Physical AI · embodied simulation — first domain, not the boundary
+        ↓
+Projects           Paper 001 · Paper 002 · Paper 003 · Mismatch Lab
+```
+
+**Long-term (L0):** When reality cannot be explained by the current **model class**, how should a system revise the **architecture and composition** of its world-modeling system?
 
 **Near-term program:** failure-driven representation reconstruction · **model adequacy decision** · latent as **observation** · recoverability as **measurement window** · Isaac/ORBIT embodied sim.
+
+Full program framing, application policy, and the rule for admitting new work: [`docs/program/README.md`](docs/program/README.md).
 
 **Public product wedge (2026–28):** understand robot rollouts (**Diff · Replay · Explain**) → detect when differences imply **structural model inadequacy** — not auto-fix the robot on day one.
 
@@ -75,9 +88,12 @@ Full status: Paper 001 [`docs/paper1/status.md`](docs/paper1/status.md) · Paper
 | | Link |
 | --- | --- |
 | Portfolio landing | **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)** · [`docs/index.md`](docs/index.md) |
+| **Research program** | [`docs/program/README.md`](docs/program/README.md) — the question all of this serves |
 | **Mismatch Lab** | [`docs/mismatch_lab/README.md`](docs/mismatch_lab/README.md) · [Diff demo](docs/mismatch_lab/diff_explorer_v0.1.html) · [public scope](docs/mismatch_lab/PUBLIC_SCOPE.md) |
 | Paper 001 hub | [`docs/paper1/README.md`](docs/paper1/README.md) |
-| Paper 002 hub | [`docs/paper002/README.md`](docs/paper002/README.md) |
+| Paper 002 hub | [`docs/paper002/README.md`](docs/paper002/README.md) · [project page](docs/paper002/project_page.html) |
+| Paper 003 hub | [`docs/paper003/README.md`](docs/paper003/README.md) |
+| Figure standards | [`docs/FIGURE_STANDARDS.md`](docs/FIGURE_STANDARDS.md) |
 | EXP-SURG-003 | [`experiments/.../exp_surg_003_wm_expansion/README.md`](experiments/surgical_intelligence/exp_surg_003_wm_expansion/README.md) |
 | Study 002 hub | [`docs/stage2/README.md`](docs/stage2/README.md) |
 | Research question v1.0 | [`docs/paper1/research_question.md`](docs/paper1/research_question.md) |
@@ -98,6 +114,11 @@ python scripts/build_paper002_overleaf_zip.py
 # Historical Paper 002 mock smoke (CPU)
 python scripts/run_exp_surg_003_pilot.py --smoke
 
+# Paper 003 design checks (CPU only)
+cd scripts && python -m unittest test_paper003_relation_dynamics test_paper003_commitment_task
+python -m wm_expansion.commitment_task          # capability threshold table
+python demo_commitment_live.py --source sim     # live demo, no camera needed
+
 # Paper 001
 python scripts/run_study1a.py --mock
 export STUDY1D_FULL=1
@@ -113,13 +134,15 @@ VESSL: [`docs/paper002/vessl_runbook_v0.1.md`](docs/paper002/vessl_runbook_v0.1.
 
 | Path | Contents |
 | --- | --- |
+| `docs/program/` | The program question, application policy, and admission rule |
 | `docs/mismatch_lab/` | Public lab spec · API schema · benchmark · homepage copy |
 | `docs/paper1/` | Paper 001 RQ · status · working paper |
-| `docs/paper002/` | Paper 002 manuscript · figures · frozen preregistration |
+| `docs/paper002/` | Paper 002 manuscript · figures · frozen preregistration · project page |
+| `docs/paper003/` | Paper 003 RQ · method · related work · commitment-point task (design) |
 | `experiments/surgical_intelligence/exp_surg_003_*` | Paper 002 pilot, confirmatory records, and Isaac trajectories |
 | `experiments/surgical_intelligence/exp_surg_001_*` | Paper 1 configs · Tier B/C results |
-| `scripts/wm_expansion/` | Mock env · WM · gate · protocol |
-| `scripts/` | Mock + RunPod + VESSL entry points |
+| `scripts/wm_expansion/` | Mock env · WM · gate · protocol · relation module · commitment task |
+| `scripts/` | Mock + RunPod + VESSL entry points · demos |
 
 ---
 

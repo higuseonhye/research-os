@@ -1,18 +1,32 @@
-# Seonhye Gu | Physical AI Research
+# Seonhye Gu | Research Portfolio
 
-Independent research on model adequacy, embodied world models, and failure
-analysis in simulation.
+**When should an intelligent system decide that its current understanding of the
+world is no longer sufficient — and how should it construct a better one?**
 
-[GitHub](https://github.com/higuseonhye/research-os) | [Paper 002](paper002/README.md) | [Mismatch Lab](mismatch_lab/README.md)
+That question is the through-line of everything below. Physical AI is the
+current testbed, not the boundary of the question: embodiment is used because it
+makes mismatch, timing, intervention, and recovery observable and consequential.
 
-## Current Work: Paper 002
+[Research program](program/README.md) | [GitHub](https://github.com/higuseonhye/research-os) | [Mismatch Lab](mismatch_lab/README.md)
+
+## The Sequence
+
+Each paper changes the decision under test, not the question.
+
+| | Decision under test | Status |
+| --- | --- | --- |
+| **Paper 001** | Is the failure recoverable at all? | Tier C complete |
+| **Paper 002** | Repair the parameters, or change the model class? | Tier C complete |
+| **Paper 003** | Does changing it open capability a repair cannot reach? | Design |
+
+## Paper 002 — Failure-Conditioned Model-Order Expansion
 
 **When should an embodied agent expand its predictive model instead of
 continuing to retune it?**
 
-Paper 002 studies that decision in a preregistered Isaac Sim target-drift
-experiment. After the best allowed zero-order parameter repair, a rule-based
-adequacy gate can activate a prepared constant-velocity state expansion.
+A preregistered Isaac Sim target-drift experiment. After the best allowed
+zero-order parameter repair, a rule-based adequacy gate can activate a prepared
+constant-velocity state expansion.
 
 [Project page](paper002/project_page.html) | [Manuscript PDF](paper002/paper002_manuscript_model_order_v1.1.pdf) | [Supplement](paper002/paper002_supplement_model_order_v1.1.pdf) | [Results and provenance](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md)
 
@@ -40,12 +54,45 @@ target-drift family. It does not establish general world-model expansion,
 autonomous variable invention, hardware transfer, tissue or contact validity,
 clinical efficacy, or peer-reviewed publication.
 
+## Paper 003 — Beyond Error Reduction (design)
+
+**When the gap is a missing *relation* between entities rather than a missing
+mode, does structural expansion open task capability that repair cannot reach?**
+
+Paper 002 measured success as lower prediction error. Paper 003 asks a harder
+question: does expansion move task variants from **unachievable to achievable**?
+
+Two design-stage findings, both from running the code rather than reasoning
+about it:
+
+- **The relation gate separates cleanly.** It fires 10/10 on proximity-driven
+  coupling and **0/10** on the persistent drift Paper 002 handles — necessary,
+  because firing there would mean the existing mode operator already explains
+  the failure.
+- **The task shape decides whether anything is measurable at all.** In a
+  continuous reach-and-hold task the arms were indistinguishable, because
+  continuous re-aiming averages prediction error away. Adding an **irreversible
+  commitment** separated them completely:
+
+| Task | Parameter repair | Mode expansion | Relation expansion |
+| --- | ---: | ---: | ---: |
+| Continuous tracking | 0.30 | 0.25 | 0.35 |
+| **Commitment point** | **0.00** | 0.36 | **1.00** |
+
+Arm B's lockout speed is predicted from the task geometry rather than fitted, so
+it can be preregistered as a point prediction.
+
+**Design-stage only** — not preregistered, not run in Isaac, and the relation
+arm is still given information it will have to estimate online. See the
+[Paper 003 hub](paper003/README.md) and
+[commitment-point task](paper003/paper003_commitment_task_v0.1.md).
+
 ## Research Portfolio
 
 | Project | Question | Evidence |
 | --- | --- | --- |
 | **Paper 002 / EXP-SURG-003** | When does structured failure warrant model-order expansion after parameter repair? | Tier C confirmatory complete; [project page](paper002/project_page.html) · [manuscript v1.1](paper002/paper002_manuscript_model_order_v1.1.pdf) |
-| **Paper 003** | When failure reveals a missing *relation* (not mode), does expansion unlock task capability, not just lower error? | Design v0.1; [docs](paper003/README.md) |
+| **Paper 003** | When failure reveals a missing *relation*, does expansion unlock capability, not just lower error? | Design v0.1; [docs](paper003/README.md) |
 | **Paper 001 / EXP-SURG-001** | Is a failed state recoverable under a same-state counterfactual intervention? | Tier C complete; [working paper](paper1/paper001_recoverability_complete.pdf) |
 | **Mismatch Lab** | How can robot rollouts expose behavior differences that may indicate model inadequacy? | Public specification and [Robot Diff demo](mismatch_lab/diff_explorer_v0.1.html) |
 
@@ -55,6 +102,8 @@ clinical efficacy, or peer-reviewed publication.
 - Process-isolated simulation cells with complete execution-validity checks
 - Paired continuous endpoints, negative controls, and reproducible artifacts
 - Public code, configurations, trajectories, figures, and checksum manifests
+- Negative and design-stage results are published alongside positive ones, with
+  the reasoning that produced them
 - Figures are real captures or plots from frozen artifacts, never generated — see [figure standards](FIGURE_STANDARDS.md)
 
 Paper 002 was independently conducted as personal research while Seonhye Gu
