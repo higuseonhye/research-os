@@ -14,9 +14,10 @@ Paper 002 studies that decision in a preregistered Isaac Sim target-drift
 experiment. After the best allowed zero-order parameter repair, a rule-based
 adequacy gate can activate a prepared constant-velocity state expansion.
 
-[Read the manuscript PDF](paper002/paper002_manuscript_model_order_v1.1.pdf) | [Supplement](paper002/paper002_supplement_model_order_v1.1.pdf) | [Results and provenance](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md)
+[Project page](paper002/project_page.html) | [Manuscript PDF](paper002/paper002_manuscript_model_order_v1.1.pdf) | [Supplement](paper002/paper002_supplement_model_order_v1.1.pdf) | [Results and provenance](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md)
 
-![Confirmatory prediction and control outcomes](paper002/figures/fig2_confirmatory_outcomes.png)
+[![Arm-level prediction, control, and success outcomes](paper002/figures/fig2_confirmatory_outcomes.png)](paper002/project_page.html)
+<br><sub>Static plot from frozen result artifact — real Isaac Sim viewport teaser pending GPU capture; see <a href="FIGURE_STANDARDS.md">figure standards</a>.</sub>
 
 ### Confirmatory Result
 
@@ -43,7 +44,8 @@ clinical efficacy, or peer-reviewed publication.
 
 | Project | Question | Evidence |
 | --- | --- | --- |
-| **Paper 002 / EXP-SURG-003** | When does structured failure warrant model-order expansion after parameter repair? | Tier C confirmatory complete; [manuscript v1.1](paper002/paper002_manuscript_model_order_v1.1.pdf) |
+| **Paper 002 / EXP-SURG-003** | When does structured failure warrant model-order expansion after parameter repair? | Tier C confirmatory complete; [project page](paper002/project_page.html) · [manuscript v1.1](paper002/paper002_manuscript_model_order_v1.1.pdf) |
+| **Paper 003** | When failure reveals a missing *relation* (not mode), does expansion unlock task capability, not just lower error? | Design v0.1; [docs](paper003/README.md) |
 | **Paper 001 / EXP-SURG-001** | Is a failed state recoverable under a same-state counterfactual intervention? | Tier C complete; [working paper](paper1/paper001_recoverability_complete.pdf) |
 | **Mismatch Lab** | How can robot rollouts expose behavior differences that may indicate model inadequacy? | Public specification and [Robot Diff demo](mismatch_lab/diff_explorer_v0.1.html) |
 
@@ -53,6 +55,7 @@ clinical efficacy, or peer-reviewed publication.
 - Process-isolated simulation cells with complete execution-validity checks
 - Paired continuous endpoints, negative controls, and reproducible artifacts
 - Public code, configurations, trajectories, figures, and checksum manifests
+- Figures are real captures or plots from frozen artifacts, never generated — see [figure standards](FIGURE_STANDARDS.md)
 
 Paper 002 was independently conducted as personal research while Seonhye Gu
 was affiliated with the AI-Based Surgical Robot Innovation Lab. The affiliation
@@ -63,4 +66,4 @@ Contact: [@higuseonhye](https://github.com/higuseonhye)
 
 ---
 
-*Updated 2026-07-30*
+*Updated 2026-07-31*

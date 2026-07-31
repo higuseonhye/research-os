@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Paper 002 — Failure-Conditioned Model-Order Expansion</title>
+  <meta name="description" content="When parameter repair is not enough: failure-conditioned model-order expansion for embodied control. Isaac Sim confirmatory result, Seonhye Gu." />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --warn: #d29922;
+      --danger: #f85149;
+      --ok: #3fb950;
+      --font: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #ffffff;
+        --surface: #f6f8fa;
+        --border: #d0d7de;
+        --text: #1f2328;
+        --muted: #57606a;
+        --accent: #0969da;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: var(--accent); }
+    header, main, footer {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem;
+    }
+    header { border-bottom: 1px solid var(--border); }
+    h1 { font-size: 1.5rem; margin: 0 0 0.4rem; font-weight: 600; }
+    h2 { font-size: 1.1rem; margin: 2rem 0 0.75rem; font-weight: 600; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+    h2:first-of-type { border-top: none; padding-top: 0; }
+    .sub { color: var(--muted); font-size: 0.9rem; margin: 0.25rem 0 0; }
+    .status-line { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0 0; }
+    .pill {
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: 1px solid var(--border);
+    }
+    .pill.ok { border-color: var(--ok); color: var(--ok); }
+    .pill.info { border-color: var(--accent); color: var(--accent); }
+    .pill.neutral { color: var(--muted); }
+    .links { margin: 1rem 0 0; font-size: 0.9rem; }
+    .links a { margin-right: 0.75rem; }
+    .tagline { font-size: 1.05rem; margin: 0.5rem 0 0; }
+    figure { margin: 1rem 0; }
+    figure img { width: 100%; border: 1px solid var(--border); border-radius: 6px; display: block; background: var(--surface); }
+    figcaption { color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 0.75rem 0; }
+    th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.02em; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; }
+    .card.boundary-yes { border-left: 3px solid var(--ok); }
+    .card.boundary-no { border-left: 3px solid var(--danger); }
+    .rq { font-size: 1.05rem; font-style: italic; margin: 0; }
+    footer { border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>When Parameter Repair Is Not Enough</h1>
+    <p class="sub">Failure-Conditioned Model-Order Expansion for Embodied Control · Seonhye Gu · Independent research</p>
+    <div class="status-line">
+      <span class="pill ok">Tier C confirmatory complete</span>
+      <span class="pill info">Isaac Sim 4.1 / ORBIT</span>
+      <span class="pill neutral">Not peer-reviewed</span>
+    </div>
+    <div class="links">
+      <a href="paper002_manuscript_model_order_v1.1.pdf">Manuscript (PDF)</a>
+      <a href="paper002_supplement_model_order_v1.1.pdf">Supplement (PDF)</a>
+      <a href="https://github.com/higuseonhye/research-os/tree/master/docs/paper002">Code &amp; docs</a>
+      <a href="https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md">Results artifact</a>
+    </div>
+  </header>
+
+  <main>
+    <p class="tagline">An embodied controller can fail because its parameters are wrong, or because its model is missing a state variable the dynamics actually depend on — this paper tests, in simulation, whether observed failure evidence can tell those two cases apart.</p>
+
+    <h2>Central question</h2>
+    <p class="rq">"When persistent, structured task failure survives the best repair available inside the current model class, does a prepared increase in model order improve prediction-linked control without nominal regression?"</p>
+
+    <h2>Teaser</h2>
+    <figure>
+      <img src="figures/fig2_confirmatory_outcomes.png" alt="Arm-level prediction, control, and success outcomes across the confirmatory grid" />
+      <figcaption>Fig. 2 — Arm-level prediction, control, and success outcomes, 400/400 valid confirmatory cells. <em>Static plot from frozen result artifact — real Isaac Sim viewport capture pending GPU run; see <a href="../FIGURE_STANDARDS.md">figure standards</a>.</em></figcaption>
+    </figure>
+
+    <h2>Approach</h2>
+    <figure>
+      <img src="figures/fig1_confirmatory_protocol.png" alt="Preregistered protocol diagram: shared drift trace, zero-order repair, adequacy gate, four-arm comparison" />
+      <figcaption>Fig. 1 — Preregistered protocol and arms.</figcaption>
+    </figure>
+    <p>In an Isaac Sim surgical-reach environment, a zero-order target model is exposed to persistent drift on a shared Episode 1 trace, then repaired within its own model class. A preregistered adequacy gate asks whether the remaining residual is persistent, directional, and better explained by a prepared constant-velocity alternative. Episode 2 compares four arms — frozen zero order, repaired zero order, gated constant velocity, and a velocity oracle — while holding the Cartesian controller fixed across 10 fresh seeds &times; 10 fresh drift conditions, every seed-arm-condition cell in its own Isaac process.</p>
+
+    <h2>Results</h2>
+    <table>
+      <thead>
+        <tr><th>Endpoint</th><th class="num">Repaired zero order (B)</th><th class="num">Gated constant velocity (C)</th><th class="num">C &minus; B</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>H=10 prediction error</td><td class="num">18.401 mm</td><td class="num">7.595 mm</td><td class="num">&minus;10.806 mm [&minus;11.360, &minus;10.331]</td></tr>
+        <tr><td>Fixed-horizon final distance</td><td class="num">18.905 mm</td><td class="num">5.601 mm</td><td class="num">&minus;13.304 mm [&minus;13.599, &minus;12.982]</td></tr>
+        <tr><td>20&nbsp;mm resolution rate</td><td class="num">76%</td><td class="num">100%</td><td class="num">secondary</td></tr>
+        <tr><td>Static retention</td><td class="num">10/10</td><td class="num">10/10</td><td class="num">non-inferior</td></tr>
+      </tbody>
+    </table>
+    <figure>
+      <img src="figures/fig3_condition_effects.png" alt="C minus B effect size across all ten fresh drift conditions" />
+      <figcaption>Fig. 3 — C&minus;B effects across all ten fresh conditions, favorable in 100/100 paired cells on both continuous endpoints.</figcaption>
+    </figure>
+    <p>The adequacy gate fired on 100/100 persistent-drift trials and 0/100 each of static, observation-noise, and single-impulse controls — no missing cells, unexpected resets, or forbidden-region violations across the complete grid.</p>
+    <figure>
+      <img src="figures/fig5_gate_and_retention.png" alt="Gate specificity and static retention controls" />
+      <figcaption>Fig. 5 — Gate specificity (drift vs. controls) and static retention.</figcaption>
+    </figure>
+
+    <h2>Claim boundary</h2>
+    <div class="card boundary-yes">
+      <strong>Supported:</strong> in the specified Isaac target-drift family, structured failure after zero-order repair warrants a prepared velocity-state expansion that improves prediction-linked control without static regression.
+    </div>
+    <div class="card boundary-no">
+      <strong>Not supported:</strong> unconstrained model invention, arbitrary world-model expansion, tissue/contact validity, hardware transfer, clinical efficacy, or operating-room deployment.
+    </div>
+
+    <h2>More</h2>
+    <p>Full method, related work, and reproduction instructions: <a href="README.md">docs/paper002/README.md</a>. Program context and what comes next: <a href="../paper003/README.md">Paper 003</a> — missing causal relation, capability-threshold expansion. <a href="../NAMING.md">NAMING.md</a> — full program roadmap.</p>
+  </main>
+
+  <footer>
+    <p>Independently conducted as personal research while affiliated with the AI-Based Surgical Robot Innovation Lab. Affiliation is for identification only, not sponsorship or endorsement. <a href="https://github.com/higuseonhye">@higuseonhye</a></p>
+  </footer>
+</body>
+</html>

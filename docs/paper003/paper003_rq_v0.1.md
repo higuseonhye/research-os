@@ -65,6 +65,7 @@ Paper 003 is **not** required to follow Paper 002 sequentially in execution, but
 | Doc | Path |
 | --- | --- |
 | Description / method draft | [paper003_description_v0.1.md](paper003_description_v0.1.md) |
+| Related work | [paper003_related_work_v0.1.md](paper003_related_work_v0.1.md) |
 | Paper 002 description (parent method) | [paper002_description_wm_expansion_v0.1.md](../paper002/paper002_description_wm_expansion_v0.1.md) |
 | Expansion taxonomy | [paper002_wm_system_expansion_v0.1.md](../paper002/paper002_wm_system_expansion_v0.1.md) |
 | Naming / program roadmap | [NAMING.md](../NAMING.md) |

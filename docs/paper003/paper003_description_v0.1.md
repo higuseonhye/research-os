@@ -30,9 +30,11 @@ Recoverability / error reduction is a **measurement window**, not the claim. The
 
 ---
 
-## Minimal environment (draft)
+## Minimal environment (locked v0.1)
 
-**True simulator:** target's dynamics depend on a second entity's state — e.g. `target_position` is coupled to `reference_object_position` (target tracks, is pushed by, or is occluded by a second moving body), hidden from the initial agent WM.
+**Simulator: Isaac Sim / ORBIT Reach, continuing Paper 002's environment** (not a cheaper proxy). Paper 002's own mock→physics rank-transfer direction was tried and archived — building a separate proxy for Paper 003 repeats a path this program already closed out. Reusing Isaac keeps the controller, VESSL runbook, and M0/M1 baseline directly comparable.
+
+**Relation form: physical coupling.** A second dynamic body (`reference_object`) intermittently contacts and displaces the target — target's dynamics depend on `reference_object_position`, hidden from the initial agent WM. Chosen over occlusion-dependent (too close to a perception problem, muddies the "missing relation in dynamics" claim) and multi-agent (adds a second controllable agent, out of scope for a restricted first cell).
 
 **Initial agent representation:**
 
@@ -129,8 +131,8 @@ capability_crossing(a) = |{ t in T : success_rate(t, A_baseline) ≈ 0
 
 ## Open design questions (to resolve before prereg)
 
-- [ ] Concrete simulator choice for the coupling (Isaac Sim continuation of Paper 002, or a cheaper proxy env first?)
-- [ ] Exact form of the relation (physical coupling vs occlusion-dependent vs multi-agent) — pick the one with the cleanest 0%→>0% task variant construction
+- [x] Concrete simulator choice — Isaac Sim / ORBIT Reach, continuing Paper 002 (locked 2026-07-31)
+- [x] Exact form of the relation — physical coupling via `reference_object` (locked 2026-07-31)
 - [ ] Threshold value(s) for capability crossing — needs prereg, not post-hoc
 - [ ] Whether Arm C (mode expansion) needs its own sub-gate or can reuse Paper 002's trained expert directly
 
@@ -141,6 +143,7 @@ capability_crossing(a) = |{ t in T : success_rate(t, A_baseline) ≈ 0
 | Doc | Path |
 | --- | --- |
 | RQ | [paper003_rq_v0.1.md](paper003_rq_v0.1.md) |
+| Related work | [paper003_related_work_v0.1.md](paper003_related_work_v0.1.md) |
 | Paper 002 description (parent method) | [paper002_description_wm_expansion_v0.1.md](../paper002/paper002_description_wm_expansion_v0.1.md) |
 | Expansion taxonomy | [paper002_wm_system_expansion_v0.1.md](../paper002/paper002_wm_system_expansion_v0.1.md) |
 
@@ -151,3 +154,4 @@ capability_crossing(a) = |{ t in T : success_rate(t, A_baseline) ≈ 0
 | Version | Date | Note |
 | --- | --- | --- |
 | v0.1 | 2026-07-31 | Initial method draft — relation expansion + capability threshold crossing metric |
+| v0.1 (update) | 2026-07-31 | Locked environment: Isaac Sim/ORBIT Reach continuation + physical-coupling relation form |
