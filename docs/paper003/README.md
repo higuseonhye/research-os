@@ -38,9 +38,9 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] Related work — relational/graph world models, capability-boundary framing precedent
 - [x] Environment / simulator choice locked — Isaac Sim/ORBIT Reach continuation, physical-coupling relation
 - [x] Relation module + gate implemented and separated on a CPU proxy ([`relation_dynamics.py`](../../scripts/wm_expansion/relation_dynamics.py), 10 tests)
-- [ ] **Closed-loop capability variants** — demonstrate a 0% → achievable transition (open-loop prediction gain is only ~1 mm, so this must carry the claim)
+- [ ] **Capability threshold crossing — UNVALIDATED, blocking.** First closed-loop probe produced no gap: open-loop prediction separates the arms strongly (D 4.5 mm vs B 14.8 mm at H=10), but continuous reach-and-hold success is identical across arms. Needs a task with a commitment point. See [method doc](paper003_description_v0.1.md).
 - [ ] Re-derive gate thresholds from Isaac data
-- [ ] Prereg
+- [ ] Prereg — **should not be frozen until the capability endpoint is demonstrated**
 
 ---
 
