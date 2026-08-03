@@ -108,7 +108,18 @@ being shorter than one burst cycle, and it admits the same arm-neutral remedy:
 **eligibility must reflect whether the world produces motion over the dispense
 window**, which is a property of the world and not of any arm's readiness.
 
-Fixing it is CPU work with test coverage, not a parameter change.
+Fixing it is CPU work with test coverage, not a parameter change — but it is
+**not sufficient**. Measured against ground truth, the predicate admits
+stationary cells in 51% of cases under `burst` as well, so it was always
+over-admitting; `probe` only made it worse. Correcting it does not bring arm B
+near zero, and neither does any encounter parameter tried.
+
+See [the two-body encounter note](../../../../../docs/paper003/paper003_two_body_encounter_v0.1.md)
+for what the follow-up found: the identifiability/difficulty tension is resolved
+by splitting the reference into two bodies, but **arm B still never approaches
+zero**, because one contact pass displaces the target by roughly 15 mm against a
+20 mm tolerance. The endpoint's reachability is downstream of the tolerance,
+which cannot be set before the Branch B scene exists.
 
 ## Status against the pilot's deliverables
 
@@ -116,7 +127,7 @@ Fixing it is CPU work with test coverage, not a parameter change.
 | --- | --- | --- |
 | 1 | Environment runs end to end, isolated per cell | met |
 | 2 | Observation noise and timing under real physics | **not met** — Branch B now known to be required |
-| 3 | Speed sweep locating arm B's near-zero band | **not run**, and blocked: arm B is not near zero under this encounter |
+| 3 | Speed sweep locating arm B's near-zero band | **run on CPU, and it fails**: reference speed does not grade difficulty at all — flat across a fourfold range, because faster bodies penetrate further per step but spend fewer steps in contact |
 | 4 | Gate statistics across all five conditions | **met** |
 | 5 | Oracle clears 80% | **met** — D\* landed in every cell of every condition |
 | 6 | `normal_alignment` under real contact | pending Branch B |
