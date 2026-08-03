@@ -192,6 +192,53 @@ class ReferencePatternEstimator:
         tail_value, tail_len = runs[-1]
         return on, off, tail_len, tail_value
 
+    def predict_steps(self, history: Sequence[float], horizon: int) -> list[float] | None:
+        """Per-step displacements over the next `horizon` steps. None if unusable.
+
+        Needed by any caller that has to advance a coupled body one step at a
+        time rather than jump to the end - the target's displacement direction
+        depends on where the reference is at each step, so a single summed
+        magnitude is not enough.
+        """
+
+        if horizon < 0:
+            raise ValueError("horizon must be >= 0")
+        if len(history) < 4:
+            return None
+
+        deltas = np.diff(np.asarray(history, dtype=np.float64))
+        largest = float(np.max(np.abs(deltas)))
+        if largest <= 0.0:
+            return [0.0] * horizon
+
+        moving = [bool(abs(d) >= self.motion_floor_ratio * largest) for d in deltas]
+        speed = float(np.mean(np.abs(deltas[np.asarray(moving)]))) if any(moving) else 0.0
+
+        on_runs, off_runs, tail_len, tail_moving = self._run_lengths(moving)
+        if not on_runs or not off_runs:
+            return None
+        burst_on = int(round(float(np.median(on_runs))))
+        burst_off = int(round(float(np.median(off_runs))))
+        if burst_on < 1 or burst_off < 1:
+            return None
+
+        direction = 1.0 if float(np.sum(deltas)) >= 0.0 else -1.0
+        phase, currently_moving = tail_len, tail_moving
+
+        steps: list[float] = []
+        for _ in range(horizon):
+            if currently_moving:
+                steps.append(direction * speed)
+                phase += 1
+                if phase >= burst_on:
+                    currently_moving, phase = False, 0
+            else:
+                steps.append(0.0)
+                phase += 1
+                if phase >= burst_off:
+                    currently_moving, phase = True, 0
+        return steps
+
     def predict_displacement(self, history: Sequence[float], horizon: int) -> float | None:
         """Displacement expected over the next `horizon` steps. None if unusable."""
 
