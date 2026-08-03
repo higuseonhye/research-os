@@ -174,6 +174,38 @@ class EpisodeDriverTests(unittest.TestCase):
             "arm D fell back to zero order despite can_estimate() being true",
         )
 
+    @staticmethod
+    def _moving_reference(steps=40, dims=3, speed=0.015, on=10, off=4):
+        reference = np.zeros(dims)
+        out = []
+        for step in range(steps):
+            if (step % (on + off)) < on:
+                reference = reference + np.array([speed] + [0.0] * (dims - 1))
+            out.append(reference.copy())
+        return out
+
+    def test_gate_refuses_a_static_target_while_the_reference_moves(self) -> None:
+        """Pins the Isaac control-condition failure.
+
+        On a static target the reference still sweeps past. Without consulting
+        the relation gate, arm D predicted 90 mm of motion for a target that
+        never moved, while plain zero-order was exact. Arm D must be identical
+        to arm B here.
+        """
+        episode = CommitmentEpisode(spec=self.spec)
+        for reference in self._moving_reference()[:20]:
+            episode.observe(np.array([0.20, 0.0, 0.0]), reference)
+        self.assertFalse(episode.gate_decision().fired)
+        self.assertFalse(episode.can_estimate())
+        aims = episode.aims()
+        np.testing.assert_allclose(aims["D"], aims["B"])
+
+    def test_gate_fires_and_arm_d_acts_when_the_target_is_actually_coupled(self) -> None:
+        episode = self._drive(20)
+        self.assertTrue(episode.gate_decision().fired)
+        aims = episode.aims()
+        self.assertFalse(np.allclose(aims["D"], aims["B"]))
+
     def test_degrades_to_zero_order_rather_than_inventing_an_aim(self) -> None:
         """With no usable pattern, arm D must fall back, not fabricate."""
         episode = CommitmentEpisode(spec=self.spec)

@@ -174,8 +174,20 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         _set_command(env, command)
 
         episode.observe(target, reference)
+        # Record the gate every step, not only at commitment. H3 (gate
+        # specificity) has to be evaluable on conditions that never commit -
+        # `drift` produced no commit at all in the first control run, which
+        # would otherwise leave the paper's key control untestable.
+        gate = episode.gate_decision()
         observations.append(
-            {"step": step, "target": target.tolist(), "reference": reference.tolist()}
+            {
+                "step": step,
+                "target": target.tolist(),
+                "reference": reference.tolist(),
+                "gate_fired": bool(gate.fired),
+                "proximity_contrast": float(gate.proximity_contrast),
+                "constant_velocity_gain": float(gate.constant_velocity_gain),
+            }
         )
 
         eligible = episode.motion_expected()
@@ -213,6 +225,11 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "reference_speed": args.reference_speed,
         "committed_at": committed_at,
         "d_estimated": d_estimated,
+        "gate_fire_rate": (
+            sum(o["gate_fired"] for o in observations) / len(observations)
+            if observations
+            else 0.0
+        ),
         "resolved": resolved,
         "aims": {k: v.tolist() for k, v in (aims or {}).items()},
         "observations": observations,
