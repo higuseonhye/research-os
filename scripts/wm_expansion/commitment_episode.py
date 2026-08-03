@@ -145,25 +145,17 @@ class CommitmentEpisode:
             horizon=self.spec.dispense_latency,
         )
 
-    def can_estimate(self) -> bool:
-        """May arm D use a relational prediction at all?
+    def _projection_available(self) -> bool:
+        """Has enough history accumulated for the reference cycle to be identified?
 
-        Two conditions, both necessary:
-
-        1. **The gate fires** - the residual is proximity-conditioned on the
-           reference, and not already explained as constant-velocity drift.
-        2. **The estimator produces something** - it needs one completed burst
-           and one completed pause before the cycle is identifiable, which
-           takes longer than any `min_history` shorter than a period.
-
-        The first Isaac run failed the second condition, committing at step 7
-        of a 14-step cycle so that arm D silently degraded into arm B. The
-        control conditions then failed the first.
+        A property of the observation history alone, independent of whether the
+        relation applies. The estimator needs one completed burst and one
+        completed pause, which takes longer than any `min_history` shorter than
+        a period - the first Isaac run committed at step 7 of a 14-step cycle
+        and arm D silently degraded into arm B.
         """
 
         if len(self.references) < 2:
-            return False
-        if not self.gate_decision().fired:
             return False
         return (
             project_reference_motion(
@@ -172,10 +164,26 @@ class CommitmentEpisode:
             is not None
         )
 
+    def can_estimate(self) -> bool:
+        """May arm D use a relational prediction? Gate **and** history required."""
+        return self._projection_available() and self.gate_decision().fired
+
     @property
     def ready(self) -> bool:
-        """Eligible to commit: enough history, and arm D is not merely guessing."""
-        return len(self.targets) >= self.spec.min_history and self.can_estimate()
+        """Eligible to commit.
+
+        Deliberately **not** conditioned on the gate. Whether a cell is worth
+        committing is a property of the world - will the target move, and have
+        we watched long enough to predict it - not of whether one particular
+        arm is allowed to act. Requiring the gate here skipped every
+        non-relational cell outright, which would have made H4 untestable:
+        the hypothesis that arm D does not regress where the relation is
+        absent cannot be checked on cells that never run.
+
+        Arm D falling back to zero-order is legitimate arm behaviour and is
+        scored as such, in `aims()`.
+        """
+        return len(self.targets) >= self.spec.min_history and self._projection_available()
 
     def motion_expected(self) -> bool:
         """Will the target move during the dispense window?

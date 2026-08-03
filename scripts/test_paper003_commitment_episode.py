@@ -200,6 +200,19 @@ class EpisodeDriverTests(unittest.TestCase):
         aims = episode.aims()
         np.testing.assert_allclose(aims["D"], aims["B"])
 
+    def test_non_relational_cells_still_commit_so_h4_is_testable(self) -> None:
+        """Eligibility is a property of the world, not of arm D's permission.
+
+        Requiring the gate for readiness skipped every non-relational cell, so
+        the hypothesis that arm D does not regress where the relation is absent
+        could not be checked at all - those cells never ran.
+        """
+        episode = CommitmentEpisode(spec=self.spec)
+        for reference in self._moving_reference()[:20]:
+            episode.observe(np.array([0.20, 0.0, 0.0]), reference)
+        self.assertTrue(episode.ready, "non-relational cell was skipped entirely")
+        self.assertFalse(episode.can_estimate(), "arm D should still be barred from acting")
+
     def test_gate_fires_and_arm_d_acts_when_the_target_is_actually_coupled(self) -> None:
         episode = self._drive(20)
         self.assertTrue(episode.gate_decision().fired)
