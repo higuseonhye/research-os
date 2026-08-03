@@ -41,10 +41,12 @@ import numpy as np
 from omni.isaac.lab.app import AppLauncher
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--task", type=str, default="Isaac-Reach-PSM-v0")
-parser.add_argument("--num-envs", type=int, default=1)
+parser.add_argument("--task", type=str, default="Isaac-Reach-Dual-STAR-IK-Rel-Play-v0")
+parser.add_argument("--num_envs", type=int, default=1)
 parser.add_argument("--seed", type=int, required=True)
 parser.add_argument("--body-index", type=int, default=-1)
+parser.add_argument("--gain", type=float, default=1.0)
+parser.add_argument("--max-delta", type=float, default=0.05)
 parser.add_argument(
     "--condition",
     choices=["coupled", "drift", "static", "noise"],
@@ -96,7 +98,9 @@ from wm_expansion.relation_dynamics import (  # noqa: E402
     coupling_displacement,
 )
 
-COMMAND_NAME = "ee_pose"
+#: Matches orbit_reach_drift.py. This task exposes `ee_1_pose`, not `ee_pose`;
+#: an earlier version of this file invented the latter and could never have run.
+COMMAND_NAME = "ee_1_pose"
 
 
 def _get_command(env: Any) -> torch.Tensor:
@@ -130,8 +134,7 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
 
     env.reset(seed=args.seed)
     robot_name = find_robot_name(env.unwrapped.scene)
-    asset = env.unwrapped.scene[robot_name]
-    body_index = resolve_ee_body_index(asset, args.body_index)
+    body_index = resolve_ee_body_index(env.unwrapped.scene[robot_name], args.body_index)
 
     command = _get_command(env)
     target0 = command[0, :3].detach().cpu().numpy().astype(np.float64)
@@ -188,7 +191,10 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             resolved = episode.resolve(oracle_aims, target)
             aims = oracle_aims
 
-        action = scripted_action(env, asset, body_index)
+        with torch.no_grad():
+            action = scripted_action(
+                env, robot_name, COMMAND_NAME, args.gain, body_index, args.max_delta
+            )
         _, _, terminated, truncated, _ = env.step(action)
         if bool(terminated[0]) or bool(truncated[0]):
             violations += 1
