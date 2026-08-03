@@ -200,6 +200,41 @@ class EpisodeDriverTests(unittest.TestCase):
         aims = episode.aims()
         np.testing.assert_allclose(aims["D"], aims["B"])
 
+    @staticmethod
+    def _drift_world(steps=40, dims=3, speed=0.015):
+        """Target drifts under its own dynamics; the reference is far and irrelevant."""
+        target = np.array([0.20] + [0.0] * (dims - 1))
+        reference = np.array([-0.5] + [0.0] * (dims - 1))
+        targets, references = [], []
+        for _ in range(steps):
+            target = target + np.array([speed] + [0.0] * (dims - 1))
+            targets.append(target.copy())
+            references.append(reference.copy())
+        return targets, references
+
+    def test_drift_commits_and_the_mode_arm_wins_there(self) -> None:
+        """The two operators must win on different gaps, not one dominate.
+
+        On drift the target moves under its own constant velocity, so arm C is
+        the right tool and arm D should decline. Until eligibility admitted
+        self-driven motion, drift never committed at all and this could not be
+        shown.
+        """
+        targets, references = self._drift_world()
+        episode = CommitmentEpisode(spec=self.spec)
+        for target, reference in zip(targets[:20], references[:20]):
+            episode.observe(target, reference)
+
+        self.assertTrue(episode.motion_expected(), "drift cell was never eligible")
+        self.assertFalse(episode.gate_decision().fired, "relation gate fired on drift")
+
+        aims = episode.aims()
+        landing = targets[20 + self.spec.dispense_latency]
+        miss = {a: float(np.linalg.norm(aims[a] - landing)) for a in ("B", "C", "D")}
+        self.assertLess(miss["C"], miss["B"], "constant velocity should win on drift")
+        self.assertLess(miss["C"], self.spec.tolerance, "arm C should land on drift")
+        np.testing.assert_allclose(aims["D"], aims["B"])
+
     def test_non_relational_cells_still_commit_so_h4_is_testable(self) -> None:
         """Eligibility is a property of the world, not of arm D's permission.
 
