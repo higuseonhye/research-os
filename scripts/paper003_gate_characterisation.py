@@ -152,7 +152,11 @@ def constant_velocity_clause_work(
 
 
 def slide_rollout(
-    damping: float, seed: int, steps: int = 45, noise: float = 0.0005
+    damping: float,
+    seed: int,
+    steps: int = 60,
+    noise: float = 0.0005,
+    encounter: str = "probe",
 ) -> tuple[list[np.ndarray], list[np.ndarray]]:
     """Reference strikes the target, which then retains `damping` of its velocity.
 
@@ -160,6 +164,14 @@ def slide_rollout(
     stops the instant contact ends. `damping = 1` is a frictionless slide, which
     a constant-velocity model predicts perfectly - arm C's case, and the one the
     gate must refuse.
+
+    `encounter` is the reference's schedule. `burst` only advances, which is the
+    v5 sweep; `probe` withdraws after striking. The encounter matters as much as
+    the gate does: under `burst` the target is never observed after the
+    reference departs, and the two dampings produce the same history until then.
+
+    The geometry is drawn per seed - azimuth and lateral offset - because a
+    fixed head-on approach makes every seed a translation of one encounter.
     """
 
     if not 0.0 <= damping <= 1.0:
@@ -167,14 +179,23 @@ def slide_rollout(
 
     rng = np.random.default_rng(seed)
     spec = CouplingSpec(interaction_radius=RADIUS, coupling_gain=GAIN)
+    azimuth = float(rng.uniform(0.0, 2.0 * np.pi))
+    axis = np.array([np.cos(azimuth), np.sin(azimuth), 0.0])
+    lateral = np.array([-axis[1], axis[0], 0.0]) * float(rng.uniform(-0.5, 0.5)) * RADIUS
+
     target = np.array([0.20, 0.0, 0.0])
-    reference = np.array([0.20 - 6.0 * RADIUS, 0.0, 0.0])
+    start = (6.0 if encounter == "burst" else 2.5) * RADIUS
+    reference = target - start * axis + lateral
     velocity = np.zeros(3)
 
     targets, references = [], []
     for step in range(steps):
-        if step % (BURST_ON + BURST_OFF) < BURST_ON:
-            reference = reference + np.array([REFERENCE_SPEED, 0.0, 0.0])
+        if encounter == "burst":
+            direction = 1 if step % (BURST_ON + BURST_OFF) < BURST_ON else 0
+        else:
+            cycle = step % 14
+            direction = 1 if cycle < 7 else (-1 if cycle < 12 else 0)
+        reference = reference + direction * REFERENCE_SPEED * axis
         velocity = damping * velocity + coupling_displacement(target, reference, spec)
         target = target + velocity
         targets.append(target + rng.normal(0.0, noise, 3))
@@ -185,22 +206,30 @@ def slide_rollout(
 def gate_under_sliding(
     damping: float,
     thresholds: RelationGateThresholds | None = None,
-    seeds: int = 8,
+    seeds: int = 16,
+    encounter: str = "probe",
 ) -> dict[str, float]:
-    """Fire rate over a growing history at horizon 6, as CommitmentEpisode runs it.
+    """Fire rates over a growing history at horizon 6, as CommitmentEpisode runs it.
 
     The configuration matters more than it looks: evaluating over a fixed
     12-step window instead, or at the module default horizon of 10, moves the
     constant-velocity statistic by enough to change the verdict. These are the
     settings the pilot actually ran.
+
+    Both a per-step and a per-trial rate are returned, and **the per-trial one is
+    what H3 is stated in**. They can disagree completely: firing on one step in
+    eight still means firing somewhere in every trial, which is how a 12-16%
+    per-step leak was in fact a 100% per-trial failure.
     """
 
     thresholds = thresholds or RelationGateThresholds()
     fired: list[bool] = []
+    trials: list[bool] = []
     contrasts: list[float] = []
     gains: list[float] = []
     for seed in range(seeds):
-        targets, references = slide_rollout(damping, seed=seed)
+        targets, references = slide_rollout(damping, seed=seed, encounter=encounter)
+        this_trial = False
         for end in range(MIN_DELTAS + 1, len(targets) + 1):
             decision = evaluate_relation_gate(
                 targets[:end],
@@ -210,15 +239,76 @@ def gate_under_sliding(
                 horizon=HORIZON,
             )
             fired.append(decision.fired)
+            this_trial = this_trial or decision.fired
             contrasts.append(decision.proximity_contrast)
             gains.append(decision.constant_velocity_gain)
+        trials.append(this_trial)
     return {
         "damping": damping,
+        "encounter": encounter,
         "fire_rate": float(np.mean(fired)),
+        "trial_rate": float(np.mean(trials)),
         "median_contrast": float(np.median(contrasts)),
         "median_constant_velocity_gain": float(np.median(gains)),
         "max_constant_velocity_gain": float(np.max(gains)),
     }
+
+
+#: The v5 sweep's commit steps ran 11-25. A decision that arrives after the
+#: commitment is already made is of no use to any arm, so "fires eventually" is
+#: not the quantity of interest - "fires in time" is.
+COMMIT_WINDOW_END = 25
+
+
+def first_fire_step(
+    damping: float, seed: int, thresholds: RelationGateThresholds, encounter: str
+) -> int | None:
+    targets, references = slide_rollout(damping, seed=seed, encounter=encounter)
+    for end in range(MIN_DELTAS + 1, len(targets) + 1):
+        if evaluate_relation_gate(
+            targets[:end], references[:end], thresholds,
+            interaction_radius=RADIUS, horizon=HORIZON,
+        ).fired:
+            return end
+    return None
+
+
+def gate_comparison(seeds: int = 16) -> list[dict[str, Any]]:
+    """Both gates on both encounters, scored on whether they decide *in time*.
+
+    Firing eventually is not enough and is actively misleading here: under the
+    advance-only schedule the reference does eventually pass the target and move
+    away, so far-field evidence accrues - but around step 34, long after the
+    commitment. Measured that way the encounter looks fine. Measured against the
+    commit window it is not: replaying the sweep's own nine coupled cells, the
+    corrected gate fires at **none** of the commit steps they actually used.
+    """
+
+    old = RelationGateThresholds(contrast_from_first_contact=False)
+    new = RelationGateThresholds()
+    rows = []
+    for encounter in ("burst", "probe"):
+        for label, thresholds in (("all-history", old), ("post-contact", new)):
+            coupled = [first_fire_step(0.0, s, thresholds, encounter) for s in range(seeds)]
+            slide = [first_fire_step(1.0, s, thresholds, encounter) for s in range(seeds)]
+            in_time = [f is not None and f <= COMMIT_WINDOW_END for f in coupled]
+            slide_in_time = [f is not None and f <= COMMIT_WINDOW_END for f in slide]
+            timely = [f for f in coupled if f is not None]
+            rows.append(
+                {
+                    "encounter": encounter,
+                    "gate": label,
+                    "coupled_in_time": float(np.mean(in_time)),
+                    "slide_in_time": float(np.mean(slide_in_time)),
+                    "median_first_fire": (
+                        float(np.median(timely)) if timely else None
+                    ),
+                    "passes_h3": bool(
+                        np.mean(in_time) >= 0.90 and np.mean(slide_in_time) <= 0.10
+                    ),
+                }
+            )
+    return rows
 
 
 # --------------------------------------------------------------------------
@@ -230,6 +320,7 @@ def render(
     plateau: list[dict[str, Any]],
     clause: dict[str, dict[str, int]],
     sliding: list[dict[str, float]],
+    comparison: list[dict[str, Any]] | None = None,
 ) -> str:
     conditions = sorted(clause)
     lines = [
@@ -276,8 +367,8 @@ def render(
         "Post-contact sliding - the control the sweep does not have",
         "(damping 0 = stops dead, 1 = frictionless slide, which arm C absorbs)",
         "",
-        f"{'damping':>8}{'contrast':>11}{'cv_gain':>10}{'cv max':>9}{'fire rate':>11}   required",
-        "-" * 68,
+        f"{'damping':>8}{'contrast':>11}{'cv_gain':>10}{'per-step':>10}{'per-trial':>11}   required",
+        "-" * 72,
     ]
     for row in sliding:
         damping = row["damping"]
@@ -285,13 +376,34 @@ def render(
         lines.append(
             f"{damping:>8.2f}{row['median_contrast']:>11.3f}"
             f"{row['median_constant_velocity_gain']:>10.3f}"
-            f"{row['max_constant_velocity_gain']:>9.3f}{row['fire_rate']:>11.2f}   {required}"
+            f"{row['fire_rate']:>10.2f}{row['trial_rate']:>11.2f}   {required}"
         )
-    worst = max((r for r in sliding if r["damping"] >= 0.9), key=lambda r: r["fire_rate"], default=None)
-    if worst and worst["fire_rate"] > 0.0:
+    lines.append(
+        "\nH3 is stated per trial, and the two columns can disagree completely:\n"
+        "firing on one step in eight still means firing somewhere in every trial."
+    )
+
+    if comparison:
+        lines += [
+            "",
+            f"Both gates, both encounters - decided by the commit window (step {COMMIT_WINDOW_END})",
+            f"{'encounter':<10}{'gate':<15}{'coupled':>9}{'slide':>8}{'first fire':>12}   H3",
+            "-" * 64,
+        ]
+        for row in comparison:
+            first = row["median_first_fire"]
+            lines.append(
+                f"{row['encounter']:<10}{row['gate']:<15}{row['coupled_in_time']:>9.2f}"
+                f"{row['slide_in_time']:>8.2f}"
+                f"{(f'{first:.0f}' if first else 'never'):>12}"
+                f"   {'pass' if row['passes_h3'] else 'FAIL'}"
+            )
         lines.append(
-            f"\nThe gate still fires on {worst['fire_rate']:.0%} of steps in the frictionless\n"
-            "limit, where a constant-velocity model explains the motion outright."
+            "\nThe encounter matters as much as the gate. Without a withdrawal the\n"
+            "target is never seen after the reference leaves in time, so a struck\n"
+            "target and a sliding one are the same history at the commitment - the\n"
+            "corrected gate abstains, and the original claims a relation it has not\n"
+            "established. Firing eventually is not the same as firing in time."
         )
     return "\n".join(lines)
 
@@ -311,11 +423,14 @@ def main() -> None:
     sliding = [
         gate_under_sliding(d) for d in (0.0, 0.30, 0.50, 0.70, 0.85, 0.95, 1.0)
     ]
+    comparison = gate_comparison()
 
     if args.json:
-        print(json.dumps({"plateau": plateau, "clause": clause, "sliding": sliding}, indent=2))
+        print(json.dumps(
+            {"plateau": plateau, "clause": clause, "sliding": sliding,
+             "comparison": comparison}, indent=2))
     else:
-        print(render(plateau, clause, sliding))
+        print(render(plateau, clause, sliding, comparison))
 
 
 if __name__ == "__main__":

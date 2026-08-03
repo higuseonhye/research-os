@@ -16,11 +16,13 @@ from pathlib import Path
 import numpy as np
 
 from paper003_gate_characterisation import (
+    COMMIT_WINDOW_END,
     GAIN,
     HORIZON,
     MIN_DELTAS,
     RADIUS,
     constant_velocity_clause_work,
+    gate_comparison,
     gate_under_sliding,
     load_gate_statistics,
     render,
@@ -145,14 +147,46 @@ class SlideRolloutTests(unittest.TestCase):
 
 
 class SlidingGateTests(unittest.TestCase):
-    def test_the_gate_leaks_on_the_case_that_would_collapse_the_paper(self) -> None:
-        """The finding. A frictionless slide is arm C's, and the gate still fires."""
-        self.assertGreater(gate_under_sliding(1.0, seeds=4)["fire_rate"], 0.0)
+    def test_the_original_gate_leaks_on_the_case_that_would_collapse_the_paper(self) -> None:
+        """A frictionless slide is arm C's case, and the original gate claims it.
 
-    def test_it_fires_far_more_on_a_genuine_relation(self) -> None:
-        genuine = gate_under_sliding(0.30, seeds=4)["fire_rate"]
-        ballistic = gate_under_sliding(1.0, seeds=4)["fire_rate"]
-        self.assertGreater(genuine, 2 * ballistic)
+        Per *trial*, which is H3's unit, it claimed every single one. The
+        per-step rate of 12-16% concealed that entirely.
+        """
+        original = RelationGateThresholds(contrast_from_first_contact=False)
+        result = gate_under_sliding(1.0, original, seeds=4, encounter="burst")
+        self.assertEqual(result["trial_rate"], 1.0)
+        self.assertLess(result["fire_rate"], 0.5)  # the per-step rate that hid it
+
+    def test_the_corrected_gate_refuses_it(self) -> None:
+        self.assertEqual(gate_under_sliding(1.0, seeds=4)["trial_rate"], 0.0)
+
+    def test_it_still_fires_on_a_genuine_relation(self) -> None:
+        self.assertEqual(gate_under_sliding(0.0, seeds=4)["trial_rate"], 1.0)
+
+    def test_only_gate_and_encounter_together_satisfy_h3(self) -> None:
+        """Neither change is sufficient alone, which is the whole finding.
+
+        Fixing the gate without adding a withdrawal makes it abstain until long
+        after the commitment; adding a withdrawal without fixing the gate leaves
+        the slide claimed as a relation.
+        """
+        rows = {(r["encounter"], r["gate"]): r for r in gate_comparison(seeds=8)}
+        self.assertFalse(rows[("burst", "all-history")]["passes_h3"])
+        self.assertFalse(rows[("burst", "post-contact")]["passes_h3"])
+        self.assertFalse(rows[("probe", "all-history")]["passes_h3"])
+        self.assertTrue(rows[("probe", "post-contact")]["passes_h3"])
+
+    def test_deciding_late_is_not_deciding(self) -> None:
+        """Under the advance-only schedule the corrected gate does fire - at
+        around step 34, against a commit window ending at 25."""
+        row = next(
+            r for r in gate_comparison(seeds=8)
+            if r["encounter"] == "burst" and r["gate"] == "post-contact"
+        )
+        self.assertIsNotNone(row["median_first_fire"])
+        self.assertGreater(row["median_first_fire"], COMMIT_WINDOW_END)
+        self.assertEqual(row["coupled_in_time"], 0.0)
 
     def test_the_configuration_is_the_episodes_and_it_matters(self) -> None:
         """Pins why HORIZON is 6 rather than the module default of 10.
@@ -180,9 +214,12 @@ class RenderTests(unittest.TestCase):
             threshold_plateau(statistics, grid=(0.50,)),
             constant_velocity_clause_work(statistics),
             [gate_under_sliding(1.0, seeds=2)],
+            gate_comparison(seeds=2),
         )
-        self.assertIn("still fires", text)
         self.assertIn("Never.", text)
+        # both halves of the fix must be visible, not just the passing row
+        self.assertIn("Firing eventually is not the same as firing in time.", text)
+        self.assertIn("FAIL", text)
 
 
 if __name__ == "__main__":

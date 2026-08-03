@@ -35,18 +35,33 @@ def fake_world(
     burst_off: int = 4,
     radius: float = 0.05,
     gain: float = 0.5,
+    encounter: str = "burst",
+    start: float = 0.12,
 ) -> tuple[list[np.ndarray], list[np.ndarray]]:
-    """Stand-in for Isaac: same structure, no physics engine."""
+    """Stand-in for Isaac: same structure, no physics engine.
+
+    `probe` withdraws after striking; `burst` only ever advances, which is the
+    v5 sweep's schedule. The difference is not cosmetic - under `burst` the
+    target is never seen after the reference departs, and a struck target and a
+    sliding one are the same history until then, so the gate cannot fire.
+    """
 
     target = np.zeros(dims)
     target[0] = 0.20
     reference = np.zeros(dims)
+    if encounter == "probe":
+        reference[0] = target[0] - start
     targets, references = [], []
     for step in range(steps):
-        moving = (step % (burst_on + burst_off)) < burst_on
-        if moving:
-            reference = reference.copy()
-            reference[0] += speed
+        if encounter == "burst":
+            direction = 1 if (step % (burst_on + burst_off)) < burst_on else 0
+        else:
+            # 7 + 5 + 2 = 14, matching the burst period so only the withdrawal
+            # differs. Contact recurs, which the coupling estimator needs.
+            cycle = step % 14
+            direction = 1 if cycle < 7 else (-1 if cycle < 12 else 0)
+        reference = reference.copy()
+        reference[0] += direction * speed
         offset = target - reference
         distance = float(np.linalg.norm(offset))
         if 0.0 < distance < radius:
@@ -104,6 +119,19 @@ class EpisodeDriverTests(unittest.TestCase):
     def _drive(self, upto: int) -> CommitmentEpisode:
         episode = CommitmentEpisode(spec=self.spec)
         for target, reference in zip(self.targets[:upto], self.references[:upto]):
+            episode.observe(target, reference)
+        return episode
+
+    def _drive_probe(self, upto: int) -> CommitmentEpisode:
+        """Same, in a world where the reference withdraws after striking.
+
+        Anything that depends on the relation gate needs this world: without a
+        withdrawal the target is never observed after the reference leaves, and
+        the gate abstains by design.
+        """
+        targets, references = fake_world(steps=40, dims=3, encounter="probe")
+        episode = CommitmentEpisode(spec=self.spec)
+        for target, reference in zip(targets[:upto], references[:upto]):
             episode.observe(target, reference)
         return episode
 
@@ -174,12 +202,27 @@ class EpisodeDriverTests(unittest.TestCase):
 
     def test_ready_once_a_burst_and_a_pause_are_both_complete(self) -> None:
         # burst_on=10, burst_off=4 -> a pause completes around step 15
-        self.assertTrue(self._drive(18).can_estimate())
         self.assertTrue(self._drive(18).ready)
+        self.assertTrue(self._drive_probe(20).can_estimate())
+
+    def test_no_completed_contact_means_no_relation_claim(self) -> None:
+        """The identifiability limit, pinned.
+
+        Under the advance-only schedule the reference arrives and stays, so the
+        target is never seen after it departs. A struck target and a target
+        still sliding from an earlier strike are then the same history, and the
+        second is what a constant-velocity model already explains. The gate must
+        abstain rather than claim a relation it cannot have established - even
+        though the world here really is coupled.
+        """
+        self.assertFalse(self._drive(18).gate_decision().fired)
+        self.assertEqual(self._drive(18).gate_decision().post_contact_far_deltas, 0)
+        # the same coupling, once a withdrawal has actually been observed
+        self.assertTrue(self._drive_probe(20).gate_decision().fired)
 
     def test_arm_d_differs_from_arm_b_once_it_can_estimate(self) -> None:
         """If D still equals B after the gate, the gate is not doing its job."""
-        episode = self._drive(18)
+        episode = self._drive_probe(20)
         aims = episode.aims()
         self.assertFalse(
             np.allclose(aims["D"], aims["B"]),
@@ -284,7 +327,8 @@ class EpisodeDriverTests(unittest.TestCase):
         np.testing.assert_allclose(aims["D"], aims["B"])
 
     def test_gate_fires_and_arm_d_acts_when_the_target_is_actually_coupled(self) -> None:
-        episode = self._drive(20)
+        # probe world: the gate needs a completed contact, not merely a coupled one
+        episode = self._drive_probe(20)
         self.assertTrue(episode.gate_decision().fired)
         aims = episode.aims()
         self.assertFalse(np.allclose(aims["D"], aims["B"]))

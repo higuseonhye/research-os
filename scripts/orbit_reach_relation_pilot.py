@@ -61,6 +61,19 @@ parser.add_argument("--reference-speed", type=float, default=0.015,
                     help="metres per step while the reference body is moving")
 parser.add_argument("--burst-on", type=int, default=10)
 parser.add_argument("--burst-off", type=int, default=4)
+parser.add_argument(
+    "--encounter", choices=["probe", "burst"], default="probe",
+    help="probe withdraws after striking, so one completed contact precedes the "
+         "commit window; burst is the v5 schedule, which never retreats and "
+         "leaves coupling and sliding unidentifiable at commit time",
+)
+#: 7 + 5 + 2 = 14, the same period as the burst schedule it replaces, so the
+#: encounter's timing stays comparable to the v5 sweep and only the withdrawal
+#: is new. The withdrawal must exceed the interaction radius: 5 * 15 mm = 75 mm
+#: against a 50 mm radius, so contact genuinely releases rather than easing off.
+parser.add_argument("--probe-advance", type=int, default=7)
+parser.add_argument("--probe-withdraw", type=int, default=5)
+parser.add_argument("--probe-hold", type=int, default=2)
 parser.add_argument("--interaction-radius", type=float, default=0.05)
 parser.add_argument("--coupling-gain", type=float, default=0.5)
 parser.add_argument("--tolerance", type=float, default=0.020,
@@ -130,11 +143,45 @@ def _set_command(env: Any, command: torch.Tensor) -> None:
     env.unwrapped.command_manager.get_command(COMMAND_NAME)[:] = command
 
 
+def schedule_direction(step: int, args: argparse.Namespace) -> int:
+    """Which way the reference moves this step: +1 advance, -1 withdraw, 0 hold.
+
+    `burst` is the original schedule - advance, pause, advance - and it never
+    retreats. That turns out to be a defect rather than a simplification.
+
+    Under `burst` the reference arrives and then stays within the interaction
+    radius, so the target is never observed *after* the reference has left. But
+    "the target moves only while the reference is near" and "the target was
+    struck once and is still sliding" are the same observation until you see
+    what happens once the reference departs. At the commit steps the v5 sweep
+    actually chose, the number of post-departure observations available was
+    **zero in all nine cells**, and the gate's proximity contrast of +1.0 came
+    from the degenerate branch where the far-field class is empty.
+
+    This is an identifiability limit, not an arm's shortcoming: no method, and
+    no ideal observer, can separate the two from that history. `probe` adds a
+    withdrawal, so one complete strike-and-release precedes the commit window.
+    The change is arm-neutral - it alters what the world reveals, not what any
+    arm is ready to do, which is the distinction that has to be kept.
+    """
+
+    if args.encounter == "burst":
+        period = args.burst_on + args.burst_off
+        return 1 if (step % period) < args.burst_on else 0
+
+    cycle = step % (args.probe_advance + args.probe_withdraw + args.probe_hold)
+    if cycle < args.probe_advance:
+        return 1
+    if cycle < args.probe_advance + args.probe_withdraw:
+        return -1
+    return 0
+
+
 def reference_offset(step: int, args: argparse.Namespace) -> float:
-    """Cumulative reference displacement, from the burst schedule."""
-    period = args.burst_on + args.burst_off
-    moving = sum(1 for s in range(step + 1) if (s % period) < args.burst_on)
-    return args.reference_speed * moving
+    """Cumulative reference displacement along its approach axis."""
+    return args.reference_speed * sum(
+        schedule_direction(s, args) for s in range(step + 1)
+    )
 
 
 def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
@@ -199,11 +246,25 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     # estimator-readiness never overlapped. This is a precondition for the
     # measurement to exist, derived from the estimator's requirement - not a
     # value chosen after seeing which arm it favours.
-    min_approach = args.burst_on * args.reference_speed + args.interaction_radius
-    approach = min_approach * float(geometry_rng.uniform(1.05, 1.6))
+    #
+    # Under `probe` the requirement is different and tighter. What must fit
+    # before the commit window is not one cycle of the reference's schedule but
+    # one **completed contact**: strike, withdraw past the interaction radius,
+    # and at least one observation of the target afterwards. Until that has
+    # happened, coupling and a post-contact slide are the same history, so the
+    # gate abstains and no arm can do better. A start of 2.5 radii puts the
+    # first strike around step 7 and the release around step 12, inside the
+    # commit window the v5 sweep used.
+    if args.encounter == "burst":
+        min_approach = args.burst_on * args.reference_speed + args.interaction_radius
+        approach = min_approach * float(geometry_rng.uniform(1.05, 1.6))
+        phase_offset = int(geometry_rng.integers(0, args.burst_on + args.burst_off))
+    else:
+        approach = args.interaction_radius * float(geometry_rng.uniform(2.2, 2.8))
+        phase_offset = int(
+            geometry_rng.integers(0, args.probe_advance + args.probe_withdraw + args.probe_hold)
+        )
     reference_start = target0 - reference_axis * approach + lateral * offset
-    # Starting phase decides where in the burst cycle the encounter begins.
-    phase_offset = int(geometry_rng.integers(0, args.burst_on + args.burst_off))
 
     target = target0.copy()
     observations: list[dict[str, Any]] = []
