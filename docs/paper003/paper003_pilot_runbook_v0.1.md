@@ -49,6 +49,27 @@ mkdir -p /workspace && cd /workspace
 cd research-os && git pull origin master
 ```
 
+**A fresh image has Isaac Sim but not Isaac Lab.** Observed 2026-08-03:
+`/isaac-sim/python.sh` present, `import omni.isaac.lab` → `ModuleNotFoundError`.
+Check before assuming:
+
+```bash
+/isaac-sim/python.sh -c "import omni.isaac.lab, orbit.surgical.tasks; print('deps OK')"
+```
+
+If that fails, run the Paper 002 bootstrap — it installs Isaac Lab v1.0.0 and
+orbit-surgical into `/workspace`. **It takes tens of minutes**, so run it under
+`tmux` or it dies with the connection:
+
+```bash
+tmux new -s bootstrap
+bash /workspace/research-os/scripts/bootstrap_orbit_surgical_runpod.sh 2>&1 | tee /workspace/bootstrap.log
+# detach with ctrl-b then d ; reattach with: tmux attach -t bootstrap
+```
+
+Re-run the dependency check above before continuing. Do not start the pilot
+until it prints `deps OK`.
+
 **Do not call `python` directly.** The simulator ships its own interpreter;
 a bare `python` is usually absent in the image. `scripts/run_paper003_pilot.sh`
 resolves the right one (`/isaac-sim/python.sh`, else
