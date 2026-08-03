@@ -31,14 +31,76 @@ parameters into measured ones so the preregistration can be frozen honestly.
 Do not skip to a sweep. Each step below exists because the one before it can
 fail in a way that makes the next meaningless.
 
+### 0. Bootstrap — the workspace is not persistent
+
+A fresh VESSL workspace has neither the repo nor a usable `python` on `PATH`.
+Both were assumed by an earlier version of this runbook and neither held.
+
+```bash
+# where am I, and what is installed?
+pwd; ls /workspace
+ls -d /isaac-sim /workspace/IsaacLab 2>/dev/null || echo "no Isaac install found"
+```
+
+```bash
+# clone if absent, otherwise update
+mkdir -p /workspace && cd /workspace
+[ -d research-os/.git ] || git clone https://github.com/higuseonhye/research-os.git
+cd research-os && git pull origin master
+```
+
+**A fresh image has Isaac Sim but not Isaac Lab.** Observed 2026-08-03:
+`/isaac-sim/python.sh` present, Isaac Lab absent. Install it with the Paper 002
+bootstrap, which also brings in orbit-surgical. **It takes tens of minutes**, so
+run it under `tmux` or it dies with the connection:
+
+```bash
+tmux new -s bootstrap
+bash /workspace/research-os/scripts/bootstrap_orbit_surgical_runpod.sh 2>&1 | tee /workspace/bootstrap.log
+# detach with ctrl-b then d ; reattach with: tmux attach -t bootstrap
+```
+
+> **Do not verify with a bare `import`.** A check like
+> `python.sh -c "import omni.isaac.lab"` **always fails**, working install or
+> not, because `omni.isaac.core` and its siblings are Isaac Sim *extensions*
+> that only resolve once the app has started. That is exactly why every runner
+> in this repo imports them **after** `AppLauncher`:
+>
+> ```python
+> app_launcher = AppLauncher(args_cli)      # extensions load here
+> simulation_app = app_launcher.app
+> from omni.isaac.lab_tasks.utils import parse_env_cfg   # only now
+> ```
+>
+> An earlier version of this runbook prescribed that bare import and produced a
+> `ModuleNotFoundError: No module named 'omni.isaac.core'` that looked like a
+> failed bootstrap and was not one.
+
+Verify by launching something instead — Isaac Lab's own zero-agent, which is
+what the bootstrap itself uses as its check:
+
+```bash
+cd /workspace/IsaacLab && ./isaaclab.sh -p source/standalone/environments/zero_agent.py \
+  --task Isaac-Reach-Dual-STAR-IK-Rel-Play-v0 --num_envs 1 --headless
+```
+
+If that opens and steps without error, the install is good and the pilot can run.
+
+**Do not call `python` directly.** The simulator ships its own interpreter;
+a bare `python` is usually absent in the image. `scripts/run_paper003_pilot.sh`
+resolves the right one (`/isaac-sim/python.sh`, else
+`$ISAACLAB_PATH/isaaclab.sh -p`) and fails with a readable message if neither
+exists.
+
 ### 1. Smoke — one cell, read the output by eye
 
 ```bash
-cd /workspace/research-os && git pull origin master
-python scripts/orbit_reach_relation_pilot.py \
-  --seed 300 --condition coupled --max-cells 1 \
-  --out-dir results/paper003_pilot_smoke
+cd /workspace/research-os && bash scripts/run_paper003_pilot.sh
 ```
+
+Override with environment variables rather than editing the script:
+`SEED=301 CONDITION=drift OUT_DIR=results/x bash scripts/run_paper003_pilot.sh`.
+Extra flags pass straight through to the runner.
 
 Check in the written JSON:
 
@@ -58,8 +120,8 @@ command frame differs from what the script assumes.
 
 ```bash
 for c in coupled drift static noise; do
-  python scripts/orbit_reach_relation_pilot.py \
-    --seed 300 --condition $c --out-dir results/paper003_pilot_controls
+  CONDITION=$c OUT_DIR=results/paper003_pilot_controls \
+    bash scripts/run_paper003_pilot.sh
 done
 ```
 
@@ -80,9 +142,16 @@ guesses them as abstract fractions of a step, which is not defensible.
 
 ### 4. Speed sweep
 
-Vary `--reference-speed` and record per-arm success. Locate the speed at which
+Vary the reference speed and record per-arm success. Locate the speed at which
 arm B enters the near-zero band; that region defines the confirmatory variant
 set `T`.
+
+```bash
+for v in 0.008 0.010 0.015 0.020; do
+  OUT_DIR=results/paper003_pilot_sweep \
+    bash scripts/run_paper003_pilot.sh --reference-speed $v
+done
+```
 
 ### 5. Record and stop
 
