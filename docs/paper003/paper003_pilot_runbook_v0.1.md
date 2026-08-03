@@ -195,18 +195,27 @@ prior work, and stands whether or not it favours any arm.
 
 ### Control conditions, same seed
 
-| Condition | B | C | D | Gate fire rate | Passed |
-| --- | ---: | ---: | ---: | ---: | --- |
-| coupled | 83.0 mm | 35.5 mm | **7.0 mm** | 0.19 | D, oracle |
-| **drift** | — | — | — | **0.00** | no commit |
-| static | — | — | — | 0.00 | no commit |
-| noise | — | — | — | 0.00 | no commit |
+| Condition | Missing | B | C | D | Gate | Passes at 20 mm |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| **coupled** | relation | 83.0 | 35.5 | **7.0** | 0.19 | **D** |
+| **drift** | mode | 105.0 | **15.0** | 105.0 | 0.00 | **C** |
+| static | — | 0.0 | 0.0 | 0.0 | 0.00 | all |
+| noise | — | 27.2 | 129.9 | 27.2 | 0.00 | none |
 
-**The drift row is the one that matters.** Drift is precisely the condition
-Paper 002's mode operator already explains; a gate that fired there would mean
-the relational claim adds nothing. It stayed silent, on real physics, at 0.00.
+Three things this shows, in order of importance:
 
-Getting here took two defects that the controls themselves exposed:
+1. **The two operators win on different gaps.** Arm D takes the relational cell
+   and loses the mode cell; arm C does the reverse. That is the result the
+   paper needs — it rules out arm D simply being a stronger model that wins
+   everywhere. (Drift is measured on the CPU driver; the Isaac drift cell had
+   not yet been re-run when this was written.)
+2. **The gate stayed silent on drift**, precisely the condition Paper 002's
+   operator already explains. A gate firing there would mean the relational
+   claim adds nothing.
+3. **No regression where the relation is absent.** On static and noise arm D
+   falls back and is numerically identical to arm B — 0.0 and 27.2 mm.
+
+Getting here took three defects that the controls themselves exposed:
 
 1. **Arm D never consulted the gate.** It applied the relation unconditionally,
    so on a *static* target — where the reference still sweeps past — it
@@ -217,6 +226,10 @@ Getting here took two defects that the controls themselves exposed:
    the relation is absent cannot be checked on cells that never run. Commit
    eligibility is a property of the world; whether arm D may act is a separate
    question, settled in scoring.
+3. **Eligibility ignored a target moving under its own dynamics.** It only
+   asked about proximity to the reference, so the drift cell never committed
+   and the mode operator could never be shown winning anywhere. A drifting
+   target moves during the dispense whether or not anything is near it.
 
 ---
 

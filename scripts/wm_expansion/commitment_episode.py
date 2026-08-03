@@ -192,25 +192,37 @@ class CommitmentEpisode:
         arm is trivially right and committing there measures nothing. The
         preregistration treats it as a screen, not a result.
 
-        Two regimes qualify, and an earlier version wrongly admitted only the
-        first, which silently discarded the cells where the arms differ most:
+        Three regimes qualify. Earlier versions admitted only some of them and
+        each omission silently discarded cells where the arms differ:
 
-        1. **Contact coming** - the reference is closing and will arrive inside
+        1. **Already moving** - whatever the cause. A target drifting under its
+           own dynamics will move during the dispense even with no reference
+           anywhere near it, and that is a cell worth scoring: it is where a
+           constant-velocity arm should win and a relational one should decline
+           to act. Omitting it meant the drift condition never committed at
+           all, so the two operators could never be shown to address different
+           gaps.
+        2. **Contact coming** - the reference is closing and will arrive inside
            the interaction radius within the dispense window.
-        2. **Contact ongoing** - they are already within the interaction radius,
+        3. **Contact ongoing** - they are already within the interaction radius,
            so the target is being pushed right now.
         """
 
         if len(self.targets) < 2:
             return False
-        target = self.targets[-1]
-        reference, previous = self.references[-1], self.references[-2]
-        separation = float(np.linalg.norm(target - reference))
+        target, previous_target = self.targets[-1], self.targets[-2]
+        reference, previous_reference = self.references[-1], self.references[-2]
 
+        # 1. the target is moving under any cause
+        target_speed = float(np.linalg.norm(target - previous_target))
+        if target_speed * self.spec.dispense_latency > self.spec.tolerance:
+            return True
+
+        separation = float(np.linalg.norm(target - reference))
         if separation < self.spec.interaction_radius:
             return True
 
-        closing = float(np.linalg.norm(target - previous)) - separation
+        closing = float(np.linalg.norm(target - previous_reference)) - separation
         reach = separation - self.spec.interaction_radius
         return closing > 0.0 and 0.0 < reach <= closing * self.spec.dispense_latency
 
