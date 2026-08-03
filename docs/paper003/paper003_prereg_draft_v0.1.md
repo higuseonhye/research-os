@@ -361,21 +361,57 @@ target then retains its velocity, and a constant-velocity model absorbs the
 result. Only the second clause can reject it. This is not a contrived case: it
 is what real rigid-body contact produces, because struck objects slide.
 
-The gate does not currently pass it (`scripts/paper003_gate_characterisation.py`):
+The original gate failed it outright. A first pass recorded the leak as "14–19%
+of steps", which was **the wrong unit** — H3 is stated per trial. Measured per
+trial, the original gate claimed a relation in **every single slide trial**:
+firing on one step in eight still means firing somewhere in every episode.
 
-| Velocity retained | contrast | cv_gain | max cv_gain | Fire rate | Required |
-| ---: | ---: | ---: | ---: | ---: | --- |
-| 0.00 *(the pilot's coupling)* | 0.733 | −0.319 | 0.395 | 0.42 | fire |
-| 0.30 | 0.786 | −0.290 | 0.309 | 0.60 | fire |
-| 0.50 | 0.627 | −0.262 | 0.228 | 0.62 | fire |
-| 0.95 | 0.287 | −0.151 | 0.596 | **0.19** | **silent** |
-| 1.00 *(frictionless)* | 0.077 | −0.141 | 0.780 | **0.14** | **silent** |
+#### Two changes were needed, and neither is sufficient alone
 
-**H3's 10% ceiling is therefore a real constraint on the slide control, not a
-formality** — the gate currently sits at 14–19%, above it. Either the gate is
-tightened before the confirmatory run, or H3 fails on this control and the
-paper's contribution over Paper 002 is not established. Which of those happens
-is left to the data; the threshold is not adjusted to accommodate it.
+**The gate.** Evidence gathered *before the first contact* is not evidence. A
+target that has not yet been touched is still because nothing has happened to
+it, not because contact ended and it stopped — yet the far-field class was being
+filled with exactly those steps, which drove `proximity_contrast` to +1.0 for
+any target that had ever been struck. Worse, at the commit steps the v5 sweep
+actually chose, the number of post-departure observations was **zero in all nine
+cells**: that +1.0 came from the degenerate branch where the far-field class is
+empty. The contrast is now computed from the first contact onward, and the gate
+abstains until at least one post-contact far-field observation exists.
+
+**The encounter.** The `burst` schedule only ever advances, so the reference
+arrives and stays. The target is therefore never observed after the reference
+departs — and until that is observed, a struck target and a target still sliding
+from an earlier strike are *the same history*. **This is an identifiability
+limit, not an arm's shortcoming**: no method and no ideal observer can separate
+them from that record. The `probe` schedule adds a withdrawal (advance 7,
+withdraw 5, hold 2 — the same 14-step period, so only the retreat is new), which
+places one completed strike-and-release before the commit window.
+
+The change is **arm-neutral**: it alters what the world reveals, not what any
+arm is ready to do. That distinction is the one this project has had to restore
+three times, and it is why the alternative — delaying the commit window until
+arm D is ready — was refused.
+
+| Encounter | Gate | Coupled in time | Slide in time | Median first fire | H3 |
+| --- | --- | ---: | ---: | ---: | --- |
+| burst | all-history *(original)* | 1.00 | **1.00** | 22 | **fail** |
+| burst | post-contact | **0.00** | 0.00 | 34 | **fail** |
+| probe | all-history | 1.00 | **1.00** | 7 | **fail** |
+| **probe** | **post-contact** | **1.00** | **0.00** | **9** | **pass** |
+
+Scored on whether the gate decides by step 25, the end of the v5 commit window.
+Firing eventually is not the same as firing in time: under `burst` the corrected
+gate does fire, at around step 34, long after the commitment is made.
+
+#### Declared risk: the gate is noise-sensitive and the noise is unmeasured
+
+Characterised at 0.5 mm observation noise. At 2 mm the coupled fire rate falls to
+0.25 and at 5 mm to 0.12, because after contact the target is still and every
+far-field sample is pure noise. **The real figure is unknown** — deliverable 2 is
+unmet, so no physical jitter has ever been measured. If real contact is noisier
+than 1 mm, the gate as specified will not fire often enough, and that is a
+threat to H3 from the opposite direction. The real-contact pilot must measure
+the noise before the gate can be frozen.
 
 #### The contrast threshold is not fitted
 
@@ -420,7 +456,8 @@ confirmatory data. The CPU proxy gives their *shape*, not defensible values.
 | 4 | `ACHIEVABLE_THRESHOLD` | Must sit above the achievable floor at the chosen noise/jitter | — |
 | 5 | `C_MARGIN` | Depends on how much of the structure mode expansion captures in Isaac | C plateaus **0.24–0.50** in proxy |
 | 6 | `min_proximity_contrast` | ~~Proxy has no contact noise~~ — **settled 2026-08-04.** Re-derived from the Isaac sweep: 0.30–0.90 all separate identically | 0.50 sits mid-plateau; not fitted |
-| 7 | `max_constant_velocity_gain` | **Untested.** Zero steps in the sweep were rejected by this clause, because no control exercises it | Gate leaks 14–19% on `slide`, vs H3's 10% ceiling |
+| 7 | `max_constant_velocity_gain` | **Untested by the sweep**, whose controls never exercise it; now exercised by `slide` on CPU | Original gate claimed **every** slide trial; corrected gate 0.00 |
+| 8 | Observation noise | **Unmeasured.** The gate is characterised at 0.5 mm and its fire rate falls to 0.25 at 2 mm | Blocks freezing the gate; needs the real-contact pilot |
 
 Also pending: the speed grid defining `T`, the placement tolerance, and
 `dispense_latency` — all three follow from the physical scale of the Isaac
@@ -439,11 +476,13 @@ estimate, matching Paper 002's excluded pilot:
 3. A speed sweep locating where arm B falls into the near-zero band → the
    variant set `T`.
 4. Gate statistics on coupled, drift, static, noise, **and slide** conditions
-   → §6–7. The slide control is the one that can fail: it is the only condition
-   that exercises the constant-velocity clause, and on CPU the gate is above
-   H3's ceiling there.
-5. Confirmation that arm D\* clears 80%, i.e. the task is solvable at all.
-6. `normal_alignment` under real contact, to tell a tangential-push failure
+   → §6–7, run under the `probe` encounter. The slide control is the one that
+   can fail: it is the only condition that exercises the constant-velocity
+   clause.
+5. **Measured observation noise**, because the gate's fire rate depends on it
+   sharply and no physical jitter has ever been measured → §8.
+6. Confirmation that arm D\* clears 80%, i.e. the task is solvable at all.
+7. `normal_alignment` under real contact, to tell a tangential-push failure
    apart from a coefficient failure if arm D underperforms.
 
 Pilot seeds must be disjoint from the confirmatory sample and are named in the

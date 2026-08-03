@@ -285,6 +285,29 @@ class RelationGateThresholds:
 
     min_deltas: int = 6
     speed_floor: float = 5e-4
+    # Evidence from before the first contact is not evidence. A target that has
+    # not yet been touched is still because nothing has happened to it, not
+    # because contact ended and it stopped - yet the far-field class was being
+    # filled with exactly those steps, which inflated `proximity_contrast`
+    # toward +1 for any target that had ever been struck.
+    #
+    # Measured trial-by-trial, that made the gate fire on **100% of trials in
+    # every condition**, including a frictionless slide that a constant-velocity
+    # model explains outright. The per-step rate of 12-16% concealed it: firing
+    # on one step in eight still means firing somewhere in every trial, and H3
+    # is stated per trial.
+    #
+    # Restricting the contrast to the first contact onward, and refusing to
+    # decide until enough far-field steps have accrued *after* it, separates
+    # them completely - treatment 1.00, frictionless slide 0.00.
+    contrast_from_first_contact: bool = True
+    # One is the minimum that makes the contrast non-degenerate, and it is also
+    # what holds up best as observation noise rises: with the target still after
+    # contact, every far-field sample is pure noise, so demanding more of them
+    # buys nothing and costs firing rate. See the noise sweep in the gate
+    # characterisation - the whole discriminating power lies in requiring at
+    # least one, not in requiring several.
+    min_post_contact_far_deltas: int = 1
     # Positive evidence: target moves when the reference body is near, not when
     # it is far. Separates coupling (+1.0) from drift and noise (-1.0).
     min_proximity_contrast: float = 0.50
@@ -302,6 +325,8 @@ class RelationGateThresholds:
             raise ValueError("min_proximity_contrast must be in [-1, 1]")
         if not 0.0 <= self.max_constant_velocity_gain <= 1.0:
             raise ValueError("max_constant_velocity_gain must be in [0, 1]")
+        if self.min_post_contact_far_deltas < 0:
+            raise ValueError("min_post_contact_far_deltas must be >= 0")
 
 
 @dataclass(frozen=True)
@@ -313,6 +338,9 @@ class RelationGateDecision:
     directional_consistency: float
     near_fraction: float
     mean_speed: float
+    #: Far-field steps observed *after* the first contact. Zero means the
+    #: contrast has nothing to compare against and the gate abstains.
+    post_contact_far_deltas: int = 0
 
     def to_dict(self) -> dict[str, float | int | bool]:
         return asdict(self)
@@ -399,8 +427,23 @@ def evaluate_relation_gate(
     separations = np.linalg.norm(target_arr - reference_arr, axis=1)[:-1]
     near = separations < interaction_radius
     near_fraction = float(np.mean(near))
-    speed_near = float(np.mean(speeds[near])) if near.any() else 0.0
-    speed_far = float(np.mean(speeds[~near])) if (~near).any() else 0.0
+
+    # Only evidence gathered from the first contact onward can distinguish "the
+    # target stops when the reference leaves" from "the target had not been
+    # touched yet". Both look like a still target beside a distant reference.
+    contrast_near, contrast_speeds = near, speeds
+    if thresholds.contrast_from_first_contact and near.any():
+        first_contact = int(np.argmax(near))
+        contrast_near = near[first_contact:]
+        contrast_speeds = speeds[first_contact:]
+    post_contact_far = int(np.count_nonzero(~contrast_near)) if near.any() else 0
+
+    speed_near = (
+        float(np.mean(contrast_speeds[contrast_near])) if contrast_near.any() else 0.0
+    )
+    speed_far = (
+        float(np.mean(contrast_speeds[~contrast_near])) if (~contrast_near).any() else 0.0
+    )
     denominator = speed_near + speed_far
     proximity_contrast = (
         float((speed_near - speed_far) / denominator) if denominator > 0.0 else 0.0
@@ -414,6 +457,12 @@ def evaluate_relation_gate(
         and mean_speed >= thresholds.speed_floor
         and proximity_contrast >= thresholds.min_proximity_contrast
         and cv_gain <= thresholds.max_constant_velocity_gain
+        # With no far-field steps after contact the contrast has nothing to
+        # compare against and reads +1.0 by construction. Abstain instead.
+        and (
+            not thresholds.contrast_from_first_contact
+            or post_contact_far >= thresholds.min_post_contact_far_deltas
+        )
     )
     return RelationGateDecision(
         fired=fired,
@@ -423,6 +472,7 @@ def evaluate_relation_gate(
         directional_consistency=directional_consistency,
         near_fraction=near_fraction,
         mean_speed=mean_speed,
+        post_contact_far_deltas=post_contact_far,
     )
 
 

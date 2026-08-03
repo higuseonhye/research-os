@@ -152,8 +152,30 @@ into Paper 002, and this sweep provides no evidence it works.
 
 A `slide` control was added to the runner in response — the reference genuinely
 strikes the target, which then retains its velocity, so only the second clause
-can reject it. On CPU the gate leaks there, firing on 14–19% of steps against
-H3's 10% ceiling. That is now a declared risk to H3 rather than a surprise.
+can reject it. **The gate failed it outright.** A first pass recorded the leak
+as "14–19% of steps", which was the wrong unit: H3 is stated per trial, and per
+trial the gate claimed a relation in *every* slide trial.
+
+Two changes were needed, and neither works alone:
+
+| Encounter | Gate | Coupled in time | Slide in time | First fire | H3 |
+| --- | --- | ---: | ---: | ---: | --- |
+| burst *(this sweep)* | all-history *(this sweep)* | 1.00 | **1.00** | 22 | **fail** |
+| burst | post-contact | **0.00** | 0.00 | 34 | **fail** |
+| probe | all-history | 1.00 | **1.00** | 7 | **fail** |
+| **probe** | **post-contact** | **1.00** | **0.00** | **9** | **pass** |
+
+The gate now computes its contrast only from the first contact onward, and
+abstains until at least one post-departure observation exists. The encounter now
+withdraws after striking. **The second change is not a convenience**: until the
+target is seen after the reference leaves, a struck target and one still sliding
+from an earlier strike are the same history, so no method — and no ideal
+observer — can separate them. It is arm-neutral, changing what the world reveals
+rather than what any arm is ready to do.
+
+At this sweep's own nine commit steps, the corrected gate fires at **none** of
+them. That is the cost of the correction under the `burst` encounter, and the
+reason the encounter had to change too rather than the commit window.
 
 **The contrast threshold, by contrast, is sound.** Re-derived from these records,
 every value from 0.30 to 0.90 separates the treatment from all three controls
@@ -241,6 +263,9 @@ read as though it arrived clean:
 | Committed at the first eligible step | Gate rarely fired yet; arm D fell back in two of three cells |
 | Coupling parameters handed to arm D | Its accuracy measured the loan, not inference |
 | Drift control never brings the reference near | The gate's constant-velocity clause was never exercised; deliverable 4 downgraded to partly met |
+| Contrast counted pre-contact steps as far-field evidence | Gate claimed a relation in every post-contact-slide trial; at this sweep's own commit steps its +1.0 contrast came from an empty far-field class |
+| Reference never withdraws | A struck target and a sliding one are the same history at commit time, so the corrected gate cannot decide either |
+| Leak first reported per step, not per trial | Understated a total failure as 14-19% |
 
 ## Reproduce
 
