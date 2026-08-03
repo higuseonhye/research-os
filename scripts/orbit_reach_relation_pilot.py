@@ -74,6 +74,18 @@ parser.add_argument(
 parser.add_argument("--probe-advance", type=int, default=7)
 parser.add_argument("--probe-withdraw", type=int, default=5)
 parser.add_argument("--probe-hold", type=int, default=2)
+parser.add_argument(
+    "--bodies", type=int, choices=[1, 2], default=1,
+    help="2 adds a second reference body: the first strikes early and leaves, "
+         "the second arrives during the dispense window. At the commitment the "
+         "target is then stationary, so zero-order and constant velocity both "
+         "predict no motion and only a relation applied to the *second* body "
+         "predicts the displacement",
+)
+parser.add_argument("--pusher-speed", type=float, default=0.015,
+                    help="metres per step for the second body, which never pauses")
+parser.add_argument("--pusher-start-step", type=int, default=16,
+                    help="step at which the second body begins to close")
 parser.add_argument("--interaction-radius", type=float, default=0.05)
 parser.add_argument("--coupling-gain", type=float, default=0.5)
 parser.add_argument("--tolerance", type=float, default=0.020,
@@ -124,6 +136,12 @@ from wm_expansion.commitment_episode import (  # noqa: E402
     CommitmentEpisode,
     EpisodeSpec,
 )
+from wm_expansion.encounter import (  # noqa: E402
+    EncounterSpec,
+    bodies_at,
+    bodies_over,
+    draw_geometry,
+)
 from wm_expansion.relation_dynamics import (  # noqa: E402
     CouplingSpec,
     coupling_displacement,
@@ -141,47 +159,6 @@ def _get_command(env: Any) -> torch.Tensor:
 
 def _set_command(env: Any, command: torch.Tensor) -> None:
     env.unwrapped.command_manager.get_command(COMMAND_NAME)[:] = command
-
-
-def schedule_direction(step: int, args: argparse.Namespace) -> int:
-    """Which way the reference moves this step: +1 advance, -1 withdraw, 0 hold.
-
-    `burst` is the original schedule - advance, pause, advance - and it never
-    retreats. That turns out to be a defect rather than a simplification.
-
-    Under `burst` the reference arrives and then stays within the interaction
-    radius, so the target is never observed *after* the reference has left. But
-    "the target moves only while the reference is near" and "the target was
-    struck once and is still sliding" are the same observation until you see
-    what happens once the reference departs. At the commit steps the v5 sweep
-    actually chose, the number of post-departure observations available was
-    **zero in all nine cells**, and the gate's proximity contrast of +1.0 came
-    from the degenerate branch where the far-field class is empty.
-
-    This is an identifiability limit, not an arm's shortcoming: no method, and
-    no ideal observer, can separate the two from that history. `probe` adds a
-    withdrawal, so one complete strike-and-release precedes the commit window.
-    The change is arm-neutral - it alters what the world reveals, not what any
-    arm is ready to do, which is the distinction that has to be kept.
-    """
-
-    if args.encounter == "burst":
-        period = args.burst_on + args.burst_off
-        return 1 if (step % period) < args.burst_on else 0
-
-    cycle = step % (args.probe_advance + args.probe_withdraw + args.probe_hold)
-    if cycle < args.probe_advance:
-        return 1
-    if cycle < args.probe_advance + args.probe_withdraw:
-        return -1
-    return 0
-
-
-def reference_offset(step: int, args: argparse.Namespace) -> float:
-    """Cumulative reference displacement along its approach axis."""
-    return args.reference_speed * sum(
-        schedule_direction(s, args) for s in range(step + 1)
-    )
 
 
 def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
@@ -216,55 +193,32 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     command = _get_command(env)
     target0 = command[0, :3].detach().cpu().numpy().astype(np.float64)
 
-    # The reference body is a moving point rather than a rigid asset: this
-    # pilot measures prediction, not contact dynamics, and a second articulated
-    # body is deferred until the environment itself is trusted.
+    # The reference bodies are moving points rather than rigid assets: this
+    # pilot measures prediction, not contact dynamics. Real contact needs a
+    # rigid body added to the scene, which the inventory shows has none.
     #
-    # Its approach geometry is drawn from the seed, and that matters more than
-    # it looks. An earlier version fixed the axis to +x and placed the start at
-    # a constant offset from the target, which made the whole interaction
-    # translation-invariant: ten seeds gave ten different absolute positions
-    # but one identical encounter, and every arm's miss distance came out to
-    # the same number every time. Cells like that are not independent samples.
-    geometry_rng = np.random.default_rng(args.seed)
-    azimuth = float(geometry_rng.uniform(0.0, 2.0 * np.pi))
-    reference_axis = np.array([np.cos(azimuth), np.sin(azimuth), 0.0])
-    # A lateral offset decides whether the pass is head-on or glancing.
-    lateral = np.array([-reference_axis[1], reference_axis[0], 0.0])
-    offset = float(geometry_rng.uniform(-0.5, 0.5)) * args.interaction_radius
-    # The reference must stay outside the interaction radius long enough for a
-    # full burst cycle to be observed, or the encounter is over before arm D
-    # can identify the pattern and the cell yields nothing.
-    #
-    # One cycle spans burst_on + burst_off steps, during which the reference
-    # travels burst_on * speed. Add the interaction radius and that is the
-    # minimum approach distance. At the defaults: 10 * 15 mm + 50 mm = 200 mm.
-    #
-    # An earlier version drew from 2.5-3.5 radii, i.e. 125-175 mm, all of it
-    # below that floor. Four of ten coupled cells then ran their full 80 steps
-    # with the gate firing and never committed at all, because eligibility and
-    # estimator-readiness never overlapped. This is a precondition for the
-    # measurement to exist, derived from the estimator's requirement - not a
-    # value chosen after seeing which arm it favours.
-    #
-    # Under `probe` the requirement is different and tighter. What must fit
-    # before the commit window is not one cycle of the reference's schedule but
-    # one **completed contact**: strike, withdraw past the interaction radius,
-    # and at least one observation of the target afterwards. Until that has
-    # happened, coupling and a post-contact slide are the same history, so the
-    # gate abstains and no arm can do better. A start of 2.5 radii puts the
-    # first strike around step 7 and the release around step 12, inside the
-    # commit window the v5 sweep used.
-    if args.encounter == "burst":
-        min_approach = args.burst_on * args.reference_speed + args.interaction_radius
-        approach = min_approach * float(geometry_rng.uniform(1.05, 1.6))
-        phase_offset = int(geometry_rng.integers(0, args.burst_on + args.burst_off))
-    else:
-        approach = args.interaction_radius * float(geometry_rng.uniform(2.2, 2.8))
-        phase_offset = int(
-            geometry_rng.integers(0, args.probe_advance + args.probe_withdraw + args.probe_hold)
-        )
-    reference_start = target0 - reference_axis * approach + lateral * offset
+    # All of the geometry lives in wm_expansion.encounter, where tests can
+    # reach it. It used to be inline here, in a file that cannot be imported
+    # without a GPU - the surface that produced eight defects, among them a
+    # fixed +x axis that made ten seeds one translation-invariant encounter.
+    encounter = EncounterSpec(
+        interaction_radius=args.interaction_radius,
+        reference_speed=args.reference_speed,
+        schedule=args.encounter,
+        burst_on=args.burst_on,
+        burst_off=args.burst_off,
+        probe_advance=args.probe_advance,
+        probe_withdraw=args.probe_withdraw,
+        probe_hold=args.probe_hold,
+        bodies=args.bodies,
+        pusher_speed=args.pusher_speed,
+        pusher_start_step=args.pusher_start_step,
+    )
+    geometry = draw_geometry(args.seed, target0, encounter)
+    azimuth = geometry.azimuth
+    offset = geometry.lateral_offset
+    phase_offset = geometry.phase_offset
+    pusher_azimuth = geometry.pusher_azimuth
 
     target = target0.copy()
     observations: list[dict[str, Any]] = []
@@ -278,12 +232,13 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     slide_velocity = np.zeros(3)  # carried across steps by the `slide` control
 
     for step in range(args.episode_steps):
-        reference = reference_start + reference_axis * reference_offset(
-            step + phase_offset, args
-        )
+        bodies = bodies_at(step, geometry, encounter)
+        reference = bodies[0]
 
         if args.condition == "coupled":
-            target = target + coupling_displacement(target, reference, coupling)
+            # Summed over bodies: with one body this is the previous behaviour.
+            for body in bodies:
+                target = target + coupling_displacement(target, body, coupling)
         elif args.condition == "drift":
             # Paper 002's positive case: motion unrelated to the reference.
             #
@@ -294,7 +249,7 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             # not because it distinguished proximity-conditioned motion from
             # constant-velocity motion. `slide` below is the control that
             # actually puts that question to it.
-            target = target + reference_axis * args.reference_speed
+            target = target + geometry.prober_axis * args.reference_speed
         elif args.condition == "slide":
             # Adversarial control for H2. Contact genuinely causes the motion -
             # so the relation is real - but the target then keeps its velocity,
@@ -305,9 +260,11 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             # The gate must stay silent here. On CPU it does not: in the
             # near-frictionless regime it still fired on 14-19% of steps
             # (scripts/paper003_gate_characterisation.py).
-            slide_velocity = args.slide_damping * slide_velocity + coupling_displacement(
-                target, reference, coupling
+            kick = sum(
+                (coupling_displacement(target, body, coupling) for body in bodies),
+                np.zeros(3),
             )
+            slide_velocity = args.slide_damping * slide_velocity + kick
             target = target + slide_velocity
         elif args.condition == "noise":
             target = target0 + np.random.default_rng(args.seed + step).normal(
@@ -318,7 +275,7 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         command[0, :3] = torch.as_tensor(target, device=command.device, dtype=command.dtype)
         _set_command(env, command)
 
-        episode.observe(target, reference)
+        episode.observe(target, bodies)
         # Record the gate every step, not only at commitment. H3 (gate
         # specificity) has to be evaluable on conditions that never commit -
         # `drift` produced no commit at all in the first control run, which
@@ -329,7 +286,10 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             {
                 "step": step,
                 "target": target.tolist(),
+                # `reference` is the first body, kept so every existing reader
+                # of these records keeps working; `references` is the full set.
                 "reference": reference.tolist(),
+                "references": bodies.tolist(),
                 # This step's crossing, kept for diagnosis, and the sustained
                 # decision arm D actually acts on. They differ: a lone crossing
                 # is one draw of a statistic, and under the noise control some
@@ -346,11 +306,9 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         # a property of the world: predicting the future instead would route it
         # through arm D's pattern estimator and make eligibility depend on one
         # arm's readiness.
-        reference_future = np.stack([
-            reference_start
-            + reference_axis * reference_offset(ahead + phase_offset, args)
-            for ahead in range(step + 1, step + 1 + args.dispense_latency)
-        ])
+        reference_future = bodies_over(
+            step + 1, args.dispense_latency, geometry, encounter
+        )
         eligible = episode.motion_expected(reference_future) and episode.ready
         if eligible:
             # Every eligible step is a commit candidate. The policy below picks
@@ -408,6 +366,8 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "phase_offset": phase_offset,
         "commit_policy": args.commit_policy,
         "scene_inventory": scene_inventory,
+        "bodies": args.bodies,
+        "pusher_azimuth": pusher_azimuth if args.bodies == 2 else None,
         "eligible_steps": [c["step"] for c in candidates],
         "committed_at": committed_at,
         "d_estimated": d_estimated,

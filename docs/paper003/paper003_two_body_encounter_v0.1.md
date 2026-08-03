@@ -206,12 +206,34 @@ two-step contact, the median displacement is 7.6 mm against a 20 mm tolerance.
 The residual imprecision is the tolerance, not the predicate. This is the same
 finding as above, arrived at from a different direction.
 
+## The runner, 2026-08-04
+
+The second body needed no scene construction at all: the reference bodies are
+**moving points**, not rigid assets, so the runner computes their positions
+analytically and hands them to the driver. A second analytic trajectory costs
+nothing. `--bodies 2` now runs the encounter under Isaac with injected coupling.
+
+That is a validation of the machinery, **not** progress on real contact.
+Deliverable 2 stays unmet: the scene reports `rigid_objects: []`, so contact
+physics still requires adding a body.
+
+While doing it, all of the geometry moved out of the runner into
+`wm_expansion/encounter.py` and under test. It had been inline in a file that
+cannot be imported without a GPU — the surface that produced eight defects,
+among them the fixed +x axis that turned ten seeds into one translation-invariant
+encounter. The runner is now 426 lines and decides almost nothing; 19 tests cover
+the schedules, the draw, and the body positions, including that adding a second
+body leaves the first's trajectory untouched.
+
 ## What remains
 
 1. **The placement tolerance**, which is blocking and needs the Branch B scene.
-2. **The Isaac runner**, which still constructs a single reference body. It now
-   passes the harness future to the eligibility screen, but the two-body scene
-   itself does not exist.
+2. **The Branch B scene itself** — a rigid body in the environment, so that
+   contact is simulated rather than injected. The orbit-surgical `lift` and
+   `handover` task folders, which do have rigid objects, are **deliberately
+   deleted by the bootstrap script** as "incompatible", with no record of why.
+   Finding out is a two-minute check on the pod and is the cheapest next GPU
+   action.
 
 The tolerance moves every number here, so it should settle before any figure
 from (2) is treated as more than a smoke test.
