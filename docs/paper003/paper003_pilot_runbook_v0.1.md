@@ -193,6 +193,31 @@ Raising the tolerance *because* 20 mm lets arm D pass and 5 mm does not would be
 exactly the move preregistration exists to prevent. The number is taken from
 prior work, and stands whether or not it favours any arm.
 
+### Control conditions, same seed
+
+| Condition | B | C | D | Gate fire rate | Passed |
+| --- | ---: | ---: | ---: | ---: | --- |
+| coupled | 83.0 mm | 35.5 mm | **7.0 mm** | 0.19 | D, oracle |
+| **drift** | — | — | — | **0.00** | no commit |
+| static | — | — | — | 0.00 | no commit |
+| noise | — | — | — | 0.00 | no commit |
+
+**The drift row is the one that matters.** Drift is precisely the condition
+Paper 002's mode operator already explains; a gate that fired there would mean
+the relational claim adds nothing. It stayed silent, on real physics, at 0.00.
+
+Getting here took two defects that the controls themselves exposed:
+
+1. **Arm D never consulted the gate.** It applied the relation unconditionally,
+   so on a *static* target — where the reference still sweeps past — it
+   predicted 90 mm of motion for something that never moved, while plain
+   zero-order was exact. The gate existed and was tested; nothing called it.
+2. **Requiring the gate for commitment skipped every non-relational cell.**
+   That made H4 untestable: the hypothesis that arm D does not regress where
+   the relation is absent cannot be checked on cells that never run. Commit
+   eligibility is a property of the world; whether arm D may act is a separate
+   question, settled in scoring.
+
 ---
 
 ## Known limitations of this pilot runner
