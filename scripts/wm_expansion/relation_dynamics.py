@@ -301,6 +301,19 @@ class RelationGateThresholds:
     # decide until enough far-field steps have accrued *after* it, separates
     # them completely - treatment 1.00, frictionless slide 0.00.
     contrast_from_first_contact: bool = True
+    # Compare net displacement per step rather than mean per-step speed. A still
+    # target under observation noise moves every step but goes nowhere, so its
+    # path length grows with the window while its net displacement does not.
+    # Keeping the old statistic left the gate usable only at implausibly clean
+    # observations - coupled contrast 0.47 at 0.5 mm of noise, 0.04 at 5 mm,
+    # against 0.86 and 0.66 for this one. Since the real noise has never been
+    # measured, the gate should not depend on it being small.
+    contrast_uses_displacement: bool = True
+    # A statistic crossing a threshold once is a draw, not evidence. With ~70
+    # prefixes evaluated per episode, the observation-noise control crossed by
+    # chance in 0.30 of trials against H3's 0.10 ceiling; requiring two
+    # consecutive crossings put it at 0.00 with the treatment still at 1.00.
+    min_consecutive_fires: int = 2
     # One is the minimum that makes the contrast non-degenerate, and it is also
     # what holds up best as observation noise rises: with the target still after
     # contact, every far-field sample is pure noise, so demanding more of them
@@ -327,6 +340,8 @@ class RelationGateThresholds:
             raise ValueError("max_constant_velocity_gain must be in [0, 1]")
         if self.min_post_contact_far_deltas < 0:
             raise ValueError("min_post_contact_far_deltas must be >= 0")
+        if self.min_consecutive_fires < 1:
+            raise ValueError("min_consecutive_fires must be >= 1")
 
 
 @dataclass(frozen=True)
@@ -357,6 +372,54 @@ def _paired_array(values: Iterable[ArrayLike]) -> np.ndarray:
     return array
 
 
+def _contiguous_runs(mask: np.ndarray) -> list[tuple[int, int]]:
+    """Half-open [start, end) index ranges over which `mask` stays True."""
+
+    runs: list[tuple[int, int]] = []
+    index = 0
+    while index < len(mask):
+        if not mask[index]:
+            index += 1
+            continue
+        end = index
+        while end < len(mask) and mask[end]:
+            end += 1
+        runs.append((index, end))
+        index = end
+    return runs
+
+
+def _displacement_rate(points: np.ndarray, mask: np.ndarray, window: int = 3) -> float | None:
+    """Net displacement per step over fixed `window`-step spans inside each run.
+
+    Not mean per-step speed, and the difference is the gate's whole tolerance
+    for observation noise. A still target under noise moves every step but goes
+    nowhere: its path length grows with the span while its net displacement
+    stays at the noise scale. Per-step speed cannot tell that from slow genuine
+    motion, so the far-field term floors at the noise level and the contrast
+    collapses - measured, from 0.47 at 0.5 mm of noise to 0.04 at 5 mm. This
+    statistic holds the same comparison at 0.86 and 0.66.
+
+    The window is **fixed rather than each run's own length**, and that is not a
+    detail. Dividing a run's total displacement by its own length makes short
+    runs look fast, which independent observation noise exploits directly:
+    contact spans are short and far-field spans are long, so the noise control
+    fired on 90% of trials until both classes were measured at the same scale.
+
+    Recorded contact spans in the pilot run 6 to 15 steps, so a 3-step window
+    fits inside them with room to spare.
+    """
+
+    if window < 1:
+        raise ValueError("window must be >= 1")
+    rates = [
+        float(np.linalg.norm(points[start + window] - points[start])) / window
+        for run_start, run_end in _contiguous_runs(mask)
+        for start in range(run_start, run_end - window + 1)
+    ]
+    return float(np.mean(rates)) if rates else None
+
+
 def _constant_velocity_gain(target_arr: np.ndarray, horizon: int) -> float:
     """Fraction of zero-order H-step error that a constant-velocity model removes.
 
@@ -382,6 +445,43 @@ def _constant_velocity_gain(target_arr: np.ndarray, horizon: int) -> float:
     if zero_mean <= 0.0:
         return 0.0
     return float((zero_mean - float(np.mean(cv_errors))) / zero_mean)
+
+
+def gate_fired_persistently(
+    target_positions: Iterable[ArrayLike],
+    reference_positions: Iterable[ArrayLike],
+    thresholds: RelationGateThresholds,
+    interaction_radius: float = 0.05,
+    horizon: int = 10,
+) -> bool:
+    """Has the gate fired on the last `min_consecutive_fires` prefixes running?
+
+    A single crossing is not evidence of a relation; it is one draw of a
+    statistic. Under the observation-noise control the target jitters
+    independently every step, and with roughly seventy prefixes evaluated per
+    episode some prefix will cross any fixed threshold by chance - that alone
+    put the noise control at 0.30 of trials, against H3's 0.10 ceiling. Two
+    consecutive crossings put it at 0.00 while leaving the treatment at 1.00.
+
+    Kept as a separate function so `evaluate_relation_gate` stays pure and its
+    statistics remain readable per step for diagnosis.
+    """
+
+    targets = list(target_positions)
+    references = list(reference_positions)
+    needed = max(1, thresholds.min_consecutive_fires)
+    if len(targets) < needed:
+        return False
+    return all(
+        evaluate_relation_gate(
+            targets[: len(targets) - back],
+            references[: len(references) - back],
+            thresholds,
+            interaction_radius=interaction_radius,
+            horizon=horizon,
+        ).fired
+        for back in range(needed)
+    )
 
 
 def evaluate_relation_gate(
@@ -432,18 +532,31 @@ def evaluate_relation_gate(
     # target stops when the reference leaves" from "the target had not been
     # touched yet". Both look like a still target beside a distant reference.
     contrast_near, contrast_speeds = near, speeds
+    contrast_points = target_arr
     if thresholds.contrast_from_first_contact and near.any():
         first_contact = int(np.argmax(near))
         contrast_near = near[first_contact:]
         contrast_speeds = speeds[first_contact:]
+        contrast_points = target_arr[first_contact:]
     post_contact_far = int(np.count_nonzero(~contrast_near)) if near.any() else 0
 
-    speed_near = (
-        float(np.mean(contrast_speeds[contrast_near])) if contrast_near.any() else 0.0
-    )
-    speed_far = (
-        float(np.mean(contrast_speeds[~contrast_near])) if (~contrast_near).any() else 0.0
-    )
+    if thresholds.contrast_uses_displacement:
+        rate_near = _displacement_rate(contrast_points, contrast_near)
+        rate_far = _displacement_rate(contrast_points, ~contrast_near)
+        # A class with no run long enough to measure contributes nothing rather
+        # than a zero, which would read as strong evidence for the other side.
+        speed_near = rate_near if rate_near is not None else 0.0
+        speed_far = rate_far if rate_far is not None else 0.0
+        measurable = rate_near is not None and rate_far is not None
+    else:
+        speed_near = (
+            float(np.mean(contrast_speeds[contrast_near])) if contrast_near.any() else 0.0
+        )
+        speed_far = (
+            float(np.mean(contrast_speeds[~contrast_near])) if (~contrast_near).any() else 0.0
+        )
+        measurable = True
+
     denominator = speed_near + speed_far
     proximity_contrast = (
         float((speed_near - speed_far) / denominator) if denominator > 0.0 else 0.0
@@ -463,6 +576,9 @@ def evaluate_relation_gate(
             not thresholds.contrast_from_first_contact
             or post_contact_far >= thresholds.min_post_contact_far_deltas
         )
+        # Both classes must contain a run long enough to measure a displacement
+        # rate; otherwise the contrast is comparing against a fabricated zero.
+        and measurable
     )
     return RelationGateDecision(
         fired=fired,

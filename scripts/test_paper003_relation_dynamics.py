@@ -22,7 +22,9 @@ from wm_expansion.relation_dynamics import (
     RelationGateThresholds,
     RelationalTargetModel,
     coupling_displacement,
+    _displacement_rate,
     evaluate_relation_gate,
+    gate_fired_persistently,
     normal_alignment,
 )
 from wm_expansion.target_dynamics import ConstantVelocityTargetModel, ZeroOrderTargetModel
@@ -194,6 +196,114 @@ class RelationalModelPredictionTests(unittest.TestCase):
         model.observe(targets[0], references[0])
         self.assertFalse(model.gate_fired)
         np.testing.assert_allclose(model.predict(HORIZON), targets[0])
+
+
+class ContrastStatisticTests(unittest.TestCase):
+    """The two corrections that let the gate survive observation noise."""
+
+    RADIUS = 0.05
+
+    def _jitter(self, steps: int, scale: float, seed: int = 0) -> np.ndarray:
+        """A target going nowhere, observed noisily - not a moving target."""
+        rng = np.random.default_rng(seed)
+        return np.array([np.array([0.20, 0.0]) + rng.normal(0, scale, 2) for _ in range(steps)])
+
+    def test_fixed_window_does_not_reward_short_runs(self) -> None:
+        """The regression that a run-length-normalised rate introduced.
+
+        Dividing each run's total displacement by its own length makes short
+        runs look fast. Contact runs are short and far-field runs are long, so
+        independent observation noise alone produced a strong false contrast -
+        the noise control fired on 90% of trials.
+        """
+        points = self._jitter(40, 0.01, seed=3)
+        short = np.zeros(39, dtype=bool)
+        short[4:9] = True  # a 5-step run, like a contact span
+        long_run = np.zeros(39, dtype=bool)
+        long_run[12:36] = True  # a 24-step run, like a far-field span
+
+        def run_normalised(mask: np.ndarray) -> float:
+            """What the statistic did before: each run divided by its own length."""
+            start = int(np.argmax(mask))
+            end = start + int(np.count_nonzero(mask))
+            return float(np.linalg.norm(points[end] - points[start])) / (end - start)
+
+        # The artefact, shown directly: the same jitter looks several times
+        # faster when measured over a short run.
+        self.assertGreater(run_normalised(short) / run_normalised(long_run), 2.0)
+        # The fixed window measures both at the same scale.
+        fast = _displacement_rate(points, short)
+        slow = _displacement_rate(points, long_run)
+        self.assertLess(max(fast, slow) / min(fast, slow), 1.7)
+
+    def test_a_still_target_scores_far_below_a_moving_one(self) -> None:
+        moving = np.array([np.array([0.20 + 0.01 * i, 0.0]) for i in range(20)])
+        mask = np.ones(19, dtype=bool)
+        self.assertGreater(
+            _displacement_rate(moving, mask), 5.0 * _displacement_rate(self._jitter(20, 0.001), mask)
+        )
+
+    def test_a_class_with_no_full_window_is_unmeasurable(self) -> None:
+        points = self._jitter(10, 0.001)
+        tiny = np.zeros(9, dtype=bool)
+        tiny[3:5] = True  # 2 steps, shorter than the 3-step window
+        self.assertIsNone(_displacement_rate(points, tiny))
+
+
+class PersistenceTests(unittest.TestCase):
+    """A statistic crossing a threshold once is a draw, not evidence."""
+
+    RADIUS = 0.05
+
+    def _coupled_history(self, steps: int = 30) -> tuple[list, list]:
+        target = np.array([0.20, 0.0])
+        # Close enough that the first advance actually reaches contact: 7 steps
+        # at 15 mm covers 105 mm, so a 2.4-radius start makes contact by step 4.
+        reference = np.array([0.20 - 2.4 * self.RADIUS, 0.0])
+        spec = CouplingSpec(interaction_radius=self.RADIUS, coupling_gain=0.5)
+        targets, references = [], []
+        for step in range(steps):
+            cycle = step % 14
+            direction = 1 if cycle < 7 else (-1 if cycle < 12 else 0)
+            reference = reference + np.array([direction * 0.015, 0.0])
+            target = target + coupling_displacement(target, reference, spec)
+            targets.append(target.copy())
+            references.append(reference.copy())
+        return targets, references
+
+    def test_a_sustained_relation_still_fires(self) -> None:
+        targets, references = self._coupled_history()
+        self.assertTrue(
+            gate_fired_persistently(
+                targets, references, RelationGateThresholds(), interaction_radius=self.RADIUS,
+                horizon=6,
+            )
+        )
+
+    def test_requiring_more_agreement_is_never_more_permissive(self) -> None:
+        targets, references = self._coupled_history(steps=16)
+        fired = [
+            gate_fired_persistently(
+                targets, references,
+                RelationGateThresholds(min_consecutive_fires=need),
+                interaction_radius=self.RADIUS, horizon=6,
+            )
+            for need in (1, 2, 4, 8)
+        ]
+        for stricter, looser in zip(fired[1:], fired[:-1]):
+            self.assertTrue(looser or not stricter)
+
+    def test_a_history_shorter_than_the_requirement_cannot_fire(self) -> None:
+        self.assertFalse(
+            gate_fired_persistently(
+                [np.array([0.2, 0.0])], [np.array([0.0, 0.0])],
+                RelationGateThresholds(min_consecutive_fires=3), interaction_radius=self.RADIUS,
+            )
+        )
+
+    def test_zero_agreement_is_refused_as_a_setting(self) -> None:
+        with self.assertRaises(ValueError):
+            RelationGateThresholds(min_consecutive_fires=0).validate()
 
 
 class NormalAlignmentTests(unittest.TestCase):
