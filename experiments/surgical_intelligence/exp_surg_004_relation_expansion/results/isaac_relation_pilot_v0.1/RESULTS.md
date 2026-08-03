@@ -59,6 +59,39 @@ anything and must not be reported as an effect; the sweep is far too small for
 a rate comparison. What it establishes is only that the comparison is now being
 made on honest terms.
 
+### Conditional decomposition: the limit is engagement, not accuracy
+
+Recounted directly from the raw records rather than through the aggregator.
+Splitting the nine committed coupled cells by whether arm D was permitted to
+act at all:
+
+| Seed | Commit | Eligible window | Arm D acted | B miss | D miss |
+| ---: | ---: | --- | :---: | ---: | ---: |
+| 300 | 12 | 12–17 | yes | 8.4 | **1.1** |
+| 302 | 21 | 8–24 | yes | 14.4 | **0.0** |
+| 307 | 19 | 14–19 | yes | 0.0 | 0.0 |
+| 308 | 25 | 12–32 | yes | **50.3** | **4.9** |
+| 309 | 17 | 13–19 | yes | 6.4 | **0.0** |
+| 301 | 11 | 9–17 | no | 37.8 | 37.8 |
+| 303 | 18 | 11–29 | no | 37.2 | 37.2 |
+| 304 | 19 | 13–21 | no | 5.9 | 5.9 |
+| 305 | 11 | 7–19 | no | 36.0 | 36.0 |
+
+**Where arm D acts it lands 5 of 5, against 4 of 5 for parameter repair, and
+its misses run 0.0–4.9 mm against 0.0–50.3 mm.** Where the gate has not fired
+it falls back and is identical to arm B by construction, and those four cells
+are what drag the headline rate to 0.67.
+
+So the current limitation is **engagement rate, not predictive accuracy**. The
+relational model is accurate when it engages; `estD = 0.56` is what caps the
+overall figure. That is a more specific target than "improve arm D", and it is
+not addressed by a better predictor.
+
+Note the engagement is not simply a matter of committing later — seed 303
+committed at step 18 of an 11–29 window and still did not engage, while seed
+300 engaged at step 12. What matters is whether contact has actually occurred
+by the commit, which varies with the drawn geometry.
+
 ### Superseded: the fixed-geometry numbers
 
 An earlier version of this file reported arm D at 7.0 mm and a 1.00 land rate.
@@ -111,7 +144,12 @@ cell out of nine. That is a sample-size problem, not a finding.
    identifiable.
 3. **Sample size.** Nine committed coupled cells cannot support a land-rate
    comparison. The current 0.67 against 0.56 is one cell.
-4. **Deliverable 2 remains unmet** — the coupling is injected through the
+4. **Engagement rate.** Arm D acts in only 0.56 of committed cells, and the
+   conditional decomposition shows accuracy is not the binding constraint. A
+   confirmatory design has to either raise engagement or report the conditional
+   estimate alongside the marginal one - and which of those it does must be
+   preregistered, not chosen afterwards.
+5. **Deliverable 2 remains unmet** — the coupling is injected through the
    target command rather than emerging from contact, so there is no physical
    jitter to measure, and the observation noise the estimator was characterised
    against is absent here.
