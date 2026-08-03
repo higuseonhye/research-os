@@ -23,10 +23,13 @@ SEED="${SEED:-300}"
 CONDITION="${CONDITION:-coupled}"
 OUT_DIR="${OUT_DIR:-results/paper003_pilot_smoke}"
 
-if [ -x /isaac-sim/python.sh ]; then
-  ISAAC_PYTHON="/isaac-sim/python.sh"
-elif [ -x "${ISAACLAB_PATH:-/workspace/IsaacLab}/isaaclab.sh" ]; then
+# Prefer isaaclab.sh when Isaac Lab is installed: it configures the Isaac Lab
+# environment that omni.isaac.lab_tasks and orbit.surgical.tasks need. Falling
+# back to Isaac Sim's own python.sh only when Isaac Lab is absent.
+if [ -x "${ISAACLAB_PATH:-/workspace/IsaacLab}/isaaclab.sh" ]; then
   ISAAC_PYTHON="${ISAACLAB_PATH:-/workspace/IsaacLab}/isaaclab.sh -p"
+elif [ -x /isaac-sim/python.sh ]; then
+  ISAAC_PYTHON="/isaac-sim/python.sh"
 else
   echo "[pilot] no Isaac Sim / Isaac Lab launcher found." >&2
   echo "[pilot] looked for: /isaac-sim/python.sh" >&2

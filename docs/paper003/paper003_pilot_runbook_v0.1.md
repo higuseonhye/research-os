@@ -50,16 +50,9 @@ cd research-os && git pull origin master
 ```
 
 **A fresh image has Isaac Sim but not Isaac Lab.** Observed 2026-08-03:
-`/isaac-sim/python.sh` present, `import omni.isaac.lab` → `ModuleNotFoundError`.
-Check before assuming:
-
-```bash
-/isaac-sim/python.sh -c "import omni.isaac.lab, orbit.surgical.tasks; print('deps OK')"
-```
-
-If that fails, run the Paper 002 bootstrap — it installs Isaac Lab v1.0.0 and
-orbit-surgical into `/workspace`. **It takes tens of minutes**, so run it under
-`tmux` or it dies with the connection:
+`/isaac-sim/python.sh` present, Isaac Lab absent. Install it with the Paper 002
+bootstrap, which also brings in orbit-surgical. **It takes tens of minutes**, so
+run it under `tmux` or it dies with the connection:
 
 ```bash
 tmux new -s bootstrap
@@ -67,8 +60,31 @@ bash /workspace/research-os/scripts/bootstrap_orbit_surgical_runpod.sh 2>&1 | te
 # detach with ctrl-b then d ; reattach with: tmux attach -t bootstrap
 ```
 
-Re-run the dependency check above before continuing. Do not start the pilot
-until it prints `deps OK`.
+> **Do not verify with a bare `import`.** A check like
+> `python.sh -c "import omni.isaac.lab"` **always fails**, working install or
+> not, because `omni.isaac.core` and its siblings are Isaac Sim *extensions*
+> that only resolve once the app has started. That is exactly why every runner
+> in this repo imports them **after** `AppLauncher`:
+>
+> ```python
+> app_launcher = AppLauncher(args_cli)      # extensions load here
+> simulation_app = app_launcher.app
+> from omni.isaac.lab_tasks.utils import parse_env_cfg   # only now
+> ```
+>
+> An earlier version of this runbook prescribed that bare import and produced a
+> `ModuleNotFoundError: No module named 'omni.isaac.core'` that looked like a
+> failed bootstrap and was not one.
+
+Verify by launching something instead — Isaac Lab's own zero-agent, which is
+what the bootstrap itself uses as its check:
+
+```bash
+cd /workspace/IsaacLab && ./isaaclab.sh -p source/standalone/environments/zero_agent.py \
+  --task Isaac-Reach-Dual-STAR-IK-Rel-Play-v0 --num_envs 1 --headless
+```
+
+If that opens and steps without error, the install is good and the pilot can run.
 
 **Do not call `python` directly.** The simulator ships its own interpreter;
 a bare `python` is usually absent in the image. `scripts/run_paper003_pilot.sh`
