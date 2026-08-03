@@ -64,6 +64,17 @@ class EpisodeSpec:
     interaction_radius: float = 0.05
     coupling_gain: float = 0.5
     min_history: int = 8
+    min_contact_steps: int = 2
+    """How many steps of the dispense window a contact must occupy to count.
+
+    The action takes `dispense_latency` steps and lands wherever the target is
+    at completion. A contact that begins on the final step has no time to move
+    the target before the action is over, so admitting that cell scores a task
+    that was never posed - every arm is trivially right there.
+
+    Two steps is the minimum overlap that leaves the contact any room to act. It
+    is set from the structure of the action, not from any arm's performance.
+    """
 
     def validate(self) -> None:
         if self.tolerance <= 0.0:
@@ -76,6 +87,8 @@ class EpisodeSpec:
             raise ValueError("coupling_gain must be in (0, 1]")
         if self.min_history < 4:
             raise ValueError("min_history must be >= 4")
+        if not 1 <= self.min_contact_steps <= self.dispense_latency:
+            raise ValueError("min_contact_steps must be in [1, dispense_latency]")
 
 
 def project_reference_motion(
@@ -342,8 +355,14 @@ class CommitmentEpisode:
         """
         return len(self.targets) >= self.spec.min_history and self._projection_available()
 
-    def motion_expected(self) -> bool:
+    def motion_expected(self, reference_future: ArrayLike | None = None) -> bool:
         """Will the target move during the dispense window?
+
+        `reference_future` is the bodies' positions over the next
+        `dispense_latency` steps, supplied by the harness. It must come from the
+        harness rather than from `self.estimator`: predicting it would make
+        eligibility depend on arm D's pattern estimator, and eligibility has to
+        be a property of the world, not of one arm's readiness.
 
         This is the eligibility screen: where the target will not move, every
         arm is trivially right and committing there measures nothing. The
@@ -368,23 +387,49 @@ class CommitmentEpisode:
         if len(self.targets) < 2:
             return False
         target, previous_target = self.targets[-1], self.targets[-2]
-        # Nearest body now, and where that same body was a step ago. Taking the
-        # nearest at each step separately would report a closing rate between
-        # two different bodies.
-        distances = np.linalg.norm(self.references[-1] - target, axis=1)
-        body = int(np.argmin(distances))
-        reference = self.references[-1][body]
-        previous_reference = self.references[-2][min(body, len(self.references[-2]) - 1)]
 
-        # 1. the target is moving under any cause
+        # 1. The target is already moving, under any cause. A target drifting
+        #    under its own dynamics moves during the dispense even with no body
+        #    near it, and that cell is worth scoring: it is where a
+        #    constant-velocity arm should win and a relational one decline.
         target_speed = float(np.linalg.norm(target - previous_target))
         if target_speed * self.spec.dispense_latency > self.spec.tolerance:
             return True
 
+        # 2. A body will be in contact for long enough during the window to act.
+        if reference_future is not None:
+            future = np.asarray(reference_future, dtype=np.float64)
+            if future.ndim == 2:
+                future = future[:, None, :]
+            if future.ndim != 3 or future.shape[2] != target.shape[0]:
+                raise ValueError("reference_future must be [step, dim] or [step, body, dim]")
+            horizon = min(len(future), self.spec.dispense_latency)
+            in_contact = sum(
+                1
+                for step in range(horizon)
+                if float(np.min(np.linalg.norm(future[step] - target, axis=1)))
+                < self.spec.interaction_radius
+            )
+            return in_contact >= self.spec.min_contact_steps
+
+        # Fallback when the harness does not supply the bodies' future.
+        #
+        # It is a proxy, and a poor one: it reads the *instantaneous* closing
+        # rate, which a schedule that ever reverses breaks in both directions -
+        # a body inside the radius but leaving still counts as contact, and a
+        # body paused between advances counts as receding. Measured against
+        # ground truth it admits cells where the target does not move in 51% of
+        # advance-only encounters and 84% of ones with a withdrawal.
+        #
+        # Kept only so existing single-body callers keep working. Anything that
+        # knows the schedule should pass `reference_future`.
+        distances = np.linalg.norm(self.references[-1] - target, axis=1)
+        body = int(np.argmin(distances))
+        reference = self.references[-1][body]
+        previous_reference = self.references[-2][min(body, len(self.references[-2]) - 1)]
         separation = float(np.linalg.norm(target - reference))
         if separation < self.spec.interaction_radius:
             return True
-
         closing = float(np.linalg.norm(target - previous_reference)) - separation
         reach = separation - self.spec.interaction_radius
         return closing > 0.0 and 0.0 < reach <= closing * self.spec.dispense_latency

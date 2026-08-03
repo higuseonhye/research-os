@@ -341,7 +341,17 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             }
         )
 
-        eligible = episode.motion_expected() and episode.ready
+        # The reference's schedule is the harness's own, so its future is known
+        # exactly. Handing it to the eligibility screen is what keeps that screen
+        # a property of the world: predicting the future instead would route it
+        # through arm D's pattern estimator and make eligibility depend on one
+        # arm's readiness.
+        reference_future = np.stack([
+            reference_start
+            + reference_axis * reference_offset(ahead + phase_offset, args)
+            for ahead in range(step + 1, step + 1 + args.dispense_latency)
+        ])
+        eligible = episode.motion_expected(reference_future) and episode.ready
         if eligible:
             # Every eligible step is a commit candidate. The policy below picks
             # among them; recording all of them keeps that choice out of the
