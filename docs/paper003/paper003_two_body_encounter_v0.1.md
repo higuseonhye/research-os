@@ -172,12 +172,46 @@ explains it, and the gate declines — correctly, since that is arm C's case. Th
 commitment has to precede the sustained push, which is what the eligibility
 window arranges. Pinned by a test.
 
+## Eligibility, implemented 2026-08-04
+
+`motion_expected()` now takes the bodies' positions over the dispense window,
+**supplied by the harness**. That source matters: predicting the future instead
+would route eligibility through arm D's pattern estimator and make it depend on
+one arm's readiness, which is the coupling this design has had to undo three
+times. The Isaac runner computes the schedule, so it knows the future exactly.
+
+A cell is admitted when the target is already moving fast enough to leave
+tolerance, or when a body occupies at least `min_contact_steps` of the window.
+Two steps is the default, set from the structure of the action rather than any
+arm's score: the placement lands at the end of the window, so a contact
+beginning on the final step has no time to move anything.
+
+Measured against ground truth over 80 two-body episodes:
+
+| Eligibility rule | Admitted | Precision | B | C | D | Displacement |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| instantaneous proxy | 915 | 0.37 | 0.80 | 0.42 | 0.97 | 3.7 mm |
+| future, ≥1 contact step | 757 | 0.45 | 0.77 | 0.27 | 0.99 | 7.5 mm |
+| **future, ≥2 contact steps** | 673 | **0.51** | 0.76 | 0.25 | **0.99** | 7.6 mm |
+| future, ≥4 contact steps | 514 | 0.57 | 0.75 | 0.17 | 0.98 | 8.7 mm |
+
+Precision is the fraction of admitted cells where the target really moves beyond
+tolerance. The old proxy was right about a third of the time; the corrected rule
+about half. The instantaneous fallback is kept for single-body callers and
+documented as the proxy it is.
+
+**Arm B barely moves — 0.80 to 0.76 — and that is the expected result, not a
+disappointment.** Even with perfect knowledge of the future and a guaranteed
+two-step contact, the median displacement is 7.6 mm against a 20 mm tolerance.
+The residual imprecision is the tolerance, not the predicate. This is the same
+finding as above, arrived at from a different direction.
+
 ## What remains
 
-1. **The eligibility predicate.** `motion_expected()` still uses the
-   instantaneous closing rate; the arm-neutral rule above is not implemented.
-2. **The placement tolerance**, which is blocking and needs the Branch B scene.
-3. **The Isaac runner**, which still constructs a single reference body.
+1. **The placement tolerance**, which is blocking and needs the Branch B scene.
+2. **The Isaac runner**, which still constructs a single reference body. It now
+   passes the harness future to the eligibility screen, but the two-body scene
+   itself does not exist.
 
-Order matters: the tolerance moves every number, so (2) should settle before any
-figure from (1) or (3) is treated as more than a smoke test.
+The tolerance moves every number here, so it should settle before any figure
+from (2) is treated as more than a smoke test.

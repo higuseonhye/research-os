@@ -445,6 +445,82 @@ class TwoBodyTests(unittest.TestCase):
         self.assertFalse(np.allclose(aims["D"], aims["B"]))
 
 
+class EligibilityTests(unittest.TestCase):
+    """The screen deciding which cells are measurements at all.
+
+    It must be a property of the world: the future is supplied by the harness,
+    never predicted, because predicting it would route eligibility through arm
+    D's pattern estimator and make it depend on one arm's readiness.
+    """
+
+    RADIUS = 0.05
+
+    def setUp(self) -> None:
+        self.spec = EpisodeSpec(interaction_radius=self.RADIUS)
+
+    def _still(self) -> CommitmentEpisode:
+        """A stationary target with a body parked far away."""
+        episode = CommitmentEpisode(spec=self.spec)
+        for _ in range(6):
+            episode.observe(np.array([0.20, 0.0, 0.0]), np.array([0.60, 0.0, 0.0]))
+        return episode
+
+    def _future(self, distances: list[float]) -> np.ndarray:
+        """Body positions over the window, given separations from the target."""
+        return np.array([[[0.20 + d, 0.0, 0.0]] for d in distances])
+
+    def test_contact_that_occupies_the_window_is_admitted(self) -> None:
+        near = 0.5 * self.RADIUS
+        self.assertTrue(self._still().motion_expected(self._future([near] * 6)))
+
+    def test_contact_beginning_on_the_final_step_is_refused(self) -> None:
+        """The action completes before the displacement happens, so the task
+        was never posed and every arm is trivially right."""
+        far, near = 2.0 * self.RADIUS, 0.5 * self.RADIUS
+        self.assertFalse(
+            self._still().motion_expected(self._future([far] * 5 + [near]))
+        )
+
+    def test_no_contact_at_all_is_refused(self) -> None:
+        self.assertFalse(self._still().motion_expected(self._future([2.0 * self.RADIUS] * 6)))
+
+    def test_a_moving_target_is_admitted_even_with_no_body_near(self) -> None:
+        """Drift is a cell worth scoring: arm C should win and arm D decline."""
+        episode = CommitmentEpisode(spec=self.spec)
+        for index in range(6):
+            episode.observe(
+                np.array([0.20 + 0.01 * index, 0.0, 0.0]), np.array([0.60, 0.0, 0.0])
+            )
+        self.assertTrue(episode.motion_expected(self._future([2.0 * self.RADIUS] * 6)))
+
+    def test_the_required_overlap_is_configurable_and_monotone(self) -> None:
+        far, near = 2.0 * self.RADIUS, 0.5 * self.RADIUS
+        window = self._future([far] * 3 + [near] * 3)
+        lenient = CommitmentEpisode(spec=EpisodeSpec(interaction_radius=self.RADIUS,
+                                                     min_contact_steps=2))
+        strict = CommitmentEpisode(spec=EpisodeSpec(interaction_radius=self.RADIUS,
+                                                    min_contact_steps=5))
+        for episode in (lenient, strict):
+            for _ in range(6):
+                episode.observe(np.array([0.20, 0.0, 0.0]), np.array([0.60, 0.0, 0.0]))
+        self.assertTrue(lenient.motion_expected(window))
+        self.assertFalse(strict.motion_expected(window))
+
+    def test_an_impossible_overlap_requirement_is_refused_at_construction(self) -> None:
+        with self.assertRaises(ValueError):
+            EpisodeSpec(dispense_latency=6, min_contact_steps=7).validate()
+        with self.assertRaises(ValueError):
+            EpisodeSpec(min_contact_steps=0).validate()
+
+    def test_a_malformed_future_is_rejected_rather_than_guessed(self) -> None:
+        with self.assertRaises(ValueError):
+            self._still().motion_expected(np.zeros((6, 1, 2)))
+
+    def test_the_fallback_is_reachable_and_documented_as_a_proxy(self) -> None:
+        """Passing no future still works, so single-body callers are unaffected."""
+        self.assertIsInstance(self._still().motion_expected(), bool)
+
+
 class ConstantMotionTests(unittest.TestCase):
     """A body that never pauses is the simplest pattern, and was being refused."""
 
