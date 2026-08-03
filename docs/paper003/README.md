@@ -44,7 +44,9 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] **Preregistration drafted** — [draft v0.1](paper003_prereg_draft_v0.1.md). Arms, task, primary endpoint, and hypotheses H1–H4 locked; **six parameters left open** because they need real physics, not a 1-D proxy.
 - [x] **Episode driver** — all decision logic in [`commitment_episode.py`](../../scripts/wm_expansion/commitment_episode.py), CPU-tested, so the Isaac script is a shell over scene setup
 - [x] **Isaac pilot runner written** — [`orbit_reach_relation_pilot.py`](../../scripts/orbit_reach_relation_pilot.py) + [runbook](paper003_pilot_runbook_v0.1.md). **Never executed**; syntax-checked only
-- [ ] Run the calibration pilot on GPU — must produce the six open parameters (excluded from evidence, as Paper 002's pilot was)
+- [x] **Calibration pilot run in Isaac** (n=1 seed, excluded from evidence) — [RESULTS](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/isaac_relation_pilot_v0.1/RESULTS.md). The operators dissociate: arm D lands the relational cell (7.0 mm) and declines the mode cell; arm C lands the mode cell (0.0 mm) and fails the relational one. Gate fires only on coupling. No regression where the relation is absent.
+- [ ] Measure observation noise and timing irregularity — **still unmet**: the coupling is injected through the target command rather than emerging from contact, so there is no physical jitter to measure
+- [ ] Speed sweep to locate arm B's near-zero band
 - [ ] Freeze the preregistration, then run confirmatory
 
 ---
