@@ -145,6 +145,12 @@ VESSL: [`docs/paper002/vessl_runbook_v0.1.md`](docs/paper002/vessl_runbook_v0.1.
 
 ---
 
+## Affiliation
+
+All work in this repository is **independent personal research**. Where Seonhye Gu is affiliated with the AI-Based Surgical Robot Innovation Lab, the affiliation is stated for identification only and does not imply sponsorship, funding, or institutional endorsement of any claim made here.
+
+---
+
 ## Security
 
 Do **not** commit API keys, credentials, PHI, or collaborator-embargoed material without consent. See [`.gitignore`](.gitignore) and [`docs/PUBLIC_BOUNDARY.md`](docs/PUBLIC_BOUNDARY.md).

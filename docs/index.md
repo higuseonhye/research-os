@@ -93,9 +93,9 @@ its geometry turned out to be degenerate.
 
 ---
 
-Paper 002 was independently conducted as personal research while Seonhye Gu was
-affiliated with the AI-Based Surgical Robot Innovation Lab. The affiliation is
-for identification only and does not imply sponsorship or endorsement.
+All work in this repository is independent personal research. Where Seonhye Gu
+is affiliated with the AI-Based Surgical Robot Innovation Lab, the affiliation
+is for identification only and does not imply sponsorship or endorsement.
 
 Contact: [@higuseonhye](https://github.com/higuseonhye)
 
