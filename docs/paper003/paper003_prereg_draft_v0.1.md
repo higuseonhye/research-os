@@ -70,6 +70,53 @@ re-aiming averages prediction error away; the design record is in the
 
 ---
 
+## Commit policy — LOCKED 2026-08-03, before the run that tests it
+
+**Every eligible step is a commit candidate, and one is drawn uniformly at
+random per cell from the cell's seed.**
+
+Locked here rather than left to the runner's default because the choice moves
+the primary endpoint and is therefore exactly the kind of decision that must
+not be made after seeing which arm it favours.
+
+### Why uniform
+
+Two reasons, both independent of any measured outcome:
+
+1. **"First eligible" is not a policy an agent would follow.** Nobody places at
+   the earliest physically possible instant. Across trials the commit moment
+   spreads over the window, and uniform sampling models that; taking the
+   earliest step concentrates every measurement in the approach phase, before
+   the encounter has produced any evidence for any arm to use.
+2. **Arm independence.** The commit step must not depend on when a particular
+   arm's information becomes available, or the arms are no longer compared on
+   the same cells. Uniform sampling is arm-blind by construction; so is "first",
+   but it is biased in *phase* rather than by arm.
+
+Policies considered and rejected: a fixed offset (the constant is arbitrary),
+and letting each arm commit when it judges best (arms would then be scored on
+different cells, which is not a comparison).
+
+### Declared in advance: the expected direction of the effect
+
+Under "first eligible" the observed `d_estimated` rate was 0.33 — in two of
+three committed cells the relation gate had not yet fired, so arm D fell back
+to zero-order and scored identically to arm B by construction. Admitting later
+commits will raise that rate, and **is therefore expected to favour arm D**.
+
+That expectation is stated before the run precisely because it is known. The
+policy is chosen on the two grounds above, and the direction of its effect is
+declared rather than discovered afterwards. Had the reasoning pointed the other
+way, the policy would still be uniform.
+
+### Recorded per cell
+
+`commit_policy` and the full `eligible_steps` list are written into every
+record, so the realised distribution of commit moments can be audited rather
+than taken on trust.
+
+---
+
 ## Primary Endpoint: capability threshold crossing
 
 For a preregistered variant set `T` graded by reference speed, and arms `a`:

@@ -63,8 +63,20 @@ parser.add_argument("--tolerance", type=float, default=0.020,
                          "20 mm success criterion (Paper 001/002), not fitted here")
 parser.add_argument("--dispense-latency", type=int, default=6)
 parser.add_argument("--episode-steps", type=int, default=80)
+parser.add_argument(
+    "--commit-policy",
+    choices=["uniform", "first"],
+    default="uniform",
+    help=(
+        "which eligible step to commit at. 'uniform' draws one from the seed; "
+        "'first' takes the earliest. Uniform is the default because 'first' is "
+        "not a policy an agent would follow - nobody places at the earliest "
+        "physically possible instant - and because it concentrates every "
+        "measurement in the approach phase, where no arm has information yet."
+    ),
+)
 parser.add_argument("--commit-step", type=int, default=-1,
-                    help="-1 commits at the first eligible step")
+                    help="force a specific step; overrides --commit-policy")
 parser.add_argument("--max-cells", type=int, default=1,
                     help="smoke guard; keep at 1 until the environment is trusted")
 parser.add_argument("--out-dir", type=str, required=True)
@@ -178,6 +190,8 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
 
     target = target0.copy()
     observations: list[dict[str, Any]] = []
+    candidates: list[dict[str, Any]] = []
+    trajectory: list[np.ndarray] = []
     committed_at: int | None = None
     d_estimated = False
     aims: dict[str, np.ndarray] | None = None
@@ -220,25 +234,24 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             }
         )
 
-        eligible = episode.motion_expected()
-        due = step == args.commit_step if args.commit_step >= 0 else eligible
-        if committed_at is None and episode.ready and due and eligible:
-            # Record whether arm D actually estimated or fell back to
-            # zero-order. Without this the two are indistinguishable in the
-            # output, and a fallback looks like a failed relational prediction.
-            d_estimated = episode.can_estimate()
-            aims = episode.aims()
-            committed_at = step
+        eligible = episode.motion_expected() and episode.ready
+        if eligible:
+            # Every eligible step is a commit candidate. The policy below picks
+            # among them; recording all of them keeps that choice out of the
+            # loop, so it cannot depend on how a cell happened to unfold.
+            candidates.append(
+                {
+                    "step": step,
+                    # Whether arm D actually estimated or fell back to
+                    # zero-order. Without this the two are indistinguishable in
+                    # the output and a fallback reads as a failed relational
+                    # prediction.
+                    "d_estimated": episode.can_estimate(),
+                    "aims": {k: v.copy() for k, v in episode.aims().items()},
+                }
+            )
 
-        if (
-            committed_at is not None
-            and resolved is None
-            and step == committed_at + args.dispense_latency
-        ):
-            oracle_aims = dict(aims or {})
-            oracle_aims["D_oracle"] = target.copy()
-            resolved = episode.resolve(oracle_aims, target)
-            aims = oracle_aims
+        trajectory.append(target.copy())
 
         with torch.no_grad():
             action = scripted_action(
@@ -249,6 +262,26 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             violations += 1
             break
 
+    # ---- commit policy -----------------------------------------------------
+    # Only candidates whose dispense completes within the episode are usable.
+    usable = [
+        c for c in candidates if c["step"] + args.dispense_latency < len(trajectory)
+    ]
+    if usable:
+        if args.commit_step >= 0:
+            chosen = min(usable, key=lambda c: abs(c["step"] - args.commit_step))
+        elif args.commit_policy == "first":
+            chosen = usable[0]
+        else:
+            chosen = usable[int(np.random.default_rng(args.seed).integers(len(usable)))]
+
+        committed_at = int(chosen["step"])
+        d_estimated = bool(chosen["d_estimated"])
+        landing = trajectory[committed_at + args.dispense_latency]
+        aims = dict(chosen["aims"])
+        aims["D_oracle"] = landing.copy()
+        resolved = episode.resolve(aims, landing)
+
     return {
         "seed": args.seed,
         "condition": args.condition,
@@ -256,6 +289,8 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "approach_azimuth": azimuth,
         "approach_offset": offset,
         "phase_offset": phase_offset,
+        "commit_policy": args.commit_policy,
+        "eligible_steps": [c["step"] for c in candidates],
         "committed_at": committed_at,
         "d_estimated": d_estimated,
         "gate_fire_rate": (
