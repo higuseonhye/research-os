@@ -143,8 +143,14 @@ rather than inventing motion.
 arm B's 22.4 — because velocity extrapolation amplifies observation error.
 Each operator has a regime where it is actively harmful.
 
-**Arm D's advantage is not yet established.** It leads parameter repair by one
-cell out of nine. That is a sample-size problem, not a finding.
+**Arm D's advantage is not yet established.** Paired 95% interval for D − B is
+`[+0.00, +0.33]`. The lower bound is **structural rather than evidential**: arm
+D falls back to arm B's aim when it declines, so `D ≥ B` holds by construction
+and the interval can never be negative. The informative quantities are the
+engagement rate and the conditional advantage, both preregistered.
+
+**Individual land rates are very wide at this size** — B `[0.22, 0.89]`,
+D `[0.33, 1.00]`. Quoting either point estimate alone would misrepresent them.
 
 ## Blocking before this can inform a preregistration
 
@@ -153,8 +159,11 @@ cell out of nine. That is a sample-size problem, not a finding.
 2. ~~Arm D is handed the coupling parameters~~ — **settled.** Radius and gain
    are fitted from the observed contacts; arm D declines when the fit is not
    identifiable.
-3. **Sample size.** Nine committed coupled cells cannot support a land-rate
-   comparison. The current 0.67 against 0.56 is one cell.
+3. **Sample size — now quantified.** Nine committed cells give power **0.03**
+   to detect the observed structure. Roughly **60 committed cells** are needed
+   for 0.90, about 70 seeds at this commit rate. The pilot could not have
+   detected this effect even if it is real, which is how its inconclusive
+   interval should be read.
 4. ~~Engagement rate~~ — **settled.** Both marginal and conditional estimates
    are preregistered and printed together. Delaying the commit window to raise
    engagement was declined: unlike the approach distance, no arm-neutral

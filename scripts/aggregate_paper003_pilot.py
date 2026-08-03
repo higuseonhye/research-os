@@ -18,6 +18,8 @@ from __future__ import annotations
 import argparse
 import json
 import math
+
+import numpy as np
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Iterable
@@ -49,6 +51,42 @@ def miss_distances(record: dict[str, Any]) -> dict[str, float] | None:
     }
 
 
+def bootstrap_rate_interval(
+    outcomes: list[bool], draws: int = 10000, seed: int = 20260804
+) -> tuple[float, float]:
+    """Percentile 95% interval for a landing rate, resampling cells.
+
+    The preregistration requires intervals rather than point estimates, and
+    with nine cells they are wide enough that quoting a bare rate would be
+    misleading on its own.
+    """
+
+    if not outcomes:
+        return (0.0, 0.0)
+    rng = np.random.default_rng(seed)
+    data = np.asarray(outcomes, dtype=float)
+    resampled = rng.choice(data, size=(draws, len(data)), replace=True).mean(axis=1)
+    return (float(np.percentile(resampled, 2.5)), float(np.percentile(resampled, 97.5)))
+
+
+def bootstrap_difference_interval(
+    left: list[bool], right: list[bool], draws: int = 10000, seed: int = 20260804
+) -> tuple[float, float]:
+    """Paired interval for (left - right) landing rate, resampling cells together.
+
+    Paired because both arms are scored on the same cells; resampling them
+    independently would discard that and overstate the uncertainty.
+    """
+
+    if not left or len(left) != len(right):
+        return (0.0, 0.0)
+    rng = np.random.default_rng(seed)
+    a, b = np.asarray(left, dtype=float), np.asarray(right, dtype=float)
+    idx = rng.integers(0, len(a), size=(draws, len(a)))
+    diffs = a[idx].mean(axis=1) - b[idx].mean(axis=1)
+    return (float(np.percentile(diffs, 2.5)), float(np.percentile(diffs, 97.5)))
+
+
 def summarise(records: list[dict[str, Any]], tolerance: float) -> dict[str, dict[str, Any]]:
     by_condition: dict[str, dict[str, Any]] = {}
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -59,13 +97,16 @@ def summarise(records: list[dict[str, Any]], tolerance: float) -> dict[str, dict
         committed = [r for r in group if r.get("committed_at") is not None]
         misses: dict[str, list[float]] = defaultdict(list)
         lands: dict[str, int] = defaultdict(int)
+        outcomes: dict[str, list[bool]] = defaultdict(list)
         for record in committed:
             distances = miss_distances(record)
             if distances is None:
                 continue
             for arm, distance in distances.items():
                 misses[arm].append(distance)
-                lands[arm] += int(distance <= tolerance)
+                landed = distance <= tolerance
+                lands[arm] += int(landed)
+                outcomes[arm].append(bool(landed))
 
         by_condition[condition] = {
             "cells": len(group),
@@ -87,6 +128,14 @@ def summarise(records: list[dict[str, Any]], tolerance: float) -> dict[str, dict
             "land_rate": {
                 arm: lands[arm] / len(misses[arm]) for arm in misses if misses[arm]
             },
+            "land_rate_ci": {
+                arm: bootstrap_rate_interval(outcomes[arm]) for arm in outcomes if outcomes[arm]
+            },
+            "d_minus_b_ci": (
+                bootstrap_difference_interval(outcomes["D"], outcomes["B"])
+                if outcomes.get("D") and outcomes.get("B")
+                else None
+            ),
         }
 
         # Conditional on arm D having engaged. Preregistered as a secondary
@@ -138,6 +187,26 @@ def render(summary: dict[str, dict[str, Any]], tolerance: float) -> str:
     # than computed by hand once the marginal figure looks disappointing. Where
     # arm D declines it is identical to arm B by construction, which dilutes the
     # marginal rate without saying anything about the model.
+    # Point estimates alone invite over-reading, especially at pilot sample
+    # sizes. The preregistration requires intervals, so they are printed here
+    # rather than computed only when someone asks.
+    lines += ["", "95% bootstrap intervals (10,000 draws, cells resampled)", "-" * 98]
+    for condition, stats in summary.items():
+        ci = stats.get("land_rate_ci", {})
+        if not ci:
+            continue
+        text = " ".join(
+            f"{a}=[{ci[a][0]:.2f},{ci[a][1]:.2f}]" for a in ("B", "C", "D") if a in ci
+        )
+        lines.append(f"{condition:<10}{text}")
+        diff = stats.get("d_minus_b_ci")
+        if diff:
+            crosses = diff[0] <= 0.0 <= diff[1]
+            note = "includes zero" if crosses else "excludes zero"
+            lines.append(
+                f"{'':<10}D-B paired = [{diff[0]:+.2f}, {diff[1]:+.2f}]   {note}"
+            )
+
     lines += ["", "conditional on arm D engaging (secondary, preregistered)", "-" * 98]
     for condition, stats in summary.items():
         engaged = stats.get("engaged_cells", 0)
