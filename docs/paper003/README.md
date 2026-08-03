@@ -42,8 +42,9 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] **Arm D estimates the reference pattern online** — no longer handed it. Under 20% observation noise at the speed where B is locked out: B 0.00, C 0.29, **D 0.69**, oracle 1.00. The crossing survives; estimating costs ~0.31.
 - [x] **Robustness to irregular timing measured.** The estimator does exploit periodicity — it loses ~0.4 from a strict cycle to ±3 steps of jitter — but the gap holds in the worst case tested (jitter + noise: B 0.08, **D 0.52**).
 - [x] **Preregistration drafted** — [draft v0.1](paper003_prereg_draft_v0.1.md). Arms, task, primary endpoint, and hypotheses H1–H4 locked; **six parameters left open** because they need real physics, not a 1-D proxy.
-- [ ] Isaac implementation of the commit-and-dispense structure
-- [ ] Calibration pilot on GPU — must produce the six open parameters (explicitly excluded from evidence, as Paper 002's pilot was)
+- [x] **Episode driver** — all decision logic in [`commitment_episode.py`](../../scripts/wm_expansion/commitment_episode.py), CPU-tested, so the Isaac script is a shell over scene setup
+- [x] **Isaac pilot runner written** — [`orbit_reach_relation_pilot.py`](../../scripts/orbit_reach_relation_pilot.py) + [runbook](paper003_pilot_runbook_v0.1.md). **Never executed**; syntax-checked only
+- [ ] Run the calibration pilot on GPU — must produce the six open parameters (excluded from evidence, as Paper 002's pilot was)
 - [ ] Freeze the preregistration, then run confirmatory
 
 ---
@@ -61,6 +62,7 @@ General causal discovery · relation invention outside the prepared operator · 
 | [paper003_rq_v0.1.md](paper003_rq_v0.1.md) | Central question, sub-questions, framing note |
 | [paper003_description_v0.1.md](paper003_description_v0.1.md) | Method draft, protocol, capability-threshold metric definition |
 | [paper003_prereg_draft_v0.1.md](paper003_prereg_draft_v0.1.md) | **Draft preregistration** — locked arms/endpoint/hypotheses, and the six parameters the calibration pilot must set |
+| [paper003_pilot_runbook_v0.1.md](paper003_pilot_runbook_v0.1.md) | How to run the calibration pilot, what it must produce, and the runner's known limits |
 | [paper003_commitment_task_v0.1.md](paper003_commitment_task_v0.1.md) | The task shape that makes capability threshold crossing measurable, and the breakfast-domain scope boundary |
 | [paper003_related_work_v0.1.md](paper003_related_work_v0.1.md) | Core novelty comparison — relational/graph world models, capability-boundary framing precedent |
 | [paper003_lit_positioning_v0.1.md](paper003_lit_positioning_v0.1.md) | Execution-horizon literature (Garg/Shkurti) — narrower, entry-framing only |
