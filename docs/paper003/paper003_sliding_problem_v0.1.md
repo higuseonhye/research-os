@@ -86,12 +86,37 @@ and part constant velocity, and the honest options are:
 **None of these may be chosen by seeing which arm they favour.** The measurement
 comes first.
 
+## How it is measured
+
+`wm_expansion/stopping.py` takes a pose trace and the separation to the nearest
+body at each step, and reports when contact last occurred, how many steps the
+object then coasted, the per-step speed retention, and how far it travelled
+afterwards. All of it is under test, including the ways it could be quietly
+wrong: a trace with no strike, a strike that moved nothing, and contact running
+to the end of the recording are each refused rather than reported as a stopping
+time of zero.
+
+It also emits a one-line `gate_outlook`, deliberately coarse and deliberately
+not a pass/fail, so a run states its own implication instead of leaving a number
+to be interpreted later — when the interpretation could be chosen.
+
+`scripts/orbit_lift_stopping_probe.py` is the Isaac side: drive the end effector
+into the block, retreat, hold still, record poses. It has never been run.
+
+```bash
+/workspace/IsaacLab/isaaclab.sh -p scripts/orbit_lift_stopping_probe.py     --headless --seed 300 --out-dir results/paper003_stopping
+```
+
+The result is written to a file as well as printed, because Isaac's app swallows
+stdout — which cost a diagnostic earlier today.
+
 ## Status
 
 | Item | State |
 | --- | --- |
 | `World` abstraction | **implemented**, 179 tests, injected path unchanged |
 | `ContactWorld` | implemented and exercised against toy physics |
-| Isaac contact runner | **not started** — needs the lift scene's names and a real pusher |
-| Stopping time of a struck block | **the measurement everything now waits on** |
+| Isaac contact runner | not started — needs the lift scene's names and a real pusher |
+| Stopping-time measurement | **built**: `wm_expansion/stopping.py` (12 tests) and `scripts/orbit_lift_stopping_probe.py` |
+| The measurement itself | **the next GPU action**, and everything waits on it |
 | H1 reachability | in doubt, for a reason that is now specific and testable |
