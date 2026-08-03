@@ -156,7 +156,22 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     # A lateral offset decides whether the pass is head-on or glancing.
     lateral = np.array([-reference_axis[1], reference_axis[0], 0.0])
     offset = float(geometry_rng.uniform(-0.5, 0.5)) * args.interaction_radius
-    approach = float(geometry_rng.uniform(2.5, 3.5)) * args.interaction_radius
+    # The reference must stay outside the interaction radius long enough for a
+    # full burst cycle to be observed, or the encounter is over before arm D
+    # can identify the pattern and the cell yields nothing.
+    #
+    # One cycle spans burst_on + burst_off steps, during which the reference
+    # travels burst_on * speed. Add the interaction radius and that is the
+    # minimum approach distance. At the defaults: 10 * 15 mm + 50 mm = 200 mm.
+    #
+    # An earlier version drew from 2.5-3.5 radii, i.e. 125-175 mm, all of it
+    # below that floor. Four of ten coupled cells then ran their full 80 steps
+    # with the gate firing and never committed at all, because eligibility and
+    # estimator-readiness never overlapped. This is a precondition for the
+    # measurement to exist, derived from the estimator's requirement - not a
+    # value chosen after seeing which arm it favours.
+    min_approach = args.burst_on * args.reference_speed + args.interaction_radius
+    approach = min_approach * float(geometry_rng.uniform(1.05, 1.6))
     reference_start = target0 - reference_axis * approach + lateral * offset
     # Starting phase decides where in the burst cycle the encounter begins.
     phase_offset = int(geometry_rng.integers(0, args.burst_on + args.burst_off))
