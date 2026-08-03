@@ -71,6 +71,28 @@ class MeasurementTests(unittest.TestCase):
         positions, separations = trace([0.0] * 8, contact_steps=2)
         self.assertIsNone(estimate_stopping(positions, separations, RADIUS))
 
+    def test_settling_before_contact_does_not_count_as_a_strike(self) -> None:
+        """The real trace that made this guard necessary.
+
+        On the first Isaac run the block settled under gravity in the opening
+        steps - 10.1 mm while the end effector was 57 mm away and receding - and
+        then never moved again. The end effector approached to 37.5 mm, missed,
+        and retreated. Judged on the trace's global peak speed the settling
+        cleared the old guard, and the probe reported "stops within a step":
+        the one answer that would have rescued the design, from a trace with no
+        strike in it at all.
+        """
+        positions = [np.array([0.20, 0.0, 0.0])]
+        # settle: moves while nothing is near
+        for delta in (0.0025, 0.0064, 0.0013, 0.0):
+            positions.append(positions[-1] + np.array([delta, 0.0, 0.0]))
+        # then a near pass that never touches it
+        positions.extend([positions[-1].copy() for _ in range(12)])
+        separations = [0.058] * 5 + [0.038] * 6 + [0.052] * 6
+
+        self.assertEqual(len(positions), len(separations))
+        self.assertIsNone(estimate_stopping(positions, separations, RADIUS))
+
     def test_contact_running_to_the_end_leaves_no_coast_to_measure(self) -> None:
         positions, separations = trace([0.01] * 6, contact_steps=6)
         self.assertIsNone(estimate_stopping(positions, separations, RADIUS))

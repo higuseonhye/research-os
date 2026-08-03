@@ -42,9 +42,12 @@ parser.add_argument("--seed", type=int, default=300)
 parser.add_argument("--episode-steps", type=int, default=90)
 parser.add_argument("--approach-speed", type=float, default=0.015,
                     help="metres per step the end effector is driven at")
-parser.add_argument("--strike-steps", type=int, default=14,
-                    help="steps spent driving into the block before retreating")
-parser.add_argument("--retreat-steps", type=int, default=8)
+parser.add_argument("--strike-steps", type=int, default=40,
+                    help="maximum steps spent driving at the block; the approach "
+                         "ends early once the block actually moves")
+parser.add_argument("--retreat-steps", type=int, default=10)
+parser.add_argument("--strike-motion", type=float, default=0.0005,
+                    help="metres of block movement that counts as contact made")
 parser.add_argument("--interaction-radius", type=float, default=0.05)
 parser.add_argument("--dispense-latency", type=int, default=6)
 parser.add_argument("--out-dir", type=str, default="results/paper003_stopping")
@@ -96,22 +99,44 @@ def run_probe(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     action_dim = env.action_space.shape[-1]
     positions: list[list[float]] = []
     separations: list[float] = []
+    phases: list[str] = []
+    struck_at: int | None = None
+    #: Settling under gravity happens in the opening steps and is not a strike.
+    settle_steps = 6
 
     for step in range(args.episode_steps):
         obj = object_pose()
         positions.append(obj.tolist())
         separations.append(float(np.linalg.norm(obj - ee_pose())))
+        if (
+            struck_at is None
+            and step > settle_steps
+            and float(np.linalg.norm(obj - np.asarray(positions[-2]))) >= args.strike_motion
+        ):
+            struck_at = step
 
-        # Relative IK: the first three components are a cartesian delta. Drive
-        # into the block, then back out; afterwards hold still so the coast is
-        # observed with nothing near it, which is the whole measurement.
-        action = torch.zeros((args.num_envs, action_dim), device=env.unwrapped.device)
-        if step < args.strike_steps:
-            delta = heading * args.approach_speed
-        elif step < args.strike_steps + args.retreat_steps:
-            delta = -heading * args.approach_speed
+        # Relative IK: the first three components are a cartesian delta.
+        #
+        # The approach is closed-loop rather than a fixed step count, because
+        # the first run failed on exactly that. Driving for a fixed 14 steps
+        # left the end effector 37.5 mm short, the block never moved, and the
+        # probe still produced a stopping time - from a trace with no strike in
+        # it. It now steers at the block's *current* pose and keeps going until
+        # the block actually moves, so a miss shows up as an approach that never
+        # ends rather than as a fast stop.
+        aim = obj - ee_pose()
+        reach = float(np.linalg.norm(aim))
+        aim = aim / reach if reach > 0.0 else heading
+
+        if struck_at is None and step < args.strike_steps:
+            phase, delta = "approach", aim * args.approach_speed
+        elif struck_at is not None and step < struck_at + args.retreat_steps:
+            phase, delta = "retreat", -aim * args.approach_speed
         else:
-            delta = np.zeros(3)
+            phase, delta = "hold", np.zeros(3)
+        phases.append(phase)
+
+        action = torch.zeros((args.num_envs, action_dim), device=env.unwrapped.device)
         action[0, :3] = torch.as_tensor(delta, device=action.device, dtype=action.dtype)
 
         _, _, terminated, truncated, _ = env.step(action)
@@ -128,6 +153,9 @@ def run_probe(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "start_object": start_object.tolist(),
         "start_ee": start_ee.tolist(),
         "dispense_latency": args.dispense_latency,
+        "struck_at": struck_at,
+        "min_separation": float(min(separations)) if separations else None,
+        "phases": phases,
         "stopping": None if estimate is None else estimate.to_dict(),
         "outlook": gate_outlook(estimate, args.dispense_latency),
         "positions": positions,
@@ -155,8 +183,13 @@ def main() -> None:
     if record.get("failed"):
         lines.append(f"FAILED: {record['failed']}")
     else:
+        lines.append(f"struck_at: {record['struck_at']}  "
+                     f"min_sep: {1000 * (record['min_separation'] or 0):.1f} mm")
         lines.append(f"stopping: {json.dumps(record['stopping'])}")
         lines.append(f"outlook : {record['outlook']}")
+        if record["struck_at"] is None:
+            lines.append("NO STRIKE - the end effector never moved the block; "
+                         "any stopping time here is meaningless")
     summary.write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
