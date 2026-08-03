@@ -31,6 +31,7 @@ from .relation_dynamics import (
     RelationGateThresholds,
     coupling_displacement,
     evaluate_relation_gate,
+    gate_fired_persistently,
 )
 
 ArrayLike = Sequence[float] | np.ndarray
@@ -196,6 +197,26 @@ class CommitmentEpisode:
             horizon=self.spec.dispense_latency,
         )
 
+    def gate_fired(self) -> bool:
+        """The decision arm D acts on: the gate, sustained.
+
+        `gate_decision()` reports this step's statistics and stays available for
+        diagnosis, but a single crossing is one draw rather than evidence. Under
+        the observation-noise control some prefix crosses any fixed threshold by
+        chance, which alone put that control at 0.30 of trials against H3's 0.10
+        ceiling.
+        """
+
+        if len(self.targets) < 2:
+            return False
+        return gate_fired_persistently(
+            self.targets,
+            self.references,
+            self.gate_thresholds,
+            interaction_radius=self.spec.interaction_radius,
+            horizon=self.spec.dispense_latency,
+        )
+
     def _projection_available(self) -> bool:
         """Has enough history accumulated for the reference cycle to be identified?
 
@@ -233,7 +254,7 @@ class CommitmentEpisode:
         """
         return (
             self._projection_available()
-            and self.gate_decision().fired
+            and self.gate_fired()
             and self._coupling() is not None
         )
 
@@ -320,7 +341,7 @@ class CommitmentEpisode:
         # static and noise conditions, where the reference moves but the target
         # is uncoupled. An unusable estimate falls back the same way rather than
         # fabricating an aim; the arm is penalised for it, which is correct.
-        coupling = self._coupling() if self.gate_decision().fired else None
+        coupling = self._coupling() if self.gate_fired() else None
         predicted = (
             None
             if coupling is None

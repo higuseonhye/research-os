@@ -403,15 +403,44 @@ Scored on whether the gate decides by step 25, the end of the v5 commit window.
 Firing eventually is not the same as firing in time: under `burst` the corrected
 gate does fire, at around step 34, long after the commitment is made.
 
-#### Declared risk: the gate is noise-sensitive and the noise is unmeasured
+#### Two further corrections, made because the noise is unmeasured
 
-Characterised at 0.5 mm observation noise. At 2 mm the coupled fire rate falls to
-0.25 and at 5 mm to 0.12, because after contact the target is still and every
-far-field sample is pure noise. **The real figure is unknown** — deliverable 2 is
-unmet, so no physical jitter has ever been measured. If real contact is noisier
-than 1 mm, the gate as specified will not fire often enough, and that is a
-threat to H3 from the opposite direction. The real-contact pilot must measure
-the noise before the gate can be frozen.
+The gate's original contrast compared **mean per-step speed** near against far.
+After contact the target is still, so every far-field sample is pure noise, and
+the far term floors at the noise level rather than at zero. That left the gate
+usable only at implausibly clean observations — and the real figure has never
+been measured, because deliverable 2 is unmet.
+
+**Net displacement over a fixed 3-step window** replaces it. A still target
+under noise moves every step but goes nowhere, so its net displacement stays at
+the noise scale while its path length grows. The window is fixed rather than
+each run's own length: dividing a run's total by its own length makes short runs
+look fast, and since contact spans are short and far-field spans long, that
+alone put the observation-noise control at **0.90 of trials**.
+
+**Two consecutive crossings are required.** A statistic crossing a threshold
+once is a draw, not evidence; with roughly seventy prefixes evaluated per
+episode, the noise control still crossed by chance in 0.30 of trials. Requiring
+two put it at 0.00 with the treatment unchanged at 1.00.
+
+Fire-in-time rate against observation noise, `probe` encounter:
+
+| Observation noise | Original statistic | Corrected | Slide (both) |
+| ---: | ---: | ---: | ---: |
+| 0.5 mm | 1.00 | 1.00 | 0.00 |
+| 1.0 mm | 0.81 | **1.00** | 0.00 |
+| 2.0 mm | 0.25 | 0.69 | 0.00 |
+| 3.0 mm | 0.12 | 0.62 | 0.00 |
+| 5.0 mm | 0.06 | 0.06 | 0.00 |
+
+**H3's 0.90 floor is met to 1 mm rather than 0.5 mm**, with much gentler decay
+beyond. That is a real but bounded improvement, not a solution: past 2 mm the
+gate still fails H3, and the real noise remains unmeasured. Recorded as open
+parameter 8.
+
+Replaying all 40 recorded Isaac traces through the corrected gate reproduces the
+sweep exactly — coupled 1.00, drift, noise and static 0.00 — so none of this was
+bought by loosening the controls.
 
 #### The contrast threshold is not fitted
 
@@ -457,7 +486,7 @@ confirmatory data. The CPU proxy gives their *shape*, not defensible values.
 | 5 | `C_MARGIN` | Depends on how much of the structure mode expansion captures in Isaac | C plateaus **0.24–0.50** in proxy |
 | 6 | `min_proximity_contrast` | ~~Proxy has no contact noise~~ — **settled 2026-08-04.** Re-derived from the Isaac sweep: 0.30–0.90 all separate identically | 0.50 sits mid-plateau; not fitted |
 | 7 | `max_constant_velocity_gain` | **Untested by the sweep**, whose controls never exercise it; now exercised by `slide` on CPU | Original gate claimed **every** slide trial; corrected gate 0.00 |
-| 8 | Observation noise | **Unmeasured.** The gate is characterised at 0.5 mm and its fire rate falls to 0.25 at 2 mm | Blocks freezing the gate; needs the real-contact pilot |
+| 8 | Observation noise | **Unmeasured.** The corrected gate meets H3 to 1 mm and fails past 2 mm | Blocks freezing the gate; needs the real-contact pilot |
 
 Also pending: the speed grid defining `T`, the placement tolerance, and
 `dispense_latency` — all three follow from the physical scale of the Isaac

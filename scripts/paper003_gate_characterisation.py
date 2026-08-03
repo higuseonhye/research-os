@@ -47,6 +47,7 @@ from wm_expansion.relation_dynamics import (
     RelationGateThresholds,
     coupling_displacement,
     evaluate_relation_gate,
+    gate_fired_persistently,
 )
 
 # The pilot's configuration. Reproduced here so the sliding study is comparable
@@ -58,6 +59,14 @@ BURST_ON = 10
 BURST_OFF = 4
 HORIZON = 6  # dispense latency; CommitmentEpisode passes this, not the default 10
 MIN_DELTAS = 6
+
+#: The gate exactly as the v5 sweep ran it, for before/after comparison. Every
+#: correction since is off by default here so the baseline stays the baseline.
+V5_GATE = RelationGateThresholds(
+    contrast_from_first_contact=False,
+    contrast_uses_displacement=False,
+    min_consecutive_fires=1,
+)
 
 
 # --------------------------------------------------------------------------
@@ -238,8 +247,14 @@ def gate_under_sliding(
                 interaction_radius=RADIUS,
                 horizon=HORIZON,
             )
-            fired.append(decision.fired)
-            this_trial = this_trial or decision.fired
+            # The sustained decision, as CommitmentEpisode makes it - a lone
+            # crossing is one draw of a statistic, not evidence.
+            sustained = gate_fired_persistently(
+                targets[:end], references[:end], thresholds,
+                interaction_radius=RADIUS, horizon=HORIZON,
+            )
+            fired.append(sustained)
+            this_trial = this_trial or sustained
             contrasts.append(decision.proximity_contrast)
             gains.append(decision.constant_velocity_gain)
         trials.append(this_trial)
@@ -265,10 +280,10 @@ def first_fire_step(
 ) -> int | None:
     targets, references = slide_rollout(damping, seed=seed, encounter=encounter)
     for end in range(MIN_DELTAS + 1, len(targets) + 1):
-        if evaluate_relation_gate(
+        if gate_fired_persistently(
             targets[:end], references[:end], thresholds,
             interaction_radius=RADIUS, horizon=HORIZON,
-        ).fired:
+        ):
             return end
     return None
 
@@ -284,7 +299,7 @@ def gate_comparison(seeds: int = 16) -> list[dict[str, Any]]:
     corrected gate fires at **none** of the commit steps they actually used.
     """
 
-    old = RelationGateThresholds(contrast_from_first_contact=False)
+    old = V5_GATE
     new = RelationGateThresholds()
     rows = []
     for encounter in ("burst", "probe"):

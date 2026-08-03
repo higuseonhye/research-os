@@ -324,12 +324,18 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         # `drift` produced no commit at all in the first control run, which
         # would otherwise leave the paper's key control untestable.
         gate = episode.gate_decision()
+        gate_sustained = episode.gate_fired()
         observations.append(
             {
                 "step": step,
                 "target": target.tolist(),
                 "reference": reference.tolist(),
-                "gate_fired": bool(gate.fired),
+                # This step's crossing, kept for diagnosis, and the sustained
+                # decision arm D actually acts on. They differ: a lone crossing
+                # is one draw of a statistic, and under the noise control some
+                # prefix crosses by chance in 0.30 of trials.
+                "gate_crossed": bool(gate.fired),
+                "gate_fired": bool(gate_sustained),
                 "proximity_contrast": float(gate.proximity_contrast),
                 "constant_velocity_gain": float(gate.constant_velocity_gain),
             }

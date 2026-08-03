@@ -21,6 +21,7 @@ from paper003_gate_characterisation import (
     HORIZON,
     MIN_DELTAS,
     RADIUS,
+    V5_GATE,
     constant_velocity_clause_work,
     gate_comparison,
     gate_under_sliding,
@@ -153,8 +154,7 @@ class SlidingGateTests(unittest.TestCase):
         Per *trial*, which is H3's unit, it claimed every single one. The
         per-step rate of 12-16% concealed that entirely.
         """
-        original = RelationGateThresholds(contrast_from_first_contact=False)
-        result = gate_under_sliding(1.0, original, seeds=4, encounter="burst")
+        result = gate_under_sliding(1.0, V5_GATE, seeds=4, encounter="burst")
         self.assertEqual(result["trial_rate"], 1.0)
         self.assertLess(result["fire_rate"], 0.5)  # the per-step rate that hid it
 

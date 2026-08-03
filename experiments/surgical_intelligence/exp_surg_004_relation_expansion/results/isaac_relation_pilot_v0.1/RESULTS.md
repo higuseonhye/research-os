@@ -266,6 +266,9 @@ read as though it arrived clean:
 | Contrast counted pre-contact steps as far-field evidence | Gate claimed a relation in every post-contact-slide trial; at this sweep's own commit steps its +1.0 contrast came from an empty far-field class |
 | Reference never withdraws | A struck target and a sliding one are the same history at commit time, so the corrected gate cannot decide either |
 | Leak first reported per step, not per trial | Understated a total failure as 14-19% |
+| Contrast compared mean per-step speed | Far-field term floors at the noise level, so the gate was usable only below 1 mm of observation noise |
+| Displacement rate normalised by each run's own length | Short contact spans looked fast; the noise control fired on 90% of trials until both classes were measured over a fixed window |
+| A single threshold crossing counted as firing | With ~70 prefixes per episode the noise control crossed by chance in 30% of trials |
 
 ## Reproduce
 
