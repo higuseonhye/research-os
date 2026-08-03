@@ -2,45 +2,62 @@
 
 > **Engineering calibration only. Excluded from confirmatory evidence.**
 > Same posture as [EXP-SURG-003 pilot v0.3](../../../exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.3/RESULTS.md).
-> **n = 1 seed.** Nothing here supports a claim. It exists to settle
+> **10 seeds, one speed.** Nothing here supports a claim. It exists to settle
 > preregistration parameters, per the
 > [draft preregistration](../../../../../docs/paper003/paper003_prereg_draft_v0.1.md).
 
 ## Provenance
 
-- Run commit: `9770047` (`977004771dcce1c30e33c88fc4554c995b3b4717`)
+- Runs: sweep v5 at commit `30a3db0` (uniform commit policy, estimated coupling).
+  Earlier sweeps at `9770047` and `b3721b0` are superseded; see below.
 - Runner: `scripts/orbit_reach_relation_pilot.py` via `scripts/run_paper003_pilot.sh`
 - Task: `Isaac-Reach-Dual-STAR-IK-Rel-Play-v0`, Isaac Sim on A100-SXM4-80GB
 - Isolation: fresh Isaac process per condition
-- Seed: 300 (single)
+- Seeds: 300-309, encounter geometry drawn per seed
 - Placement tolerance: **20 mm**, inherited from this task family's existing
   success criterion, not fitted here — see the runbook for why that provenance
   matters
 - Reference speed 15 mm/step, burst 10 on / 4 off, interaction radius 50 mm,
   dispense latency 6 steps
 
-## Arm results — current, 10 seeds with randomised encounter geometry
+## Arm results — current (sweep v5), 10 seeds, randomised encounter geometry
 
+Uniform commit policy and coupling parameters estimated from observation.
 Median miss distance from the true landing point, and land rate at 20 mm.
 
 | Condition | Missing | Commits | Gate | estD | B repair | C mode | D relation | Land B / C / D |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| **coupled** | relation | 9/10 | 0.80 | 0.33 | 9.1 | 23.5 | **3.0** | 0.67 / 0.44 / **0.67** |
+| **coupled** | relation | 9/10 | 0.80 | 0.56 | 14.4 | 37.8 | **4.9** | 0.56 / 0.22 / **0.67** |
 | **drift** | mode | 10/10 | 0.00 | 0.00 | 90.0 | **0.0** | 90.0 | 0.00 / **1.00** / 0.00 |
-| noise | none | 10/10 | 0.00 | 0.00 | 27.2 | 184.7 | 27.2 | 0.20 / 0.00 / 0.20 |
+| noise | none | 10/10 | 0.00 | 0.00 | 22.4 | 152.5 | 22.4 | 0.40 / 0.00 / 0.40 |
 | static | none | 9/10 | 0.00 | 0.00 | 0.0 | 0.0 | 0.0 | 1.00 / 1.00 / 1.00 |
 
-**Arm D does not beat parameter repair on land rate.** Both sit at 0.67 on the
-coupled condition, because `estD` is only 0.33 — in two of every three
-committed cells the gate had not yet fired at the commit moment and arm D fell
-back to zero-order, making it identical to arm B by construction. Where arm D
-does act its median miss is 3.0 mm against 9.1 mm, but that is a minority of
-cells and not a rate the paper can claim.
+### Both declared directions materialised
 
-The cause is protocol, not model: commitment fires at the **first eligible
-step**, which falls during the approach, before the target has moved enough for
-a proximity-conditioned gate to fire. When to commit among eligible steps is a
-preregistration decision and has not been made.
+The commit policy and the removal of the parameter loan were locked before this
+run with their expected effects written down. Both appeared, and they pulled
+against each other:
+
+| | v4: first-eligible, coupling supplied | v5: uniform, coupling estimated |
+| --- | ---: | ---: |
+| `estD` | 0.33 | **0.56** |
+| Arm D median miss | 3.0 mm | **4.9 mm** |
+| Arm D land rate | 0.67 | 0.67 |
+| Arm B land rate | 0.67 | 0.56 |
+
+Uniform commitment raised the rate at which arm D could act, as predicted.
+Estimating the coupling cost it accuracy, also as predicted. Neither direction
+was inferred after the fact.
+
+### Arm D leads for the first time, and it is one cell
+
+Arm D is ahead of parameter repair on land rate without an oracle and without
+being handed the coupling — 0.67 against 0.56.
+
+**That is 6 of 9 against 5 of 9.** A single cell. It is not evidence of
+anything and must not be reported as an effect; the sweep is far too small for
+a rate comparison. What it establishes is only that the comparison is now being
+made on honest terms.
 
 ### Superseded: the fixed-geometry numbers
 
@@ -63,7 +80,7 @@ Against the five deliverables the draft preregistration asks of it:
 | 1 | Environment runs end to end, isolated per cell | **met** |
 | 2 | Observation noise and timing irregularity under real physics | **not met** — the coupling is applied to the target command rather than emerging from contact, so no physical jitter is generated to measure |
 | 3 | Speed sweep locating arm B's near-zero band | **not run** |
-| 4 | Gate statistics across conditions | **met** — 0.19 on coupled, 0.00 on all three controls |
+| 4 | Gate statistics across conditions | **met** — 0.80 on coupled, 0.00 on all three controls |
 | 5 | Oracle clears 80%, task is solvable | **met** — oracle landed in every condition |
 
 ## Observations
@@ -78,32 +95,32 @@ survived every correction below.
 numerically identical to arm B. The gate declines and the arm falls back
 rather than inventing motion.
 
-**Arm C is not merely weaker.** It is catastrophic on noise — 184.7 mm against
-arm B's 27.2 — because velocity extrapolation amplifies observation error.
+**Arm C is not merely weaker.** It is catastrophic on noise — 152.5 mm against
+arm B's 22.4 — because velocity extrapolation amplifies observation error.
 Each operator has a regime where it is actively harmful.
 
-**Arm D's advantage is not yet established.** See the land-rate parity above.
+**Arm D's advantage is not yet established.** It leads parameter repair by one
+cell out of nine. That is a sample-size problem, not a finding.
 
 ## Blocking before this can inform a preregistration
 
-1. **Commit policy.** Committing at the first eligible step biases against arm
-   D, which needs the gate to have fired. Choosing the policy after seeing
-   which arm it favours is precisely what preregistration prevents, so it has
-   to be settled on independent grounds.
-2. **Arm D is handed the coupling parameters.** It rolls forward with the same
-   `coupling_displacement`, `interaction_radius` and `coupling_gain` used to
-   generate the ground truth, estimating only the reference's burst pattern.
-   That is a weaker posture than Paper 002's prepared operator, where
-   parameters were estimated. Either estimate them from observation, or state
-   the boundary and narrow the claim.
-3. **Deliverable 2 remains unmet** — the coupling is injected through the
+1. ~~Commit policy~~ — **settled.** Uniform over eligible steps, locked with
+   its expected directional effect declared in advance.
+2. ~~Arm D is handed the coupling parameters~~ — **settled.** Radius and gain
+   are fitted from the observed contacts; arm D declines when the fit is not
+   identifiable.
+3. **Sample size.** Nine committed coupled cells cannot support a land-rate
+   comparison. The current 0.67 against 0.56 is one cell.
+4. **Deliverable 2 remains unmet** — the coupling is injected through the
    target command rather than emerging from contact, so there is no physical
-   jitter to measure.
+   jitter to measure, and the observation noise the estimator was characterised
+   against is absent here.
 
 ## What this is not
 
 Ten seeds at one speed, one commitment per episode, and a coupling that does
-not arise from simulated contact. Nothing here is a confirmatory estimate.
+not arise from simulated contact. Nine committed cells on the treatment
+condition. Nothing here is a confirmatory estimate.
 
 ## Correction log
 
@@ -118,6 +135,8 @@ read as though it arrived clean:
 | Fixed head-on encounter geometry | Ten seeds were ten translations of one encounter |
 | Predicted along the reference's heading | Correct only head-on; arm D hit 60.4 mm under varied geometry |
 | Approach shorter than one burst cycle | Four of ten cells unmeasurable |
+| Committed at the first eligible step | Gate rarely fired yet; arm D fell back in two of three cells |
+| Coupling parameters handed to arm D | Its accuracy measured the loan, not inference |
 
 ## Reproduce
 
