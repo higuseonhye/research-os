@@ -48,7 +48,7 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] **Commit policy locked** — uniform over eligible steps, with its expected directional effect declared before the run
 - [x] **Arm D estimates the coupling** rather than being handed it — radius and gain fitted from observed contacts
 - [ ] **Sample size** — nine committed treatment cells; arm D's 0.67 vs 0.56 lead is one cell and cannot support a rate comparison
-- [ ] Measure observation noise and timing irregularity — **still unmet**: the coupling is injected through the target command rather than emerging from contact, so there is no physical jitter to measure
+- [ ] **Real-contact coupling** — [design v0.1](paper003_real_contact_design_v0.1.md). The coupling is currently injected through the target command and arm D inverts the same function, so deliverable 2 is unmet and arm D's model is exactly correct by construction. Next GPU run reads `scene_inventory` to pick between reusing an existing rigid body or adding one.
 - [ ] Speed sweep to locate arm B's near-zero band
 - [ ] Freeze the preregistration, then run confirmatory
 
@@ -68,6 +68,7 @@ General causal discovery · relation invention outside the prepared operator · 
 | [paper003_description_v0.1.md](paper003_description_v0.1.md) | Method draft, protocol, capability-threshold metric definition |
 | [paper003_prereg_draft_v0.1.md](paper003_prereg_draft_v0.1.md) | **Draft preregistration** — locked arms/endpoint/hypotheses, and the six parameters the calibration pilot must set |
 | [paper003_pilot_runbook_v0.1.md](paper003_pilot_runbook_v0.1.md) | How to run the calibration pilot, what it must produce, and the runner's known limits |
+| [paper003_real_contact_design_v0.1.md](paper003_real_contact_design_v0.1.md) | Replacing the injected coupling with real contact physics, and what that changes about the claim |
 | [paper003_commitment_task_v0.1.md](paper003_commitment_task_v0.1.md) | The task shape that makes capability threshold crossing measurable, and the breakfast-domain scope boundary |
 | [paper003_related_work_v0.1.md](paper003_related_work_v0.1.md) | Core novelty comparison — relational/graph world models, capability-boundary framing precedent |
 | [paper003_lit_positioning_v0.1.md](paper003_lit_positioning_v0.1.md) | Execution-horizon literature (Garg/Shkurti) — narrower, entry-framing only |
