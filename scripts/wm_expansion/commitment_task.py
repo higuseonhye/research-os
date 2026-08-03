@@ -53,12 +53,25 @@ class CommitmentTaskSpec:
     oracle there. That is a property of this proxy, not a finding. Sweep this
     to see where the estimator actually breaks.
     """
+    timing_jitter: int = 0
+    """Per-run variation, in steps, of how long each burst and pause lasts.
+
+    Zero means a strictly periodic reference, which the estimator can exploit -
+    it takes median run lengths and assumes they repeat. Raising this tests
+    whether arm D depends on that regularity. Note the geometric predictions
+    (`predicted_zero_order_cutoff`, `constant_velocity_exact_fraction`) are
+    derived for the periodic case and are only approximate once jitter is on.
+    """
 
     def validate(self) -> None:
         if self.tolerance <= 0.0:
             raise ValueError("tolerance must be > 0")
         if self.observation_noise < 0.0:
             raise ValueError("observation_noise must be >= 0")
+        if self.timing_jitter < 0:
+            raise ValueError("timing_jitter must be >= 0")
+        if self.timing_jitter >= min(self.burst_on, self.burst_off):
+            raise ValueError("timing_jitter must stay below the shorter run length")
         if self.dispense_latency < 1:
             raise ValueError("dispense_latency must be >= 1")
         if self.burst_on < 1 or self.burst_off < 1:
@@ -73,7 +86,33 @@ class CommitmentTaskSpec:
         return self.burst_on + self.burst_off
 
     def is_moving(self, step: int) -> bool:
+        """Periodic schedule. Only valid when `timing_jitter` is zero."""
         return (step % self.period) < self.burst_on
+
+    def motion_schedule(self, length: int, rng: np.random.Generator | None = None) -> list[bool]:
+        """Per-step moving/paused flags for one episode.
+
+        With no jitter this reproduces `is_moving` exactly, so existing results
+        are unchanged. With jitter each burst and pause length is drawn
+        independently, so the cycle no longer repeats and the estimator's
+        median-run-length assumption stops being exactly right.
+        """
+
+        if length < 0:
+            raise ValueError("length must be >= 0")
+        if self.timing_jitter == 0:
+            return [self.is_moving(step) for step in range(length)]
+        if rng is None:
+            raise ValueError("jittered schedules need an rng")
+
+        flags: list[bool] = []
+        moving = True
+        while len(flags) < length:
+            base = self.burst_on if moving else self.burst_off
+            span = int(base + rng.integers(-self.timing_jitter, self.timing_jitter + 1))
+            flags.extend([moving] * max(1, span))
+            moving = not moving
+        return flags[:length]
 
     def min_moving_steps_in_window(self) -> int:
         """Fewest moving steps any dispense window can contain."""
@@ -219,14 +258,22 @@ def run_trial(arm: str, seed: int, tray_speed: float, spec: CommitmentTaskSpec |
     rng = np.random.default_rng(seed)
     commit = int(rng.integers(spec.commit_low, spec.commit_high))
 
-    truth = [_tray_offset_at(step, tray_speed, spec) for step in range(commit + 1)]
+    if spec.timing_jitter == 0:
+        # Analytic path, kept bit-identical so periodic results do not shift.
+        truth = [_tray_offset_at(step, tray_speed, spec) for step in range(commit + 1)]
+        landing = _tray_offset_at(commit + spec.dispense_latency, tray_speed, spec)
+    else:
+        flags = spec.motion_schedule(commit + spec.dispense_latency + 1, rng)
+        offsets = np.cumsum([tray_speed if f else 0.0 for f in flags])
+        truth = list(offsets[: commit + 1])
+        landing = float(offsets[commit + spec.dispense_latency])
+
     if spec.observation_noise > 0.0:
         history = list(np.asarray(truth) + rng.normal(0.0, spec.observation_noise, len(truth)))
     else:
-        history = truth
+        history = list(truth)
     here = history[-1]
     # The filling lands on the true tray, not the noisy estimate of it.
-    landing = _tray_offset_at(commit + spec.dispense_latency, tray_speed, spec)
 
     if arm == "B":
         aim = here
