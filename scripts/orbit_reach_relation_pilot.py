@@ -1,9 +1,8 @@
 """Paper 003 Isaac calibration pilot: relational coupling at a commitment point.
 
-STATUS: prepared 2026-07-31. NOT YET RUN, NOT VALIDATED - there is no GPU or
-Isaac Lab in the authoring environment, so not one line of the Isaac-facing code
-below has been executed. Expect to iterate. Run the smoke path first
-(`--max-cells 1`) and read the records before trusting anything.
+STATUS: first ran successfully in Isaac 2026-08-03, after eight defects that a
+GPU-less authoring environment could not catch. Still a pilot: read the records
+before trusting anything.
 
 THIS IS AN ENGINEERING CALIBRATION PILOT, NOT A CONFIRMATORY RUN. Its output is
 excluded from every confirmatory estimate, exactly as Paper 002's
@@ -141,12 +140,26 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     command = _get_command(env)
     target0 = command[0, :3].detach().cpu().numpy().astype(np.float64)
 
-    # The reference body travels along +x in the target's plane. It is
-    # represented as a moving point rather than a rigid asset: this pilot
-    # measures prediction, not contact dynamics, and adding a second
-    # articulated body is deferred until the environment itself is trusted.
-    reference_axis = np.array([1.0, 0.0, 0.0])
-    reference_start = target0 - reference_axis * (args.interaction_radius * 3.0)
+    # The reference body is a moving point rather than a rigid asset: this
+    # pilot measures prediction, not contact dynamics, and a second articulated
+    # body is deferred until the environment itself is trusted.
+    #
+    # Its approach geometry is drawn from the seed, and that matters more than
+    # it looks. An earlier version fixed the axis to +x and placed the start at
+    # a constant offset from the target, which made the whole interaction
+    # translation-invariant: ten seeds gave ten different absolute positions
+    # but one identical encounter, and every arm's miss distance came out to
+    # the same number every time. Cells like that are not independent samples.
+    geometry_rng = np.random.default_rng(args.seed)
+    azimuth = float(geometry_rng.uniform(0.0, 2.0 * np.pi))
+    reference_axis = np.array([np.cos(azimuth), np.sin(azimuth), 0.0])
+    # A lateral offset decides whether the pass is head-on or glancing.
+    lateral = np.array([-reference_axis[1], reference_axis[0], 0.0])
+    offset = float(geometry_rng.uniform(-0.5, 0.5)) * args.interaction_radius
+    approach = float(geometry_rng.uniform(2.5, 3.5)) * args.interaction_radius
+    reference_start = target0 - reference_axis * approach + lateral * offset
+    # Starting phase decides where in the burst cycle the encounter begins.
+    phase_offset = int(geometry_rng.integers(0, args.burst_on + args.burst_off))
 
     target = target0.copy()
     observations: list[dict[str, Any]] = []
@@ -157,7 +170,9 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     violations = 0
 
     for step in range(args.episode_steps):
-        reference = reference_start + reference_axis * reference_offset(step, args)
+        reference = reference_start + reference_axis * reference_offset(
+            step + phase_offset, args
+        )
 
         if args.condition == "coupled":
             target = target + coupling_displacement(target, reference, coupling)
@@ -223,6 +238,9 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "seed": args.seed,
         "condition": args.condition,
         "reference_speed": args.reference_speed,
+        "approach_azimuth": azimuth,
+        "approach_offset": offset,
+        "phase_offset": phase_offset,
         "committed_at": committed_at,
         "d_estimated": d_estimated,
         "gate_fire_rate": (
