@@ -149,6 +149,31 @@ class EpisodeDriverTests(unittest.TestCase):
         self.assertGreater(trials, 0, "no eligible commit found in the fake world")
         self.assertEqual(wins, trials, "relation arm lost to zero order on a coupled landing")
 
+    def test_not_ready_before_a_full_cycle_has_been_seen(self) -> None:
+        """Pins the first Isaac run's failure.
+
+        It committed at step 7 of a 14-step cycle, before any pause had
+        occurred, so the estimator could not identify the period and arm D
+        silently degraded into arm B - scoring identically to it. Readiness is
+        now gated on the estimator actually working, not on a step count.
+        """
+        self.assertFalse(self._drive(8).ready, "committed before a pause was ever seen")
+        self.assertFalse(self._drive(8).can_estimate())
+
+    def test_ready_once_a_burst_and_a_pause_are_both_complete(self) -> None:
+        # burst_on=10, burst_off=4 -> a pause completes around step 15
+        self.assertTrue(self._drive(18).can_estimate())
+        self.assertTrue(self._drive(18).ready)
+
+    def test_arm_d_differs_from_arm_b_once_it_can_estimate(self) -> None:
+        """If D still equals B after the gate, the gate is not doing its job."""
+        episode = self._drive(18)
+        aims = episode.aims()
+        self.assertFalse(
+            np.allclose(aims["D"], aims["B"]),
+            "arm D fell back to zero order despite can_estimate() being true",
+        )
+
     def test_degrades_to_zero_order_rather_than_inventing_an_aim(self) -> None:
         """With no usable pattern, arm D must fall back, not fabricate."""
         episode = CommitmentEpisode(spec=self.spec)

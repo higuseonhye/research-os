@@ -107,9 +107,30 @@ class CommitmentEpisode:
         self.targets.append(target_arr)
         self.references.append(reference_arr)
 
+    def can_estimate(self) -> bool:
+        """Can arm D actually produce a relational estimate yet?
+
+        A step count is the wrong gate. The estimator needs one completed burst
+        **and** one completed pause before the cycle is identifiable, which
+        takes longer than any fixed `min_history` that is shorter than a period.
+        Committing before then silently degrades arm D into arm B - which is
+        what the first Isaac run did, committing at step 7 of a 14-step cycle
+        and scoring D identically to B.
+        """
+
+        if len(self.references) < 2:
+            return False
+        return (
+            project_reference_motion(
+                np.asarray(self.references), self.spec.dispense_latency, self.estimator
+            )
+            is not None
+        )
+
     @property
     def ready(self) -> bool:
-        return len(self.targets) >= self.spec.min_history
+        """Eligible to commit: enough history, and arm D is not merely guessing."""
+        return len(self.targets) >= self.spec.min_history and self.can_estimate()
 
     def motion_expected(self) -> bool:
         """Will the target move during the dispense window?
