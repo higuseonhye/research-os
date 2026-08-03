@@ -251,12 +251,30 @@ def normal_alignment(
 class RelationGateThresholds:
     """Candidate thresholds.
 
-    NOT preregistered. Derived 2026-07-31 from the CPU proxy separation below,
-    with margin; they must be re-derived from Isaac data before the prereg is
-    frozen, because the proxy has no contact noise and produces an unrealistically
-    clean `proximity_contrast` of exactly 1.0.
+    NOT preregistered. Originally derived 2026-07-31 from a CPU proxy with no
+    contact noise, which produced an unrealistically clean `proximity_contrast`
+    of exactly 1.0. **Re-derived 2026-08-04 from the 40-record Isaac v5 sweep**
+    (`scripts/paper003_gate_characterisation.py`), which found two things:
 
-    Observed on the CPU proxy (5 seeds each):
+    `min_proximity_contrast` is not doing fitted work. Every value from 0.30 to
+    0.90 separates the treatment from all three controls identically, with the
+    coupled fire rate moving only 0.91 -> 0.80 across that range. 0.50 sits in
+    the middle of the plateau.
+
+    `max_constant_velocity_gain` is **untested**. Across all 2,960 decidable
+    steps of the sweep, zero passed the contrast test and were then rejected by
+    this clause. The `drift` control is degenerate - its target runs along the
+    reference's axis at the reference's speed, so the reference never came
+    within 92 mm and the gate rejects it merely for want of anything nearby.
+
+    The case that would collapse Paper 003 into Paper 002 is a target that is
+    genuinely struck and then *slides on at constant velocity*, which real rigid
+    contact produces. On that case this gate leaks: it still fires on 14-19% of
+    steps in the near-frictionless limit, against H3's 10% ceiling. The `slide`
+    condition in `orbit_reach_relation_pilot.py` exists to measure it under
+    Isaac, and the thresholds are not adjusted to accommodate the result.
+
+    Observed on the original CPU proxy (5 seeds each), retained for provenance:
 
         case          contrast   cv_gain
         coupling        +1.000    -0.036     <- must fire

@@ -48,9 +48,14 @@ parser.add_argument("--gain", type=float, default=1.0)
 parser.add_argument("--max-delta", type=float, default=0.05)
 parser.add_argument(
     "--condition",
-    choices=["coupled", "drift", "static", "noise"],
+    choices=["coupled", "drift", "static", "noise", "slide"],
     default="coupled",
-    help="coupled is the treatment; the other three are gate-specificity controls",
+    help="coupled is the treatment; the others are gate-specificity controls",
+)
+parser.add_argument(
+    "--slide-damping", type=float, default=1.0,
+    help="velocity retained per step in the `slide` control; 1.0 is a "
+         "frictionless slide, which is precisely arm C's case",
 )
 parser.add_argument("--reference-speed", type=float, default=0.015,
                     help="metres per step while the reference body is moving")
@@ -209,6 +214,7 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     aims: dict[str, np.ndarray] | None = None
     resolved: dict[str, bool] | None = None
     violations = 0
+    slide_velocity = np.zeros(3)  # carried across steps by the `slide` control
 
     for step in range(args.episode_steps):
         reference = reference_start + reference_axis * reference_offset(
@@ -219,7 +225,29 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             target = target + coupling_displacement(target, reference, coupling)
         elif args.condition == "drift":
             # Paper 002's positive case: motion unrelated to the reference.
+            #
+            # Note this control is weaker than it looks. The target runs along
+            # the reference's own axis at the reference's own speed, so the two
+            # never close: across the whole v5 sweep the reference never came
+            # within 92 mm. The gate rejects `drift` because nothing is nearby,
+            # not because it distinguished proximity-conditioned motion from
+            # constant-velocity motion. `slide` below is the control that
+            # actually puts that question to it.
             target = target + reference_axis * args.reference_speed
+        elif args.condition == "slide":
+            # Adversarial control for H2. Contact genuinely causes the motion -
+            # so the relation is real - but the target then keeps its velocity,
+            # and a constant-velocity model absorbs the result. This is the case
+            # that would collapse Paper 003 into Paper 002, and it is also what
+            # real rigid-body contact produces: struck objects slide.
+            #
+            # The gate must stay silent here. On CPU it does not: in the
+            # near-frictionless regime it still fired on 14-19% of steps
+            # (scripts/paper003_gate_characterisation.py).
+            slide_velocity = args.slide_damping * slide_velocity + coupling_displacement(
+                target, reference, coupling
+            )
+            target = target + slide_velocity
         elif args.condition == "noise":
             target = target0 + np.random.default_rng(args.seed + step).normal(
                 0.0, args.tolerance * 0.5, 3

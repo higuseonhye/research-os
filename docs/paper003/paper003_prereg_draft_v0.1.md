@@ -336,10 +336,56 @@ falsifies the paper's contribution over Paper 002.
 ### H3: Gate specificity
 
 The relation-adequacy gate must fire on at least 90% of coupled trials, and on
-at most 10% of each of: Paper 002's persistent-drift condition, static, and
-observation-noise controls. **Firing on persistent drift is the failure that
-matters** — it would mean the existing mode operator already explains the
-evidence.
+at most 10% of each control: Paper 002's persistent-drift condition, static,
+observation-noise, and **post-contact slide** (below). **Firing on motion a
+constant-velocity model explains is the failure that matters** — it would mean
+the existing mode operator already accounts for the evidence.
+
+#### The drift control is degenerate, and `slide` replaces its role — added 2026-08-04
+
+In the v5 sweep the `drift` target runs along the reference's own axis at the
+reference's own speed, so the two never close: **the reference never came within
+92 mm of the target in any drift cell.** The gate rejects `drift` because
+nothing is nearby, not because it distinguished proximity-conditioned motion
+from constant-velocity motion.
+
+The consequence is measurable. Across all 2,960 decidable steps of the sweep,
+the number that passed the proximity-contrast test and were then rejected by the
+constant-velocity clause is **zero**, in every condition. The clause that is
+supposed to keep Paper 003 from collapsing into Paper 002 has never been
+exercised.
+
+**`slide` is the control that exercises it.** The reference genuinely strikes
+the target — so the relation is real and proximity contrast is high — but the
+target then retains its velocity, and a constant-velocity model absorbs the
+result. Only the second clause can reject it. This is not a contrived case: it
+is what real rigid-body contact produces, because struck objects slide.
+
+The gate does not currently pass it (`scripts/paper003_gate_characterisation.py`):
+
+| Velocity retained | contrast | cv_gain | max cv_gain | Fire rate | Required |
+| ---: | ---: | ---: | ---: | ---: | --- |
+| 0.00 *(the pilot's coupling)* | 0.733 | −0.319 | 0.395 | 0.42 | fire |
+| 0.30 | 0.786 | −0.290 | 0.309 | 0.60 | fire |
+| 0.50 | 0.627 | −0.262 | 0.228 | 0.62 | fire |
+| 0.95 | 0.287 | −0.151 | 0.596 | **0.19** | **silent** |
+| 1.00 *(frictionless)* | 0.077 | −0.141 | 0.780 | **0.14** | **silent** |
+
+**H3's 10% ceiling is therefore a real constraint on the slide control, not a
+formality** — the gate currently sits at 14–19%, above it. Either the gate is
+tightened before the confirmatory run, or H3 fails on this control and the
+paper's contribution over Paper 002 is not established. Which of those happens
+is left to the data; the threshold is not adjusted to accommodate it.
+
+#### The contrast threshold is not fitted
+
+Re-derived from the Isaac records rather than the noiseless proxy: every
+`min_proximity_contrast` from **0.30 to 0.90** gives the same separation —
+coupled fires, all three controls stay silent — with the coupled step rate
+moving only from 0.91 to 0.80 across that entire range. The value in use (0.50)
+sits in the middle of a wide plateau, so it is not doing fitted work. This
+closes the open item recorded in `RelationGateThresholds`, which had flagged the
+proxy's unrealistically clean contrast of exactly 1.0.
 
 ### H4: No regression without the relation
 
@@ -373,7 +419,8 @@ confirmatory data. The CPU proxy gives their *shape*, not defensible values.
 | 3 | `NEAR_ZERO_BAND` | Determined by how far jitter lifts arm B off zero | Arm B **0.00 → 0.05–0.09** |
 | 4 | `ACHIEVABLE_THRESHOLD` | Must sit above the achievable floor at the chosen noise/jitter | — |
 | 5 | `C_MARGIN` | Depends on how much of the structure mode expansion captures in Isaac | C plateaus **0.24–0.50** in proxy |
-| 6 | Gate thresholds | The proxy has no contact noise and yields an unrealistically clean proximity contrast of exactly 1.0 | Gate separation 10/10 vs 0/10 in proxy |
+| 6 | `min_proximity_contrast` | ~~Proxy has no contact noise~~ — **settled 2026-08-04.** Re-derived from the Isaac sweep: 0.30–0.90 all separate identically | 0.50 sits mid-plateau; not fitted |
+| 7 | `max_constant_velocity_gain` | **Untested.** Zero steps in the sweep were rejected by this clause, because no control exercises it | Gate leaks 14–19% on `slide`, vs H3's 10% ceiling |
 
 Also pending: the speed grid defining `T`, the placement tolerance, and
 `dispense_latency` — all three follow from the physical scale of the Isaac
@@ -391,8 +438,13 @@ estimate, matching Paper 002's excluded pilot:
 2. Measured observation noise and timing irregularity under real physics → §1–3.
 3. A speed sweep locating where arm B falls into the near-zero band → the
    variant set `T`.
-4. Gate statistics on coupled, drift, static, and noise conditions → §6.
+4. Gate statistics on coupled, drift, static, noise, **and slide** conditions
+   → §6–7. The slide control is the one that can fail: it is the only condition
+   that exercises the constant-velocity clause, and on CPU the gate is above
+   H3's ceiling there.
 5. Confirmation that arm D\* clears 80%, i.e. the task is solvable at all.
+6. `normal_alignment` under real contact, to tell a tangential-push failure
+   apart from a coefficient failure if arm D underperforms.
 
 Pilot seeds must be disjoint from the confirmatory sample and are named in the
 frozen config.
