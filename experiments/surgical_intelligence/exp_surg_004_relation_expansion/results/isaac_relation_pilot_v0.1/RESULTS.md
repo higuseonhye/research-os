@@ -19,20 +19,40 @@
 - Reference speed 15 mm/step, burst 10 on / 4 off, interaction radius 50 mm,
   dispense latency 6 steps
 
-## Arm results, all four conditions
+## Arm results — current, 10 seeds with randomised encounter geometry
 
-Miss distance from the true landing point at commitment.
+Median miss distance from the true landing point, and land rate at 20 mm.
 
-| Condition | Missing structure | A | B repair | C mode | D relation | Gate | Lands at 20 mm |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| **coupled** | relation | 140.1 | 83.0 | 35.5 | **7.0** | 0.19 | **D** |
-| **drift** | mode | — | 90.0 | **0.0** | 90.0 | 0.00 | **C** |
-| noise | none | — | 27.2 | 129.9 | 27.2 | 0.00 | none |
-| static | none | 0.0 | 0.0 | 0.0 | 0.0 | 0.00 | all |
+| Condition | Missing | Commits | Gate | estD | B repair | C mode | D relation | Land B / C / D |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| **coupled** | relation | 9/10 | 0.80 | 0.33 | 9.1 | 23.5 | **3.0** | 0.67 / 0.44 / **0.67** |
+| **drift** | mode | 10/10 | 0.00 | 0.00 | 90.0 | **0.0** | 90.0 | 0.00 / **1.00** / 0.00 |
+| noise | none | 10/10 | 0.00 | 0.00 | 27.2 | 184.7 | 27.2 | 0.20 / 0.00 / 0.20 |
+| static | none | 9/10 | 0.00 | 0.00 | 0.0 | 0.0 | 0.0 | 1.00 / 1.00 / 1.00 |
 
-All cells committed and were valid. Arm D estimated the reference pattern from
-observation on the coupled cell (`d_estimated: true`); it declined to act on
-every other condition, as the gate requires.
+**Arm D does not beat parameter repair on land rate.** Both sit at 0.67 on the
+coupled condition, because `estD` is only 0.33 — in two of every three
+committed cells the gate had not yet fired at the commit moment and arm D fell
+back to zero-order, making it identical to arm B by construction. Where arm D
+does act its median miss is 3.0 mm against 9.1 mm, but that is a minority of
+cells and not a rate the paper can claim.
+
+The cause is protocol, not model: commitment fires at the **first eligible
+step**, which falls during the approach, before the target has moved enough for
+a proximity-conditioned gate to fire. When to commit among eligible steps is a
+preregistration decision and has not been made.
+
+### Superseded: the fixed-geometry numbers
+
+An earlier version of this file reported arm D at 7.0 mm and a 1.00 land rate.
+Those came from a degenerate encounter — the reference axis was fixed to +x
+with zero lateral offset, so ten seeds produced ten translations of a single
+head-on pass. Under that geometry the contact normal coincides with the
+reference's heading, which happened to make a since-corrected modelling error
+invisible. **Do not cite those figures.**
+
+The dissociation survived the correction: arm C still takes the mode condition
+outright at 0.0 mm, and arm D still declines there.
 
 ## What the pilot was for
 
@@ -48,26 +68,56 @@ Against the five deliverables the draft preregistration asks of it:
 
 ## Observations
 
-**The operators dissociate.** Arm D takes the relational cell and loses the
-mode cell; arm C does the reverse, landing at exactly 0.0 mm on constant drift
-where a constant-velocity model is the correct one. This matters more than arm
-D's win: it is what rules out arm D simply being a stronger predictor that wins
-everywhere.
+**The operators dissociate, and that is the durable finding.** Arm C takes the
+mode condition outright — 0.0 mm, a 1.00 land rate — and arm D declines there,
+scoring identically to plain repair. It rules out the obvious objection that
+the relational arm is simply a stronger predictor that wins everywhere. This
+survived every correction below.
 
-**No regression where the relation is absent.** On static and noise, arm D is
-numerically identical to arm B — 0.0 and 27.2 mm. The gate declines and the arm
-falls back rather than inventing motion.
+**No regression where the relation is absent.** On static and noise arm D is
+numerically identical to arm B. The gate declines and the arm falls back
+rather than inventing motion.
 
-**Arm C is not merely weaker.** It is catastrophic on noise (129.9 mm against
-arm B's 27.2 mm), because velocity extrapolation amplifies observation noise.
+**Arm C is not merely weaker.** It is catastrophic on noise — 184.7 mm against
+arm B's 27.2 — because velocity extrapolation amplifies observation error.
 Each operator has a regime where it is actively harmful.
+
+**Arm D's advantage is not yet established.** See the land-rate parity above.
+
+## Blocking before this can inform a preregistration
+
+1. **Commit policy.** Committing at the first eligible step biases against arm
+   D, which needs the gate to have fired. Choosing the policy after seeing
+   which arm it favours is precisely what preregistration prevents, so it has
+   to be settled on independent grounds.
+2. **Arm D is handed the coupling parameters.** It rolls forward with the same
+   `coupling_displacement`, `interaction_radius` and `coupling_gain` used to
+   generate the ground truth, estimating only the reference's burst pattern.
+   That is a weaker posture than Paper 002's prepared operator, where
+   parameters were estimated. Either estimate them from observation, or state
+   the boundary and narrow the claim.
+3. **Deliverable 2 remains unmet** — the coupling is injected through the
+   target command rather than emerging from contact, so there is no physical
+   jitter to measure.
 
 ## What this is not
 
-One seed, one speed, one commitment per episode, and a coupling injected
-through the target command rather than simulated contact. Deliverable 2 above
-is unmet, which is the main reason the preregistration cannot be frozen from
-this run. The confirmatory grid, seed sweep, and speed sweep have not run.
+Ten seeds at one speed, one commitment per episode, and a coupling that does
+not arise from simulated contact. Nothing here is a confirmatory estimate.
+
+## Correction log
+
+Findings that changed materially during this pilot, kept so the record is not
+read as though it arrived clean:
+
+| What | Effect |
+| --- | --- |
+| Arm D never consulted the relation gate | Invented 90 mm of motion on a static target |
+| Gate required for commitment | Skipped every non-relational cell, making H4 untestable |
+| Eligibility ignored self-driven motion | Drift never committed; the mode operator could not be shown winning |
+| Fixed head-on encounter geometry | Ten seeds were ten translations of one encounter |
+| Predicted along the reference's heading | Correct only head-on; arm D hit 60.4 mm under varied geometry |
+| Approach shorter than one burst cycle | Four of ten cells unmeasurable |
 
 ## Reproduce
 

@@ -1,9 +1,8 @@
 # Paper 003 — calibration pilot runbook v0.1
 
-> **The runner has never been executed.** `scripts/orbit_reach_relation_pilot.py`
-> was written without a GPU or Isaac Lab available, so no Isaac-facing line in it
-> has run. It passes a syntax check and its pure schedule function is tested;
-> everything touching the simulator is unverified. Budget for iteration.
+> **Ran in Isaac 2026-08-03**, after eight defects a GPU-less authoring
+> environment could not catch. Current results and the full correction log:
+> [`isaac_relation_pilot_v0.1/RESULTS.md`](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/isaac_relation_pilot_v0.1/RESULTS.md).
 >
 > **This is an engineering calibration pilot, excluded from every confirmatory
 > estimate** — the same posture as Paper 002's `isaac_model_order_pilot_v0.3`.
@@ -162,79 +161,45 @@ confirmatory cell runs.
 
 ---
 
-## First Isaac measurement (2026-08-03, seed 300, coupled)
+## Measurements
 
-The first cell that ran with a working estimator. **One seed is not a result** —
-recorded because it is the pilot's first real deliverable and it settled the
-tolerance question.
-
-| Arm | Miss distance |
-| --- | ---: |
-| A no update | 140.11 mm |
-| B parameter repair | 83.03 mm |
-| C mode expansion | 35.51 mm |
-| **D relation expansion** | **6.97 mm** |
-
-`d_estimated: true` — arm D inferred the reference pattern rather than being
-handed it. The ordering A > B > C > D is monotone and matches the design
-prediction, and arm B's miss equals the 83.03 mm the target travelled during
-the dispense, which is the expected identity for an arm that aims where the
-target currently is.
-
-**This settled the placement tolerance, and how it was settled matters.** The
-runner had carried a 5 mm placeholder from the CPU proxy, where spatial scale
-was arbitrary; against real coupling that admits nothing but a perfect oracle.
-The replacement is **20 mm, inherited from this task family's existing success
-criterion** (`ReachDriftEnv.success_tol`, and Paper 002's binary success
-threshold) — both fixed before Paper 003 existed and with no reference to its
-arms.
-
-Raising the tolerance *because* 20 mm lets arm D pass and 5 mm does not would be
-exactly the move preregistration exists to prevent. The number is taken from
-prior work, and stands whether or not it favours any arm.
-
-### Control conditions, same seed
-
-All four measured in Isaac, seed 300. Full record:
+Superseded by the ten-seed sweep with randomised encounter geometry. Current
+numbers, and the log of every correction that changed them, live in
 [`isaac_relation_pilot_v0.1/RESULTS.md`](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/isaac_relation_pilot_v0.1/RESULTS.md).
 
-| Condition | Missing | B | C | D | Gate | Passes at 20 mm |
-| --- | --- | ---: | ---: | ---: | ---: | --- |
-| **coupled** | relation | 83.0 | 35.5 | **7.0** | 0.19 | **D** |
-| **drift** | mode | 90.0 | **0.0** | 90.0 | 0.00 | **C** |
-| static | — | 0.0 | 0.0 | 0.0 | 0.00 | all |
-| noise | — | 27.2 | 129.9 | 27.2 | 0.00 | none |
+Two things that came out of the single-seed stage and still hold:
 
-Three things this shows, in order of importance:
+**The placement tolerance, and how it was settled.** The runner carried a 5 mm
+placeholder from the CPU proxy, where spatial scale was arbitrary; against real
+coupling that admits nothing but a perfect oracle. The replacement is **20 mm,
+inherited from this task family's existing success criterion**
+(`ReachDriftEnv.success_tol`, and Paper 002's binary success threshold) — both
+fixed before Paper 003 existed and with no reference to its arms. Raising a
+tolerance *because* it lets a favoured arm pass is exactly what preregistration
+prevents, so the number is taken from prior work and stands either way.
 
-1. **The two operators win on different gaps.** Arm D takes the relational cell
-   and loses the mode cell; arm C does the reverse, landing at exactly 0.0 mm
-   on constant drift where constant velocity is the correct model. That matters
-   more than arm D's win — it rules out arm D simply being a stronger predictor
-   that wins everywhere.
-2. **The gate stayed silent on drift**, precisely the condition Paper 002's
-   operator already explains. A gate firing there would mean the relational
-   claim adds nothing.
-3. **No regression where the relation is absent.** On static and noise arm D
-   falls back and is numerically identical to arm B — 0.0 and 27.2 mm.
+**Arm B's miss equals the distance the target travelled during the dispense**,
+which is the expected identity for an arm aiming where the target currently is,
+and a useful sanity check on any future run.
 
-Getting here took three defects that the controls themselves exposed:
+### Defects the controls exposed
 
-1. **Arm D never consulted the gate.** It applied the relation unconditionally,
-   so on a *static* target — where the reference still sweeps past — it
-   predicted 90 mm of motion for something that never moved, while plain
-   zero-order was exact. The gate existed and was tested; nothing called it.
-2. **Requiring the gate for commitment skipped every non-relational cell.**
-   That made H4 untestable: the hypothesis that arm D does not regress where
-   the relation is absent cannot be checked on cells that never run. Commit
-   eligibility is a property of the world; whether arm D may act is a separate
-   question, settled in scoring.
-3. **Eligibility ignored a target moving under its own dynamics.** It only
-   asked about proximity to the reference, so the drift cell never committed
-   and the mode operator could never be shown winning anywhere. A drifting
-   target moves during the dispense whether or not anything is near it.
+Six corrections changed the numbers materially during this pilot. They are
+listed with their effects in the results file; the ones worth carrying into any
+future protocol:
 
----
+- **Arm D must consult the relation gate.** Without it, it invented 90 mm of
+  motion on a static target while plain repair was exact.
+- **Commit eligibility is a property of the world, not of one arm's
+  permission.** Gating commitment on the relation gate skipped every
+  non-relational cell and made H4 untestable.
+- **Eligibility must admit a target moving under its own dynamics**, or the
+  drift condition never commits and the mode operator cannot be shown winning.
+- **The encounter geometry must vary per seed**, not just the absolute
+  position. A fixed head-on pass makes ten seeds ten translations of one
+  encounter, and hides errors that only appear off-axis.
+- **The approach must be long enough to observe a full burst cycle**, or the
+  encounter ends before the pattern is identifiable and the cell yields nothing.
 
 ## Known limitations of this pilot runner
 
