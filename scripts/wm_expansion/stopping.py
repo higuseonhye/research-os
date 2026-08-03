@@ -41,6 +41,13 @@ class StoppingEstimate:
     slide, which a constant-velocity model predicts outright.
     """
     peak_speed: float
+    """Fastest step anywhere in the trace."""
+    peak_in_contact: float
+    """Fastest step while a body was within the radius.
+
+    Reported separately because the two diverging is the signature of a trace
+    with no strike in it - settling, drift, or a probe that missed.
+    """
     coast_distance: float
     """How far the object travelled after contact ended. Compared against the
     placement tolerance, this is what decides whether a commitment made before
@@ -52,6 +59,7 @@ class StoppingEstimate:
             "steps_to_stop": self.steps_to_stop,
             "retention": self.retention,
             "peak_speed": self.peak_speed,
+            "peak_in_contact": self.peak_in_contact,
             "coast_distance": self.coast_distance,
         }
 
@@ -89,9 +97,23 @@ def estimate_stopping(
         return None  # contact ran to the end; nothing to observe afterwards
 
     speeds = np.linalg.norm(np.diff(poses, axis=0), axis=1)
+
+    # The peak must be measured *during contact*, not over the whole trace.
+    #
+    # The first real run failed exactly here. A block settling under gravity in
+    # the opening steps moved 10.1 mm while the end effector was 57 mm away and
+    # receding; the end effector then approached to 37.5 mm, never touched it,
+    # and the object stayed still for the remaining 85 steps. Judged on the
+    # global peak, the settling cleared this guard and the probe reported
+    # "stops within a step" - the one answer that would have rescued the design,
+    # from a trace containing no strike at all.
+    # `speeds[i]` is the motion from step i to i+1, so a step counts when the
+    # object was within the radius at i.
+    contact_speeds = speeds[in_contact[:-1]]
+    peak_in_contact = float(np.max(contact_speeds)) if contact_speeds.size else 0.0
     peak = float(np.max(speeds)) if speeds.size else 0.0
-    if peak <= speed_floor:
-        return None  # the strike never moved it; not a measurement of stopping
+    if peak_in_contact <= speed_floor:
+        return None  # nothing moved while a body was near: no strike to measure
 
     coasting = speeds[contact_end:]
     moving = np.flatnonzero(coasting >= speed_floor)
@@ -124,6 +146,7 @@ def estimate_stopping(
         steps_to_stop=steps_to_stop,
         retention=retention,
         peak_speed=peak,
+        peak_in_contact=peak_in_contact,
         coast_distance=coast,
     )
 
