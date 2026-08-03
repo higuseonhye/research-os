@@ -106,15 +106,34 @@ class BodiesTests(unittest.TestCase):
         geometry = draw_geometry(0, TARGET, spec)
         self.assertEqual(bodies_at(5, geometry, spec).shape, (2, 3))
 
-    def test_adding_a_body_does_not_move_the_first(self) -> None:
-        """A one-body run and a two-body run share the prober's trajectory."""
+    def test_adding_a_body_deliberately_changes_the_first_ones_schedule(self) -> None:
+        """This once asserted the opposite, and the opposite was wrong.
+
+        With one body the schedule repeats, because recurring contacts are what
+        give the coupling estimator enough points to fit. With two, the first
+        body must strike once and stop: a cycling one keeps pushing the target,
+        and the second body's approach was aimed at where the target started.
+        Measured, cycling carried the target 74 mm away and the second body's
+        closest approach became 61 mm against a 50 mm radius - it never touched,
+        and a two-body run came out byte-identical to a one-body one.
+
+        So the two schedules must differ, and they must agree up to the first
+        body's single advance-and-withdraw.
+        """
         one = EncounterSpec(bodies=1)
         two = EncounterSpec(bodies=2)
-        geometry = draw_geometry(3, TARGET, one)
-        for step in range(30):
+        geometry = draw_geometry(3, TARGET, two)  # phase offset 0 for two bodies
+        settled = two.probe_advance + two.probe_withdraw
+        for step in range(settled):
             np.testing.assert_allclose(
                 bodies_at(step, geometry, one)[0], bodies_at(step, geometry, two)[0]
             )
+        later = [
+            float(np.linalg.norm(bodies_at(step, geometry, one)[0]
+                                 - bodies_at(step, geometry, two)[0]))
+            for step in range(settled + 2, 40)
+        ]
+        self.assertGreater(max(later), 0.01, "the first body kept cycling")
 
     def test_the_second_body_waits_then_moves_at_a_constant_speed(self) -> None:
         """Not tested as monotonically closing: the body passes the target and
