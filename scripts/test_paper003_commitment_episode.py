@@ -19,6 +19,7 @@ from wm_expansion.commitment_episode import (
     project_reference_motion,
 )
 from wm_expansion.commitment_task import ReferencePatternEstimator
+from wm_expansion.relation_dynamics import CouplingSpec
 
 
 # --------------------------------------------------------------------------
@@ -59,27 +60,38 @@ def fake_world(
 class ProjectionTests(unittest.TestCase):
     def setUp(self) -> None:
         self.estimator = ReferencePatternEstimator()
+        self.coupling = CouplingSpec(interaction_radius=0.05, coupling_gain=0.5)
+
+    def _project(self, target, history, horizon=6):
+        return project_reference_motion(
+            np.asarray(target), np.asarray(history), horizon, self.estimator, self.coupling
+        )
 
     def test_returns_none_when_history_is_too_short(self) -> None:
-        self.assertIsNone(project_reference_motion(np.zeros((1, 3)), 6, self.estimator))
+        self.assertIsNone(self._project(np.zeros(3), np.zeros((1, 3))))
 
     def test_stationary_reference_predicts_no_motion(self) -> None:
         history = np.tile(np.array([0.1, 0.2, 0.3]), (10, 1))
-        predicted = project_reference_motion(history, 6, self.estimator)
+        predicted = self._project(np.array([0.2, 0.2, 0.3]), history)
         np.testing.assert_allclose(predicted, np.zeros(3), atol=1e-12)
 
-    def test_prediction_follows_the_direction_of_travel(self) -> None:
-        _, references = fake_world(steps=40, dims=3)
-        predicted = project_reference_motion(np.asarray(references), 6, self.estimator)
+    def test_predicts_along_the_contact_normal_not_the_reference_heading(self) -> None:
+        """The defect the Isaac sweep exposed.
+
+        With the reference approaching along +x but offset in +y, the target is
+        pushed along the contact normal, which has a +y component. Summing the
+        reference's own displacement would predict pure +x and miss.
+        """
+        targets, references = fake_world(steps=40, dims=3)
+        offset_target = targets[19] + np.array([0.0, 0.02, 0.0])
+        predicted = self._project(offset_target, references[:20])
         self.assertIsNotNone(predicted)
-        # motion is along +x only
-        self.assertGreater(predicted[0], 0.0)
-        np.testing.assert_allclose(predicted[1:], 0.0, atol=1e-9)
+        self.assertGreater(abs(predicted[1]), 0.0, "no lateral component predicted")
 
     def test_works_in_two_dimensions_as_well_as_three(self) -> None:
         for dims in (2, 3):
-            _, references = fake_world(steps=40, dims=dims)
-            predicted = project_reference_motion(np.asarray(references), 6, self.estimator)
+            targets, references = fake_world(steps=40, dims=dims)
+            predicted = self._project(targets[19], references[:20])
             self.assertIsNotNone(predicted)
             self.assertEqual(predicted.shape, (dims,))
 

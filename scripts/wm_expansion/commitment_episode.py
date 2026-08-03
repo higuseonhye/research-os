@@ -24,7 +24,13 @@ from typing import Sequence
 import numpy as np
 
 from .commitment_task import ReferencePatternEstimator
-from .relation_dynamics import RelationGateDecision, RelationGateThresholds, evaluate_relation_gate
+from .relation_dynamics import (
+    CouplingSpec,
+    RelationGateDecision,
+    RelationGateThresholds,
+    coupling_displacement,
+    evaluate_relation_gate,
+)
 
 ArrayLike = Sequence[float] | np.ndarray
 
@@ -54,6 +60,7 @@ class EpisodeSpec:
     """
     dispense_latency: int = 6
     interaction_radius: float = 0.05
+    coupling_gain: float = 0.5
     min_history: int = 8
 
     def validate(self) -> None:
@@ -63,21 +70,33 @@ class EpisodeSpec:
             raise ValueError("dispense_latency must be >= 1")
         if self.interaction_radius <= 0.0:
             raise ValueError("interaction_radius must be > 0")
+        if not 0.0 < self.coupling_gain <= 1.0:
+            raise ValueError("coupling_gain must be in (0, 1]")
         if self.min_history < 4:
             raise ValueError("min_history must be >= 4")
 
 
 def project_reference_motion(
-    history: np.ndarray, horizon: int, estimator: ReferencePatternEstimator
+    target: np.ndarray,
+    history: np.ndarray,
+    horizon: int,
+    estimator: ReferencePatternEstimator,
+    coupling: CouplingSpec,
 ) -> np.ndarray | None:
-    """Predict the reference body's displacement over `horizon` steps.
+    """Predict the *target's* displacement over `horizon` steps.
 
-    The estimator reasons about a scalar burst/pause pattern, so the vector
-    history is projected onto its own dominant direction of travel, estimated
-    there, and re-embedded. A reference that reverses direction within the
-    observed window will violate that reduction; the caller sees `None` only
-    when the estimator itself declines, so this is a modelling limit worth
-    stating rather than a silent failure.
+    The reference is rolled forward one step at a time using the estimated
+    burst pattern, and the coupling is re-applied to a running copy of the
+    target at each step - the same forward roll `RelationalTargetModel.predict`
+    performs.
+
+    An earlier version summed the reference's own displacement and applied it
+    to the target directly. That is only correct for a perfectly head-on pass,
+    where the contact normal happens to align with the reference's direction of
+    travel. Under varied approach geometry the two diverge, and the Isaac sweep
+    punished it immediately: arm D went from 7.0 mm on a fixed head-on encounter
+    to 60.4 mm across randomised ones, worse than plain parameter repair. The
+    target moves along the contact normal, not along the reference's heading.
     """
 
     if len(history) < 2:
@@ -89,11 +108,19 @@ def project_reference_motion(
         return np.zeros(history.shape[1])
 
     direction = total / norm
-    scalar_history = history @ direction
-    magnitude = estimator.predict_displacement(list(scalar_history), horizon)
-    if magnitude is None:
+    steps = estimator.predict_steps(list(history @ direction), horizon)
+    if steps is None:
         return None
-    return float(magnitude) * direction
+
+    start = np.asarray(target, dtype=np.float64)
+    rolling_target = start.copy()
+    rolling_reference = np.asarray(history[-1], dtype=np.float64)
+    for step in steps:
+        rolling_reference = rolling_reference + float(step) * direction
+        rolling_target = rolling_target + coupling_displacement(
+            rolling_target, rolling_reference, coupling
+        )
+    return rolling_target - start
 
 
 @dataclass
@@ -122,6 +149,12 @@ class CommitmentEpisode:
             raise ValueError("observations must be finite")
         self.targets.append(target_arr)
         self.references.append(reference_arr)
+
+    def _coupling(self) -> CouplingSpec:
+        return CouplingSpec(
+            interaction_radius=self.spec.interaction_radius,
+            coupling_gain=self.spec.coupling_gain,
+        )
 
     def gate_decision(self) -> RelationGateDecision:
         """Is the target's motion actually conditioned on the reference?
@@ -159,7 +192,11 @@ class CommitmentEpisode:
             return False
         return (
             project_reference_motion(
-                np.asarray(self.references), self.spec.dispense_latency, self.estimator
+                self.targets[-1],
+                np.asarray(self.references),
+                self.spec.dispense_latency,
+                self.estimator,
+                self._coupling(),
             )
             is not None
         )
@@ -252,7 +289,9 @@ class CommitmentEpisode:
         # is uncoupled. An unusable estimate falls back the same way rather than
         # fabricating an aim; the arm is penalised for it, which is correct.
         predicted = (
-            project_reference_motion(np.asarray(self.references), horizon, self.estimator)
+            project_reference_motion(
+                target, np.asarray(self.references), horizon, self.estimator, self._coupling()
+            )
             if self.gate_decision().fired
             else None
         )
