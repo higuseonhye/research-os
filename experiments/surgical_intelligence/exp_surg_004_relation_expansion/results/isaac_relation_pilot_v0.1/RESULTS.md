@@ -124,8 +124,40 @@ Against the five deliverables the draft preregistration asks of it:
 | 1 | Environment runs end to end, isolated per cell | **met** |
 | 2 | Observation noise and timing irregularity under real physics | **not met** — the coupling is applied to the target command rather than emerging from contact, so no physical jitter is generated to measure |
 | 3 | Speed sweep locating arm B's near-zero band | **not run** |
-| 4 | Gate statistics across conditions | **met** — 0.80 on coupled, 0.00 on all three controls |
+| 4 | Gate statistics across conditions | **partly met** — 0.80 on coupled, 0.00 on all three controls, but one control is degenerate; see below |
 | 5 | Oracle clears 80%, task is solvable | **met** — oracle landed in every condition |
+
+### The drift control does not test what it was built to test
+
+Re-read from the records rather than taken from the run's own summary
+(`scripts/paper003_gate_characterisation.py`):
+
+| Condition | Min separation | Steps within 50 mm |
+| --- | ---: | ---: |
+| coupled | 36.3 mm | 0.13 |
+| noise | 5.7 mm | 0.11 |
+| static | 4.2 mm | 0.12 |
+| **drift** | **91.9 mm** | **0.00** |
+
+The drift target runs along the reference's own axis at the reference's own
+speed, so the two never close. **The gate rejects drift because nothing is
+nearby**, not because it distinguished proximity-conditioned motion from
+constant-velocity motion. Noise and static are fine — the reference does sweep
+past them — so the defect is specific to drift.
+
+The measurable consequence: across all 2,960 decidable steps of the sweep,
+**zero** passed the proximity-contrast test and were then rejected by the
+constant-velocity clause. That clause is what keeps Paper 003 from collapsing
+into Paper 002, and this sweep provides no evidence it works.
+
+A `slide` control was added to the runner in response — the reference genuinely
+strikes the target, which then retains its velocity, so only the second clause
+can reject it. On CPU the gate leaks there, firing on 14–19% of steps against
+H3's 10% ceiling. That is now a declared risk to H3 rather than a surprise.
+
+**The contrast threshold, by contrast, is sound.** Re-derived from these records,
+every value from 0.30 to 0.90 separates the treatment from all three controls
+identically; 0.50 sits mid-plateau and is not a fitted value.
 
 ## Observations
 
@@ -208,14 +240,22 @@ read as though it arrived clean:
 | Approach shorter than one burst cycle | Four of ten cells unmeasurable |
 | Committed at the first eligible step | Gate rarely fired yet; arm D fell back in two of three cells |
 | Coupling parameters handed to arm D | Its accuracy measured the loan, not inference |
+| Drift control never brings the reference near | The gate's constant-velocity clause was never exercised; deliverable 4 downgraded to partly met |
 
 ## Reproduce
 
 ```bash
-for c in coupled drift static noise; do
+for c in coupled drift static noise slide; do
   CONDITION=$c OUT_DIR=results/paper003_pilot_controls \
     bash scripts/run_paper003_pilot.sh
 done
+```
+
+The `slide` control was added after this sweep and has not yet run under Isaac.
+Re-analysis of the records above needs no GPU:
+
+```bash
+python scripts/paper003_gate_characterisation.py results/paper003_sweep_v5
 ```
 
 Records are written per condition as `pilot_<condition>_seed<seed>.json` with
