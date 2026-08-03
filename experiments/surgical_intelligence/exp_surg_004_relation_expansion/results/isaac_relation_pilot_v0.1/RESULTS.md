@@ -1,5 +1,11 @@
 # Paper 003 Relation Pilot v0.1 — Isaac calibration
 
+> **Superseded for the gate and the encounter** by
+> [isaac_probe_sweep_v0.2](../isaac_probe_sweep_v0.2/RESULTS.md), which runs the
+> corrected gate under the `probe` encounter and adds the `slide` control. The
+> diagnoses below stand; the numbers were produced by a gate since shown to
+> claim relations it had not established.
+>
 > **Engineering calibration only. Excluded from confirmatory evidence.**
 > Same posture as [EXP-SURG-003 pilot v0.3](../../../exp_surg_003_wm_expansion/results/isaac_model_order_pilot_v0.3/RESULTS.md).
 > **10 seeds, one speed.** Nothing here supports a claim. It exists to settle
