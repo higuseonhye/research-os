@@ -149,6 +149,7 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     target = target0.copy()
     observations: list[dict[str, Any]] = []
     committed_at: int | None = None
+    d_estimated = False
     aims: dict[str, np.ndarray] | None = None
     resolved: dict[str, bool] | None = None
     violations = 0
@@ -178,6 +179,10 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         eligible = episode.motion_expected()
         due = step == args.commit_step if args.commit_step >= 0 else eligible
         if committed_at is None and episode.ready and due and eligible:
+            # Record whether arm D actually estimated or fell back to
+            # zero-order. Without this the two are indistinguishable in the
+            # output, and a fallback looks like a failed relational prediction.
+            d_estimated = episode.can_estimate()
             aims = episode.aims()
             committed_at = step
 
@@ -205,6 +210,7 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "condition": args.condition,
         "reference_speed": args.reference_speed,
         "committed_at": committed_at,
+        "d_estimated": d_estimated,
         "resolved": resolved,
         "aims": {k: v.tolist() for k, v in (aims or {}).items()},
         "observations": observations,
