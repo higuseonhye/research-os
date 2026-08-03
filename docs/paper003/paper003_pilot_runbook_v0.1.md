@@ -195,20 +195,23 @@ prior work, and stands whether or not it favours any arm.
 
 ### Control conditions, same seed
 
+All four measured in Isaac, seed 300. Full record:
+[`isaac_relation_pilot_v0.1/RESULTS.md`](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/isaac_relation_pilot_v0.1/RESULTS.md).
+
 | Condition | Missing | B | C | D | Gate | Passes at 20 mm |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
 | **coupled** | relation | 83.0 | 35.5 | **7.0** | 0.19 | **D** |
-| **drift** | mode | 105.0 | **15.0** | 105.0 | 0.00 | **C** |
+| **drift** | mode | 90.0 | **0.0** | 90.0 | 0.00 | **C** |
 | static | — | 0.0 | 0.0 | 0.0 | 0.00 | all |
 | noise | — | 27.2 | 129.9 | 27.2 | 0.00 | none |
 
 Three things this shows, in order of importance:
 
 1. **The two operators win on different gaps.** Arm D takes the relational cell
-   and loses the mode cell; arm C does the reverse. That is the result the
-   paper needs — it rules out arm D simply being a stronger model that wins
-   everywhere. (Drift is measured on the CPU driver; the Isaac drift cell had
-   not yet been re-run when this was written.)
+   and loses the mode cell; arm C does the reverse, landing at exactly 0.0 mm
+   on constant drift where constant velocity is the correct model. That matters
+   more than arm D's win — it rules out arm D simply being a stronger predictor
+   that wins everywhere.
 2. **The gate stayed silent on drift**, precisely the condition Paper 002's
    operator already explains. A gate firing there would mean the relational
    claim adds nothing.
