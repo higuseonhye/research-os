@@ -1,5 +1,12 @@
 # Paper 003 — the two-body encounter, and what still blocks the endpoint
 
+> **Correction, 2026-08-04.** The tolerance argument below is wrong. It reasoned
+> that a forked task family does not inherit its predecessor's 20 mm, so the
+> figure was open pending a new scene. The new scene exists, already has a rigid
+> object, and sets **the same 20 mm** independently — see
+> [the Branch B scene note](paper003_branch_b_scene_v0.1.md). The tolerance is
+> settled, not open. Everything else here stands.
+
 > **Design note, 2026-08-04. CPU proxy only, not preregistered, not run in Isaac.**
 > Written after the [probe sweep](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/isaac_probe_sweep_v0.2/RESULTS.md)
 > showed arm B landing 0.90 on the treatment condition.

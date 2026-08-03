@@ -24,7 +24,15 @@
 ```
 
 **`rigid_objects` is empty.** There is no existing rigid body to reuse, so real
-contact physics requires **adding one**. That forks the task family, and the
+contact physics requires **adding one**.
+
+> **Corrected 2026-08-04.** This conclusion was right about the reach scene and
+> wrong about the suite. The bootstrap script had deleted the `lift` and
+> `handover` task folders as "incompatible"; the incompatibility was two lines
+> setting a debug marker's scale. Patched, sixteen Lift tasks register and
+> `Isaac-Lift-Block-PSM-IK-Rel-Play-v0` reports `rigid_objects: ['object']`.
+> A body does not have to be added — see
+> [the Branch B scene note](../../../../../docs/paper003/paper003_branch_b_scene_v0.1.md). That forks the task family, and the
 20 mm tolerance inherited from Paper 001/002 has to be re-argued rather than
 carried across — it was established for a task whose scene this no longer is.
 

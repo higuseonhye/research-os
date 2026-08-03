@@ -95,18 +95,31 @@ log "Registering ORBIT-Surgical extensions"
 "$IL_PY" -m pip install -e "$ORBIT_SURGICAL_PATH/source/extensions/orbit.surgical.assets" --no-build-isolation --no-deps
 "$IL_PY" -m pip install -e "$ORBIT_SURGICAL_PATH/source/extensions/orbit.surgical.tasks" --no-build-isolation --no-deps
 
-log "Disabling incompatible non-Reach task folders"
-mkdir -p "$DISABLED_TASK_DIR"
+log "Patching the object tasks for Isaac Lab v1.0.0"
+# These folders used to be deleted wholesale as "incompatible", and that cost
+# Paper 003 a wrong turn: every scene inventory came back with no rigid objects,
+# so real contact physics looked like it required adding a body by hand.
+#
+# The incompatibility is two lines. `UniformPoseCommandCfg` lost its
+# `goal_pose_visualizer_cfg` and `current_pose_visualizer_cfg` attributes in
+# v1.0.0, and lift_env_cfg.py sets a debug marker scale through them. Nothing
+# else in the task touches them - not the dynamics, not the rewards, not the
+# 20 mm placement threshold in mdp/terminations.py. Importing the task package
+# aborts on that AttributeError, which is why deleting the folders "fixed" Reach.
+#
+# Dropping the two lines registers all 16 Lift tasks, and
+# Isaac-Lift-Block-PSM-IK-Rel-Play-v0 reports rigid_objects: ['object'].
 SURGICAL_TASK_DIR="$ORBIT_SURGICAL_PATH/source/extensions/orbit.surgical.tasks/orbit/surgical/tasks/surgical"
+mkdir -p "$DISABLED_TASK_DIR"
 for task_name in handover lift; do
-  if [ -d "$SURGICAL_TASK_DIR/$task_name" ]; then
-    rm -rf "$DISABLED_TASK_DIR/$task_name"
-    mv "$SURGICAL_TASK_DIR/$task_name" "$DISABLED_TASK_DIR/$task_name"
-    echo "Moved $task_name to $DISABLED_TASK_DIR/$task_name"
+  cfg="$SURGICAL_TASK_DIR/$task_name/${task_name}_env_cfg.py"
+  if [ -f "$cfg" ]; then
+    rm -rf "$DISABLED_TASK_DIR/$task_name.orig"
+    cp -r "$SURGICAL_TASK_DIR/$task_name" "$DISABLED_TASK_DIR/$task_name.orig"
+    sed -i '/object_pose\..*_pose_visualizer_cfg/d' "$cfg"
+    echo "Patched $cfg (debug marker scale only; original kept in $DISABLED_TASK_DIR)"
   fi
 done
-find "$ORBIT_SURGICAL_PATH/source/extensions/orbit.surgical.tasks/orbit/surgical/tasks" -maxdepth 4 -type d \
-  \( -iname "*handover*" -o -iname "*hadnover*" -o -iname "*lift*" \) || true
 
 log "Patching ORBIT zero_agent compatibility"
 "$IL_PY" - <<'PY'
