@@ -11,7 +11,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from aggregate_paper003_pilot import load_records, miss_distances, summarise
+from aggregate_paper003_pilot import load_records, miss_distances, render, summarise
 
 
 def record(condition: str, seed: int, misses: dict[str, float], gate: float = 0.0,
@@ -80,6 +80,42 @@ class SummaryTests(unittest.TestCase):
         summary = summarise(records, tolerance=0.020)["coupled"]
         self.assertAlmostEqual(summary["gate_fire_rate"], 0.15)
         self.assertAlmostEqual(summary["d_estimated_rate"], 0.5)
+
+
+class ConditionalEstimateTests(unittest.TestCase):
+    """Preregistered secondary estimate: performance where arm D actually acted."""
+
+    def test_conditional_covers_only_engaged_cells(self) -> None:
+        records = [
+            record("coupled", 300, {"B": 0.008, "D": 0.001}, estimated=True),
+            record("coupled", 301, {"B": 0.050, "D": 0.005}, estimated=True),
+            # declined: arm D is identical to arm B by construction
+            record("coupled", 302, {"B": 0.038, "D": 0.038}, estimated=False),
+            record("coupled", 303, {"B": 0.037, "D": 0.037}, estimated=False),
+        ]
+        summary = summarise(records, tolerance=0.020)["coupled"]
+
+        self.assertEqual(summary["engaged_cells"], 2)
+        # marginal, over all four: B lands only on the 8 mm cell, D on the 1 mm
+        # and 5 mm ones. The two declined cells miss for both arms alike.
+        self.assertEqual(summary["land_rate"]["B"], 0.25)
+        self.assertEqual(summary["land_rate"]["D"], 0.50)
+        # conditional, over the two engaged: arm D lands both, arm B one.
+        self.assertEqual(summary["land_rate_engaged"]["D"], 1.0)
+        self.assertEqual(summary["land_rate_engaged"]["B"], 0.5)
+
+    def test_conditional_is_empty_when_arm_d_never_engaged(self) -> None:
+        records = [record("drift", s, {"B": 0.09, "D": 0.09}) for s in range(300, 305)]
+        summary = summarise(records, tolerance=0.020)["drift"]
+        self.assertEqual(summary["engaged_cells"], 0)
+        self.assertEqual(summary["land_rate_engaged"], {})
+
+    def test_both_estimates_are_always_rendered(self) -> None:
+        """It must not be possible to report one without the other."""
+        records = [record("coupled", 300, {"B": 0.008, "D": 0.001}, estimated=True)]
+        text = render(summarise(records, tolerance=0.020), 0.020)
+        self.assertIn("land rate", text)
+        self.assertIn("conditional on arm D engaging", text)
 
 
 class LoadingTests(unittest.TestCase):

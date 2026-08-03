@@ -87,6 +87,17 @@ relational model is accurate when it engages; `estD = 0.56` is what caps the
 overall figure. That is a more specific target than "improve arm D", and it is
 not addressed by a better predictor.
 
+Conditional on engagement, over those five cells: **arm D 1.00, arm B 0.80,
+arm C 0.20.** Reported here because the preregistration now requires both
+estimates, and the aggregator prints them together so the conditional cannot be
+produced by hand only when the marginal disappoints.
+
+**Diagnosed from the records, not assumed.** The gate was not the obstacle: in
+three of the four declining cells its statistics were excellent — proximity
+contrast 0.96 to 1.00, constant-velocity gain 0.000. What declined was the
+coupling fit, which had only 0, 2, 3 and 2 usable contacts against the four a
+guarded line requires. They missed by one to three steps.
+
 Note the engagement is not simply a matter of committing later — seed 303
 committed at step 18 of an 11–29 window and still did not engage, while seed
 300 engaged at step 12. What matters is whether contact has actually occurred
@@ -144,11 +155,12 @@ cell out of nine. That is a sample-size problem, not a finding.
    identifiable.
 3. **Sample size.** Nine committed coupled cells cannot support a land-rate
    comparison. The current 0.67 against 0.56 is one cell.
-4. **Engagement rate.** Arm D acts in only 0.56 of committed cells, and the
-   conditional decomposition shows accuracy is not the binding constraint. A
-   confirmatory design has to either raise engagement or report the conditional
-   estimate alongside the marginal one - and which of those it does must be
-   preregistered, not chosen afterwards.
+4. ~~Engagement rate~~ — **settled.** Both marginal and conditional estimates
+   are preregistered and printed together. Delaying the commit window to raise
+   engagement was declined: unlike the approach distance, no arm-neutral
+   justification exists for it, and eligibility must not depend on one arm's
+   readiness. Lowering `min_contacts` was declined for the same reason and
+   because a three-point line makes the fit-quality guard nearly vacuous.
 5. **Deliverable 2 remains unmet** — the coupling is injected through the
    target command rather than emerging from contact, so there is no physical
    jitter to measure, and the observation noise the estimator was characterised
