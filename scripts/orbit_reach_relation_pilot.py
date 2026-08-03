@@ -149,6 +149,17 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     robot_name = find_robot_name(env.unwrapped.scene)
     body_index = resolve_ee_body_index(env.unwrapped.scene[robot_name], args.body_index)
 
+    # What is actually in this scene? Needed to decide whether a real-contact
+    # version can reuse an existing rigid body as the pushed target or has to
+    # add one, and that cannot be determined without a GPU. Recording it costs
+    # nothing and answers the question on the next run rather than by guesswork.
+    scene = env.unwrapped.scene
+    scene_inventory = {
+        "articulations": sorted(getattr(scene, "articulations", {}).keys()),
+        "rigid_objects": sorted(getattr(scene, "rigid_objects", {}).keys()),
+        "sensors": sorted(getattr(scene, "sensors", {}).keys()),
+    }
+
     command = _get_command(env)
     target0 = command[0, :3].detach().cpu().numpy().astype(np.float64)
 
@@ -290,6 +301,7 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "approach_offset": offset,
         "phase_offset": phase_offset,
         "commit_policy": args.commit_policy,
+        "scene_inventory": scene_inventory,
         "eligible_steps": [c["step"] for c in candidates],
         "committed_at": committed_at,
         "d_estimated": d_estimated,
