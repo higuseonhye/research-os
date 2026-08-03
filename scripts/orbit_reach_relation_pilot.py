@@ -1,0 +1,240 @@
+"""Paper 003 Isaac calibration pilot: relational coupling at a commitment point.
+
+STATUS: prepared 2026-07-31. NOT YET RUN, NOT VALIDATED - there is no GPU or
+Isaac Lab in the authoring environment, so not one line of the Isaac-facing code
+below has been executed. Expect to iterate. Run the smoke path first
+(`--max-cells 1`) and read the records before trusting anything.
+
+THIS IS AN ENGINEERING CALIBRATION PILOT, NOT A CONFIRMATORY RUN. Its output is
+excluded from every confirmatory estimate, exactly as Paper 002's
+`isaac_model_order_pilot_v0.3` was. Its job is to produce the five things the
+draft preregistration says it must:
+
+  1. the environment runs end to end, process-isolated per cell
+  2. measured observation noise and timing irregularity under real physics
+  3. a speed sweep locating where arm B falls into the near-zero band
+  4. gate statistics on coupled / drift / static / noise conditions
+  5. confirmation that the oracle arm clears 80%, i.e. the task is solvable
+
+See docs/paper003/paper003_prereg_draft_v0.1.md.
+
+Design note: every decision - eligibility, each arm's prediction, scoring - is
+delegated to `wm_expansion.commitment_episode`, which is CPU-testable and
+covered by tests. What lives here is scene manipulation and record-keeping, so
+the unvalidated surface is as small as it can be made.
+
+Structure follows `orbit_reach_drift.py`: one policy-free process per cell,
+argparse before AppLauncher, Isaac imports after.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+
+from omni.isaac.lab.app import AppLauncher
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--task", type=str, default="Isaac-Reach-PSM-v0")
+parser.add_argument("--num-envs", type=int, default=1)
+parser.add_argument("--seed", type=int, required=True)
+parser.add_argument("--body-index", type=int, default=-1)
+parser.add_argument(
+    "--condition",
+    choices=["coupled", "drift", "static", "noise"],
+    default="coupled",
+    help="coupled is the treatment; the other three are gate-specificity controls",
+)
+parser.add_argument("--reference-speed", type=float, default=0.015,
+                    help="metres per step while the reference body is moving")
+parser.add_argument("--burst-on", type=int, default=10)
+parser.add_argument("--burst-off", type=int, default=4)
+parser.add_argument("--interaction-radius", type=float, default=0.05)
+parser.add_argument("--coupling-gain", type=float, default=0.5)
+parser.add_argument("--tolerance", type=float, default=0.005)
+parser.add_argument("--dispense-latency", type=int, default=6)
+parser.add_argument("--episode-steps", type=int, default=80)
+parser.add_argument("--commit-step", type=int, default=-1,
+                    help="-1 commits at the first eligible step")
+parser.add_argument("--max-cells", type=int, default=1,
+                    help="smoke guard; keep at 1 until the environment is trusted")
+parser.add_argument("--out-dir", type=str, required=True)
+parser.add_argument("--disable_fabric", action="store_true", default=False)
+AppLauncher.add_app_launcher_args(parser)
+args_cli = parser.parse_args()
+
+app_launcher = AppLauncher(args_cli)
+simulation_app = app_launcher.app
+
+import gymnasium as gym  # noqa: E402
+import torch  # noqa: E402
+from omni.isaac.lab_tasks.utils import parse_env_cfg  # noqa: E402
+
+import omni.isaac.lab_tasks  # noqa: F401,E402
+import orbit.surgical.tasks  # noqa: F401,E402
+
+import sys  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from orbit_reach_common import (  # noqa: E402
+    find_robot_name,
+    resolve_ee_body_index,
+    scripted_action,
+)
+from wm_expansion.commitment_episode import (  # noqa: E402
+    CommitmentEpisode,
+    EpisodeSpec,
+)
+from wm_expansion.relation_dynamics import (  # noqa: E402
+    CouplingSpec,
+    coupling_displacement,
+)
+
+COMMAND_NAME = "ee_pose"
+
+
+def _get_command(env: Any) -> torch.Tensor:
+    return env.unwrapped.command_manager.get_command(COMMAND_NAME).clone()
+
+
+def _set_command(env: Any, command: torch.Tensor) -> None:
+    env.unwrapped.command_manager.get_command(COMMAND_NAME)[:] = command
+
+
+def reference_offset(step: int, args: argparse.Namespace) -> float:
+    """Cumulative reference displacement, from the burst schedule."""
+    period = args.burst_on + args.burst_off
+    moving = sum(1 for s in range(step + 1) if (s % period) < args.burst_on)
+    return args.reference_speed * moving
+
+
+def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
+    """One episode: drive the coupling, commit once, score every arm."""
+
+    spec = EpisodeSpec(
+        tolerance=args.tolerance,
+        dispense_latency=args.dispense_latency,
+        interaction_radius=args.interaction_radius,
+    )
+    coupling = CouplingSpec(
+        interaction_radius=args.interaction_radius,
+        coupling_gain=args.coupling_gain,
+    )
+    episode = CommitmentEpisode(spec=spec)
+
+    env.reset(seed=args.seed)
+    robot_name = find_robot_name(env.unwrapped.scene)
+    asset = env.unwrapped.scene[robot_name]
+    body_index = resolve_ee_body_index(asset, args.body_index)
+
+    command = _get_command(env)
+    target0 = command[0, :3].detach().cpu().numpy().astype(np.float64)
+
+    # The reference body travels along +x in the target's plane. It is
+    # represented as a moving point rather than a rigid asset: this pilot
+    # measures prediction, not contact dynamics, and adding a second
+    # articulated body is deferred until the environment itself is trusted.
+    reference_axis = np.array([1.0, 0.0, 0.0])
+    reference_start = target0 - reference_axis * (args.interaction_radius * 3.0)
+
+    target = target0.copy()
+    observations: list[dict[str, Any]] = []
+    committed_at: int | None = None
+    aims: dict[str, np.ndarray] | None = None
+    resolved: dict[str, bool] | None = None
+    violations = 0
+
+    for step in range(args.episode_steps):
+        reference = reference_start + reference_axis * reference_offset(step, args)
+
+        if args.condition == "coupled":
+            target = target + coupling_displacement(target, reference, coupling)
+        elif args.condition == "drift":
+            # Paper 002's positive case: motion unrelated to the reference.
+            target = target + reference_axis * args.reference_speed
+        elif args.condition == "noise":
+            target = target0 + np.random.default_rng(args.seed + step).normal(
+                0.0, args.tolerance * 0.5, 3
+            )
+        # "static" leaves the target where it is.
+
+        command[0, :3] = torch.as_tensor(target, device=command.device, dtype=command.dtype)
+        _set_command(env, command)
+
+        episode.observe(target, reference)
+        observations.append(
+            {"step": step, "target": target.tolist(), "reference": reference.tolist()}
+        )
+
+        eligible = episode.motion_expected()
+        due = step == args.commit_step if args.commit_step >= 0 else eligible
+        if committed_at is None and episode.ready and due and eligible:
+            aims = episode.aims()
+            committed_at = step
+
+        if (
+            committed_at is not None
+            and resolved is None
+            and step == committed_at + args.dispense_latency
+        ):
+            oracle_aims = dict(aims or {})
+            oracle_aims["D_oracle"] = target.copy()
+            resolved = episode.resolve(oracle_aims, target)
+            aims = oracle_aims
+
+        action = scripted_action(env, asset, body_index)
+        _, _, terminated, truncated, _ = env.step(action)
+        if bool(terminated[0]) or bool(truncated[0]):
+            violations += 1
+            break
+
+    return {
+        "seed": args.seed,
+        "condition": args.condition,
+        "reference_speed": args.reference_speed,
+        "committed_at": committed_at,
+        "resolved": resolved,
+        "aims": {k: v.tolist() for k, v in (aims or {}).items()},
+        "observations": observations,
+        "early_termination": violations,
+        "valid": resolved is not None and violations == 0,
+    }
+
+
+def main() -> None:
+    out_dir = Path(args_cli.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    env_cfg = parse_env_cfg(
+        args_cli.task,
+        num_envs=args_cli.num_envs,
+        use_fabric=not args_cli.disable_fabric,
+    )
+    env = gym.make(args_cli.task, cfg=env_cfg)
+
+    record = run_cell(env, args_cli)
+    record["created_utc"] = datetime.now(timezone.utc).isoformat()
+    record["source"] = Path(__file__).name
+    record["status"] = "CALIBRATION PILOT - excluded from confirmatory estimates"
+
+    payload = json.dumps(record, indent=2, sort_keys=True)
+    record["sha256"] = hashlib.sha256(payload.encode()).hexdigest()
+
+    name = f"pilot_{args_cli.condition}_seed{args_cli.seed}.json"
+    (out_dir / name).write_text(json.dumps(record, indent=2, sort_keys=True))
+    print(f"wrote {out_dir / name}")
+    print(f"  committed_at={record['committed_at']}  valid={record['valid']}")
+    print(f"  resolved={record['resolved']}")
+
+    env.close()
+    simulation_app.close()
+
+
+if __name__ == "__main__":
+    main()
