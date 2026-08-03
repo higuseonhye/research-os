@@ -143,14 +143,55 @@ class CommitmentEpisode:
         self.spec.validate()
 
     def observe(self, target: ArrayLike, reference: ArrayLike) -> None:
+        """Record one step. `reference` may be one body or several.
+
+        The two-body encounter needs several: the relation is demonstrated by a
+        body that then leaves and applied to a different body that arrives
+        later. A single body is stored as a one-body list, so nothing that
+        passes one array changes behaviour.
+        """
+
         target_arr = np.asarray(target, dtype=np.float64)
         reference_arr = np.asarray(reference, dtype=np.float64)
-        if target_arr.shape != reference_arr.shape or target_arr.ndim != 1:
-            raise ValueError("target and reference must be 1-D and share a shape")
+        if target_arr.ndim != 1:
+            raise ValueError("target must be 1-D")
+        if reference_arr.ndim == 1:
+            reference_arr = reference_arr[None, :]
+        if reference_arr.ndim != 2 or reference_arr.shape[1] != target_arr.shape[0]:
+            raise ValueError("reference must be [dim] or [body, dim] matching the target")
         if not (np.isfinite(target_arr).all() and np.isfinite(reference_arr).all()):
             raise ValueError("observations must be finite")
         self.targets.append(target_arr)
         self.references.append(reference_arr)
+
+    @property
+    def single_reference(self) -> bool:
+        """True while only one body has ever been observed."""
+        return bool(self.references) and self.references[0].shape[0] == 1
+
+    def _acting_body(self) -> int | None:
+        """Which body will act over the dispense window: the one closing fastest.
+
+        With two bodies the prediction must be rolled forward with the body that
+        is *arriving*, not the one that happens to be nearest now - after the
+        prober leaves it may still be closer than the pusher for several steps
+        while having no further effect. Closing rate is observable and does not
+        depend on any arm's model.
+        """
+
+        if len(self.references) < 2:
+            return None
+        target = self.targets[-1]
+        now = np.linalg.norm(self.references[-1] - target, axis=1)
+        before = np.linalg.norm(self.references[-2] - target, axis=1)
+        closing = before - now
+        # Prefer a body already inside the radius; otherwise the fastest closer.
+        inside = np.flatnonzero(now < self.spec.interaction_radius)
+        if inside.size:
+            return int(inside[np.argmax(closing[inside])])
+        if float(np.max(closing)) <= 0.0:
+            return None
+        return int(np.argmax(closing))
 
     def _coupling(self) -> CouplingSpec | None:
         """The coupling arm D will roll forward with, estimated from observation.
@@ -173,6 +214,29 @@ class CommitmentEpisode:
             self.targets,
             self.references,
             search_radius=self.spec.interaction_radius * 3.0,
+        )
+
+    def _body_history(self, body: int) -> np.ndarray:
+        """One body's trajectory as [time, dim]."""
+        return np.asarray([step[body] for step in self.references], dtype=np.float64)
+
+    def _project(
+        self, target: np.ndarray, horizon: int, coupling: CouplingSpec
+    ) -> np.ndarray | None:
+        """Arm D's displacement prediction, rolled forward with the acting body.
+
+        The coupling is fitted from contacts with whichever body was nearest -
+        so, in the two-body encounter, mostly from the prober. It is then
+        applied to the pusher. That transfer is the point: a relation that only
+        described the body it was learned on would be an extrapolation of one
+        trajectory, not a relation.
+        """
+
+        body = self._acting_body()
+        if body is None:
+            return None
+        return project_reference_motion(
+            target, self._body_history(body), horizon, self.estimator, coupling
         )
 
     def gate_decision(self) -> RelationGateDecision:
@@ -229,7 +293,10 @@ class CommitmentEpisode:
 
         if len(self.references) < 2:
             return False
-        history = np.asarray(self.references)
+        body = self._acting_body()
+        if body is None:
+            return True  # nothing is approaching; a still reference is predictable
+        history = self._body_history(body)
         total = np.diff(history, axis=0).sum(axis=0)
         norm = float(np.linalg.norm(total))
         if norm <= 0.0:
@@ -301,7 +368,13 @@ class CommitmentEpisode:
         if len(self.targets) < 2:
             return False
         target, previous_target = self.targets[-1], self.targets[-2]
-        reference, previous_reference = self.references[-1], self.references[-2]
+        # Nearest body now, and where that same body was a step ago. Taking the
+        # nearest at each step separately would report a closing rate between
+        # two different bodies.
+        distances = np.linalg.norm(self.references[-1] - target, axis=1)
+        body = int(np.argmin(distances))
+        reference = self.references[-1][body]
+        previous_reference = self.references[-2][min(body, len(self.references[-2]) - 1)]
 
         # 1. the target is moving under any cause
         target_speed = float(np.linalg.norm(target - previous_target))
@@ -345,9 +418,7 @@ class CommitmentEpisode:
         predicted = (
             None
             if coupling is None
-            else project_reference_motion(
-                target, np.asarray(self.references), horizon, self.estimator, coupling
-            )
+            else self._project(target, horizon, coupling)
         )
         out["D"] = target.copy() if predicted is None else target + predicted
 

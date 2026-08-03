@@ -19,7 +19,7 @@ from wm_expansion.commitment_episode import (
     project_reference_motion,
 )
 from wm_expansion.commitment_task import ReferencePatternEstimator
-from wm_expansion.relation_dynamics import CouplingSpec
+from wm_expansion.relation_dynamics import CouplingSpec, coupling_displacement
 
 
 # --------------------------------------------------------------------------
@@ -229,6 +229,27 @@ class EpisodeDriverTests(unittest.TestCase):
             "arm D fell back to zero order despite can_estimate() being true",
         )
 
+    def test_a_one_body_list_behaves_exactly_like_a_bare_array(self) -> None:
+        """Multi-body support must not change anything that passes one body."""
+        bare = CommitmentEpisode(spec=self.spec)
+        listed = CommitmentEpisode(spec=self.spec)
+        for index in range(20):
+            target = np.array([0.20 + 0.001 * index, 0.0, 0.0])
+            reference = np.array([0.10 + 0.005 * index, 0.0, 0.0])
+            bare.observe(target, reference)
+            listed.observe(target, reference[None, :])
+        np.testing.assert_allclose(bare.aims()["D"], listed.aims()["D"])
+        self.assertEqual(bare.gate_fired(), listed.gate_fired())
+        self.assertEqual(bare.motion_expected(), listed.motion_expected())
+
+    def test_reference_shape_is_checked(self) -> None:
+        episode = CommitmentEpisode(spec=self.spec)
+        with self.assertRaises(ValueError):
+            episode.observe(np.zeros(3), np.zeros((2, 2)))  # wrong dimension
+        with self.assertRaises(ValueError):
+            episode.observe(np.zeros(3), np.zeros((2, 2, 3)))  # too many axes
+
+
     @staticmethod
     def _moving_reference(steps=40, dims=3, speed=0.015, on=10, off=4):
         reference = np.zeros(dims)
@@ -340,6 +361,117 @@ class EpisodeDriverTests(unittest.TestCase):
             episode.observe(np.array([0.2, 0.0, 0.0]), np.array([0.0, 0.0, 0.0]))
         aims = episode.aims()
         np.testing.assert_allclose(aims["D"], aims["B"])
+
+class TwoBodyTests(unittest.TestCase):
+    """The encounter where one body demonstrates the relation and another applies it."""
+
+    RADIUS = 0.05
+
+    def setUp(self) -> None:
+        self.spec = EpisodeSpec(interaction_radius=self.RADIUS)
+
+    def _two_body(self, steps: int = 28) -> CommitmentEpisode:
+        """Prober strikes and withdraws; pusher closes steadily from the far side."""
+        episode = CommitmentEpisode(spec=self.spec)
+        target = np.array([0.20, 0.0, 0.0])
+        prober = np.array([0.20 - 1.9 * self.RADIUS, 0.0, 0.0])
+        pusher = np.array([0.20 + 0.30, 0.0, 0.0])
+        coupling = CouplingSpec(interaction_radius=self.RADIUS, coupling_gain=0.5)
+        for step in range(steps):
+            if step < 10:
+                prober = prober + np.array([0.010, 0.0, 0.0])
+            elif step < 22:
+                prober = prober - np.array([0.030, 0.0, 0.0])
+            if step >= 14:
+                pusher = pusher - np.array([0.015, 0.0, 0.0])
+            target = (
+                target
+                + coupling_displacement(target, prober, coupling)
+                + coupling_displacement(target, pusher, coupling)
+            )
+            episode.observe(target, np.stack([prober, pusher]))
+        return episode
+
+    def test_the_acting_body_is_the_one_arriving_not_the_one_nearest(self) -> None:
+        """After the prober leaves it can still be nearer while having no effect.
+
+        Rolling the prediction forward with it would predict a contact that is
+        over, which is why the acting body is chosen by closing rate.
+        """
+        episode = self._two_body(steps=30)
+        target = episode.targets[-1]
+        separations = np.linalg.norm(episode.references[-1] - target, axis=1)
+        acting = episode._acting_body()
+        self.assertEqual(acting, 1, "should follow the pusher")
+        # and it is not simply the nearest, at least somewhere in the approach
+        nearest_history = []
+        probe = CommitmentEpisode(spec=self.spec)
+        for target, bodies in zip(episode.targets, episode.references):
+            probe.observe(target, bodies)
+            if len(probe.references) >= 2:
+                nearest = int(np.argmin(np.linalg.norm(bodies - target, axis=1)))
+                nearest_history.append((nearest, probe._acting_body()))
+        self.assertTrue(
+            any(n != a for n, a in nearest_history if a is not None),
+            "acting body never differed from the nearest, so the test proves nothing",
+        )
+
+    def test_the_gate_fires_on_a_relation_carried_by_two_bodies(self) -> None:
+        self.assertTrue(self._two_body().gate_fired())
+
+    def test_a_pusher_that_never_stops_becomes_arm_c_s_case(self) -> None:
+        """Kept because it is a property of the design, not a defect.
+
+        If the second body pushes without pause, the target settles into a
+        steady drift, a constant-velocity model explains it, and the gate
+        declines - correctly. The commitment therefore has to precede the
+        sustained push, which is what the eligibility window arranges.
+        """
+        late = self._two_body(steps=40)
+        self.assertGreater(late.gate_decision().constant_velocity_gain, 0.30)
+        self.assertFalse(late.gate_fired())
+
+    def test_the_coupling_is_fitted_across_both_bodies(self) -> None:
+        coupling = self._two_body()._coupling()
+        self.assertIsNotNone(coupling)
+        self.assertAlmostEqual(coupling.coupling_gain, 0.5, delta=0.15)
+        self.assertAlmostEqual(coupling.interaction_radius, self.RADIUS, delta=0.015)
+
+    def test_arm_d_predicts_motion_the_other_arms_cannot(self) -> None:
+        """At the commitment the target is still, so B and C both predict nothing."""
+        episode = self._two_body(steps=26)
+        aims = episode.aims()
+        self.assertTrue(episode.can_estimate())
+        self.assertFalse(np.allclose(aims["D"], aims["B"]))
+
+
+class ConstantMotionTests(unittest.TestCase):
+    """A body that never pauses is the simplest pattern, and was being refused."""
+
+    def test_a_steadily_moving_body_is_predictable(self) -> None:
+        estimator = ReferencePatternEstimator()
+        history = [0.015 * step for step in range(20)]
+        steps = estimator.predict_steps(history, 6)
+        self.assertIsNotNone(steps)
+        self.assertEqual(len(steps), 6)
+        for value in steps:
+            self.assertAlmostEqual(value, 0.015, places=6)
+
+    def test_a_bursting_body_that_has_not_paused_yet_is_still_refused(self) -> None:
+        """The defect this must not revive: a commitment at step 7 of a 14-step
+        cycle, with arm D predicting continuous motion and silently degrading."""
+        estimator = ReferencePatternEstimator()
+        history = [0.015 * step for step in range(8)]  # shorter than 2 * horizon
+        self.assertIsNone(estimator.predict_steps(history, 6))
+
+    def test_direction_is_taken_from_the_observed_motion(self) -> None:
+        estimator = ReferencePatternEstimator()
+        steps = estimator.predict_steps([-0.02 * step for step in range(20)], 4)
+        self.assertIsNotNone(steps)
+        self.assertTrue(all(value < 0 for value in steps))
+
+
+
 
 
 if __name__ == "__main__":

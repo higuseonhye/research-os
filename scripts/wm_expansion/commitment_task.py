@@ -215,12 +215,34 @@ class ReferencePatternEstimator:
         speed = float(np.mean(np.abs(deltas[np.asarray(moving)]))) if any(moving) else 0.0
 
         on_runs, off_runs, tail_len, tail_moving = self._run_lengths(moving)
-        if not on_runs or not off_runs:
+
+        # A body that simply keeps moving has no burst cycle to find, and
+        # refusing it would leave the simplest possible pattern unpredictable.
+        # The two-body encounter's pusher travels at constant velocity - it sits
+        # still, then closes without pausing - so it presents no completed
+        # moving run at all, and without this branch the relational arm can
+        # never act on it.
+        #
+        # The evidence requirement is what keeps this from reviving an old
+        # defect. A *bursting* body that has not paused yet also shows no
+        # completed cycle, and predicting constant motion for it is exactly the
+        # error that once let a commitment land at step 7 of a 14-step cycle
+        # with arm D silently degraded into arm B. Requiring an unbroken run of
+        # at least twice the horizon means a burst pattern with any plausible
+        # duty cycle will have revealed its pause first - at the default
+        # 10-on/4-off with a 6-step horizon, twelve unbroken steps cannot occur.
+        def constant_motion() -> list[float] | None:
+            if tail_moving and tail_len >= 2 * horizon:
+                sign = 1.0 if float(np.sum(deltas)) >= 0.0 else -1.0
+                return [sign * speed] * horizon
             return None
+
+        if not on_runs or not off_runs:
+            return constant_motion()
         burst_on = int(round(float(np.median(on_runs))))
         burst_off = int(round(float(np.median(off_runs))))
         if burst_on < 1 or burst_off < 1:
-            return None
+            return constant_motion()
 
         direction = 1.0 if float(np.sum(deltas)) >= 0.0 else -1.0
         phase, currently_moving = tail_len, tail_moving

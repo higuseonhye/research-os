@@ -136,8 +136,8 @@ def estimate_coupling(
     """
 
     targets = _paired_array(target_positions)
-    references = _paired_array(reference_positions)
-    if targets.shape != references.shape or len(targets) < min_contacts + 1:
+    references = _reference_array(reference_positions)
+    if len(targets) != len(references) or len(targets) < min_contacts + 1:
         return None
     if search_radius <= 0.0:
         raise ValueError("search_radius must be > 0")
@@ -146,8 +146,13 @@ def estimate_coupling(
     # between the target at i and the reference at **i+1** - the reference moves
     # first, then pushes. Pairing against the reference at i instead is an
     # off-by-one that biased the fitted gain by up to 40%.
+    #
+    # With more than one body, the separation is to whichever is nearest. That
+    # is what lets one coupling be fitted from contacts with several bodies -
+    # the point of the two-body encounter, where the relation is demonstrated by
+    # one body and applied to another.
     deltas = np.linalg.norm(np.diff(targets, axis=0), axis=1)
-    separations = np.linalg.norm(targets[:-1] - references[1:], axis=1)
+    separations, _ = _nearest_reference(targets[:-1], references[1:])
 
     # A bare `deltas > 0` admits every step once observations carry any noise,
     # dragging the fit toward the far-field points where the true displacement
@@ -214,8 +219,8 @@ def normal_alignment(
     """
 
     targets = _paired_array(target_positions)
-    references = _paired_array(reference_positions)
-    if targets.shape != references.shape or len(targets) < 2:
+    references = _reference_array(reference_positions)
+    if len(targets) != len(references) or len(targets) < 2:
         return None
     if interaction_radius <= 0.0:
         raise ValueError("interaction_radius must be > 0")
@@ -227,8 +232,8 @@ def normal_alignment(
         return None
 
     # Same contact screen as the estimator, so the two describe the same steps.
-    offsets = targets[:-1] - references[1:]
-    separations = np.linalg.norm(offsets, axis=1)
+    separations, nearest = _nearest_reference(targets[:-1], references[1:])
+    offsets = targets[:-1] - references[1:][np.arange(len(nearest)), nearest]
     usable = (
         (lengths >= motion_floor_ratio * largest)
         & (separations < interaction_radius)
@@ -372,6 +377,46 @@ def _paired_array(values: Iterable[ArrayLike]) -> np.ndarray:
     return array
 
 
+def _reference_array(values: Iterable[ArrayLike]) -> np.ndarray:
+    """Normalise reference history to ``[time, body, dim]``.
+
+    The two-body encounter needs more than one reference: the relation is
+    demonstrated by a body that then leaves, and applied to a different body
+    that arrives later. A single-body history is accepted unchanged and simply
+    reports one body, so every existing caller keeps working.
+    """
+
+    array = np.asarray(list(values), dtype=np.float64)
+    if array.size == 0:
+        return np.empty((0, 0, 0), dtype=np.float64)
+    if array.ndim == 2:
+        array = array[:, None, :]
+    if array.ndim != 3:
+        raise ValueError("expected shape [time, dim] or [time, body, dim]")
+    if not np.isfinite(array).all():
+        raise ValueError("values must be finite")
+    return array
+
+
+def _nearest_reference(
+    targets: np.ndarray, references: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """Per timestep, the separation to the closest body and that body's index.
+
+    Only the closest body can be in contact - the interaction radius is smaller
+    than the separation the encounter keeps between bodies - so "the reference"
+    in every statistic below means the nearest one at that instant. Pooling all
+    bodies instead would let a distant body's stillness dilute a real contact.
+    """
+
+    if targets.shape[0] != references.shape[0]:
+        raise ValueError("target and reference histories must align in time")
+    offsets = targets[:, None, :] - references
+    distances = np.linalg.norm(offsets, axis=2)
+    index = np.argmin(distances, axis=1)
+    return distances[np.arange(len(distances)), index], index
+
+
 def _contiguous_runs(mask: np.ndarray) -> list[tuple[int, int]]:
     """Half-open [start, end) index ranges over which `mask` stays True."""
 
@@ -503,9 +548,11 @@ def evaluate_relation_gate(
 
     thresholds.validate()
     target_arr = _paired_array(target_positions)
-    reference_arr = _paired_array(reference_positions)
-    if target_arr.shape != reference_arr.shape:
-        raise ValueError("target and reference histories must align in shape")
+    reference_arr = _reference_array(reference_positions)
+    if len(target_arr) != len(reference_arr):
+        raise ValueError("target and reference histories must align in time")
+    if reference_arr.size and target_arr.shape[1] != reference_arr.shape[2]:
+        raise ValueError("target and reference must share a dimension")
     if interaction_radius <= 0.0:
         raise ValueError("interaction_radius must be > 0")
 
@@ -524,7 +571,11 @@ def evaluate_relation_gate(
     )
 
     # Positive evidence: speed contrast between near and far separations.
-    separations = np.linalg.norm(target_arr - reference_arr, axis=1)[:-1]
+    # "Near" means near the closest body: with two bodies the target is in
+    # contact whenever either is within the radius, and a distant body must not
+    # make a real contact look far.
+    all_separations, _ = _nearest_reference(target_arr, reference_arr)
+    separations = all_separations[:-1]
     near = separations < interaction_radius
     near_fraction = float(np.mean(near))
 
