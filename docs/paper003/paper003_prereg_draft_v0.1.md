@@ -403,6 +403,42 @@ Scored on whether the gate decides by step 25, the end of the v5 commit window.
 Firing eventually is not the same as firing in time: under `burst` the corrected
 gate does fire, at around step 34, long after the commitment is made.
 
+#### Measured under Isaac, 2026-08-04 — the gate passes, the task does not
+
+A 50-cell sweep (5 conditions x 10 seeds, `probe` encounter, corrected gate)
+settled three things and broke a fourth. Full record in
+[isaac_probe_sweep_v0.2](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/isaac_probe_sweep_v0.2/RESULTS.md).
+
+**H3 gate specificity is met**: coupled 1.00 of trials, and drift, static, noise
+and `slide` all 0.00. The `slide` control is the only one that exercises the
+constant-velocity clause, and under the original gate it failed in every trial.
+
+**The real-contact branch is decided.** The scene reports
+`rigid_objects: []` — there is no body to reuse, so contact physics requires
+**adding one**. That forks the task family, and the 20 mm tolerance inherited
+from Paper 001/002 must be re-argued rather than carried across.
+
+**But arm B is now indistinguishable from arm D**: median miss 0.1 mm against
+0.1 mm, land rate 0.90 against 0.90, where the `burst` encounter gave 14.4 mm /
+0.56 against 4.9 mm / 0.67. The `probe` schedule closes for only half its cycle,
+so in most cells the 6-step dispense window contains no contact and zero-order is
+exact.
+
+**This removes H1's premise** — a capability threshold needs `success(B)` in a
+near-zero band, and 0.90 is not one. The identifiability fix was bought at the
+cost of the task's discriminating power.
+
+The remedy is *not* to adjust the encounter until arm B fails again; that
+chooses parameters by which arm they favour. The defect is that
+`motion_expected()` does not know about the withdrawal and admits steps where
+the reference is retreating, so cells are scored in which nothing moves. A cell
+with a stationary target is not a trial of this task at all. Eligibility must
+reflect whether **the world** produces motion over the dispense window - the
+same arm-neutral ground on which the v0.1 approach distance was fixed.
+
+Open parameter 3 (`NEAR_ZERO_BAND`) and deliverable 3 (the speed sweep locating
+arm B's near-zero band) are both **blocked** until that lands.
+
 #### Two further corrections, made because the noise is unmeasured
 
 The gate's original contrast compared **mean per-step speed** near against far.
