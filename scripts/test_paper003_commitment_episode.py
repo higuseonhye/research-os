@@ -260,6 +260,29 @@ class EpisodeDriverTests(unittest.TestCase):
         self.assertTrue(episode.ready, "non-relational cell was skipped entirely")
         self.assertFalse(episode.can_estimate(), "arm D should still be barred from acting")
 
+    def test_coupling_is_estimated_not_supplied(self) -> None:
+        """Arm D must not be handed the generating model.
+
+        The fake world uses radius 0.05 and gain 0.5; the driver is never told
+        either. If this recovers them, arm D's accuracy is inference rather
+        than a loan of the true parameters.
+        """
+        episode = self._drive(22)
+        coupling = episode._coupling()
+        self.assertIsNotNone(coupling, "coupling was not identifiable")
+        self.assertAlmostEqual(coupling.interaction_radius, 0.05, delta=0.005)
+        self.assertAlmostEqual(coupling.coupling_gain, 0.5, delta=0.05)
+
+    def test_arm_d_declines_when_the_coupling_cannot_be_fitted(self) -> None:
+        """No contacts to fit means no relational prediction, not a guess."""
+        episode = CommitmentEpisode(spec=self.spec)
+        for reference in self._moving_reference()[:20]:
+            episode.observe(np.array([0.20, 0.0, 0.0]), reference)
+        self.assertIsNone(episode._coupling())
+        self.assertFalse(episode.can_estimate())
+        aims = episode.aims()
+        np.testing.assert_allclose(aims["D"], aims["B"])
+
     def test_gate_fires_and_arm_d_acts_when_the_target_is_actually_coupled(self) -> None:
         episode = self._drive(20)
         self.assertTrue(episode.gate_decision().fired)
