@@ -96,8 +96,22 @@ class EncounterGeometry:
 
 
 def schedule_direction(step: int, spec: EncounterSpec) -> int:
-    """+1 advancing, -1 withdrawing, 0 holding."""
+    """+1 advancing, -1 withdrawing, 0 holding, for the *first* body.
 
+    With two bodies the first body strikes once and stops for good. That is not
+    a simplification, it is required: a first body that keeps cycling keeps
+    pushing the target, and the second body's approach line was fixed at draw
+    time against the target's *initial* position. Measured, a cycling prober
+    carried the target 74 mm away and the pusher's closest approach became
+    61 mm against a 50 mm radius - it never touched, and a two-body run was
+    byte-identical to a one-body one.
+
+    A single body still cycles, because there the recurring contacts are what
+    give the coupling estimator enough points to fit.
+    """
+
+    if spec.bodies == 2 and step >= spec.probe_advance + spec.probe_withdraw:
+        return 0
     cycle = step % spec.period
     if spec.schedule == "burst":
         return 1 if cycle < spec.burst_on else 0
@@ -145,7 +159,13 @@ def draw_geometry(seed: int, target: np.ndarray, spec: EncounterSpec) -> Encount
         approach = floor * float(rng.uniform(1.05, 1.6))
     else:
         approach = spec.interaction_radius * float(rng.uniform(2.2, 2.8))
-    phase_offset = int(rng.integers(0, spec.period))
+    # A phase offset places the encounter somewhere in a repeating cycle. With
+    # two bodies there is no cycle - the first body strikes once and stops - so
+    # an offset would start it partway through, or past its only advance
+    # entirely. Measured, that left the prober's closest approach at 51.8 mm
+    # against a 50 mm radius: the body that is supposed to demonstrate the
+    # relation never touched the target.
+    phase_offset = 0 if spec.bodies == 2 else int(rng.integers(0, spec.period))
 
     # The second body approaches from at least 60 degrees away, so the two are
     # distinguishable encounters rather than one approach in two parts, and
