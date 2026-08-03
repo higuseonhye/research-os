@@ -38,10 +38,11 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] Related work — relational/graph world models, capability-boundary framing precedent
 - [x] Environment / simulator choice locked — Isaac Sim/ORBIT Reach continuation, physical-coupling relation
 - [x] Relation module + gate implemented and separated on a CPU proxy ([`relation_dynamics.py`](../../scripts/wm_expansion/relation_dynamics.py), 10 tests)
-- [x] **Capability threshold crossing — constructed.** A continuous reach-and-hold task produced no gap; a [commitment-point task](paper003_commitment_task_v0.1.md) does (arm B 0.00, arm D 1.00, arm B's lockout speed predicted exactly from task geometry).
-- [ ] Arm D must **estimate** the reference pattern online — it is currently given it
+- [x] **Capability threshold crossing — constructed.** A continuous reach-and-hold task produced no gap; a [commitment-point task](paper003_commitment_task_v0.1.md) does, with arm B's lockout speed predicted exactly from task geometry.
+- [x] **Arm D estimates the reference pattern online** — no longer handed it. Under 20% observation noise at the speed where B is locked out: B 0.00, C 0.29, **D 0.69**, oracle 1.00. The crossing survives; estimating costs ~0.31.
 - [ ] Isaac implementation of the commit-and-dispense structure
 - [ ] Re-derive gate thresholds from Isaac data
+- [ ] Decide the preregistered observation-noise level — it moves arm D from 1.00 to 0.32
 - [ ] Prereg
 
 ---

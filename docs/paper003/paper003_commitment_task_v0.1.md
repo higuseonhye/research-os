@@ -78,10 +78,45 @@ C is not simply "worse" — it is *partially* right, and its plateau is set by h
 
 ---
 
+## Arm D now estimates the pattern (2026-07-31, second pass)
+
+The first pass handed arm D the tray's burst pattern, which made it an oracle rather than an arm. It now infers speed, burst and pause lengths, and current phase **from the observed position history alone** (`ReferencePatternEstimator`), and declines to predict when no complete cycle has been seen rather than guessing. `D_oracle` is retained as an explicit ceiling.
+
+### The noiseless proxy hides the cost of estimating
+
+With clean observations the estimator recovers the pattern almost exactly, so D ≈ D_oracle. **That is a property of the proxy, not a result** — noiseless deterministic bursts make recovery nearly trivial, which is the same criticism as the original oracle, moved one step back. The estimator is only meaningfully tested under observation noise.
+
+### Under noise, at the speed where arm B is locked out (15 mm/step, 300 seeds)
+
+| Observation noise | B | C | **D (estimated)** | D_oracle |
+| ---: | ---: | ---: | ---: | ---: |
+| 0 mm | 0.00 | 0.37 | **1.00** | 1.00 |
+| 1.5 mm | 0.00 | 0.35 | **0.96** | 1.00 |
+| 3.0 mm | 0.00 | 0.29 | **0.69** | 1.00 |
+| 5.25 mm | 0.00 | 0.24 | **0.42** | 1.00 |
+| 15.0 mm | 0.04 | 0.12 | **0.32** | 1.00 |
+
+The estimator degrades substantially — it costs 0.31 at 20% noise and 0.68 at the extreme — but **the capability crossing survives**: arm B stays at or near zero throughout while arm D does not.
+
+### Across speeds at 20% observation noise (300 seeds)
+
+| Tray speed | B | C | **D** | D_oracle | D − B |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 4 mm/step | 0.61 | 0.85 | 1.00 | 1.00 | +0.39 |
+| 8 mm/step | 0.20 | 0.51 | 0.95 | 1.00 | +0.75 |
+| 10 mm/step | 0.10 | 0.40 | 0.86 | 1.00 | +0.76 |
+| **15 mm/step** | **0.00** | 0.29 | **0.69** | 1.00 | **+0.69** |
+| **20 mm/step** | **0.00** | 0.24 | **0.59** | 1.00 | **+0.59** |
+
+This is the defensible form of the claim: at speeds where parameter repair cannot succeed at all, an arm that must *estimate* the relation still does — at a real and measurable cost relative to knowing it.
+
+---
+
 ## Caveats (must not be glossed)
 
-- **Arm D is given the tray's burst pattern.** In this abstract simulation D knows when the tray will be moving. A deployed arm D must *estimate* that pattern online. This matches Paper 002's "prepared operator" posture (the model class is prepared; parameters are estimated), but the estimation step is **not tested here** and is a required addition before the confirmatory run.
-- **Abstract simulation.** 1-D tray offset, no contact physics, no perception noise. Isaac implementation may move both thresholds; the analytic forms should survive, the numbers may not.
+- **Abstract simulation.** 1-D tray offset, no contact physics. Observation noise is additive Gaussian on position, which is a crude stand-in for perception error. Isaac implementation may move both thresholds; the analytic forms should survive, the numbers may not.
+- **The burst pattern is strictly periodic.** The estimator exploits that. A reference body with irregular timing would be harder, and this has not been tested.
+- **Noise is applied only to the reference observation**, not to the dispense itself or to the landing.
 - **Not preregistered.** These are design-stage values chosen to demonstrate that the transition is constructible at all.
 
 ---
@@ -126,9 +161,10 @@ A first synthetic run gave B 50%, C 50%, D 100% under the contact-imminent gate.
 
 ## What this changes upstream
 
-- The capability-crossing endpoint moves from **unvalidated** to **constructible** — a task shape now exists that produces it.
+- The capability-crossing endpoint moves from **unvalidated** to **constructible** — a task shape now exists that produces it, and it survives an arm that has to estimate rather than be told.
 - The Isaac environment choice needs revisiting: the oscillating-coupling reach world was built for a tracking task. A commitment-point task may be a better fit for the same relation, and is cheaper to run.
-- Still blocking before prereg: online estimation of the reference pattern by arm D, and an Isaac implementation of the commit structure.
+- **Resolved:** online estimation of the reference pattern by arm D.
+- **Still blocking before prereg:** an Isaac implementation of the commit structure; gate thresholds re-derived from Isaac data; and a decision on how much observation noise the preregistered cells should carry, since that single parameter moves arm D from 1.00 to 0.32.
 
 ---
 

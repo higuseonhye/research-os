@@ -77,13 +77,15 @@ about it:
 | Task | Parameter repair | Mode expansion | Relation expansion |
 | --- | ---: | ---: | ---: |
 | Continuous tracking | 0.30 | 0.25 | 0.35 |
-| **Commitment point** | **0.00** | 0.36 | **1.00** |
+| **Commitment point** | **0.00** | 0.29 | **0.69** |
 
 Arm B's lockout speed is predicted from the task geometry rather than fitted, so
-it can be preregistered as a point prediction.
+it can be preregistered as a point prediction. The relation arm **estimates** the
+second entity's motion from observation rather than being told it; under a clean
+observation it reaches 1.00, and the 0.69 above is what it costs to have to infer
+the relation under noise. An oracle arm is kept as an explicit ceiling.
 
-**Design-stage only** — not preregistered, not run in Isaac, and the relation
-arm is still given information it will have to estimate online. See the
+**Design-stage only** — not preregistered, not run in Isaac. See the
 [Paper 003 hub](paper003/README.md) and
 [commitment-point task](paper003/paper003_commitment_task_v0.1.md).
 
