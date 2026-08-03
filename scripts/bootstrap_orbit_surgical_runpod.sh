@@ -116,7 +116,13 @@ for task_name in handover lift; do
   if [ -f "$cfg" ]; then
     rm -rf "$DISABLED_TASK_DIR/$task_name.orig"
     cp -r "$SURGICAL_TASK_DIR/$task_name" "$DISABLED_TASK_DIR/$task_name.orig"
-    sed -i '/object_pose\..*_pose_visualizer_cfg/d' "$cfg"
+    # Any command name, not just `object_pose`: handover is the dual-arm task
+    # and names its command `ee_1_pose`, so a narrower pattern left it broken
+    # and the whole package still failed to import. This matches a statement
+    # that *reads* the attribute, never a constructor keyword such as
+    # `visualizer_cfg=marker_cfg` - deleting one of those is a syntax error,
+    # which is how the first attempt at this failed.
+    sed -i '/^[[:space:]]*[A-Za-z_][A-Za-z0-9_]*\.\(goal\|current\)_pose_visualizer_cfg/d' "$cfg"
     echo "Patched $cfg (debug marker scale only; original kept in $DISABLED_TASK_DIR)"
   fi
 done
