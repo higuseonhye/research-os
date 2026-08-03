@@ -225,7 +225,8 @@ In a continuous reach-and-hold task, the binding constraint is not *where the ta
 - [x] Concrete simulator choice — Isaac Sim / ORBIT Reach, continuing Paper 002 (locked 2026-07-31)
 - [x] Exact form of the relation — physical coupling via an oscillating `reference_object` that sweeps through the target band (locked 2026-07-31; a single pass-by is disqualified, see above)
 - [x] **A task with a commitment point** — resolved 2026-07-31, see [commitment task doc](paper003_commitment_task_v0.1.md)
-- [ ] **Arm D must estimate the reference pattern online** — in the commitment-task simulation arm D is *given* the tray's burst pattern. Required before any confirmatory run
+- [x] **Arm D estimates the reference pattern online** — resolved 2026-07-31. It infers speed, burst/pause lengths, and phase from observed history, and declines to predict without a complete cycle. The capability crossing survives under observation noise at a measurable cost (see [commitment task doc](paper003_commitment_task_v0.1.md))
+- [ ] **Preregistered observation-noise level** — new, and consequential: arm D runs from 1.00 to 0.32 across the noise range tested, so this cannot be chosen after seeing results
 - [ ] Isaac implementation of the commit-and-dispense structure (may replace the oscillating-coupling reach world, which was built for the tracking task)
 - [ ] Decide whether the elastic anchor becomes part of the specified environment (it is what makes the phenomenon sustained, but it is intrinsic target dynamics, not the relation itself — arms B and C should arguably be given it too)
 - [ ] Threshold value(s) for capability crossing — needs prereg, not post-hoc

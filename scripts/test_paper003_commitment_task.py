@@ -10,7 +10,12 @@ from __future__ import annotations
 
 import unittest
 
-from wm_expansion.commitment_task import CommitmentTaskSpec, run_trial, success_rate
+from wm_expansion.commitment_task import (
+    CommitmentTaskSpec,
+    ReferencePatternEstimator,
+    run_trial,
+    success_rate,
+)
 
 
 class SpecGeometryTests(unittest.TestCase):
@@ -80,6 +85,63 @@ class CapabilityCrossingTests(unittest.TestCase):
     def test_unknown_arm_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
             run_trial("Z", 0, 0.01, self.spec)
+
+
+class ReferenceEstimatorTests(unittest.TestCase):
+    """Arm D must infer the reference pattern, not be handed it."""
+
+    def setUp(self) -> None:
+        self.spec = CommitmentTaskSpec()
+        self.estimator = ReferencePatternEstimator()
+
+    def _observed(self, speed: float = 0.015, steps: int = 40) -> list[float]:
+        offset, history = 0.0, []
+        for step in range(steps):
+            if self.spec.is_moving(step):
+                offset += speed
+            history.append(offset)
+        return history
+
+    def test_declines_to_guess_without_a_complete_cycle(self) -> None:
+        """No completed burst and pause means the cycle is not identifiable."""
+        self.assertIsNone(self.estimator.predict_displacement([0.0, 0.0, 0.0], 6))
+        self.assertIsNone(self.estimator.predict_displacement([0.0, 0.1, 0.2, 0.3, 0.4], 6))
+
+    def test_predicts_no_motion_when_nothing_has_moved(self) -> None:
+        self.assertEqual(self.estimator.predict_displacement([0.4] * 8, 6), 0.0)
+
+    def test_recovers_the_pattern_from_clean_observations(self) -> None:
+        speed, horizon = 0.015, self.spec.dispense_latency
+        history = self._observed(speed=speed, steps=40)
+        predicted = self.estimator.predict_displacement(history, horizon)
+        self.assertIsNotNone(predicted)
+        truth = sum(speed for h in range(1, horizon + 1) if self.spec.is_moving(39 + h))
+        self.assertAlmostEqual(predicted, truth, delta=speed)
+
+    def test_arm_d_never_beats_its_own_oracle(self) -> None:
+        for noise in (0.0, 0.003):
+            spec = CommitmentTaskSpec(observation_noise=noise)
+            estimated = success_rate("D", 0.015, seeds=200, spec=spec)
+            oracle = success_rate("D_oracle", 0.015, seeds=200, spec=spec)
+            self.assertLessEqual(estimated, oracle)
+
+    def test_capability_crossing_survives_a_real_estimator_under_noise(self) -> None:
+        """The claim that matters: B locked out, D still succeeding, no oracle."""
+        speed = 0.015
+        spec = CommitmentTaskSpec(observation_noise=0.20 * speed)
+        zero_order = success_rate("B", speed, seeds=300, spec=spec)
+        relation = success_rate("D", speed, seeds=300, spec=spec)
+        self.assertEqual(zero_order, 0.0)
+        self.assertGreater(relation, 0.5)
+
+    def test_estimator_degrades_as_observations_get_noisier(self) -> None:
+        speed = 0.015
+        rates = [
+            success_rate("D", speed, seeds=300, spec=CommitmentTaskSpec(observation_noise=n * speed))
+            for n in (0.0, 0.35, 1.0)
+        ]
+        self.assertGreater(rates[0], rates[1])
+        self.assertGreater(rates[1], rates[2])
 
 
 if __name__ == "__main__":

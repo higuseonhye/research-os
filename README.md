@@ -16,7 +16,7 @@ This repository contains **promoted research evidence only**—research question
 | **Mismatch Lab** | Public lab spec — **Robot Diff** · model adequacy layer · [hub](docs/mismatch_lab/README.md) |
 | **Study 002 (EXP-SURG-002)** | Pilot: dream curriculum (Tier B · archived) |
 
-**Latest (2026-07-31):** **Paper 003** design advanced — relation module and adequacy gate implemented, and a capability threshold crossing constructed on a commitment-point task (arm B 0.00 vs arm D 1.00, with arm B's lockout speed predicted from task geometry). Not preregistered, not run in Isaac. **Paper 002** submission package v1.1 published (400/400 valid cells; C−B H=10 prediction error −10.806 mm, final distance −13.304 mm). **Paper 001** complete. **Mismatch Lab** v0.1 spec published.
+**Latest (2026-07-31):** **Paper 003** design advanced — relation module and adequacy gate implemented, and a capability threshold crossing constructed on a commitment-point task. The relation arm now **estimates** the second entity's motion from observation rather than being handed it; under observation noise, at the speed where parameter repair is locked out at 0.00, it still reaches 0.69 (oracle ceiling 1.00). Not preregistered, not run in Isaac. **Paper 002** submission package v1.1 published (400/400 valid cells; C−B H=10 prediction error −10.806 mm, final distance −13.304 mm). **Paper 001** complete. **Mismatch Lab** v0.1 spec published.
 
 ---
 
