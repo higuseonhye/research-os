@@ -18,7 +18,7 @@ The runner keeps `env.reset`, the scene inventory, and the three-line callback.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any, Callable, Protocol
 
 import numpy as np
 
@@ -29,6 +29,25 @@ from .relation_dynamics import CouplingSpec, coupling_displacement, normal_align
 #: Called once per step with the target position. Returns True if the episode
 #: terminated or was truncated, which ends the cell and marks it invalid.
 Drive = Callable[[np.ndarray], bool]
+
+
+class World(Protocol):
+    """Where the target's pose comes from.
+
+    The distinction this abstraction exists for is the difference between the
+    calibration pilots and the real thing. Under injected coupling the cell
+    *computes* the target and writes it into the simulator's command; the
+    contact is arithmetic and the simulator never resists it. Under real
+    contact the cell commands the pushing bodies, steps physics, and **reads**
+    where the object ended up. Nothing else in the cell changes, which is why it
+    is worth separating: the gate, the arms, the eligibility screen and the
+    scoring are identical in both, so a result cannot differ because the loop
+    differed.
+    """
+
+    def advance(self, step: int, bodies: np.ndarray) -> tuple[np.ndarray, bool]:
+        """Take one step. Returns the target's pose and whether the episode ended."""
+        ...
 
 CONDITIONS = ("coupled", "drift", "static", "noise", "slide")
 
@@ -102,13 +121,69 @@ def _advance_target(
     return target, slide_velocity
 
 
+@dataclass
+class InjectedWorld:
+    """The target moves by arithmetic; the simulator is only told where it is.
+
+    This is what every pilot so far has run. It is honest about being a
+    calibration device: the coupling is a formula, so `normal_alignment` is 1.0
+    by construction and there is no contact jitter to measure.
+    """
+
+    target0: np.ndarray
+    geometry: EncounterGeometry
+    encounter: EncounterSpec
+    coupling: CouplingSpec
+    cell: CellSpec
+    drive: Drive
+
+    def __post_init__(self) -> None:
+        self.target = np.asarray(self.target0, dtype=np.float64).copy()
+        self.slide_velocity = np.zeros_like(self.target)
+
+    def advance(self, step: int, bodies: np.ndarray) -> tuple[np.ndarray, bool]:
+        self.target, self.slide_velocity = _advance_target(
+            self.target, self.target0, bodies, self.geometry, self.encounter,
+            self.coupling, self.cell, step, self.slide_velocity,
+        )
+        return self.target, bool(self.drive(self.target))
+
+
+@dataclass
+class ContactWorld:
+    """The target is a rigid body: command the pushers, step physics, read it.
+
+    The three callbacks are the entire simulator-facing surface. Everything the
+    cell decides stays on the other side of them, so this can be exercised on a
+    laptop against a toy physics function and the code path is the one the GPU
+    runs.
+
+    `place` receives the bodies' target positions for this step. Under Isaac
+    those are poses the arm is commanded toward, not teleports - the object
+    moves because something pushed it, which is the whole point of the branch.
+    """
+
+    place: Callable[[np.ndarray], None]
+    step_physics: Callable[[], bool]
+    read_target: Callable[[], np.ndarray]
+
+    def advance(self, step: int, bodies: np.ndarray) -> tuple[np.ndarray, bool]:
+        self.place(bodies)
+        terminated = bool(self.step_physics())
+        target = np.asarray(self.read_target(), dtype=np.float64)
+        if target.ndim != 1:
+            raise ValueError("read_target must return a 1-D pose")
+        return target, terminated
+
+
 def run_cell(
     target0: np.ndarray,
     spec: EpisodeSpec,
     encounter: EncounterSpec,
     cell: CellSpec,
-    drive: Drive,
+    drive: Drive | None = None,
     coupling: CouplingSpec | None = None,
+    world: World | None = None,
 ) -> dict[str, Any]:
     """Drive one episode, commit once, score every arm, return the record."""
 
@@ -122,21 +197,23 @@ def run_cell(
     from .encounter import draw_geometry  # local: keeps the import graph shallow
 
     geometry = draw_geometry(cell.seed, target0, encounter)
+    if world is None:
+        if drive is None:
+            raise ValueError("pass either `drive` (injected coupling) or `world`")
+        world = InjectedWorld(target0, geometry, encounter, coupling, cell, drive)
+    elif drive is not None:
+        raise ValueError("pass `drive` or `world`, not both")
     episode = CommitmentEpisode(spec=spec)
 
-    target = target0.copy()
     observations: list[dict[str, Any]] = []
     candidates: list[dict[str, Any]] = []
     trajectory: list[np.ndarray] = []
-    slide_velocity = np.zeros_like(target0)
     violations = 0
+    terminated = False
 
     for step in range(cell.episode_steps):
         bodies = bodies_at(step, geometry, encounter)
-        target, slide_velocity = _advance_target(
-            target, target0, bodies, geometry, encounter, coupling, cell, step,
-            slide_velocity,
-        )
+        target, terminated = world.advance(step, bodies)
 
         episode.observe(target, bodies)
         # Recorded every step, not only at commitment: H3 has to be evaluable on
@@ -181,7 +258,7 @@ def run_cell(
             )
 
         trajectory.append(target.copy())
-        if drive(target):
+        if terminated:
             violations += 1
             break
 
@@ -214,6 +291,9 @@ def run_cell(
         "commit_policy": cell.commit_policy,
         "bodies": encounter.bodies,
         "encounter": encounter.schedule,
+        # Which world produced the target. An injected cell is a calibration
+        # device and must never be pooled with a contact cell.
+        "world": type(world).__name__,
         **geometry.to_dict(),
         "eligible_steps": [c["step"] for c in candidates],
         "committed_at": committed_at,
