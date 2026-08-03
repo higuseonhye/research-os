@@ -124,14 +124,60 @@ all.
 
 | Item | State |
 | --- | --- |
-| Two-body encounter | designed and measured on CPU; **not implemented** in the episode driver or the Isaac runner |
+| Two-body encounter | **implemented** in `relation_dynamics` and `commitment_episode`, 130 tests passing; not yet in the Isaac runner |
 | `motion_expected()` | known-wrong under reversing schedules; needs the eligibility rule above |
 | Variant grading dimension | speed shown non-functional; gain is the candidate |
 | Placement tolerance | **blocking**, and cannot be set before the Branch B scene |
 | H1 reachability | **unknown**, and downstream of the tolerance |
 
-The next implementation step is the two-body support in `commitment_episode.py`
-and `relation_dynamics.py` — the gate, the estimator and the projection all
-currently assume a single reference. That is CPU work with test coverage. It
-should not begin before the tolerance question is settled, because a tolerance
-change moves every number above.
+## Implemented 2026-08-04
+
+The gate, the coupling estimator, `normal_alignment` and the projection now take
+either one body or several. A single-body history is stored as a one-body list,
+so nothing that passes one array changes behaviour — pinned by a test.
+
+Three decisions the implementation forced:
+
+**Every statistic follows the nearest body.** The interaction radius is smaller
+than the separation the encounter keeps between bodies, so only the closest can
+be in contact. Pooling all bodies would let a distant body's stillness dilute a
+real contact.
+
+**The projection follows the *acting* body, not the nearest one.** After the
+prober leaves it can remain closer than the pusher for several steps while
+having no further effect; rolling the prediction forward with it would predict a
+contact that is over. The acting body is the one closing fastest, or one already
+inside the radius — observable, and independent of any arm's model.
+
+**A body that never pauses had to become predictable.** The pattern estimator
+looked for a burst cycle and refused anything without a completed pause, so the
+pusher — which sits still, then closes at constant speed — was unpredictable and
+arm D could never act on it. It now falls back to constant motion, but only
+after an unbroken run of at least twice the horizon. That threshold is what stops
+the fallback reviving an older defect: a *bursting* body that has not paused yet
+also shows no completed cycle, and predicting continuous motion for it is exactly
+the error that once let a commitment land at step 7 of a 14-step cycle with arm D
+silently degraded into arm B. At 10-on/4-off with a 6-step horizon, twelve
+unbroken steps cannot occur.
+
+Measured end to end through the real driver, 80 cells, 0.5 mm noise, gain 0.7:
+**arm D 0.97, arm B 0.80, arm C 0.42**, gate firing in every cell and arm D
+engaging in 0.89. Arm B is high here because the *old* eligibility predicate is
+still in place and admits stationary cells; the corrected predicate above put it
+at 0.57–0.63 in the standalone measurements.
+
+A property worth stating rather than fixing: **if the second body pushes without
+pause the target settles into a steady drift**, a constant-velocity model
+explains it, and the gate declines — correctly, since that is arm C's case. The
+commitment has to precede the sustained push, which is what the eligibility
+window arranges. Pinned by a test.
+
+## What remains
+
+1. **The eligibility predicate.** `motion_expected()` still uses the
+   instantaneous closing rate; the arm-neutral rule above is not implemented.
+2. **The placement tolerance**, which is blocking and needs the Branch B scene.
+3. **The Isaac runner**, which still constructs a single reference body.
+
+Order matters: the tolerance moves every number, so (2) should settle before any
+figure from (1) or (3) is treated as more than a smoke test.
