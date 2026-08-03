@@ -117,6 +117,58 @@ than taken on trust.
 
 ---
 
+## Engagement, and why the endpoint is reported twice — LOCKED 2026-08-03
+
+Arm D can only act once the relation is **characterisable**: the gate must fire
+*and* the coupling must be fitted from enough observed contacts. In the pilot it
+acted in 0.56 of committed cells, and the reason was diagnosed from the raw
+records rather than assumed.
+
+**The gate was not the obstacle.** In three of the four cells where arm D
+declined, gate statistics were excellent — proximity contrast 0.96 to 1.00,
+constant-velocity gain 0.000, both clearing their thresholds comfortably. What
+declined was the coupling fit: only 0, 2, 3 and 2 usable contacts had occurred
+by the commit, against the four a line with a fit-quality guard requires.
+
+They missed by **one to three steps**.
+
+### The tuning that will not be done
+
+Opening the commit window a few steps later would raise engagement from 0.56
+toward 1.00. It is declined.
+
+When the approach distance was lengthened earlier, the justification was
+arm-neutral: *the measurement does not exist* unless the reference pattern is
+identifiable before the encounter ends. No such justification is available
+here. The only reason to delay the window is that arm D is not ready yet, and
+eligibility must be a property of the world rather than of one arm's
+readiness — a principle this design has already violated twice, once with the
+gate and once with the coupling estimate, and had to reverse both times.
+
+Lowering `min_contacts` from four to three is declined for the same reason and
+an independent one: a line through three points leaves a single degree of
+freedom, which makes the fit-quality guard nearly vacuous.
+
+### What is preregistered instead
+
+Both estimates, with the conditional one specified in advance rather than
+introduced after seeing the marginal:
+
+| Estimate | Population | Reading |
+| --- | --- | --- |
+| **Marginal** (primary) | All committed cells | What the operator delivers in deployment, including encounters it cannot characterise in time |
+| **Conditional** (secondary, prespecified) | Cells where arm D engaged | Whether the relational model is right when it applies |
+
+Neither may be dropped after the fact, and the marginal remains primary. A
+conditional advantage with a low engagement rate is a real but bounded result
+and must be reported as one.
+
+**Engagement rate is itself an outcome**, not a nuisance parameter. "The
+relation was characterisable at commit time in *x* of encounters" is a finding
+about when the operator is applicable at all, and is reported with its interval.
+
+---
+
 ## Primary Endpoint: capability threshold crossing
 
 For a preregistered variant set `T` graded by reference speed, and arms `a`:

@@ -88,6 +88,27 @@ def summarise(records: list[dict[str, Any]], tolerance: float) -> dict[str, dict
                 arm: lands[arm] / len(misses[arm]) for arm in misses if misses[arm]
             },
         }
+
+        # Conditional on arm D having engaged. Preregistered as a secondary
+        # estimate so it cannot be introduced after seeing the marginal one;
+        # where arm D declines it is identical to arm B by construction, which
+        # dilutes the marginal figure without saying anything about the model.
+        engaged = [r for r in committed if r.get("d_estimated")]
+        cond_misses: dict[str, list[float]] = defaultdict(list)
+        cond_lands: dict[str, int] = defaultdict(int)
+        for record in engaged:
+            distances = miss_distances(record)
+            if distances is None:
+                continue
+            for arm, distance in distances.items():
+                cond_misses[arm].append(distance)
+                cond_lands[arm] += int(distance <= tolerance)
+        by_condition[condition]["engaged_cells"] = len(engaged)
+        by_condition[condition]["land_rate_engaged"] = {
+            arm: cond_lands[arm] / len(cond_misses[arm])
+            for arm in cond_misses
+            if cond_misses[arm]
+        }
     return by_condition
 
 
@@ -112,6 +133,22 @@ def render(summary: dict[str, dict[str, Any]], tolerance: float) -> str:
         )
         if stats["invalid"]:
             lines.append(f"{'':<10}  ! {stats['invalid']} invalid cell(s)")
+
+    # Preregistered as a secondary estimate, so it is printed every time rather
+    # than computed by hand once the marginal figure looks disappointing. Where
+    # arm D declines it is identical to arm B by construction, which dilutes the
+    # marginal rate without saying anything about the model.
+    lines += ["", "conditional on arm D engaging (secondary, preregistered)", "-" * 98]
+    for condition, stats in summary.items():
+        engaged = stats.get("engaged_cells", 0)
+        if not engaged:
+            lines.append(f"{condition:<10}  arm D never engaged")
+            continue
+        land = stats.get("land_rate_engaged", {})
+        text = " ".join(f"{a}={land[a]:.2f}" for a in ("B", "C", "D") if a in land)
+        lines.append(
+            f"{condition:<10}{engaged:>4}/{stats['committed']} committed   {text}"
+        )
     return "\n".join(lines)
 
 
