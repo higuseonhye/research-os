@@ -24,6 +24,7 @@ from typing import Sequence
 import numpy as np
 
 from .commitment_task import ReferencePatternEstimator
+from .relation_dynamics import RelationGateDecision, RelationGateThresholds, evaluate_relation_gate
 
 ArrayLike = Sequence[float] | np.ndarray
 
@@ -105,6 +106,7 @@ class CommitmentEpisode:
 
     spec: EpisodeSpec = field(default_factory=EpisodeSpec)
     estimator: ReferencePatternEstimator = field(default_factory=ReferencePatternEstimator)
+    gate_thresholds: RelationGateThresholds = field(default_factory=RelationGateThresholds)
     targets: list[np.ndarray] = field(default_factory=list)
     references: list[np.ndarray] = field(default_factory=list)
 
@@ -121,18 +123,47 @@ class CommitmentEpisode:
         self.targets.append(target_arr)
         self.references.append(reference_arr)
 
-    def can_estimate(self) -> bool:
-        """Can arm D actually produce a relational estimate yet?
+    def gate_decision(self) -> RelationGateDecision:
+        """Is the target's motion actually conditioned on the reference?
 
-        A step count is the wrong gate. The estimator needs one completed burst
-        **and** one completed pause before the cycle is identifiable, which
-        takes longer than any fixed `min_history` that is shorter than a period.
-        Committing before then silently degrades arm D into arm B - which is
-        what the first Isaac run did, committing at step 7 of a 14-step cycle
-        and scoring D identically to B.
+        This is the relation-adequacy gate, and arm D must not act without it.
+        An earlier version applied the relation unconditionally, which the
+        Isaac control conditions immediately punished: on a **static** target
+        the reference still sweeps past, so arm D predicted 90 mm of motion
+        for a target that never moved, while plain zero-order was exact. The
+        gate is what distinguishes "the reference is moving" from "the target
+        moves *because of* the reference".
+        """
+
+        if len(self.targets) < 2:
+            return RelationGateDecision(False, 0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        return evaluate_relation_gate(
+            self.targets,
+            self.references,
+            self.gate_thresholds,
+            interaction_radius=self.spec.interaction_radius,
+            horizon=self.spec.dispense_latency,
+        )
+
+    def can_estimate(self) -> bool:
+        """May arm D use a relational prediction at all?
+
+        Two conditions, both necessary:
+
+        1. **The gate fires** - the residual is proximity-conditioned on the
+           reference, and not already explained as constant-velocity drift.
+        2. **The estimator produces something** - it needs one completed burst
+           and one completed pause before the cycle is identifiable, which
+           takes longer than any `min_history` shorter than a period.
+
+        The first Isaac run failed the second condition, committing at step 7
+        of a 14-step cycle so that arm D silently degraded into arm B. The
+        control conditions then failed the first.
         """
 
         if len(self.references) < 2:
+            return False
+        if not self.gate_decision().fired:
             return False
         return (
             project_reference_motion(
@@ -195,11 +226,16 @@ class CommitmentEpisode:
             "C": target + horizon * velocity,
         }
 
-        predicted = project_reference_motion(
-            np.asarray(self.references), horizon, self.estimator
+        # Arm D acts only when the gate says the target's motion is actually
+        # conditioned on the reference. Without this check it invents motion on
+        # static and noise conditions, where the reference moves but the target
+        # is uncoupled. An unusable estimate falls back the same way rather than
+        # fabricating an aim; the arm is penalised for it, which is correct.
+        predicted = (
+            project_reference_motion(np.asarray(self.references), horizon, self.estimator)
+            if self.gate_decision().fired
+            else None
         )
-        # An unusable estimate falls back to the zero-order aim rather than
-        # inventing one. The arm is penalised for it, which is correct.
         out["D"] = target.copy() if predicted is None else target + predicted
 
         if true_landing is not None:
