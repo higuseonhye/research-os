@@ -1,6 +1,6 @@
 # Paper 003 — Missing relation & capability expansion
 
-> **Status:** design v0.1 · not yet run · Experiment ID TBD
+> **Status:** design v0.1 · Isaac calibration pilot run (10 seeds, excluded from evidence) · not preregistered · Experiment ID TBD
 > **Program context:** builds on [Paper 002](../paper002/README.md) (missing dynamic mode) · next taxonomy cell = missing causal relation
 
 ---
@@ -43,8 +43,11 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] **Robustness to irregular timing measured.** The estimator does exploit periodicity — it loses ~0.4 from a strict cycle to ±3 steps of jitter — but the gap holds in the worst case tested (jitter + noise: B 0.08, **D 0.52**).
 - [x] **Preregistration drafted** — [draft v0.1](paper003_prereg_draft_v0.1.md). Arms, task, primary endpoint, and hypotheses H1–H4 locked; **six parameters left open** because they need real physics, not a 1-D proxy.
 - [x] **Episode driver** — all decision logic in [`commitment_episode.py`](../../scripts/wm_expansion/commitment_episode.py), CPU-tested, so the Isaac script is a shell over scene setup
-- [x] **Isaac pilot runner written** — [`orbit_reach_relation_pilot.py`](../../scripts/orbit_reach_relation_pilot.py) + [runbook](paper003_pilot_runbook_v0.1.md). **Never executed**; syntax-checked only
-- [x] **Calibration pilot run in Isaac** (n=1 seed, excluded from evidence) — [RESULTS](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/isaac_relation_pilot_v0.1/RESULTS.md). The operators dissociate: arm D lands the relational cell (7.0 mm) and declines the mode cell; arm C lands the mode cell (0.0 mm) and fails the relational one. Gate fires only on coupling. No regression where the relation is absent.
+- [x] **Isaac pilot runner** — [`orbit_reach_relation_pilot.py`](../../scripts/orbit_reach_relation_pilot.py) + [runbook](paper003_pilot_runbook_v0.1.md). Ran in Isaac after eight defects a GPU-less environment could not catch
+- [x] **Calibration pilot run in Isaac** (10 seeds, excluded from evidence) — [RESULTS](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/isaac_relation_pilot_v0.1/RESULTS.md). The operators dissociate: arm C lands the mode cell (0.0 mm, 1.00) and arm D declines there; arm D leads on the relational cell. No regression where the relation is absent.
+- [x] **Commit policy locked** — uniform over eligible steps, with its expected directional effect declared before the run
+- [x] **Arm D estimates the coupling** rather than being handed it — radius and gain fitted from observed contacts
+- [ ] **Sample size** — nine committed treatment cells; arm D's 0.67 vs 0.56 lead is one cell and cannot support a rate comparison
 - [ ] Measure observation noise and timing irregularity — **still unmet**: the coupling is injected through the target command rather than emerging from contact, so there is no physical jitter to measure
 - [ ] Speed sweep to locate arm B's near-zero band
 - [ ] Freeze the preregistration, then run confirmatory
