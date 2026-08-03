@@ -106,6 +106,88 @@ def coupling_displacement(
     return spec.coupling_gain * penetration * spec.interaction_radius * direction
 
 
+def estimate_coupling(
+    target_positions: Iterable[ArrayLike],
+    reference_positions: Iterable[ArrayLike],
+    search_radius: float,
+    min_contacts: int = 4,
+    motion_floor_ratio: float = 0.25,
+    min_fit_quality: float = 0.80,
+) -> CouplingSpec | None:
+    """Recover the coupling's radius and gain from observation alone.
+
+    Without this, an arm that "predicts the relation" is really being handed
+    the generating model: it rolls forward with the same `coupling_gain` and
+    `interaction_radius` used to produce the ground truth, and its accuracy
+    measures the loan rather than any inference.
+
+    The model is linear in separation, which makes it identifiable. Since
+    ``penetration = (radius - d) / radius``,
+
+        |dtarget| = gain * penetration * radius = gain * (radius - d)
+
+    so a least-squares line through the observed (separation, displacement)
+    pairs in contact gives ``gain = -slope`` and ``radius = intercept / gain``.
+
+    `search_radius` bounds which steps are considered candidates for contact;
+    it is a coarse screen, not the estimate. Returns None when the fit is not
+    identifiable - too few contacts, no spread in separation, or coefficients
+    outside physical range - so a caller can decline rather than act on noise.
+    """
+
+    targets = _paired_array(target_positions)
+    references = _paired_array(reference_positions)
+    if targets.shape != references.shape or len(targets) < min_contacts + 1:
+        return None
+    if search_radius <= 0.0:
+        raise ValueError("search_radius must be > 0")
+
+    # The displacement between steps i and i+1 is produced by the separation
+    # between the target at i and the reference at **i+1** - the reference moves
+    # first, then pushes. Pairing against the reference at i instead is an
+    # off-by-one that biased the fitted gain by up to 40%.
+    deltas = np.linalg.norm(np.diff(targets, axis=0), axis=1)
+    separations = np.linalg.norm(targets[:-1] - references[1:], axis=1)
+
+    # A bare `deltas > 0` admits every step once observations carry any noise,
+    # dragging the fit toward the far-field points where the true displacement
+    # is zero. At 0.1 mm of noise that alone put the gain estimate 68% low, and
+    # silently - the fit still succeeded. Require displacement well above the
+    # per-episode noise floor instead.
+    largest = float(np.max(deltas)) if deltas.size else 0.0
+    if largest <= 0.0:
+        return None
+    moving = deltas >= motion_floor_ratio * largest
+    near = separations < search_radius
+    contact = moving & near
+    if int(np.count_nonzero(contact)) < min_contacts:
+        return None
+
+    x = separations[contact]
+    y = deltas[contact]
+    if float(np.ptp(x)) <= 0.0:
+        return None  # no spread in separation; slope is unidentifiable
+
+    slope, intercept = np.polyfit(x, y, 1)
+    gain = float(-slope)
+    if gain <= 0.0:
+        return None  # displacement should fall as separation grows
+    radius = float(intercept) / gain
+    if not (0.0 < gain <= 1.0) or radius <= 0.0:
+        return None
+
+    # A plausible-looking line can still be fitted to points that are mostly
+    # noise. Past roughly 1 mm of observation noise the coefficients were still
+    # returned while being 70% wrong, which is worse than declining. Require
+    # the linear model to actually explain the data.
+    residual = float(np.sum((y - (slope * x + intercept)) ** 2))
+    total = float(np.sum((y - np.mean(y)) ** 2))
+    if total <= 0.0 or 1.0 - residual / total < min_fit_quality:
+        return None
+
+    return CouplingSpec(interaction_radius=radius, coupling_gain=gain)
+
+
 # --------------------------------------------------------------------------
 # Relation-adequacy gate
 # --------------------------------------------------------------------------

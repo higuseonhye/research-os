@@ -26,6 +26,7 @@ import numpy as np
 from .commitment_task import ReferencePatternEstimator
 from .relation_dynamics import (
     CouplingSpec,
+    estimate_coupling,
     RelationGateDecision,
     RelationGateThresholds,
     coupling_displacement,
@@ -150,10 +151,27 @@ class CommitmentEpisode:
         self.targets.append(target_arr)
         self.references.append(reference_arr)
 
-    def _coupling(self) -> CouplingSpec:
-        return CouplingSpec(
-            interaction_radius=self.spec.interaction_radius,
-            coupling_gain=self.spec.coupling_gain,
+    def _coupling(self) -> CouplingSpec | None:
+        """The coupling arm D will roll forward with, estimated from observation.
+
+        Previously this handed back the spec's own `interaction_radius` and
+        `coupling_gain` - the very values used to generate the ground truth. Arm
+        D was then rolling forward with the true model and its accuracy measured
+        that loan rather than any inference.
+
+        Both are now fitted from the observed (separation, displacement) pairs.
+        `spec.interaction_radius` survives only as a coarse search window for
+        which steps to consider as contact candidates; it does not enter the
+        prediction. Returns None when the fit is not identifiable, which stops
+        arm D from acting rather than letting it act on noise.
+        """
+
+        if len(self.targets) < 3:
+            return None
+        return estimate_coupling(
+            self.targets,
+            self.references,
+            search_radius=self.spec.interaction_radius * 3.0,
         )
 
     def gate_decision(self) -> RelationGateDecision:
@@ -190,20 +208,34 @@ class CommitmentEpisode:
 
         if len(self.references) < 2:
             return False
-        return (
-            project_reference_motion(
-                self.targets[-1],
-                np.asarray(self.references),
-                self.spec.dispense_latency,
-                self.estimator,
-                self._coupling(),
-            )
-            is not None
+        history = np.asarray(self.references)
+        total = np.diff(history, axis=0).sum(axis=0)
+        norm = float(np.linalg.norm(total))
+        if norm <= 0.0:
+            return True  # a stationary reference is trivially predictable
+        steps = self.estimator.predict_steps(
+            list(history @ (total / norm)), self.spec.dispense_latency
         )
+        return steps is not None
 
     def can_estimate(self) -> bool:
-        """May arm D use a relational prediction? Gate **and** history required."""
-        return self._projection_available() and self.gate_decision().fired
+        """May arm D use a relational prediction?
+
+        Three things must hold, and each has cost a round-trip to learn:
+
+        1. the reference pattern is identifiable from history;
+        2. the gate says the target's motion is conditioned on the reference;
+        3. the coupling itself is estimable from the observed contacts.
+
+        The third is what stops arm D from being handed the generating model.
+        Note that none of these belong in `ready` - they govern whether this arm
+        may act, not whether the cell is worth measuring.
+        """
+        return (
+            self._projection_available()
+            and self.gate_decision().fired
+            and self._coupling() is not None
+        )
 
     @property
     def ready(self) -> bool:
@@ -288,12 +320,13 @@ class CommitmentEpisode:
         # static and noise conditions, where the reference moves but the target
         # is uncoupled. An unusable estimate falls back the same way rather than
         # fabricating an aim; the arm is penalised for it, which is correct.
+        coupling = self._coupling() if self.gate_decision().fired else None
         predicted = (
-            project_reference_motion(
-                target, np.asarray(self.references), horizon, self.estimator, self._coupling()
+            None
+            if coupling is None
+            else project_reference_motion(
+                target, np.asarray(self.references), horizon, self.estimator, coupling
             )
-            if self.gate_decision().fired
-            else None
         )
         out["D"] = target.copy() if predicted is None else target + predicted
 
