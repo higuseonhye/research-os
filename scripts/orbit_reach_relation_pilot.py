@@ -109,6 +109,7 @@ from wm_expansion.commitment_episode import (  # noqa: E402
 from wm_expansion.relation_dynamics import (  # noqa: E402
     CouplingSpec,
     coupling_displacement,
+    normal_alignment,
 )
 
 #: Matches orbit_reach_drift.py. This task exposes `ee_1_pose`, not `ee_pose`;
@@ -309,6 +310,15 @@ def run_cell(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             sum(o["gate_fired"] for o in observations) / len(observations)
             if observations
             else 0.0
+        ),
+        # Diagnostic only, nothing gates on it. Arm D fits displacement
+        # magnitude against separation and never inspects direction, so a
+        # contact that pushes off the normal returns correct coefficients while
+        # the aim is wrong. Under injected coupling this is ~1.0 by
+        # construction; under real contact it is the first thing to check if
+        # arm D underperforms with a healthy gate and a clean fit.
+        "normal_alignment": normal_alignment(
+            episode.targets, episode.references, args.interaction_radius
         ),
         "resolved": resolved,
         "aims": {k: v.tolist() for k, v in (aims or {}).items()},

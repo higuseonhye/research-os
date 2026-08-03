@@ -159,11 +159,13 @@ D `[0.33, 1.00]`. Quoting either point estimate alone would misrepresent them.
 2. ~~Arm D is handed the coupling parameters~~ — **settled.** Radius and gain
    are fitted from the observed contacts; arm D declines when the fit is not
    identifiable.
-3. **Sample size — now quantified.** Nine committed cells give power **0.03**
-   to detect the observed structure. Roughly **60 committed cells** are needed
-   for 0.90, about 70 seeds at this commit rate. The pilot could not have
-   detected this effect even if it is real, which is how its inconclusive
-   interval should be read.
+3. **Sample size — quantified, and it depends on engagement.** Nine committed
+   cells give power under 0.10 however the test is run. Under the preregistered
+   one-sided sign test, **80 cells** reach 0.90 at this pilot's engagement of
+   0.56 — but **200** if engagement falls to 0.20. Cells where arm D declines
+   are ties and carry no information, so engagement sets the number of
+   informative cells rather than merely diluting the effect. The confirmatory n
+   is therefore read off the real-contact pilot's engagement rate, not this one.
 4. ~~Engagement rate~~ — **settled.** Both marginal and conditional estimates
    are preregistered and printed together. Delaying the commit window to raise
    engagement was declined: unlike the approach distance, no arm-neutral
@@ -174,6 +176,16 @@ D `[0.33, 1.00]`. Quoting either point estimate alone would misrepresent them.
    target command rather than emerging from contact, so there is no physical
    jitter to measure, and the observation noise the estimator was characterised
    against is absent here.
+
+   The injected coupling is also *linear in separation*, which is exactly what
+   arm D assumes, so these numbers cannot separate "arm D works" from "arm D
+   read its own assumption back". A CPU study of misspecified contact laws
+   (`scripts/paper003_contact_robustness.py`, recorded in the preregistration)
+   found that the danger is **tangential deflection, not nonlinearity**: a
+   frictional push returns the *correct* gain and radius while sending arm D's
+   aim sideways past the 20 mm tolerance. The runner now records a
+   `normal_alignment` diagnostic so that failure is visible rather than
+   silent.
 
 ## What this is not
 
