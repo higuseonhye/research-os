@@ -30,10 +30,21 @@ parameters into measured ones so the preregistration can be frozen honestly.
 Do not skip to a sweep. Each step below exists because the one before it can
 fail in a way that makes the next meaningless.
 
-### 0. Bootstrap — the workspace is not persistent
+### 0. Bootstrap — `/workspace` does not survive a pause
 
-A fresh VESSL workspace has neither the repo nor a usable `python` on `PATH`.
-Both were assumed by an earlier version of this runbook and neither held.
+**Confirmed 2026-08-03: pausing and resuming the workspace wipes `/workspace`
+entirely.** Only `/isaac-sim`, which ships in the image and lives outside it,
+came back. IsaacLab, orbit-surgical, the repo and every result file were gone.
+
+Two consequences worth planning around:
+
+- **Every resume costs a full bootstrap** — tens of minutes of GPU time before
+  any measurement. Batch work into long sessions rather than short ones.
+- **Results must be pushed before pausing**, or they are lost. Record files
+  under `results/` are not in git by default.
+
+A fresh workspace also has no usable `python` on `PATH`; that was assumed by an
+earlier version of this runbook and did not hold.
 
 ```bash
 # where am I, and what is installed?
@@ -151,6 +162,20 @@ for v in 0.008 0.010 0.015 0.020; do
     bash scripts/run_paper003_pilot.sh --reference-speed $v
 done
 ```
+
+### 4b. Push before pausing
+
+`/workspace` is wiped on pause, so anything not pushed is gone. Before ending a
+session:
+
+```bash
+cd /workspace/research-os
+git add results/ && git commit -m "pilot records: <describe run>" && git push
+```
+
+`results/` is tracked (only `results/study2_dream_curriculum/` is ignored), so
+this needs no force. Pilot records are small JSON and worth keeping — they are
+the only evidence of what a run actually did.
 
 ### 5. Record and stop
 
