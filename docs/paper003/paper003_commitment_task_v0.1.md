@@ -112,10 +112,29 @@ This is the defensible form of the claim: at speeds where parameter repair canno
 
 ---
 
+### Does arm D depend on the reference being strictly periodic?
+
+It does, and the dependence is now measured rather than assumed. `timing_jitter` varies each burst and pause length independently, so the cycle stops repeating and the estimator's median-run-length assumption stops being exactly right. At 15 mm/step, 400 seeds:
+
+| Timing jitter | Obs. noise | B | C | **D** | D_oracle | D − B |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 | 0 | 0.00 | 0.38 | **1.00** | 1.00 | +1.00 |
+| 1 | 0 | 0.05 | 0.38 | **0.89** | 1.00 | +0.84 |
+| 2 | 0 | 0.07 | 0.39 | **0.71** | 1.00 | +0.65 |
+| 3 | 0 | 0.09 | 0.50 | **0.61** | 1.00 | +0.53 |
+| 0 | 3.0 mm | 0.00 | 0.30 | **0.69** | 1.00 | +0.69 |
+| 3 | 3.0 mm | 0.08 | 0.30 | **0.52** | 1.00 | +0.44 |
+
+**The estimator loses about 0.4 going from a strict cycle to ±3 steps of jitter**, so the regularity assumption is doing real work. But in the worst case tested — irregular timing *and* noisy observation together — arm D still sits at 0.52 against arm B's 0.08.
+
+**Consequence for the preregistration:** jitter also softens the geometric lockout. Arm B is exactly 0.00 under a strict cycle but rises to 0.05–0.09 with jitter, because some windows now contain fewer moving steps than the periodic minimum. The capability-crossing criterion therefore cannot be written as `baseline == 0`; it needs a preregistered near-zero band (e.g. baseline ≤ 0.10) and the analytic lockout must be labelled as exact only for the periodic case.
+
+---
+
 ## Caveats (must not be glossed)
 
 - **Abstract simulation.** 1-D tray offset, no contact physics. Observation noise is additive Gaussian on position, which is a crude stand-in for perception error. Isaac implementation may move both thresholds; the analytic forms should survive, the numbers may not.
-- **The burst pattern is strictly periodic.** The estimator exploits that. A reference body with irregular timing would be harder, and this has not been tested.
+- **Jitter is still structured.** Run lengths vary around a fixed mean; a reference that changed its *mean* rate, reversed, or stopped altogether has not been tested.
 - **Noise is applied only to the reference observation**, not to the dispense itself or to the landing.
 - **Not preregistered.** These are design-stage values chosen to demonstrate that the transition is constructible at all.
 
@@ -163,8 +182,12 @@ A first synthetic run gave B 50%, C 50%, D 100% under the contact-imminent gate.
 
 - The capability-crossing endpoint moves from **unvalidated** to **constructible** — a task shape now exists that produces it, and it survives an arm that has to estimate rather than be told.
 - The Isaac environment choice needs revisiting: the oscillating-coupling reach world was built for a tracking task. A commitment-point task may be a better fit for the same relation, and is cheaper to run.
-- **Resolved:** online estimation of the reference pattern by arm D.
-- **Still blocking before prereg:** an Isaac implementation of the commit structure; gate thresholds re-derived from Isaac data; and a decision on how much observation noise the preregistered cells should carry, since that single parameter moves arm D from 1.00 to 0.32.
+- **Resolved:** online estimation of the reference pattern by arm D, and its robustness to irregular timing.
+- **Still blocking before prereg:**
+  - an Isaac implementation of the commit structure;
+  - gate thresholds re-derived from Isaac data;
+  - **preregistered observation-noise and timing-jitter levels** — between them these move arm D from 1.00 to ~0.5, so they cannot be chosen after seeing results;
+  - **a near-zero band for the capability-crossing criterion**, since jitter lifts arm B off exactly zero.
 
 ---
 

@@ -115,6 +115,7 @@ capability_crossing(a) = |{ t in T : success_rate(t, A_baseline) ≈ 0
 
 - `A_baseline` = best of {No update, Parameter update} (arms A/B)
 - `threshold` prereg'd (e.g. >20%, non-trivial and above chance/floor)
+- **`≈ 0` needs a numeric band, not literal zero.** Under a strictly periodic reference the baseline is exactly 0.00, but any irregularity lifts it to 0.05–0.09 (see [commitment task](paper003_commitment_task_v0.1.md)). Preregister the band rather than inheriting an artefact of perfect periodicity.
 - Compare `capability_crossing(D relation)` vs `capability_crossing(C mode)` vs `capability_crossing(B parameter)`
 
 **Success pattern:** Relation expansion (D) crosses capability thresholds on relation-dependent variants that mode expansion (C) and parameter repair (B) do not — not merely a lower mean error.
@@ -226,7 +227,9 @@ In a continuous reach-and-hold task, the binding constraint is not *where the ta
 - [x] Exact form of the relation — physical coupling via an oscillating `reference_object` that sweeps through the target band (locked 2026-07-31; a single pass-by is disqualified, see above)
 - [x] **A task with a commitment point** — resolved 2026-07-31, see [commitment task doc](paper003_commitment_task_v0.1.md)
 - [x] **Arm D estimates the reference pattern online** — resolved 2026-07-31. It infers speed, burst/pause lengths, and phase from observed history, and declines to predict without a complete cycle. The capability crossing survives under observation noise at a measurable cost (see [commitment task doc](paper003_commitment_task_v0.1.md))
-- [ ] **Preregistered observation-noise level** — new, and consequential: arm D runs from 1.00 to 0.32 across the noise range tested, so this cannot be chosen after seeing results
+- [x] **Robustness to irregular reference timing** — measured 2026-07-31. Arm D exploits periodicity and loses ~0.4 under ±3 steps of jitter, but the capability gap holds (B 0.08 vs D 0.52 with jitter and noise together)
+- [ ] **Preregistered observation-noise and timing-jitter levels** — new, and consequential: together they move arm D from 1.00 to ~0.5, so they cannot be chosen after seeing results
+- [ ] **Near-zero band for the crossing criterion** — jitter lifts arm B off exactly zero (0.05–0.09), so `success_rate(baseline) ≈ 0` needs a preregistered numeric band
 - [ ] Isaac implementation of the commit-and-dispense structure (may replace the oscillating-coupling reach world, which was built for the tracking task)
 - [ ] Decide whether the elastic anchor becomes part of the specified environment (it is what makes the phenomenon sustained, but it is intrinsic target dynamics, not the relation itself — arms B and C should arguably be given it too)
 - [ ] Threshold value(s) for capability crossing — needs prereg, not post-hoc

@@ -40,9 +40,11 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] Relation module + gate implemented and separated on a CPU proxy ([`relation_dynamics.py`](../../scripts/wm_expansion/relation_dynamics.py), 10 tests)
 - [x] **Capability threshold crossing — constructed.** A continuous reach-and-hold task produced no gap; a [commitment-point task](paper003_commitment_task_v0.1.md) does, with arm B's lockout speed predicted exactly from task geometry.
 - [x] **Arm D estimates the reference pattern online** — no longer handed it. Under 20% observation noise at the speed where B is locked out: B 0.00, C 0.29, **D 0.69**, oracle 1.00. The crossing survives; estimating costs ~0.31.
+- [x] **Robustness to irregular timing measured.** The estimator does exploit periodicity — it loses ~0.4 from a strict cycle to ±3 steps of jitter — but the gap holds in the worst case tested (jitter + noise: B 0.08, **D 0.52**).
 - [ ] Isaac implementation of the commit-and-dispense structure
 - [ ] Re-derive gate thresholds from Isaac data
-- [ ] Decide the preregistered observation-noise level — it moves arm D from 1.00 to 0.32
+- [ ] Preregister the observation-noise and timing-jitter levels — together they move arm D from 1.00 to ~0.5
+- [ ] Preregister a **near-zero band** for the crossing criterion — jitter lifts arm B off exactly zero (0.05–0.09)
 - [ ] Prereg
 
 ---

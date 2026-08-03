@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import unittest
 
+import numpy as np
+
 from wm_expansion.commitment_task import (
     CommitmentTaskSpec,
     ReferencePatternEstimator,
@@ -142,6 +144,55 @@ class ReferenceEstimatorTests(unittest.TestCase):
         ]
         self.assertGreater(rates[0], rates[1])
         self.assertGreater(rates[1], rates[2])
+
+
+class IrregularTimingTests(unittest.TestCase):
+    """Arm D assumes the reference repeats. Test what that assumption is worth."""
+
+    def test_no_jitter_schedule_matches_the_periodic_function(self) -> None:
+        spec = CommitmentTaskSpec()
+        schedule = spec.motion_schedule(40)
+        self.assertEqual(schedule, [spec.is_moving(s) for s in range(40)])
+
+    def test_jitter_needs_an_rng_and_stays_within_bounds(self) -> None:
+        spec = CommitmentTaskSpec(timing_jitter=2)
+        with self.assertRaises(ValueError):
+            spec.motion_schedule(20)
+        schedule = spec.motion_schedule(200, np.random.default_rng(0))
+        self.assertEqual(len(schedule), 200)
+        self.assertNotEqual(schedule, [spec.is_moving(s) for s in range(200)])
+
+    def test_jitter_larger_than_the_shorter_run_is_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            CommitmentTaskSpec(timing_jitter=4, burst_off=4).validate()
+
+    def test_estimator_degrades_as_timing_gets_irregular(self) -> None:
+        """It does exploit periodicity - that dependence should be visible."""
+        speed = 0.015
+        rates = [
+            success_rate("D", speed, seeds=400, spec=CommitmentTaskSpec(timing_jitter=j))
+            for j in (0, 2, 3)
+        ]
+        self.assertGreater(rates[0], rates[1])
+        self.assertGreater(rates[1], rates[2])
+
+    def test_capability_gap_survives_irregular_timing_and_noise_together(self) -> None:
+        """The worst case tested: jittered timing and noisy observation at once."""
+        speed = 0.015
+        spec = CommitmentTaskSpec(timing_jitter=3, observation_noise=0.20 * speed)
+        zero_order = success_rate("B", speed, seeds=400, spec=spec)
+        relation = success_rate("D", speed, seeds=400, spec=spec)
+        self.assertLess(zero_order, 0.15)
+        self.assertGreater(relation, 0.40)
+        self.assertGreater(relation - zero_order, 0.30)
+
+    def test_jitter_softens_the_geometric_lockout(self) -> None:
+        """Arm B is no longer exactly zero, which the prereg threshold must allow."""
+        speed = 0.015
+        strict = success_rate("B", speed, seeds=400, spec=CommitmentTaskSpec())
+        jittered = success_rate("B", speed, seeds=400, spec=CommitmentTaskSpec(timing_jitter=3))
+        self.assertEqual(strict, 0.0)
+        self.assertGreater(jittered, 0.0)
 
 
 if __name__ == "__main__":
