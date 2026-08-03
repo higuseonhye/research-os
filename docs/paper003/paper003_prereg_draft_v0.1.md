@@ -169,6 +169,54 @@ about when the operator is applicable at all, and is reported with its interval.
 
 ---
 
+## Sample size, and a structural fact about the comparison — LOCKED 2026-08-04
+
+### Arm D cannot score worse than arm B
+
+When the gate does not fire, or the coupling cannot be fitted, arm D **falls
+back to arm B's aim**. It is then identical, cell by cell. So `D ≥ B` holds by
+construction, and the paired difference can never be negative.
+
+Two consequences for how this is read:
+
+1. **"The interval includes zero" is nearly automatic** and carries almost no
+   information here. The pilot's paired interval was `[+0.00, +0.33]`; the lower
+   bound is structural, not evidential.
+2. The informative quantities are **how often arm D engages** and **how much it
+   wins by when it does** — which is why both the engagement rate and the
+   conditional estimate are preregistered above.
+
+A confirmatory result therefore rests on the *upper* part of the paired interval
+being separated from zero, not on the interval's sign.
+
+### How many cells
+
+Simulating the pilot's observed structure — engagement 0.56, arm D landing 1.00
+against arm B's 0.80 when engaged, identical otherwise — and asking how often the
+paired interval's lower bound clears zero:
+
+| Committed treatment cells | Power |
+| ---: | ---: |
+| 9 (the pilot) | **0.03** |
+| 20 | 0.19 |
+| 40 | 0.67 |
+| **60** | **0.91** |
+| 100 | 0.99 |
+
+**The confirmatory needs on the order of 60 committed treatment cells**, roughly
+70 seeds at the observed ~0.9 commit rate. At nine, power is 0.03: the pilot
+could not have detected this effect even if it is real, which is the correct way
+to read its inconclusive interval.
+
+**This is an order-of-magnitude guide, not a precise n.** It assumes the observed
+engagement rate and conditional advantage are the true values, and those come
+from nine and five cells respectively. Under real contact both are expected to
+move — engagement unknown, conditional advantage expected to fall — so the
+figure is re-derived from the real-contact pilot before the confirmatory is
+sized, not inherited from here.
+
+---
+
 ## Primary Endpoint: capability threshold crossing
 
 For a preregistered variant set `T` graded by reference speed, and arms `a`:

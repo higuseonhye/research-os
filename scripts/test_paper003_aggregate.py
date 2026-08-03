@@ -11,7 +11,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from aggregate_paper003_pilot import load_records, miss_distances, render, summarise
+from aggregate_paper003_pilot import (
+    bootstrap_difference_interval,
+    bootstrap_rate_interval,
+    load_records,
+    miss_distances,
+    render,
+    summarise,
+)
 
 
 def record(condition: str, seed: int, misses: dict[str, float], gate: float = 0.0,
@@ -116,6 +123,50 @@ class ConditionalEstimateTests(unittest.TestCase):
         text = render(summarise(records, tolerance=0.020), 0.020)
         self.assertIn("land rate", text)
         self.assertIn("conditional on arm D engaging", text)
+
+
+class BootstrapTests(unittest.TestCase):
+    """Intervals the preregistration requires, so a bare rate is never quoted alone."""
+
+    def test_interval_brackets_the_point_estimate(self) -> None:
+        outcomes = [True] * 6 + [False] * 3
+        low, high = bootstrap_rate_interval(outcomes)
+        self.assertLessEqual(low, 6 / 9)
+        self.assertGreaterEqual(high, 6 / 9)
+
+    def test_certain_outcomes_give_a_degenerate_interval(self) -> None:
+        self.assertEqual(bootstrap_rate_interval([True] * 8), (1.0, 1.0))
+        self.assertEqual(bootstrap_rate_interval([False] * 8), (0.0, 0.0))
+
+    def test_small_samples_give_wide_intervals(self) -> None:
+        """The point of reporting them at pilot size."""
+        low, high = bootstrap_rate_interval([True] * 6 + [False] * 3)
+        self.assertGreater(high - low, 0.3)
+
+    def test_difference_is_paired_not_independent(self) -> None:
+        """Arm D falls back to arm B's aim, so it can never score worse.
+
+        Resampling the arms independently would produce negative differences
+        that cannot occur, and would overstate the uncertainty.
+        """
+        left = [True, True, False, True, False]
+        right = [True, False, False, True, False]  # D >= B cellwise
+        low, high = bootstrap_difference_interval(left, right)
+        self.assertGreaterEqual(low, 0.0)
+        self.assertGreater(high, 0.0)
+
+    def test_identical_arms_give_a_zero_interval(self) -> None:
+        same = [True, False, True, True]
+        self.assertEqual(bootstrap_difference_interval(same, same), (0.0, 0.0))
+
+    def test_mismatched_lengths_are_refused(self) -> None:
+        self.assertEqual(bootstrap_difference_interval([True], [True, False]), (0.0, 0.0))
+
+    def test_intervals_appear_in_the_rendered_output(self) -> None:
+        records = [record("coupled", s, {"B": 0.008, "D": 0.001}) for s in range(300, 305)]
+        text = render(summarise(records, tolerance=0.020), 0.020)
+        self.assertIn("95% bootstrap intervals", text)
+        self.assertIn("D-B paired", text)
 
 
 class LoadingTests(unittest.TestCase):
