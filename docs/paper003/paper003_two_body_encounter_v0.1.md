@@ -232,6 +232,29 @@ encounter. The runner is now 426 lines and decides almost nothing; 19 tests cove
 the schedules, the draw, and the body positions, including that adding a second
 body leaves the first's trajectory untouched.
 
+## First Isaac run, 2026-08-04
+
+One cell on the reach task with injected coupling, `--bodies 2`. The encounter
+appeared exactly as designed, and both defects the CPU loop had caught were
+absent:
+
+| Steps | Body 1 | Body 2 | Target |
+| --- | ---: | ---: | --- |
+| 0–6 | 106 → 38 mm, **strikes** | 230 mm | moves 1.8, 8.4, 11.6 mm |
+| 7–16 | withdraws to 113 mm, **stops** | 219 mm | **completely still** |
+| 17–27 | 113 mm | 219 → 59 mm | still |
+| 28–32 | 126 mm | 48 → 43 mm, **contacts** | moves 2.0, 6.5, 7.0, 4.9 mm |
+
+Closest approach 38.4 mm and 43.0 mm — both inside the 50 mm radius, so both
+bodies did their job. The gate fires at step 11, right after the post-departure
+observations accrue and long before the second body arrives, which is the
+identifiability argument working in the simulator rather than on paper.
+
+Arms B and C also landed in this cell: the second body's contact displaced the
+target about 22 mm in total, and less than 20 mm of that fell inside the
+dispense window. One cell says nothing, and that quantity is exactly what real
+contact will decide rather than us.
+
 ## What remains
 
 1. **The placement tolerance**, which is blocking and needs the Branch B scene.
