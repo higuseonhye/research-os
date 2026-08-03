@@ -41,11 +41,10 @@ See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.
 - [x] **Capability threshold crossing — constructed.** A continuous reach-and-hold task produced no gap; a [commitment-point task](paper003_commitment_task_v0.1.md) does, with arm B's lockout speed predicted exactly from task geometry.
 - [x] **Arm D estimates the reference pattern online** — no longer handed it. Under 20% observation noise at the speed where B is locked out: B 0.00, C 0.29, **D 0.69**, oracle 1.00. The crossing survives; estimating costs ~0.31.
 - [x] **Robustness to irregular timing measured.** The estimator does exploit periodicity — it loses ~0.4 from a strict cycle to ±3 steps of jitter — but the gap holds in the worst case tested (jitter + noise: B 0.08, **D 0.52**).
+- [x] **Preregistration drafted** — [draft v0.1](paper003_prereg_draft_v0.1.md). Arms, task, primary endpoint, and hypotheses H1–H4 locked; **six parameters left open** because they need real physics, not a 1-D proxy.
 - [ ] Isaac implementation of the commit-and-dispense structure
-- [ ] Re-derive gate thresholds from Isaac data
-- [ ] Preregister the observation-noise and timing-jitter levels — together they move arm D from 1.00 to ~0.5
-- [ ] Preregister a **near-zero band** for the crossing criterion — jitter lifts arm B off exactly zero (0.05–0.09)
-- [ ] Prereg
+- [ ] Calibration pilot on GPU — must produce the six open parameters (explicitly excluded from evidence, as Paper 002's pilot was)
+- [ ] Freeze the preregistration, then run confirmatory
 
 ---
 
@@ -61,6 +60,7 @@ General causal discovery · relation invention outside the prepared operator · 
 | --- | --- |
 | [paper003_rq_v0.1.md](paper003_rq_v0.1.md) | Central question, sub-questions, framing note |
 | [paper003_description_v0.1.md](paper003_description_v0.1.md) | Method draft, protocol, capability-threshold metric definition |
+| [paper003_prereg_draft_v0.1.md](paper003_prereg_draft_v0.1.md) | **Draft preregistration** — locked arms/endpoint/hypotheses, and the six parameters the calibration pilot must set |
 | [paper003_commitment_task_v0.1.md](paper003_commitment_task_v0.1.md) | The task shape that makes capability threshold crossing measurable, and the breakfast-domain scope boundary |
 | [paper003_related_work_v0.1.md](paper003_related_work_v0.1.md) | Core novelty comparison — relational/graph world models, capability-boundary framing precedent |
 | [paper003_lit_positioning_v0.1.md](paper003_lit_positioning_v0.1.md) | Execution-horizon literature (Garg/Shkurti) — narrower, entry-framing only |
