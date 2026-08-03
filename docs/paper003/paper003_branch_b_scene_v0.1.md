@@ -109,4 +109,10 @@ let contact move it, which means the pushing bodies have to become real too.
 | Placement tolerance | **settled at 20 mm**, corroborated independently |
 | Bootstrap | **fixed** — patches two lines instead of deleting the tasks |
 | Real-contact runner | **not started**; the target must be read, not written |
-| H1 reachability | still unknown, but now an empirical question about contact |
+| H1 reachability | **in doubt** — see [the sliding problem](paper003_sliding_problem_v0.1.md) |
+
+> **Follow-up, same day.** Driving the cell through a toy contact physics found
+> that a struck object slides, so the gate declines and arm D never acts, while
+> arm B finally reaches a near-zero band. Real contact appears to put the
+> treatment condition in the `slide` control's regime. Everything now waits on
+> one measurement: how fast a struck block stops on this table.

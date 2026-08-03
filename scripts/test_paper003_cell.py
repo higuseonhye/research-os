@@ -17,7 +17,7 @@ import unittest
 
 import numpy as np
 
-from wm_expansion.cell import CONDITIONS, CellSpec, run_cell
+from wm_expansion.cell import CONDITIONS, CellSpec, ContactWorld, run_cell
 from wm_expansion.commitment_episode import EpisodeSpec
 from wm_expansion.encounter import EncounterSpec, bodies_at, draw_geometry
 
@@ -168,6 +168,66 @@ class TwoBodyTests(unittest.TestCase):
             record = cell(condition, bodies=2)
             self.assertTrue(record["resolved"][winner], condition)
             self.assertFalse(record["resolved"]["D"], condition)
+
+
+class ContactWorldTests(unittest.TestCase):
+    """The target read from a simulator rather than computed by the cell."""
+
+    def _world(self, poses: list[np.ndarray], terminate_at: int | None = None):
+        state = {"i": 0, "placed": []}
+
+        def place(bodies):
+            state["placed"].append(np.asarray(bodies).copy())
+
+        def step():
+            state["i"] += 1
+            return terminate_at is not None and state["i"] >= terminate_at
+
+        def read():
+            return poses[min(state["i"], len(poses) - 1)]
+
+        return ContactWorld(place, step, read), state
+
+    def test_the_target_comes_from_the_simulator_not_the_cell(self) -> None:
+        """The whole point of the branch: nothing the cell computes moves it."""
+        poses = [TARGET + np.array([0.001 * i, 0.0, 0.0]) for i in range(90)]
+        world, state = self._world(poses)
+        record = run_cell(TARGET, EpisodeSpec(), EncounterSpec(), CellSpec(), world=world)
+        observed = np.array([o["target"] for o in record["observations"]])
+        np.testing.assert_allclose(observed[0], poses[1])
+        self.assertEqual(record["world"], "ContactWorld")
+
+    def test_the_bodies_are_still_commanded(self) -> None:
+        poses = [TARGET.copy() for _ in range(90)]
+        world, state = self._world(poses)
+        run_cell(TARGET, EpisodeSpec(), EncounterSpec(bodies=2), CellSpec(), world=world)
+        self.assertGreater(len(state["placed"]), 0)
+        self.assertEqual(state["placed"][0].shape, (2, 3))
+
+    def test_termination_from_the_simulator_invalidates_the_cell(self) -> None:
+        poses = [TARGET.copy() for _ in range(90)]
+        world, _ = self._world(poses, terminate_at=5)
+        record = run_cell(TARGET, EpisodeSpec(), EncounterSpec(), CellSpec(), world=world)
+        self.assertEqual(record["early_termination"], 1)
+        self.assertFalse(record["valid"])
+
+    def test_a_malformed_pose_is_refused_rather_than_broadcast(self) -> None:
+        world = ContactWorld(lambda b: None, lambda: False, lambda: np.zeros((2, 3)))
+        with self.assertRaises(ValueError):
+            run_cell(TARGET, EpisodeSpec(), EncounterSpec(), CellSpec(), world=world)
+
+    def test_injected_and_contact_worlds_are_labelled_apart(self) -> None:
+        """A calibration cell must never be poolable with a contact cell."""
+        injected = cell()
+        self.assertEqual(injected["world"], "InjectedWorld")
+
+    def test_one_source_of_truth_or_the_other_but_not_both(self) -> None:
+        world, _ = self._world([TARGET.copy()] * 90)
+        with self.assertRaises(ValueError):
+            run_cell(TARGET, EpisodeSpec(), EncounterSpec(), CellSpec(),
+                     drive=lambda t: False, world=world)
+        with self.assertRaises(ValueError):
+            run_cell(TARGET, EpisodeSpec(), EncounterSpec(), CellSpec())
 
 
 class SpecTests(unittest.TestCase):
