@@ -48,6 +48,16 @@ parser.add_argument("--strike-steps", type=int, default=40,
 parser.add_argument("--retreat-steps", type=int, default=10)
 parser.add_argument("--strike-motion", type=float, default=0.0005,
                     help="metres of block movement that counts as contact made")
+parser.add_argument("--gripper", type=float, default=-1.0,
+                    help="value written to the last action element. The first "
+                         "run reached 0.3 mm from the block's centre without "
+                         "moving it, which is what an open gripper straddling "
+                         "it looks like: `ee_frame` is a virtual point, not a "
+                         "collision body. -1 closes on most binary-joint "
+                         "actions; use 0 to leave the gripper alone")
+parser.add_argument("--aim-offset", type=float, default=0.0,
+                    help="metres to aim below the block's centre, so a jaw "
+                         "rather than the gap between jaws meets it")
 parser.add_argument("--interaction-radius", type=float, default=0.05)
 parser.add_argument("--dispense-latency", type=int, default=6)
 parser.add_argument("--out-dir", type=str, default="results/paper003_stopping")
@@ -124,7 +134,7 @@ def run_probe(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         # it. It now steers at the block's *current* pose and keeps going until
         # the block actually moves, so a miss shows up as an approach that never
         # ends rather than as a fast stop.
-        aim = obj - ee_pose()
+        aim = obj - np.array([0.0, 0.0, args.aim_offset]) - ee_pose()
         reach = float(np.linalg.norm(aim))
         aim = aim / reach if reach > 0.0 else heading
 
@@ -138,6 +148,8 @@ def run_probe(env: Any, args: argparse.Namespace) -> dict[str, Any]:
 
         action = torch.zeros((args.num_envs, action_dim), device=env.unwrapped.device)
         action[0, :3] = torch.as_tensor(delta, device=action.device, dtype=action.dtype)
+        if args.gripper != 0.0 and action_dim >= 4:
+            action[0, -1] = float(args.gripper)
 
         _, _, terminated, truncated, _ = env.step(action)
         if bool(terminated[0]) or bool(truncated[0]):
@@ -154,6 +166,9 @@ def run_probe(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "start_ee": start_ee.tolist(),
         "dispense_latency": args.dispense_latency,
         "struck_at": struck_at,
+        "action_dim": int(action_dim),
+        "gripper": args.gripper,
+        "aim_offset": args.aim_offset,
         "min_separation": float(min(separations)) if separations else None,
         "phases": phases,
         "stopping": None if estimate is None else estimate.to_dict(),
@@ -184,7 +199,9 @@ def main() -> None:
         lines.append(f"FAILED: {record['failed']}")
     else:
         lines.append(f"struck_at: {record['struck_at']}  "
-                     f"min_sep: {1000 * (record['min_separation'] or 0):.1f} mm")
+                     f"min_sep: {1000 * (record['min_separation'] or 0):.1f} mm  "
+                     f"action_dim: {record['action_dim']}  "
+                     f"gripper: {record['gripper']}")
         lines.append(f"stopping: {json.dumps(record['stopping'])}")
         lines.append(f"outlook : {record['outlook']}")
         if record["struck_at"] is None:
