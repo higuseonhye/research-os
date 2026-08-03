@@ -188,6 +188,60 @@ def estimate_coupling(
     return CouplingSpec(interaction_radius=radius, coupling_gain=gain)
 
 
+def normal_alignment(
+    target_positions: Iterable[ArrayLike],
+    reference_positions: Iterable[ArrayLike],
+    interaction_radius: float,
+    motion_floor_ratio: float = 0.25,
+) -> float | None:
+    """Mean cosine between observed displacement and the contact normal.
+
+    `estimate_coupling` fits magnitude against separation and never inspects
+    direction, so a contact that pushes off-normal - friction being the obvious
+    case - returns a **correct** gain and radius while arm D aims the wrong way.
+    That failure is invisible in every statistic the runner currently records.
+
+    A CPU study of misspecified contact laws
+    (scripts/paper003_contact_robustness.py) found this to be the dominant
+    threat under realistic contact: nonlinear penetration laws cost arm D a few
+    millimetres, whereas tangential deflection pushed it past the 20 mm
+    tolerance while the fitted coefficients still looked perfect.
+
+    Returns 1.0 for a purely normal push, falls toward 0 as the displacement
+    turns tangential, and None when there are no usable contact steps. Purely
+    diagnostic: nothing gates on it, so recording it cannot change an arm's
+    behaviour.
+    """
+
+    targets = _paired_array(target_positions)
+    references = _paired_array(reference_positions)
+    if targets.shape != references.shape or len(targets) < 2:
+        return None
+    if interaction_radius <= 0.0:
+        raise ValueError("interaction_radius must be > 0")
+
+    steps = np.diff(targets, axis=0)
+    lengths = np.linalg.norm(steps, axis=1)
+    largest = float(np.max(lengths)) if lengths.size else 0.0
+    if largest <= 0.0:
+        return None
+
+    # Same contact screen as the estimator, so the two describe the same steps.
+    offsets = targets[:-1] - references[1:]
+    separations = np.linalg.norm(offsets, axis=1)
+    usable = (
+        (lengths >= motion_floor_ratio * largest)
+        & (separations < interaction_radius)
+        & (separations > 0.0)
+    )
+    if not usable.any():
+        return None
+
+    normals = offsets[usable] / separations[usable][:, None]
+    directions = steps[usable] / lengths[usable][:, None]
+    return float(np.mean(np.sum(normals * directions, axis=1)))
+
+
 # --------------------------------------------------------------------------
 # Relation-adequacy gate
 # --------------------------------------------------------------------------

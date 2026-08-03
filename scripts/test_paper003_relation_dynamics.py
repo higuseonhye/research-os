@@ -23,6 +23,7 @@ from wm_expansion.relation_dynamics import (
     RelationalTargetModel,
     coupling_displacement,
     evaluate_relation_gate,
+    normal_alignment,
 )
 from wm_expansion.target_dynamics import ConstantVelocityTargetModel, ZeroOrderTargetModel
 
@@ -193,6 +194,64 @@ class RelationalModelPredictionTests(unittest.TestCase):
         model.observe(targets[0], references[0])
         self.assertFalse(model.gate_fired)
         np.testing.assert_allclose(model.predict(HORIZON), targets[0])
+
+
+class NormalAlignmentTests(unittest.TestCase):
+    """The diagnostic for the one failure mode no other recorded statistic sees.
+
+    `estimate_coupling` fits magnitude against separation, so a tangential push
+    leaves the gain and radius correct while arm D aims the wrong way.
+    """
+
+    RADIUS = 0.05
+
+    def _contact_history(self, deflection: float, gain: float = 0.5) -> tuple[list, list]:
+        """Reference walks into a target that is pushed at an angle to the normal."""
+        target = np.array([0.20, 0.0])
+        reference = np.array([0.20 - 3.0 * self.RADIUS, 0.0])
+        targets, references = [], []
+        for _ in range(30):
+            reference = reference + np.array([0.008, 0.0])
+            offset = target - reference
+            distance = float(np.linalg.norm(offset))
+            if 0.0 < distance < self.RADIUS:
+                normal = offset / distance
+                tangent = np.array([-normal[1], normal[0]])
+                push = normal + deflection * tangent
+                push = push / float(np.linalg.norm(push))
+                target = target + gain * ((self.RADIUS - distance) / self.RADIUS) * self.RADIUS * push
+            targets.append(target.copy())
+            references.append(reference.copy())
+        return targets, references
+
+    def test_a_purely_normal_push_scores_near_one(self) -> None:
+        targets, references = self._contact_history(0.0)
+        self.assertAlmostEqual(
+            normal_alignment(targets, references, self.RADIUS), 1.0, delta=0.02
+        )
+
+    def test_tangential_deflection_lowers_the_score(self) -> None:
+        straight = normal_alignment(*self._contact_history(0.0), self.RADIUS)
+        rubbed = normal_alignment(*self._contact_history(1.0), self.RADIUS)
+        self.assertLess(rubbed, straight)
+        # a 45-degree deflection; cos 45 = 0.707
+        self.assertAlmostEqual(rubbed, 0.707, delta=0.05)
+
+    def test_no_contact_yields_nothing_rather_than_a_number(self) -> None:
+        static = [np.array([0.2, 0.0]) for _ in range(10)]
+        far = [np.array([0.0, 0.0]) for _ in range(10)]
+        self.assertIsNone(normal_alignment(static, far, self.RADIUS))
+
+    def test_it_is_blind_to_magnitude_misspecification(self) -> None:
+        """Deliberately: it must isolate direction, or it cannot diagnose anything.
+
+        A far weaker contact still pushes along the normal, so the statistic
+        should barely move even though the fitted gain would differ fourfold.
+        """
+        firm = normal_alignment(*self._contact_history(0.0, gain=0.8), self.RADIUS)
+        feeble = normal_alignment(*self._contact_history(0.0, gain=0.2), self.RADIUS)
+        self.assertGreater(feeble, 0.95)
+        self.assertAlmostEqual(feeble, firm, delta=0.05)
 
 
 if __name__ == "__main__":

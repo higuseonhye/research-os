@@ -189,31 +189,112 @@ Two consequences for how this is read:
 A confirmatory result therefore rests on the *upper* part of the paired interval
 being separated from zero, not on the interval's sign.
 
+### Which test is confirmatory — LOCKED
+
+**A one-sided paired sign test on the discordant cells**, not the paired
+bootstrap interval.
+
+The bootstrap's lower bound cannot go negative here, for the structural reason
+above, so "the interval clears zero" is not a meaningful rejection — it is a
+statement about the fallback, not about the model. The sign test conditions on
+exactly the cells where the two arms differ, which is where the whole signal is.
+
+The choice is not cosmetic. On the same simulated structure the two disagree by
+roughly a third in required sample size, so it has to be fixed in advance rather
+than selected once both are visible:
+
+| Committed cells | Bootstrap lower bound clears zero | Sign test |
+| ---: | ---: | ---: |
+| 40 | 0.67 | 0.47 |
+| 60 | 0.91 | 0.81 |
+| 80 | — | 0.95 |
+
+The sign test is the more conservative of the two, which is the reason to prefer
+it rather than an accident of it being reported second.
+
 ### How many cells
 
-Simulating the pilot's observed structure — engagement 0.56, arm D landing 1.00
-against arm B's 0.80 when engaged, identical otherwise — and asking how often the
-paired interval's lower bound clears zero:
+Simulating the pilot's observed structure — arm D landing 1.00 against arm B's
+0.80 when engaged, identical otherwise — across plausible engagement rates
+(`scripts/paper003_contact_robustness.py`):
 
-| Committed treatment cells | Power |
-| ---: | ---: |
-| 9 (the pilot) | **0.03** |
-| 20 | 0.19 |
-| 40 | 0.67 |
-| **60** | **0.91** |
-| 100 | 0.99 |
+| Committed cells | eng 0.20 | eng 0.35 | **eng 0.56** | eng 0.75 |
+| ---: | ---: | ---: | ---: | ---: |
+| 40 | 0.02 | 0.16 | 0.47 | 0.74 |
+| 60 | 0.10 | 0.41 | **0.81** | 0.96 |
+| 80 | 0.21 | 0.66 | 0.95 | 1.00 |
+| 120 | 0.51 | 0.93 | 1.00 | 1.00 |
+| 240 | 0.97 | 1.00 | 1.00 | 1.00 |
+| **for 0.90** | **200** | **120** | **80** | **60** |
 
-**The confirmatory needs on the order of 60 committed treatment cells**, roughly
-70 seeds at the observed ~0.9 commit rate. At nine, power is 0.03: the pilot
-could not have detected this effect even if it is real, which is the correct way
-to read its inconclusive interval.
+**Engagement is not a nuisance parameter that merely dilutes the effect — it
+sets how many cells carry any information at all.** Cells where arm D declines
+are ties, and a sign test discards ties. Halving engagement therefore costs far
+more than half the power: 0.56 → 0.20 raises the requirement from 80 cells to
+200.
 
-**This is an order-of-magnitude guide, not a precise n.** It assumes the observed
-engagement rate and conditional advantage are the true values, and those come
-from nine and five cells respectively. Under real contact both are expected to
-move — engagement unknown, conditional advantage expected to fall — so the
-figure is re-derived from the real-contact pilot before the confirmatory is
-sized, not inherited from here.
+At the pilot's nine committed cells power is under 0.10 on any of these rows.
+The pilot could not have detected this effect even if it is real, which is the
+correct way to read its inconclusive interval.
+
+**Sizing rule — LOCKED.** The confirmatory n is read off this table using the
+engagement rate observed in the *real-contact* pilot, not the injected-coupling
+one. It is not inherited from the 0.56 row. The contact-misspecification study
+below gives a specific reason to expect the real figure to be lower.
+
+---
+
+## What breaks arm D when the contact is real — declared 2026-08-04
+
+Arm D fits a coupling that is **linear in separation**. The pilot generated its
+data from exactly that law, so the pilot cannot distinguish "arm D works" from
+"arm D read its own assumption back". Real contact obeys no such law.
+
+Rather than discover this during a GPU session, it was measured on CPU first
+(`scripts/paper003_contact_robustness.py`): data generated from contact laws the
+estimator does *not* assume, scored at the commitment horizon and only on steps
+where contact is live and the target actually moves.
+
+| True contact law | Fits | Fitted gain | Fitted radius | Arm D | Arm B |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| linear *(the assumption)* | 8/8 | 0.49 | 0.051 | 4.7 | 57.6 |
+| Hertzian `pen^1.5` | 8/8 | 0.54 | 0.042 | 8.1 | 57.2 |
+| very soft `pen^2.5` | 8/8 | 0.69 | 0.031 | 17.9 | 54.2 |
+| stiff / saturating | **2/8** | 0.98 | 0.054 | 2.5 | 60.1 |
+| friction `mu=0.4` | 8/8 | 0.49 | 0.050 | 9.1 | 19.3 |
+| friction `mu=1.0` | 8/8 | 0.49 | 0.050 | **20.7** | 23.9 |
+
+True gain 0.50, true radius 0.050; errors are median mm against a 20 mm tolerance.
+
+**The threat is direction, not nonlinearity.** Getting the penetration law wrong
+biases the coefficients but keeps the aim pointing the right way, and arm D
+still clears the tolerance up to a very soft `pen^2.5`. Friction does the
+opposite: the fitted gain and radius come back *exactly right* — the estimator
+only ever fits magnitude against separation, so it cannot see a tangential push
+— while the aim goes sideways and arm D exceeds the tolerance at `mu=1.0`.
+
+Two consequences, both declared before the real-contact run:
+
+1. **A new diagnostic is recorded**: `normal_alignment`, the mean cosine between
+   observed displacement and the contact normal. Under injected coupling it is
+   ~1.0 by construction; under real contact it is the first thing to read if arm
+   D underperforms while the gate is healthy and the fit is clean. It is
+   **purely diagnostic — nothing gates on it**, so recording it cannot change an
+   arm's behaviour.
+2. **Engagement is expected to fall, not just accuracy.** Friction shortens the
+   usable contact: scored steps dropped from 280 to 88 at `mu=0.4` and 64 at
+   `mu=1.0`. Since engagement sets the sample size, the real-contact pilot may
+   move the requirement toward the 120–200 rows above.
+
+**Declared expectation for the real-contact run**, so it is not fitted
+afterwards: `normal_alignment` below roughly 0.9, engagement at or below the
+injected-coupling pilot's 0.56, and arm D's conditional advantage smaller than
+1.00 vs 0.80. If arm D instead performs *better* under real contact, that is a
+surprise to be explained, not a result to be reported as expected.
+
+The saturating row is also a check on the guard: it declined 6 of 8 seeds rather
+than returning a gain of 0.98 against a true 0.50. Refusing is the intended
+behaviour and it works.
 
 ---
 
