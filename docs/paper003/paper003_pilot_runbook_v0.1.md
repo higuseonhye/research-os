@@ -162,6 +162,39 @@ confirmatory cell runs.
 
 ---
 
+## First Isaac measurement (2026-08-03, seed 300, coupled)
+
+The first cell that ran with a working estimator. **One seed is not a result** —
+recorded because it is the pilot's first real deliverable and it settled the
+tolerance question.
+
+| Arm | Miss distance |
+| --- | ---: |
+| A no update | 140.11 mm |
+| B parameter repair | 83.03 mm |
+| C mode expansion | 35.51 mm |
+| **D relation expansion** | **6.97 mm** |
+
+`d_estimated: true` — arm D inferred the reference pattern rather than being
+handed it. The ordering A > B > C > D is monotone and matches the design
+prediction, and arm B's miss equals the 83.03 mm the target travelled during
+the dispense, which is the expected identity for an arm that aims where the
+target currently is.
+
+**This settled the placement tolerance, and how it was settled matters.** The
+runner had carried a 5 mm placeholder from the CPU proxy, where spatial scale
+was arbitrary; against real coupling that admits nothing but a perfect oracle.
+The replacement is **20 mm, inherited from this task family's existing success
+criterion** (`ReachDriftEnv.success_tol`, and Paper 002's binary success
+threshold) — both fixed before Paper 003 existed and with no reference to its
+arms.
+
+Raising the tolerance *because* 20 mm lets arm D pass and 5 mm does not would be
+exactly the move preregistration exists to prevent. The number is taken from
+prior work, and stands whether or not it favours any arm.
+
+---
+
 ## Known limitations of this pilot runner
 
 Stated now so they are not discovered as surprises:

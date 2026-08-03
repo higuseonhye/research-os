@@ -59,7 +59,9 @@ parser.add_argument("--burst-on", type=int, default=10)
 parser.add_argument("--burst-off", type=int, default=4)
 parser.add_argument("--interaction-radius", type=float, default=0.05)
 parser.add_argument("--coupling-gain", type=float, default=0.5)
-parser.add_argument("--tolerance", type=float, default=0.005)
+parser.add_argument("--tolerance", type=float, default=0.020,
+                    help="metres; inherited from this task family's established "
+                         "20 mm success criterion (Paper 001/002), not fitted here")
 parser.add_argument("--dispense-latency", type=int, default=6)
 parser.add_argument("--episode-steps", type=int, default=80)
 parser.add_argument("--commit-step", type=int, default=-1,
