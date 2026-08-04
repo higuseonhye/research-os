@@ -91,6 +91,14 @@ parser.add_argument("--script-speed", type=float, default=0.006,
 parser.add_argument("--gripper", type=float, default=-1.0,
                     help="closed. An open gripper straddles the block: the frame "
                          "point reached 0.3 mm from its centre without moving it")
+parser.add_argument("--probe-advance", type=int, default=7)
+parser.add_argument("--probe-withdraw", type=int, default=5,
+                    help="steps of withdrawal. It must clear the interaction "
+                         "radius: withdraw * script-speed > radius. With the "
+                         "default 5 and a 12 mm radius, no script slower than "
+                         "2.4 mm/step is admissible, which is a tight window "
+                         "against the ~5 mm/step the arm can actually track")
+parser.add_argument("--probe-hold", type=int, default=2)
 parser.add_argument("--commit-policy", type=str, default="uniform",
                     choices=["uniform", "first"])
 parser.add_argument("--out-dir", type=str, default="results/lift_cells")
@@ -172,6 +180,9 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             interaction_radius=args.interaction_radius,
             reference_speed=args.script_speed,
             pusher_speed=args.script_speed,
+            probe_advance=args.probe_advance,
+            probe_withdraw=args.probe_withdraw,
+            probe_hold=args.probe_hold,
             bodies=args.bodies,
         ),
         CellSpec(
