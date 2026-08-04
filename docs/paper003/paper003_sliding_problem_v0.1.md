@@ -1,5 +1,16 @@
 # Paper 003 — a struck object slides, and that is arm C's case
 
+> **Reversed the same day by measurement.** The gate was run on real contact
+> traces and fires on every trace containing a strike, with `cv_gain` negative
+> throughout — a constant-velocity model is *worse* than zero-order on this
+> motion. See
+> [real_contact_gate_v0.1](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/real_contact_gate_v0.1/RESULTS.md).
+>
+> The reasoning below is kept because the toy model and the retention statistic
+> were built here, and because the failure is instructive: retention describes
+> one coast in isolation, while the gate reads the whole episode. **The proxy
+> was not the gate, and should not have been read as it.**
+
 > **Finding, 2026-08-04. CPU, toy contact physics, not Isaac.** The most
 > consequential result of the design work so far, and it threatens the paper's
 > premise rather than supporting it.
