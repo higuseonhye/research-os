@@ -1,64 +1,86 @@
-# When reality outruns the model: representation reconstruction
+# After the Spill Research Program
 
 > Live: **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)**
 > Source: [`docs/index.md`](../index.md)
 
 ---
 
-**Research question:** When persistent observations cannot be explained by the
-current model class, when should an embodied system expand its predictive state
-instead of continuing to retune parameters?
+## Core question
 
-| Program | Evidence | Status |
+**How should unexpected experience change an embodied system?**
+
+Most AI research asks how systems should learn. This program asks how far a
+system should change after reality contradicts its current model.
+
+The working decision loop is:
+
+```text
+Experience -> Evidence -> Operator -> Closure
+```
+
+The governing principle is:
+
+> Intelligence is the ability to determine the smallest sufficient change after
+> unexpected experience.
+
+## Research program
+
+This is no longer presented as a single-paper portfolio. The stable object is a
+research program with foundation documents, papers, and products that all serve
+one question.
+
+| Layer | Portfolio role |
+| --- | --- |
+| **Foundation documents** | D000-D006 define the language, novelty audit, literature matrix, formal objects, evaluation protocol, and roadmap |
+| **Research papers** | Paper 001-005 test specific change operators |
+| **Research products** | Robot Diff and Mismatch Lab expose the hypotheses to real rollout-comparison workflows |
+
+[Program charter v2](https://github.com/higuseonhye/research-os/blob/master/docs/program/after_the_spill_v2.md)
+
+[D001 Claim & Novelty Audit](https://github.com/higuseonhye/research-os/blob/master/docs/program/D001_claim_novelty_audit.md)
+
+## Paper 001-005
+
+| Paper | Question | Current status |
 | --- | --- | --- |
-| **Paper 001** | Recoverability at fixed mismatch state | Tier C complete - [working paper](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/paper001_recoverability_complete.pdf) |
-| **Paper 002** | Failure-conditioned target-dynamics model-order expansion | Tier C confirmatory complete - [manuscript v1.1](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_manuscript_model_order_v1.1.pdf) |
-| **Mismatch Lab** | Robot Diff and model-adequacy open specification | Public spec - [hub](https://github.com/higuseonhye/research-os/tree/master/docs/mismatch_lab) |
-| **Study 002** | Dream-curriculum pilot | Tier B archived |
+| **Paper 001: Recoverability** | Can the system still recover from here? | Tier C complete - [working paper](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/paper001_recoverability_complete.pdf) |
+| **Paper 002: Model Adequacy** | Should it repair or expand the model class? | Tier C complete - [manuscript v1.1](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_manuscript_model_order_v1.1.pdf) |
+| **Paper 003: Representation Expansion** | Does expansion open capability that repair cannot reach? | Design/calibration - [hub](https://github.com/higuseonhye/research-os/tree/master/docs/paper003) |
+| **Paper 004: Experience Disposition** | What should be done with the experience itself? | Program-defined |
+| **Paper 005: Recovery Orchestration** | How should recovery operators be sequenced? | Program-defined |
 
-## Paper 002: Confirmatory Result
+Each paper changes the operator under test, not the core question.
 
-A preregistered Isaac Sim study compared repaired zero-order target dynamics
-with a gated constant-velocity state expansion. The confirmatory grid completed
-all **400/400** seed-condition-arm cells.
+## Research products
 
-| Primary endpoint | C vs B result |
-| --- | ---: |
-| H=10 prediction error | **-10.806 mm**, 95% CI [-11.360, -10.331] |
-| Fixed-horizon final distance | **-13.304 mm**, 95% CI [-13.599, -12.982] |
+| Product | What it tests |
+| --- | --- |
+| **Robot Diff** | Whether rollout differences can surface evidence for repair, expansion, or refusal |
+| **Mismatch Lab** | Whether diff, replay, explanation, and benchmark workflows can become shared evaluation infrastructure |
+| **Evaluation Toolkit** | Whether evidence, operator choice, and closure can be compared across tasks |
+| **Benchmark** | Whether unexpected experience forces repeatable change decisions |
 
-The expanded model was favorable in 100/100 paired conditions on both continuous
-endpoints. Static retention passed for both arms, and the adequacy gate fired on
-100/100 persistent-drift trials and 0/100 static, noise, and impulse controls.
+[Mismatch Lab hub](https://github.com/higuseonhye/research-os/tree/master/docs/mismatch_lab)
 
-[Paper 002 hub](https://github.com/higuseonhye/research-os/tree/master/docs/paper002)
+[Robot Diff demo](https://higuseonhye.github.io/research-os/mismatch_lab/diff_explorer_v0.1.html)
 
-[Manuscript v1.1 PDF](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_manuscript_model_order_v1.1.pdf)
+## Current evidence boundary
 
-[Supplement v1.1 PDF](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_supplement_model_order_v1.1.pdf)
+Supported today: controlled simulation evidence for recoverability windows and
+failure-conditioned model adequacy in specific embodied task families.
 
-[Confirmatory results and provenance](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md)
-
-## Claim Boundary
-
-Supported: within the tested Isaac target-drift family, structured failure after
-zero-order repair can warrant a prepared velocity-state expansion that improves
-prediction-linked control without static regression.
-
-Not claimed: general world-model expansion, autonomous variable invention,
-hardware transfer, tissue/contact validity, clinical efficacy, or peer-reviewed
-publication.
+Not claimed: clinical deployment, hardware transfer, autonomous structural
+self-improvement, universal resilience, arbitrary causal discovery, or a
+complete theory of intelligence.
 
 ## More
 
 [Research OS](https://github.com/higuseonhye/research-os)
 
-[Paper 001](https://github.com/higuseonhye/research-os/tree/master/docs/paper1)
-
-[Mismatch Lab demo](https://higuseonhye.github.io/research-os/mismatch_lab/diff_explorer_v0.1.html)
+[Program landing](https://higuseonhye.github.io/research-os/)
 
 [Public boundary](https://github.com/higuseonhye/research-os/blob/master/docs/PUBLIC_BOUNDARY.md)
 
 ---
 
-*Updated 2026-07-30*
+*Updated 2026-08-04*
