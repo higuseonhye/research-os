@@ -46,6 +46,22 @@ class ScheduleTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             EncounterSpec(probe_withdraw=1).validate()
 
+    def test_a_body_faster_than_the_radius_is_refused(self) -> None:
+        """It steps over the contact zone between observations, so the encounter
+        contains no contact to observe however the gate is configured.
+
+        The design was drawn at 15 mm against a 50 mm radius. Porting it to a
+        scene where contact happens at 2 to 5 mm silently broke it - 40 mm
+        against 12 mm - and eligibility never opened in any cell.
+        """
+        with self.assertRaises(ValueError):
+            EncounterSpec(interaction_radius=0.012, reference_speed=0.04).validate()
+        with self.assertRaises(ValueError):
+            EncounterSpec(interaction_radius=0.012, reference_speed=0.006,
+                          pusher_speed=0.04).validate()
+        EncounterSpec(interaction_radius=0.012, reference_speed=0.006,
+                      pusher_speed=0.006, probe_withdraw=5).validate()
+
     def test_an_unknown_schedule_is_refused(self) -> None:
         with self.assertRaises(ValueError):
             EncounterSpec(schedule="pursue").validate()
