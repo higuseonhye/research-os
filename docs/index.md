@@ -1,102 +1,82 @@
-**When should an intelligent system decide that its current understanding of the
-world is no longer sufficient — and how should it construct a better one?**
+# After the Spill
 
-Physical AI is the current testbed, not the boundary of the question: embodiment
-makes mismatch, timing, intervention, and recovery observable and consequential.
+**How should unexpected experience change an embodied system?**
 
-[Research program](program/README.md) · [GitHub](https://github.com/higuseonhye/research-os) · [Mismatch Lab](mismatch_lab/README.md)
+Most AI research asks how systems should learn.
 
----
+We ask a different question:
 
-## The sequence
+**How much should they change?**
 
-Each paper changes the decision under test, not the question.
+This site documents an ongoing research program on decision-making after
+unexpected experience in embodied systems.
 
-| | Decision under test | Status | |
-| --- | --- | --- | --- |
-| **001** | Is the failure recoverable at all? | Tier C complete | [working paper](paper1/paper001_recoverability_complete.pdf) |
-| **002** | Repair the parameters, or change the model class? | Tier C complete | [project page](paper002/project_page.html) |
-| **003** | Does changing it open capability a repair cannot reach? | Calibration pilot; not preregistered | [docs](paper003/README.md) |
-| **Lab** | Can rollout differences flag model inadequacy? | Public spec | [Robot Diff demo](mismatch_lab/diff_explorer_v0.1.html) |
+[Research program](program/README.md) | [GitHub](https://github.com/higuseonhye/research-os) | [Mismatch Lab](mismatch_lab/README.md)
 
 ---
 
-## Paper 002 — when parameter repair is not enough
+## Core question
 
-A preregistered Isaac Sim target-drift study. After the best allowed zero-order
-repair, a rule-based adequacy gate can activate a prepared constant-velocity
-expansion.
+Unexpected experience can mean many things: noise, disturbance, recoverable
+failure, model inadequacy, missing representation, or the need to coordinate
+several recovery operators.
 
-[![Arm-level prediction, control, and success outcomes](paper002/figures/fig2_confirmatory_outcomes.png)](paper002/project_page.html)
+The program studies the decision among those interpretations.
 
-**400/400 valid cells.** Gated expansion vs repaired zero order:
-
-| Endpoint | Effect | 95% CI |
-| --- | ---: | ---: |
-| H=10 prediction error | **−10.806 mm** | [−11.360, −10.331] |
-| Fixed-horizon final distance | **−13.304 mm** | [−13.599, −12.982] |
-
-Favourable in 100/100 paired conditions. The gate fired on 100/100
-persistent-drift trials and 0/100 static, noise, and impulse controls; static
-retention held.
-
-*Supported:* a prepared model-order expansion within the tested Isaac
-target-drift family. *Not supported:* general world-model expansion, autonomous
-variable invention, hardware transfer, tissue or contact validity, clinical
-efficacy, peer review.
-
-[Project page](paper002/project_page.html) · [Manuscript](paper002/paper002_manuscript_model_order_v1.1.pdf) · [Supplement](paper002/paper002_supplement_model_order_v1.1.pdf) · [Results](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_003_wm_expansion/results/isaac_model_order_confirmatory_v1.0/RESULTS.md)
+```text
+Experience -> Evidence -> Operator -> Closure
+```
 
 ---
 
-## Paper 003 — does expansion open capability, or only lower error?
+## Research program
 
-Ten-seed Isaac calibration pilot. **Excluded from confirmatory evidence.**
+| Foundation document | Role |
+| --- | --- |
+| D000 Mathematical Foundation | Objects and primitives |
+| D001 Claim & Novelty Audit | Why the program could be wrong |
+| D002 Literature Matrix | Shared reading schema |
+| D003 Terminology | Stable language |
+| D004 Formal Definitions | Operational definitions |
+| D005 Evaluation Protocol | Evidence and closure |
+| D006 Research Roadmap | Paper/product sequence |
 
-| Condition | Missing | Repair | Mode expansion | Relation expansion |
-| --- | --- | ---: | ---: | ---: |
-| Coupled | relation | 0.56 | 0.22 | **0.67** |
-| Drift | mode | 0.00 | **1.00** | 0.00 |
-| Static / noise | none | 1.00 / 0.40 | 1.00 / 0.00 | 1.00 / 0.40 |
-
-**The dissociation is the result, not the relation arm winning.** Each operator
-answers only the gap it was built for — the mode operator takes drift outright
-and the relation operator declines there — which is what rules out the latter
-simply being a stronger predictor. Where no gap exists it is numerically
-identical to plain repair. Its 0.67 against 0.56 is six cells against five, and
-is reported as a sample-size observation.
-
-Two things this page previously claimed and no longer does: that the relation
-arm reached 1.00, and that a continuous tracking task could measure any of this.
-The first came from a degenerate head-on geometry that concealed a modelling
-error; the second showed no separation between any arms at all. Both are
-recorded in the [pilot results](https://github.com/higuseonhye/research-os/blob/master/experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/isaac_relation_pilot_v0.1/RESULTS.md)
-with the corrections that followed.
-
-Still open: the coupling is injected rather than simulated, so the relation arm
-inverts a function this repository wrote. Under real contact its model becomes
-misspecified and accuracy is **expected to drop** — recorded before that run.
-
-[Paper 003 docs](paper003/README.md) · [draft preregistration](paper003/paper003_prereg_draft_v0.1.md)
+[Program charter v2](program/after_the_spill_v2.md)
 
 ---
 
-## How this work is done
+## Papers
 
-Preregistered confirmatory designs with frozen decision rules · process-isolated
-simulation cells with execution-validity checks · negative controls and paired
-endpoints · public code, configs, trajectories, and checksum manifests.
-
-Negative and design-stage results are published alongside positive ones, with
-the reasoning that produced them — including retracting a favourable result when
-its geometry turned out to be degenerate.
+| Paper | Question | Status |
+| --- | --- | --- |
+| **001 Recoverability** | Can the system still recover from here? | Tier C complete |
+| **002 Model Adequacy** | Should it repair or expand the model class? | Tier C complete |
+| **003 Representation Expansion** | Does expansion open capability that repair cannot reach? | Design/calibration |
+| **004 Experience Disposition** | What should be done with the experience itself? | Program-defined |
+| **005 Recovery Orchestration** | How should recovery operators be sequenced? | Program-defined |
 
 ---
 
-All work in this repository is independent personal research. Where Seonhye Gu
-is affiliated with the AI-Based Surgical Robot Innovation Lab, the affiliation
-is for identification only and does not imply sponsorship or endorsement.
+## Products
 
-Contact: [@higuseonhye](https://github.com/higuseonhye)
+| Product | Program role |
+| --- | --- |
+| **Robot Diff** | Compare embodied rollouts and expose consequential differences |
+| **Mismatch Lab** | Public lab surface for diff, replay, explanation, and benchmark design |
+| **Evaluation Toolkit** | Shared tests for evidence, operator choice, and closure |
+| **Benchmark** | Repeatable tasks where unexpected experience forces a change decision |
+
+[Mismatch Lab](mismatch_lab/README.md) | [Robot Diff demo](mismatch_lab/diff_explorer_v0.1.html)
+
+---
+
+## Current evidence boundary
+
+The strongest current claims are controlled simulation claims. This program does
+not yet claim clinical deployment, hardware transfer, autonomous structural
+self-improvement, or a complete theory of intelligence.
+
+Negative and design-stage results are part of the record. A program gets
+stronger by rejecting weak claims early.
 
 *Updated 2026-08-04*
