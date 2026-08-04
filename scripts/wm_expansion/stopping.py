@@ -69,6 +69,7 @@ def estimate_stopping(
     separations,
     interaction_radius: float,
     speed_floor: float = 2e-4,
+    body_travel=None,
 ) -> StoppingEstimate | None:
     """Measure the coast after the last contact in a pose trace.
 
@@ -89,7 +90,26 @@ def estimate_stopping(
     if speed_floor <= 0.0:
         raise ValueError("speed_floor must be > 0")
 
-    in_contact = gaps < interaction_radius
+    # A body moving faster than the radius crosses the contact zone between
+    # samples, so a recorded separation can be large at both ends of a step in
+    # which contact happened. Widening the test by the body's own travel is what
+    # makes the measurement work at speeds where the strike is real but never
+    # observed inside the radius: at 50 mm/step the probe detected the block
+    # moving and still reported no usable strike, because every sample sat
+    # outside 12 mm.
+    #
+    # This is a sampling correction, not a looser contact criterion: the
+    # allowance is exactly how far the body could have moved since the last
+    # observation.
+    reach = np.zeros(len(gaps))
+    if body_travel is not None:
+        travel = np.asarray(body_travel, dtype=np.float64)
+        if travel.shape != gaps.shape:
+            raise ValueError("body_travel must align with separations")
+        if (travel < 0.0).any():
+            raise ValueError("body_travel must be non-negative")
+        reach = travel
+    in_contact = gaps < interaction_radius + reach
     if not in_contact.any():
         return None
     contact_end = int(np.max(np.flatnonzero(in_contact)))

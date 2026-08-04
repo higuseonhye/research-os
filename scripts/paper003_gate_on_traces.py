@@ -25,6 +25,7 @@ from typing import Any, Iterable
 
 import numpy as np
 
+from wm_expansion.stopping import estimate_stopping
 from wm_expansion.relation_dynamics import (
     RelationGateThresholds,
     evaluate_relation_gate,
@@ -81,13 +82,24 @@ def judge(
             )
         )
     stopping = record.get("stopping") or {}
+    # Re-derive rather than trust the probe's own field: a trace recorded before
+    # the sampling allowance existed carries a null `stopping` even when it
+    # contains a perfectly good strike.
+    travel = np.zeros(len(bodies))
+    if len(bodies) > 1:
+        travel[1:] = np.linalg.norm(np.diff(bodies, axis=0), axis=1)
+    separations = np.linalg.norm(targets - bodies, axis=1)
+    restated = estimate_stopping(targets, separations, radius, body_travel=travel)
     return {
         "source": record.get("_source"),
         "usable": True,
         "seed": record.get("seed"),
         "struck_at": record.get("struck_at"),
-        "retention": stopping.get("retention"),
-        "coast_mm": (stopping.get("coast_distance") or 0.0) * 1000.0,
+        "retention": (restated.retention if restated else stopping.get("retention")),
+        "coast_mm": 1000.0 * (
+            restated.coast_distance if restated else (stopping.get("coast_distance") or 0.0)
+        ),
+        "strike_recovered": bool(restated is not None and not stopping),
         "step_rate": float(np.mean(fired)),
         "trial": bool(np.any(fired)),
         "median_contrast": float(np.median(contrasts)),

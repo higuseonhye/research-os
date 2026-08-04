@@ -161,8 +161,16 @@ def run_probe(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         if bool(terminated[0]) or bool(truncated[0]):
             break
 
+    # How far the end effector moved into each step. A body that crosses the
+    # contact zone between samples leaves every recorded separation outside the
+    # radius even though it struck, which is what made three of ten traces
+    # unusable at the higher speeds.
+    ee_array = np.asarray(ee_positions, dtype=np.float64)
+    travel = np.zeros(len(ee_array))
+    if len(ee_array) > 1:
+        travel[1:] = np.linalg.norm(np.diff(ee_array, axis=0), axis=1)
     estimate = estimate_stopping(
-        positions, separations, args.interaction_radius
+        positions, separations, args.interaction_radius, body_travel=travel
     )
     return {
         "task": args.task,

@@ -105,6 +105,42 @@ class MeasurementTests(unittest.TestCase):
             estimate_stopping(positions, separations, 0.0)
 
 
+class SamplingTests(unittest.TestCase):
+    """A fast body crosses the contact zone between samples."""
+
+    def test_a_strike_missed_between_samples_is_recovered(self) -> None:
+        """The failure at 50 mm/step: the block moved, and every recorded
+        separation sat outside the radius, so the strike was refused."""
+        positions, _ = trace([0.01, 0.008, 0.004, 0.0, 0.0, 0.0], contact_steps=0)
+        # The body passes through: every sample sits outside a 12 mm radius
+        # while it moved 40 mm between them, then it leaves for good.
+        separations = [0.030, 0.030, 0.030] + [0.200] * (len(positions) - 3)
+        travel = [0.040, 0.040, 0.040] + [0.040] * (len(positions) - 3)
+        self.assertIsNone(estimate_stopping(positions, separations, 0.012))
+        recovered = estimate_stopping(
+            positions, separations, 0.012, body_travel=travel
+        )
+        self.assertIsNotNone(recovered)
+        self.assertGreater(recovered.peak_in_contact, 0.0)
+
+    def test_the_allowance_does_not_manufacture_contact_from_nothing(self) -> None:
+        """A stationary body far away stays far away however it is sampled."""
+        positions, _ = trace([0.01] * 6, contact_steps=0)
+        separations = [0.30] * len(positions)
+        self.assertIsNone(
+            estimate_stopping(positions, separations, 0.012,
+                              body_travel=[0.001] * len(positions))
+        )
+
+    def test_a_misaligned_or_negative_allowance_is_refused(self) -> None:
+        positions, separations = trace([0.01] * 6, contact_steps=2)
+        with self.assertRaises(ValueError):
+            estimate_stopping(positions, separations, RADIUS, body_travel=[0.01])
+        with self.assertRaises(ValueError):
+            estimate_stopping(positions, separations, RADIUS,
+                              body_travel=[-0.01] * len(separations))
+
+
 class OutlookTests(unittest.TestCase):
     """The run must state its own implication rather than leave a bare number."""
 
