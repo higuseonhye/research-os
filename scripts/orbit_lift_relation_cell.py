@@ -76,7 +76,18 @@ parser.add_argument("--interaction-radius", type=float, default=0.012,
                     help="metres; observed contact in this scene is 2-5 mm. The "
                          "50 mm of the injected design marks non-contact as "
                          "contact here")
-parser.add_argument("--approach-speed", type=float, default=0.04)
+parser.add_argument("--approach-speed", type=float, default=0.04,
+                    help="metres per step the arm is COMMANDED toward the "
+                         "scripted point. The arm achieves roughly a sixth of "
+                         "this, so it is not the encounter's speed")
+parser.add_argument("--script-speed", type=float, default=0.006,
+                    help="metres per step the encounter's scripted point "
+                         "advances. This must be the arm's ACHIEVABLE speed, "
+                         "and below the interaction radius, or the script runs "
+                         "away from an arm that cannot follow and the scripted "
+                         "body steps over its own contact zone. Passing the "
+                         "commanded value here is what left every cell without "
+                         "an eligible step")
 parser.add_argument("--gripper", type=float, default=-1.0,
                     help="closed. An open gripper straddles the block: the frame "
                          "point reached 0.3 mm from its centre without moving it")
@@ -159,8 +170,8 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         ),
         EncounterSpec(
             interaction_radius=args.interaction_radius,
-            reference_speed=args.approach_speed,
-            pusher_speed=args.approach_speed,
+            reference_speed=args.script_speed,
+            pusher_speed=args.script_speed,
             bodies=args.bodies,
         ),
         CellSpec(
@@ -193,6 +204,8 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     record["scene_inventory"] = inventory
     record["commanded_bodies"] = commanded
     record["observed_ee"] = observed_ee
+    record["script_speed"] = args.script_speed
+    record["approach_speed"] = args.approach_speed
     record["ee_error_median"] = float(np.median(errors)) if errors else None
     record["ee_error_max"] = float(np.max(errors)) if errors else None
     #: A two-body cell here is a hybrid: the scene has one arm, so the second
@@ -226,8 +239,13 @@ def main() -> None:
         lines.append(f"resolved: {record['resolved']}")
         lines.append(
             f"ee_error median={1000 * (record['ee_error_median'] or 0):.1f} mm "
-            f"max={1000 * (record['ee_error_max'] or 0):.1f} mm"
+            f"max={1000 * (record['ee_error_max'] or 0):.1f} mm  "
+            f"(script {1000 * args_cli.script_speed:.1f} mm/step, "
+            f"commanded {1000 * args_cli.approach_speed:.1f})"
         )
+        if (record["ee_error_median"] or 0) > 2.0 * args_cli.script_speed:
+            lines.append("ARM LAGGING - the script is faster than the arm can "
+                         "follow; lower --script-speed before reading anything")
     (out_dir / f"cell_{args_cli.condition}_seed{args_cli.seed}.txt").write_text(
         "\n".join(lines) + "\n"
     )
