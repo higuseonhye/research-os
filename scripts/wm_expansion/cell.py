@@ -24,7 +24,13 @@ import numpy as np
 
 from .commitment_episode import CommitmentEpisode, EpisodeSpec
 from .encounter import EncounterGeometry, EncounterSpec, bodies_at, bodies_over
-from .relation_dynamics import CouplingSpec, coupling_displacement, normal_alignment
+from .relation_dynamics import (
+    CaptureSpec,
+    CouplingSpec,
+    capture_displacement,
+    coupling_displacement,
+    normal_alignment,
+)
 
 #: Called once per step with the target position. Returns True if the episode
 #: terminated or was truncated, which ends the cell and marks it invalid.
@@ -64,6 +70,19 @@ class World(Protocol):
 
 CONDITIONS = ("coupled", "drift", "static", "noise", "slide")
 
+#: Which relation the treatment condition instantiates.
+#:
+#: `collision` - the body strikes and releases. Makes the relation necessary,
+#: since nothing in a still target's history predicts an approaching body, but
+#: cannot clear the placement tolerance: the push moves the target away, which
+#: reduces penetration, which reduces the push.
+#:
+#: `capture` - the body arrives at a still target and carries it off. Same
+#: necessity, and the effect accumulates without bound. Chosen after measuring
+#: both against a single-entity control; see
+#: docs/paper003/paper003_capture_design_v0.1.md.
+COUPLINGS = ("collision", "capture")
+
 
 @dataclass(frozen=True)
 class CellSpec:
@@ -76,10 +95,13 @@ class CellSpec:
     #: -1 leaves the policy to decide; otherwise commit nearest this step.
     commit_step: int = -1
     slide_damping: float = 1.0
+    coupling: str = "capture"
 
     def validate(self) -> None:
         if self.condition not in CONDITIONS:
             raise ValueError(f"condition must be one of {CONDITIONS}")
+        if self.coupling not in COUPLINGS:
+            raise ValueError(f"coupling must be one of {COUPLINGS}")
         if self.commit_policy not in ("uniform", "first"):
             raise ValueError("commit_policy must be 'uniform' or 'first'")
         if self.episode_steps < 2:
@@ -98,13 +120,47 @@ def _advance_target(
     cell: CellSpec,
     step: int,
     slide_velocity: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray]:
-    """The condition's effect on the target this step, and the carried velocity."""
+    previous_bodies: np.ndarray | None = None,
+    holder: int | None = None,
+) -> tuple[np.ndarray, np.ndarray, int | None]:
+    """The condition's effect on the target this step, plus which body holds it.
+
+    `holder` persists across steps: once a body has taken hold it does not let
+    go, which is what makes the effect accumulate instead of capping at the
+    interaction radius the way a collision does.
+
+    It records *which* body, not merely that one does. A boolean was tried and
+    is wrong with more than one body: whichever body came first in the list then
+    carried the target, even when a different one had captured it, and the
+    target rode away from the body actually holding it.
+    """
 
     if cell.condition == "coupled":
-        # Summed over bodies; with one body this is the original behaviour.
-        for body in bodies:
-            target = target + coupling_displacement(target, body, coupling)
+        if cell.coupling == "capture":
+            # The body's own displacement this step is what a held target
+            # inherits, so the previous positions are needed - a carried target
+            # moves *with* its carrier rather than away from it.
+            steps = (
+                np.asarray(bodies) - np.asarray(previous_bodies)
+                if previous_bodies is not None
+                else np.zeros_like(np.asarray(bodies))
+            )
+            spec = CaptureSpec(capture_radius=encounter.interaction_radius)
+            if holder is not None:
+                target = target + steps[holder]
+            else:
+                for index, (body, body_step) in enumerate(zip(bodies, steps)):
+                    delta, took = capture_displacement(
+                        target, body, body_step, spec, False
+                    )
+                    if took:
+                        target = target + delta
+                        holder = index
+                        break
+        else:
+            # Summed over bodies; with one body this is the original behaviour.
+            for body in bodies:
+                target = target + coupling_displacement(target, body, coupling)
     elif cell.condition == "drift":
         # Paper 002's positive case: motion unrelated to any body.
         #
@@ -131,7 +187,7 @@ def _advance_target(
             0.0, 0.5 * 0.020, len(target0)
         )
     # "static" leaves the target where it is.
-    return target, slide_velocity
+    return target, slide_velocity, holder
 
 
 @dataclass
@@ -153,14 +209,18 @@ class InjectedWorld:
     def __post_init__(self) -> None:
         self.target = np.asarray(self.target0, dtype=np.float64).copy()
         self.slide_velocity = np.zeros_like(self.target)
+        self.holder: int | None = None
+        self.previous_bodies: np.ndarray | None = None
 
     def advance(
         self, step: int, bodies: np.ndarray
     ) -> tuple[np.ndarray, np.ndarray, bool]:
-        self.target, self.slide_velocity = _advance_target(
+        self.target, self.slide_velocity, self.holder = _advance_target(
             self.target, self.target0, bodies, self.geometry, self.encounter,
             self.coupling, self.cell, step, self.slide_velocity,
+            self.previous_bodies, self.holder,
         )
+        self.previous_bodies = np.asarray(bodies).copy()
         # The script is the truth here: these bodies are moving points.
         return self.target, bodies, bool(self.drive(self.target))
 
