@@ -45,8 +45,21 @@ class World(Protocol):
     differed.
     """
 
-    def advance(self, step: int, bodies: np.ndarray) -> tuple[np.ndarray, bool]:
-        """Take one step. Returns the target's pose and whether the episode ended."""
+    def advance(
+        self, step: int, bodies: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray, bool]:
+        """Take one step.
+
+        Returns the target's pose, **where the bodies actually ended up**, and
+        whether the episode ended.
+
+        The middle value is not redundant. `bodies` is the encounter's script -
+        where the pushers were told to be. Under injected coupling that is also
+        where they are. On a real arm it is not: a stub following at 60% lagged
+        the command by 24 mm, and feeding the script to the gate and the
+        coupling estimator would have had them fitting a body that was never
+        there.
+        """
         ...
 
 CONDITIONS = ("coupled", "drift", "static", "noise", "slide")
@@ -141,12 +154,15 @@ class InjectedWorld:
         self.target = np.asarray(self.target0, dtype=np.float64).copy()
         self.slide_velocity = np.zeros_like(self.target)
 
-    def advance(self, step: int, bodies: np.ndarray) -> tuple[np.ndarray, bool]:
+    def advance(
+        self, step: int, bodies: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray, bool]:
         self.target, self.slide_velocity = _advance_target(
             self.target, self.target0, bodies, self.geometry, self.encounter,
             self.coupling, self.cell, step, self.slide_velocity,
         )
-        return self.target, bool(self.drive(self.target))
+        # The script is the truth here: these bodies are moving points.
+        return self.target, bodies, bool(self.drive(self.target))
 
 
 @dataclass
@@ -166,14 +182,30 @@ class ContactWorld:
     place: Callable[[np.ndarray], None]
     step_physics: Callable[[], bool]
     read_target: Callable[[], np.ndarray]
+    read_bodies: Callable[[], np.ndarray] | None = None
+    """Where the pushers actually are after the step.
 
-    def advance(self, step: int, bodies: np.ndarray) -> tuple[np.ndarray, bool]:
+    Optional only so a caller whose bodies genuinely follow their script need
+    not supply it. On a real arm it is required: the command is a target, not a
+    teleport, and the gate must see the body that did the pushing.
+    """
+
+    def advance(
+        self, step: int, bodies: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray, bool]:
         self.place(bodies)
         terminated = bool(self.step_physics())
         target = np.asarray(self.read_target(), dtype=np.float64)
         if target.ndim != 1:
             raise ValueError("read_target must return a 1-D pose")
-        return target, terminated
+        observed = bodies
+        if self.read_bodies is not None:
+            observed = np.asarray(self.read_bodies(), dtype=np.float64)
+            if observed.ndim == 1:
+                observed = observed[None, :]
+            if observed.shape != np.asarray(bodies).shape:
+                raise ValueError("read_bodies must return one pose per commanded body")
+        return target, observed, terminated
 
 
 def run_cell(
@@ -212,8 +244,8 @@ def run_cell(
     terminated = False
 
     for step in range(cell.episode_steps):
-        bodies = bodies_at(step, geometry, encounter)
-        target, terminated = world.advance(step, bodies)
+        commanded = bodies_at(step, geometry, encounter)
+        target, bodies, terminated = world.advance(step, commanded)
 
         episode.observe(target, bodies)
         # Recorded every step, not only at commitment: H3 has to be evaluable on
@@ -226,8 +258,12 @@ def run_cell(
                 "target": target.tolist(),
                 # `reference` is the first body, kept so existing readers of
                 # these records keep working; `references` is the full set.
-                "reference": bodies[0].tolist(),
-                "references": bodies.tolist(),
+                "reference": np.asarray(bodies)[0].tolist(),
+                "references": np.asarray(bodies).tolist(),
+                # What the encounter asked for, kept apart from what happened.
+                # A cell where these diverge is measuring an arm that could not
+                # follow the script, not the contact it was meant to.
+                "commanded": np.asarray(commanded).tolist(),
                 # This step's crossing, for diagnosis, and the sustained
                 # decision arm D acts on. A lone crossing is one draw of a
                 # statistic: under the noise control some prefix crosses by
