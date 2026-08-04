@@ -143,6 +143,12 @@ parser.add_argument("--preroll", type=int, default=80,
                          "not tracking. 0 disables it")
 parser.add_argument("--preroll-tolerance", type=float, default=0.003,
                     help="metres; how close is close enough to start")
+parser.add_argument("--preroll-clearance", type=float, default=0.05,
+                    help="metres to rise before crossing to the start point, and "
+                         "descend after. A direct line disturbed the block by "
+                         "10.1 mm before the episode began - fatal for capture, "
+                         "which needs the target perfectly still before the "
+                         "arrival. 0 goes straight there")
 parser.add_argument("--probe-advance", type=int, default=7)
 parser.add_argument("--probe-withdraw", type=int, default=5,
                     help="steps of withdrawal. It must clear the interaction "
@@ -271,11 +277,23 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     # than an approximation of it.
     geometry = draw_geometry(args.seed, target0, encounter)
     start = bodies_at(0, geometry, encounter)[0]
-    preroll_steps = 0
-    for preroll_steps in range(1, args.preroll + 1):
-        gap = start - read_ee()
-        if float(np.linalg.norm(gap)) <= args.preroll_tolerance:
-            break
+
+    # Over the block, across, and down - not straight there.
+    #
+    # A direct line disturbed the block by 10.1 mm before the episode began,
+    # which is fatal rather than untidy: capture requires the target to be
+    # *perfectly* still before the arrival, or its own history carries
+    # information and the single-entity arm has something to learn from. The
+    # lift scene resets the arm beside the block and the encounter runs at the
+    # block's own height, so the direct path grazes it with an open jaw.
+    lift = np.array([0.0, 0.0, args.preroll_clearance])
+    waypoints = (
+        [read_ee() + lift, start + lift, start] if args.preroll_clearance > 0.0
+        else [start]
+    )
+
+    def toward(goal: np.ndarray) -> None:
+        gap = goal - read_ee()
         reach = float(np.linalg.norm(gap))
         delta = gap if reach <= args.approach_speed else gap / reach * args.approach_speed
         action = torch.zeros((args.num_envs, action_dim), device=env.unwrapped.device)
@@ -286,6 +304,16 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             action[0, -1] = float(args.gripper_open if args.grasp else args.gripper)
         with torch.no_grad():
             env.step(action)
+
+    preroll_steps = 0
+    budget = args.preroll
+    for goal in waypoints:
+        while budget > 0:
+            if float(np.linalg.norm(goal - read_ee())) <= args.preroll_tolerance:
+                break
+            toward(goal)
+            budget -= 1
+            preroll_steps += 1
     preroll_gap = float(np.linalg.norm(start - read_ee()))
     # The block must not have been touched getting here, or `target0` is stale
     # and the geometry `run_cell` redraws is not the one just used.
