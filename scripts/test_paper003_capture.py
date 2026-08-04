@@ -282,7 +282,9 @@ class GateTests(unittest.TestCase):
         the radius at every step and the far-field class is empty.
 
         The prediction was right, and the variant deleted for failing its own
-        test was deleted against an artefact.
+        test was deleted against an artefact. What follows from it is not a
+        capture-specific threshold set but a second admissible form of positive
+        evidence in the same gate - see the next test.
         """
 
         targets, references, _ = rollout(300, noise=0.0003)
@@ -291,22 +293,56 @@ class GateTests(unittest.TestCase):
             interaction_radius=self.RADIUS, horizon=self.HORIZON,
         )
         self.assertEqual(decision.post_contact_far_deltas, 0)
-        self.assertFalse(decision.fired)
+        self.assertNotEqual(decision.evidence, "proximity")
 
-    def test_it_does_not_fire_on_capture_at_any_seed(self) -> None:
-        """0.00, not "rarely" - and this is a blocking result, not a tuning one.
+    def test_it_fires_on_capture_through_the_carriage_path(self) -> None:
+        """One gate, two forms of positive evidence, and the right one fires.
 
-        `can_estimate` requires the gate, so an abstaining gate means arm D
-        never acts under capture and scores exactly arm B. Paper 003's relation
-        cannot be measured through this gate as it stands.
+        Asserting *which* form matters as much as that it fired. A capture cell
+        reporting `proximity` would mean the contrast had found a far field
+        somewhere, which is the artefact this whole path exists to replace.
         """
 
         thresholds = RelationGateThresholds()
-        fired = [
-            self._fires(*rollout(seed, noise=0.0003)[:2], thresholds)
+        decisions = [
+            evaluate_relation_gate(
+                *rollout(seed, noise=0.0003)[:2], thresholds,
+                interaction_radius=self.RADIUS, horizon=self.HORIZON,
+            )
             for seed in range(300, 320)
         ]
-        self.assertEqual(float(np.mean(fired)), 0.0)
+        self.assertEqual(float(np.mean([d.fired for d in decisions])), 1.0)
+        self.assertEqual({d.evidence for d in decisions}, {"carriage"})
+
+    def test_collision_still_fires_through_proximity_and_not_carriage(self) -> None:
+        """The second path must not become the way everything gets in.
+
+        A struck target's displacement is a fraction of the body's and falls off
+        with separation, so it agrees with no body's own step for a run of any
+        length. Collision has to keep entering through the contrast it was
+        designed around.
+        """
+
+        from wm_expansion.cell import CellSpec, run_cell
+        from wm_expansion.commitment_episode import EpisodeSpec
+        from wm_expansion.encounter import EncounterSpec
+
+        record = run_cell(
+            np.array([0.20, 0.0, 0.40]),
+            EpisodeSpec(),
+            EncounterSpec(bodies=1, schedule="probe"),
+            CellSpec(condition="coupled", seed=300, coupling="collision"),
+            drive=lambda target: False,
+        )
+        decision = evaluate_relation_gate(
+            [o["target"] for o in record["observations"]],
+            [o["references"] for o in record["observations"]],
+            RelationGateThresholds(),
+            interaction_radius=0.05,
+            horizon=6,
+        )
+        self.assertLess(decision.carriage_run, RelationGateThresholds().min_carriage_run)
+        self.assertEqual(decision.evidence, "proximity")
 
     def test_it_refuses_a_target_that_moves_on_its_own(self) -> None:
         thresholds = RelationGateThresholds()
@@ -317,6 +353,50 @@ class GateTests(unittest.TestCase):
             ]
             with self.subTest(onset=label):
                 self.assertLessEqual(float(np.mean(fired)), 0.10)
+
+    def test_drift_would_pass_a_carriage_test_and_is_rejected_anyway(self) -> None:
+        """The control the second evidence path is dangerous for.
+
+        `drift` runs the target along the first body's own axis at its own
+        speed, so its displacement genuinely *is* that body's displacement
+        whenever the body moves - 0.71 of moving steps under a burst schedule,
+        which clears any carriage threshold worth setting. It is not a relation:
+        nothing conditions the motion on the body, the agreement is a
+        coincidence of the control's construction, and it is precisely arm C's
+        case.
+
+        What rejects it is the constant-velocity ceiling, which applies to both
+        forms of positive evidence. This test exists so that a later change
+        scoping that clause to the proximity path alone fails here rather than
+        in a confirmatory run.
+        """
+
+        from wm_expansion.cell import CellSpec, run_cell
+        from wm_expansion.commitment_episode import EpisodeSpec
+        from wm_expansion.encounter import EncounterSpec
+
+        fired, agreements = [], []
+        for seed in range(300, 320):
+            record = run_cell(
+                np.array([0.20, 0.0, 0.40]),
+                EpisodeSpec(),
+                EncounterSpec(bodies=1, schedule="burst"),
+                CellSpec(condition="drift", seed=seed),
+                drive=lambda target: False,
+            )
+            decision = evaluate_relation_gate(
+                [o["target"] for o in record["observations"]],
+                [o["references"] for o in record["observations"]],
+                RelationGateThresholds(),
+                interaction_radius=0.05,
+                horizon=6,
+            )
+            fired.append(decision.fired)
+            agreements.append(decision.carriage_agreement)
+            self.assertGreater(decision.constant_velocity_gain, 0.30)
+
+        self.assertGreater(float(np.mean(agreements)), 0.5, "the hazard is not present")
+        self.assertEqual(float(np.mean(fired)), 0.0)
 
     def test_the_controls_are_observably_different_worlds(self) -> None:
         """A control that produces an identical trajectory is not a control.

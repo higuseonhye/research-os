@@ -76,6 +76,12 @@ a deliberately crude model, not a ceiling on the design.
 > carrier, which put the riding separation outside the radius and sorted the
 > pauses into the far field. The variant deleted for failing its own test was
 > deleted against an artefact.
+>
+> What replaced it is neither the old claim nor that variant. The gate admits a
+> second form of positive evidence — **carriage**, the target's displacement
+> being a body's own — so one gate still covers both relations, but not by
+> sharing this statistic. Capture fires at 1.00 through the new path.
+> [The measurement](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/capture_arms_v0.1/RESULTS.md)
 
 The prediction here was that capture inverts the evidence. Under collision the
 discriminating question is whether the target stops once the body leaves, so

@@ -311,13 +311,18 @@ class RelationGateThresholds:
     # the body never leaves, so there is no post-contact far-field period and
     # restricting the contrast to one should make the gate abstain.
     #
-    # Measured, it does not. A carried target keeps a small separation from its
-    # carrier, and the pauses supply far-field steps in any case, so this rule
-    # leaves 20 usable deltas rather than none. The same thresholds fire on
-    # capture at 1.00 and reject a target that moves on its own at 0.00 - the
-    # identical result the special-cased version gave. One gate covers both
-    # relations, and the variant was removed rather than shipped on a premise
-    # the test contradicted.
+    # That reasoning was right. It was recorded as refuted on 2026-08-04 by a
+    # measurement showing 20 usable far-field deltas and a 1.00 fire rate, and
+    # both came from an off-by-one in `capture_displacement` that threw a
+    # captured target one body-step past its carrier: the riding separation
+    # landed outside the radius, the near-field allowance covered it during
+    # motion but not during a pause, and the pauses sorted into the far field.
+    # With that fixed the contrast has nothing to compare on any capture cell,
+    # in any of 20 rollouts.
+    #
+    # One gate still covers both relations, but not by sharing this statistic -
+    # by admitting a second form of positive evidence that does not need a far
+    # field at all. See `min_carriage_agreement`.
     # Compare net displacement per step rather than mean per-step speed. A still
     # target under observation noise moves every step but goes nowhere, so its
     # path length grows with the window while its net displacement does not.
@@ -357,7 +362,32 @@ class RelationGateThresholds:
     # Negative evidence against the Paper 002 explanation: a constant-velocity
     # model must NOT already account for the motion. Separates coupling
     # (cv_gain ~= 0) from persistent drift (cv_gain ~= 0.8), which is arm C's case.
+    #
+    # Applies to *both* forms of positive evidence, and that is what makes the
+    # second one safe. The `drift` control's target runs along the first body's
+    # own axis at its own speed, so its displacement agrees with that body's on
+    # 0.71 of moving steps under a burst schedule - it would pass a carriage
+    # test outright. Its cv_gain is 0.99, and this clause is what rejects it.
     max_constant_velocity_gain: float = 0.30
+    # Second admissible form of positive evidence: the target's displacement is
+    # a *body's* displacement. Required because the proximity contrast cannot
+    # see a capture at all - a carrier that never leaves supplies no far field,
+    # so the contrast abstains on every capture cell however it is tuned, and
+    # with it arm D never acts and scores exactly arm B.
+    #
+    # This is not a second gate and not a relation-specific threshold set. It is
+    # one more way for the same gate to find positive evidence, and every other
+    # clause - the constant-velocity ceiling above all - applies unchanged.
+    #
+    # 0.80 rather than something near 1.0 leaves room for contact jitter, and
+    # sits clear of the highest a control reaches: `drift` under burst at 0.71.
+    min_carriage_agreement: float = 0.80
+    # And the run, for the reason `estimate_capture` requires one: a struck
+    # target has an equilibrium separation where the push equals the body's own
+    # advance, and there collision and carriage are momentarily the same
+    # observation. Three consecutive steps is what a collision passes through
+    # and a carry does not.
+    min_carriage_run: int = 3
 
     def validate(self) -> None:
         if self.min_deltas < 3:
@@ -372,6 +402,10 @@ class RelationGateThresholds:
             raise ValueError("min_post_contact_far_deltas must be >= 0")
         if self.min_consecutive_fires < 1:
             raise ValueError("min_consecutive_fires must be >= 1")
+        if not 0.0 <= self.min_carriage_agreement <= 1.0:
+            raise ValueError("min_carriage_agreement must be in [0, 1]")
+        if self.min_carriage_run < 1:
+            raise ValueError("min_carriage_run must be >= 1")
 
 
 @dataclass(frozen=True)
@@ -384,8 +418,15 @@ class RelationGateDecision:
     near_fraction: float
     mean_speed: float
     #: Far-field steps observed *after* the first contact. Zero means the
-    #: contrast has nothing to compare against and the gate abstains.
+    #: contrast has nothing to compare against and the proximity path abstains.
     post_contact_far_deltas: int = 0
+    #: Fraction of moving steps whose displacement is some body's displacement,
+    #: and the longest run of it with a single body. The carriage path.
+    carriage_agreement: float = 0.0
+    carriage_run: int = 0
+    #: Which form of positive evidence fired, for diagnosis. A capture cell that
+    #: reports "proximity" is measuring something other than the carry.
+    evidence: str = "none"
 
     def to_dict(self) -> dict[str, float | int | bool]:
         return asdict(self)
@@ -648,11 +689,12 @@ def evaluate_relation_gate(
     # Negative evidence: does constant velocity already explain this?
     cv_gain = _constant_velocity_gain(target_arr, horizon)
 
-    fired = bool(
-        n_deltas >= thresholds.min_deltas
-        and mean_speed >= thresholds.speed_floor
-        and proximity_contrast >= thresholds.min_proximity_contrast
-        and cv_gain <= thresholds.max_constant_velocity_gain
+    # Positive evidence, in two admissible forms. The first is proximity
+    # conditioning; the second is that the target's displacement is a second
+    # body's own displacement. A capture has only the second, because its
+    # carrier never leaves and there is no far field to contrast against.
+    proximity_evidence = bool(
+        proximity_contrast >= thresholds.min_proximity_contrast
         # With no far-field steps after contact the contrast has nothing to
         # compare against and reads +1.0 by construction. Abstain instead.
         and (
@@ -663,6 +705,22 @@ def evaluate_relation_gate(
         # rate; otherwise the contrast is comparing against a fabricated zero.
         and measurable
     )
+    carriage_agreement, carriage_run = carriage_evidence(target_arr, reference_arr)
+    carriage = bool(
+        carriage_agreement >= thresholds.min_carriage_agreement
+        and carriage_run >= thresholds.min_carriage_run
+    )
+
+    fired = bool(
+        n_deltas >= thresholds.min_deltas
+        and mean_speed >= thresholds.speed_floor
+        # Negative evidence, and it applies to both forms. Without it here the
+        # `drift` control would enter through the carriage path: its target runs
+        # along a body's own axis at its own speed and agrees with it on 0.71 of
+        # moving steps.
+        and cv_gain <= thresholds.max_constant_velocity_gain
+        and (proximity_evidence or carriage)
+    )
     return RelationGateDecision(
         fired=fired,
         n_deltas=n_deltas,
@@ -672,6 +730,11 @@ def evaluate_relation_gate(
         near_fraction=near_fraction,
         mean_speed=mean_speed,
         post_contact_far_deltas=post_contact_far,
+        carriage_agreement=carriage_agreement,
+        carriage_run=carriage_run,
+        evidence=(
+            "proximity" if proximity_evidence else "carriage" if carriage else "none"
+        ),
     )
 
 
@@ -851,8 +914,8 @@ def capture_displacement(
     is. Handing it the body's step as well moved it away from its carrier by
     exactly that step, so a target captured at 49.9 mm rode at 64.7 mm - outside
     the radius it was captured at, permanently, and by a margin that grows with
-    the approach speed. Anything reading separations saw the carrier re-arrive
-    once per burst cycle as a result.
+    the approach speed. That put a false arrival in every burst cycle for
+    anything reading separations, `contact_arrivals` included.
     """
 
     spec.validate()
@@ -868,6 +931,73 @@ def capture_displacement(
             return np.zeros_like(target_arr), False
         return np.zeros_like(target_arr), True
     return step_arr.copy(), True
+
+
+def _ride_mask(
+    targets: np.ndarray,
+    references: np.ndarray,
+    motion_floor_ratio: float,
+    agreement: float,
+) -> tuple[np.ndarray, np.ndarray] | None:
+    """``[step, body]`` - did the target move by what this body moved by.
+
+    Shared by `estimate_capture` and the gate's carriage evidence so the two
+    cannot drift apart: what the gate admits as a carry must be the same thing
+    the arm then estimates from, or the arm is licensed to act on a relation it
+    cannot fit. Returns the mask and the per-step mask of *moving* steps, or
+    None when the target never moved and there is nothing to attribute.
+    """
+
+    target_steps = np.diff(targets, axis=0)
+    lengths = np.linalg.norm(target_steps, axis=1)
+    largest = float(np.max(lengths)) if lengths.size else 0.0
+    if largest <= 0.0:
+        return None
+    moving = lengths >= motion_floor_ratio * largest
+    if not moving.any():
+        return None
+    mismatch = np.linalg.norm(np.diff(references, axis=0) - target_steps[:, None, :], axis=2)
+    return moving[:, None] & (mismatch <= agreement * lengths[:, None]), moving
+
+
+def carriage_evidence(
+    target_positions: Iterable[ArrayLike],
+    reference_positions: Iterable[ArrayLike],
+    motion_floor_ratio: float = 0.25,
+    agreement: float = 0.25,
+) -> tuple[float, int]:
+    """How much of the target's motion is a body's own motion, and for how long.
+
+    The gate's second admissible form of positive evidence, for the relation
+    proximity contrast cannot see. Under a capture the carrier never leaves, so
+    there is no far field to contrast against and the contrast abstains however
+    the thresholds are set - the evidence that a relation is present is of a
+    different kind, and this is it: the target's displacement *is* a second
+    body's displacement, which no property of the target alone can produce.
+
+    Returns the fraction of moving steps that agree with some body, and the
+    longest consecutive run of agreement with a *single* body. The run is what
+    separates a carry from a collision at its equilibrium separation, where the
+    push momentarily equals the body's own advance; see `estimate_capture`.
+    """
+
+    targets = _paired_array(target_positions)
+    references = _reference_array(reference_positions)
+    if len(targets) != len(references) or len(targets) < 2:
+        return 0.0, 0
+    masked = _ride_mask(targets, references, motion_floor_ratio, agreement)
+    if masked is None:
+        return 0.0, 0
+    rides, moving = masked
+
+    fraction = float(np.mean(rides.any(axis=1)[moving]))
+    longest = 0
+    for body in range(rides.shape[1]):
+        run = 0
+        for riding in rides[:, body]:
+            run = run + 1 if riding else 0
+            longest = max(longest, run)
+    return fraction, longest
 
 
 def _first_run(rides: np.ndarray, length: int) -> tuple[int | None, int]:
@@ -953,28 +1083,23 @@ def estimate_capture(
     if min_ride_steps < 1:
         raise ValueError("min_ride_steps must be >= 1")
 
-    target_steps = np.diff(targets, axis=0)
-    lengths = np.linalg.norm(target_steps, axis=1)
-    largest = float(np.max(lengths)) if lengths.size else 0.0
-    if largest <= 0.0:
-        return None  # the target never moved; nothing took hold
-
     # A pause is not a release. Under the burst schedule the carrier stops for
     # `burst_off` steps and the target stops with it, so those steps carry no
     # evidence either way and must not be read as divergence - an earlier
     # version scored them as a release and reported `held=False` on every
     # captured cell it saw.
-    moving = lengths >= motion_floor_ratio * largest
-    if not moving.any():
+    #
+    # The mask is the same one the gate's carriage evidence is computed from, so
+    # a cell the gate admitted as a carry is one this can fit.
+    masked = _ride_mask(targets, references, motion_floor_ratio, agreement)
+    if masked is None:
         return None
-
-    # Which body, if any, moved by what the target moved by - per body, since a
-    # run has to be attributed to one carrier rather than to whichever body
-    # happened to match best on each step.
+    rides, moving = masked
+    lengths = np.linalg.norm(np.diff(targets, axis=0), axis=1)
+    largest = float(np.max(lengths))
     mismatch = np.linalg.norm(
-        np.diff(references, axis=0) - target_steps[:, None, :], axis=2
+        np.diff(references, axis=0) - np.diff(targets, axis=0)[:, None, :], axis=2
     )
-    rides = moving[:, None] & (mismatch <= agreement * lengths[:, None])
 
     onset, body = _first_run(rides, min_ride_steps)
     if onset is None:
