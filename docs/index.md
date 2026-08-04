@@ -1,82 +1,101 @@
-# After the Spill
+<section class="hero">
+  <p class="kicker">Independent research | Physical AI as the current testbed</p>
+  <h1>After the Spill</h1>
+  <p class="lead">How far should an embodied system change after unexpected experience?</p>
+  <p>
+    Robots and embodied agents do not only need to learn from experience. They
+    need to decide whether an experience is noise, a recoverable disturbance, a
+    sign of model inadequacy, or evidence that the system itself must change.
+  </p>
+  <p class="cta-row">
+    <a class="button primary" href="program/after_the_spill_v2.html">Program charter</a>
+    <a class="button" href="paper002/project_page.html">Paper 002 evidence</a>
+    <a class="button" href="mismatch_lab/README.html">Mismatch Lab</a>
+  </p>
+</section>
 
-**How should unexpected experience change an embodied system?**
+## The Question
 
-Most AI research asks how systems should learn.
+Most AI research asks:
 
-We ask a different question:
+> How should a system learn?
 
-**How much should they change?**
+This program asks a narrower and harder question:
 
-This site documents an ongoing research program on decision-making after
-unexpected experience in embodied systems.
+> **How much should a system change after reality contradicts its current model?**
 
-[Research program](program/README.md) | [GitHub](https://github.com/higuseonhye/research-os) | [Mismatch Lab](mismatch_lab/README.md)
-
----
-
-## Core question
-
-Unexpected experience can mean many things: noise, disturbance, recoverable
-failure, model inadequacy, missing representation, or the need to coordinate
-several recovery operators.
-
-The program studies the decision among those interpretations.
+The research object is the change decision:
 
 ```text
 Experience -> Evidence -> Operator -> Closure
 ```
 
----
+The working principle is simple enough to be useful and dangerous enough to
+audit:
 
-## Research program
+> Intelligence is the ability to determine the smallest sufficient change after
+> unexpected experience.
 
-| Foundation document | Role |
-| --- | --- |
-| D000 Mathematical Foundation | Objects and primitives |
-| D001 Claim & Novelty Audit | Why the program could be wrong |
-| D002 Literature Matrix | Shared reading schema |
-| D003 Terminology | Stable language |
-| D004 Formal Definitions | Operational definitions |
-| D005 Evaluation Protocol | Evidence and closure |
-| D006 Research Roadmap | Paper/product sequence |
+## What Exists Here
 
-[Program charter v2](program/after_the_spill_v2.md)
+<div class="evidence-grid">
+  <div>
+    <h3>Foundation</h3>
+    <p>D000-D006 define the program's formal objects, terminology, novelty audit, literature matrix, evaluation protocol, and roadmap.</p>
+  </div>
+  <div>
+    <h3>Papers</h3>
+    <p>Paper 001-005 test different change operators: recover, repair, expand, dispose, and coordinate.</p>
+  </div>
+  <div>
+    <h3>Products</h3>
+    <p>Robot Diff and Mismatch Lab turn rollout comparison into evidence for model adequacy and recovery decisions.</p>
+  </div>
+</div>
 
----
+## Evidence So Far
 
-## Papers
-
-| Paper | Question | Status |
+| Track | What it contributes | Status |
 | --- | --- | --- |
-| **001 Recoverability** | Can the system still recover from here? | Tier C complete |
-| **002 Model Adequacy** | Should it repair or expand the model class? | Tier C complete |
-| **003 Representation Expansion** | Does expansion open capability that repair cannot reach? | Design/calibration |
-| **004 Experience Disposition** | What should be done with the experience itself? | Program-defined |
-| **005 Recovery Orchestration** | How should recovery operators be sequenced? | Program-defined |
+| **Paper 001: Recoverability** | Measures whether a system can still recover from the same post-mismatch state | Tier C complete |
+| **Paper 002: Model Adequacy** | Tests when parameter repair should give way to a prepared model-order expansion | Tier C complete |
+| **Paper 003: Representation Expansion** | Tests whether adding a missing relation can open capability repair cannot reach | Design/calibration |
+| **Mismatch Lab** | Public surface for diff, replay, explanation, and benchmark design | Spec/demo |
 
----
+Selected proof points:
 
-## Products
+- Paper 001: REPLAN 19/20 vs CONTINUE 0/20 under a fixed mismatch state.
+- Paper 002: 400/400 valid confirmatory cells; gated expansion improves prediction-linked control without static regression in the tested target-drift family.
+- Paper 003: design-stage relation/mode dissociation; not yet confirmatory evidence.
 
-| Product | Program role |
+## Program Map
+
+| Paper | Core decision | Operator |
+| --- | --- | --- |
+| **001 Recoverability** | Can the system still recover from here? | Recover / Replan |
+| **002 Model Adequacy** | Is repair inside the current model class still enough? | Repair / Expand |
+| **003 Representation Expansion** | Is the missing thing a representation? | Expand |
+| **004 Experience Disposition** | What should be done with the experience itself? | Ignore / Preserve / Escalate |
+| **005 Recovery Orchestration** | How should multiple recovery capabilities be sequenced? | Coordinate |
+
+## Start Here
+
+| If you want... | Go to |
 | --- | --- |
-| **Robot Diff** | Compare embodied rollouts and expose consequential differences |
-| **Mismatch Lab** | Public lab surface for diff, replay, explanation, and benchmark design |
-| **Evaluation Toolkit** | Shared tests for evidence, operator choice, and closure |
-| **Benchmark** | Repeatable tasks where unexpected experience forces a change decision |
+| The whole program in one document | [After the Spill v2](program/after_the_spill_v2.md) |
+| The document that tries to break the idea | [D001 Claim & Novelty Audit](program/D001_claim_novelty_audit.md) |
+| The strongest current evidence | [Paper 002 project page](paper002/project_page.html) |
+| The public product/lab surface | [Mismatch Lab](mismatch_lab/README.md) |
+| The repository | [GitHub](https://github.com/higuseonhye/research-os) |
 
-[Mismatch Lab](mismatch_lab/README.md) | [Robot Diff demo](mismatch_lab/diff_explorer_v0.1.html)
+## Boundary
 
----
+This is independent personal research by Seonhye Gu. The current evidence is
+controlled simulation evidence. The program does not claim clinical deployment,
+hardware transfer, autonomous structural self-improvement, universal resilience,
+arbitrary causal discovery, or a complete theory of intelligence.
 
-## Current evidence boundary
-
-The strongest current claims are controlled simulation claims. This program does
-not yet claim clinical deployment, hardware transfer, autonomous structural
-self-improvement, or a complete theory of intelligence.
-
-Negative and design-stage results are part of the record. A program gets
+Negative and design-stage results are kept in the record because a program gets
 stronger by rejecting weak claims early.
 
 *Updated 2026-08-04*

@@ -1,0 +1,90 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+.hero {
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 32px;
+  padding-bottom: 28px;
+}
+
+.hero h1 {
+  font-size: 42px;
+  line-height: 1.05;
+  margin: 8px 0 10px;
+}
+
+.kicker {
+  color: #586069;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  margin-bottom: 0;
+  text-transform: uppercase;
+}
+
+.lead {
+  color: #111827;
+  font-size: 22px;
+  line-height: 1.35;
+  margin: 0 0 16px;
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.button {
+  border: 1px solid #c9d1d9;
+  border-radius: 6px;
+  color: #24292f;
+  display: inline-block;
+  font-weight: 600;
+  padding: 8px 12px;
+}
+
+.button:hover {
+  text-decoration: none;
+}
+
+.button.primary {
+  background: #24292f;
+  border-color: #24292f;
+  color: #ffffff;
+}
+
+.evidence-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 16px 0 28px;
+}
+
+.evidence-grid > div {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.evidence-grid h3 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+
+.evidence-grid p {
+  margin-bottom: 0;
+}
+
+@media print, screen and (max-width: 720px) {
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .lead {
+    font-size: 19px;
+  }
+}

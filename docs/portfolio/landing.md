@@ -3,81 +3,58 @@
 > Live: **[higuseonhye.github.io/research-os](https://higuseonhye.github.io/research-os/)**
 > Source: [`docs/index.md`](../index.md)
 
----
+## Portfolio Positioning
 
-## Core question
+**After the Spill** is an independent research program about one decision:
 
-**How should unexpected experience change an embodied system?**
+> How far should an embodied system change after unexpected experience?
 
-Most AI research asks how systems should learn. This program asks how far a
-system should change after reality contradicts its current model.
+The portfolio should be read as a program, not as a list of papers. The stable
+asset is the question, the shared vocabulary, the evaluation philosophy, and the
+discipline of recording what the program refuses.
 
-The working decision loop is:
+## Public First Screen
 
-```text
-Experience -> Evidence -> Operator -> Closure
-```
+The public landing page should communicate, within 30 seconds:
 
-The governing principle is:
+1. the core question,
+2. why it differs from generic learning/adaptation,
+3. what evidence already exists,
+4. where the program is going next,
+5. what is explicitly not claimed.
 
-> Intelligence is the ability to determine the smallest sufficient change after
-> unexpected experience.
+Recommended first-screen copy:
 
-## Research program
+> Robots and embodied agents do not only need to learn from experience. They
+> need to decide whether an experience is noise, a recoverable disturbance, a
+> sign of model inadequacy, or evidence that the system itself must change.
 
-This is no longer presented as a single-paper portfolio. The stable object is a
-research program with foundation documents, papers, and products that all serve
-one question.
+## Program Architecture
 
 | Layer | Portfolio role |
 | --- | --- |
-| **Foundation documents** | D000-D006 define the language, novelty audit, literature matrix, formal objects, evaluation protocol, and roadmap |
-| **Research papers** | Paper 001-005 test specific change operators |
-| **Research products** | Robot Diff and Mismatch Lab expose the hypotheses to real rollout-comparison workflows |
+| **Foundation documents** | D000-D006 define the formal objects, terminology, novelty audit, literature matrix, evaluation protocol, and roadmap |
+| **Research papers** | Paper 001-005 test different change operators |
+| **Research products** | Robot Diff and Mismatch Lab test the claims in rollout-comparison workflows |
+
+## Evidence Narrative
+
+| Track | Portfolio use |
+| --- | --- |
+| **Paper 001** | Shows recoverability can be measured at a fixed post-mismatch state |
+| **Paper 002** | Provides the strongest current confirmatory evidence for repair-vs-expansion |
+| **Paper 003** | Shows the next design frontier: representation expansion as capability, not just lower error |
+| **Mismatch Lab** | Converts the research program into a public interface and benchmark direction |
+
+## Links
 
 [Program charter v2](https://github.com/higuseonhye/research-os/blob/master/docs/program/after_the_spill_v2.md)
 
 [D001 Claim & Novelty Audit](https://github.com/higuseonhye/research-os/blob/master/docs/program/D001_claim_novelty_audit.md)
 
-## Paper 001-005
+[Paper 002 project page](https://higuseonhye.github.io/research-os/paper002/project_page.html)
 
-| Paper | Question | Current status |
-| --- | --- | --- |
-| **Paper 001: Recoverability** | Can the system still recover from here? | Tier C complete - [working paper](https://github.com/higuseonhye/research-os/blob/master/docs/paper1/paper001_recoverability_complete.pdf) |
-| **Paper 002: Model Adequacy** | Should it repair or expand the model class? | Tier C complete - [manuscript v1.1](https://github.com/higuseonhye/research-os/blob/master/docs/paper002/paper002_manuscript_model_order_v1.1.pdf) |
-| **Paper 003: Representation Expansion** | Does expansion open capability that repair cannot reach? | Design/calibration - [hub](https://github.com/higuseonhye/research-os/tree/master/docs/paper003) |
-| **Paper 004: Experience Disposition** | What should be done with the experience itself? | Program-defined |
-| **Paper 005: Recovery Orchestration** | How should recovery operators be sequenced? | Program-defined |
-
-Each paper changes the operator under test, not the core question.
-
-## Research products
-
-| Product | What it tests |
-| --- | --- |
-| **Robot Diff** | Whether rollout differences can surface evidence for repair, expansion, or refusal |
-| **Mismatch Lab** | Whether diff, replay, explanation, and benchmark workflows can become shared evaluation infrastructure |
-| **Evaluation Toolkit** | Whether evidence, operator choice, and closure can be compared across tasks |
-| **Benchmark** | Whether unexpected experience forces repeatable change decisions |
-
-[Mismatch Lab hub](https://github.com/higuseonhye/research-os/tree/master/docs/mismatch_lab)
-
-[Robot Diff demo](https://higuseonhye.github.io/research-os/mismatch_lab/diff_explorer_v0.1.html)
-
-## Current evidence boundary
-
-Supported today: controlled simulation evidence for recoverability windows and
-failure-conditioned model adequacy in specific embodied task families.
-
-Not claimed: clinical deployment, hardware transfer, autonomous structural
-self-improvement, universal resilience, arbitrary causal discovery, or a
-complete theory of intelligence.
-
-## More
-
-[Research OS](https://github.com/higuseonhye/research-os)
-
-[Program landing](https://higuseonhye.github.io/research-os/)
+[Mismatch Lab demo](https://higuseonhye.github.io/research-os/mismatch_lab/diff_explorer_v0.1.html)
 
 [Public boundary](https://github.com/higuseonhye/research-os/blob/master/docs/PUBLIC_BOUNDARY.md)
 
