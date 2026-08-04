@@ -134,21 +134,33 @@ parser.add_argument("--schedule", type=str, default="probe",
                          "block back and breaks the pattern estimator")
 parser.add_argument("--burst-on", type=int, default=10)
 parser.add_argument("--burst-off", type=int, default=4)
-parser.add_argument("--preroll", type=int, default=80,
+parser.add_argument("--preroll", type=int, default=160,
                     help="steps allowed to bring the arm to the encounter's "
                          "first point BEFORE the episode starts. The arm begins "
                          "wherever the scene resets it - a fixed 50.2 mm from "
                          "the script's start in the first pilot, at every speed "
                          "tried - and those steps are travel to the start line, "
                          "not tracking. 0 disables it")
+parser.add_argument("--settle", type=int, default=30,
+                    help="steps of physics with no action before anything is "
+                         "read, so the block's own settling after reset is not "
+                         "attributed to the arm and does not enter the encounter "
+                         "geometry as a stale position")
 parser.add_argument("--preroll-tolerance", type=float, default=0.003,
                     help="metres; how close is close enough to start")
-parser.add_argument("--preroll-clearance", type=float, default=0.05,
+parser.add_argument("--preroll-clearance", type=float, default=0.0,
                     help="metres to rise before crossing to the start point, and "
-                         "descend after. A direct line disturbed the block by "
-                         "10.1 mm before the episode began - fatal for capture, "
-                         "which needs the target perfectly still before the "
-                         "arrival. 0 goes straight there")
+                         "descend after. 0, the default, goes straight there. "
+                         "This was 0.05 for one run, on the theory that a direct "
+                         "line was brushing the block - it disturbed it by 10.1 "
+                         "mm before the episode began. **That was the wrong "
+                         "diagnosis.** Going up and over reported the same 10.1 "
+                         "mm to eight decimal places, so the arm was never "
+                         "touching it; the block settles after `reset_object_"
+                         "position` under gravity, and `--settle` is what "
+                         "addresses that. The detour meanwhile spent all 80 "
+                         "pre-roll steps and left the arm 66 mm from the start "
+                         "line, where the direct path had converged in 16")
 parser.add_argument("--probe-advance", type=int, default=7)
 parser.add_argument("--probe-withdraw", type=int, default=5,
                     help="steps of withdrawal. It must clear the interaction "
@@ -249,7 +261,23 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         observed_ee.append(read_ee().tolist())
         return bool(terminated[0]) or bool(truncated[0])
 
-    target0 = read_object()
+    # Let the scene settle before anything is measured from it.
+    #
+    # The block moves 10.1 mm after `reset_object_position` regardless of what
+    # the arm does - identical to eight decimal places across two completely
+    # different pre-roll paths - so it is the block finding its own rest under
+    # gravity, not contact. Reading `target0` before that settles wrote a stale
+    # position into the encounter geometry, and charged the arm with a
+    # disturbance it had not caused.
+    #
+    # It matters beyond bookkeeping: capture requires the target to be
+    # *perfectly* still before the arrival, and a block still settling is not.
+    for _ in range(args.settle):
+        with torch.no_grad():
+            env.step(torch.zeros((args.num_envs, action_dim), device=env.unwrapped.device))
+    settled = read_object()
+
+    target0 = settled
 
     encounter = EncounterSpec(
         interaction_radius=args.interaction_radius,
