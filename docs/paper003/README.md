@@ -63,6 +63,7 @@ without bound.
 | Document | What it settles |
 | --- | --- |
 | [`paper003_capture_design_v0.1.md`](paper003_capture_design_v0.1.md) | **The relation.** Why capture, and why carriage was recommended and then rejected |
+| [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md) | **The preregistration.** Locked in design, open in numbers until an Isaac calibration pilot for capture |
 | [`paper003_self_arm_prereg_v1.0.md`](paper003_self_arm_prereg_v1.0.md) | **H2's decisive comparison**, and its rule fixed before the arm existed |
 | [`paper003_onset_is_not_predictable_v0.1.md`](paper003_onset_is_not_predictable_v0.1.md) | **What the paper may not claim**, and why the three-step band is the right answer |
 | [`paper003_displacement_ceiling_v0.1.md`](paper003_displacement_ceiling_v0.1.md) | Why collision cannot work |
@@ -82,7 +83,7 @@ without bound.
 
 | Document | Problem |
 | --- | --- |
-| [`paper003_prereg_draft_v0.1.md`](paper003_prereg_draft_v0.1.md) | Assumes the **collision** coupling throughout, grades variants by reference speed (measured non-functional), and its sample-size section predates the change of relation. **Needs a rewrite, not an edit** |
+| [`paper003_prereg_draft_v0.1.md`](paper003_prereg_draft_v0.1.md) | **Superseded entirely** by [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md). Collision throughout; provenance only, not to be cited for any design decision |
 | [`paper003_commitment_task_v0.1.md`](paper003_commitment_task_v0.1.md) | Describes carriage — "a bread slice carried by a tray" — and its arm-B band came from that rejected model |
 | [`paper003_pilot_runbook_v0.1.md`](paper003_pilot_runbook_v0.1.md) | Targets the reach task; the scene is now the lift task |
 
@@ -177,8 +178,20 @@ without bound.
    `static` and `noise` and fail H4, and its weak form moves the usable band by
    a step or two. The two-body encounter stays with collision.
    [Why](paper003_onset_is_not_predictable_v0.1.md)
-8. **Rewrite the preregistration**, which assumes collision throughout.
-9. **Then** the confirmatory sample.
+8. ~~Rewrite the preregistration, which assumes collision throughout.~~
+   **Done** — [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md), which
+   supersedes the draft entirely. Locked in design: arms including SELF, the
+   commit window, the confirmatory test, the sizing *rule*, the scope limits,
+   and a list of tuning that will not be done. **Open in numbers**, all marked
+   `PENDING`, because none of them may be inherited from injected coupling.
+9. **An Isaac calibration pilot for capture.** The first thing that could end
+   this design, and it is not a formality: every result so far is arithmetic —
+   the cell computes the target's motion and writes it into the command.
+   Whether the lift scene produces a *capture* rather than a collision is
+   unmeasured. The pilot must also give the engagement rate under contact
+   jitter (which sets `n`), `normal_alignment` under real contact, and the
+   observation noise the gate's margin is stated against.
+10. **Then** the confirmatory sample. Not on this machine — GPU, on the pod.
 
 ## Not in this repository
 
