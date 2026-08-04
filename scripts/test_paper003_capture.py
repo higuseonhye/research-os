@@ -21,7 +21,9 @@ import numpy as np
 from wm_expansion.commitment_task import ReferencePatternEstimator
 from wm_expansion.relation_dynamics import (
     CaptureSpec,
+    RelationGateThresholds,
     capture_displacement,
+    evaluate_relation_gate,
     predict_capture,
 )
 
@@ -184,6 +186,101 @@ class PredictionTests(unittest.TestCase):
         targets, references, _ = rollout(300)
         with self.assertRaises(ValueError):
             predict_capture(targets[10], references[:11], -1, self.estimator, self.spec)
+
+
+class GateTests(unittest.TestCase):
+    """The gate under capture, where the discriminating evidence is inverted.
+
+    Under collision the question is whether the target stops once the body
+    leaves, so evidence from before the first contact is discarded. Under
+    capture the body never leaves; restricting to what follows makes the gate
+    abstain on every cell, and the evidence that discriminates is exactly the
+    discarded one - the target was still while the body was far.
+    """
+
+    RADIUS = 0.012
+    HORIZON = 6
+
+    def _self_moving(self, seed: int, onset: int, speed: float = 0.008,
+                     on: int = 8, off: int = 4, steps: int = 90,
+                     noise: float = 0.0003):
+        """A target that starts moving on its own, unrelated to the body.
+
+        Its pattern is the same intermittent one, and its onset is unrelated to
+        the body's arrival - which is what makes it a control rather than a
+        relabelling. A target moving with the *same* pattern from the *same*
+        step is not a different world at all: the trajectories are identical and
+        only the causal story differs, so no gate can separate them and none
+        should be claimed to. That version was tried and discarded.
+        """
+        rng = np.random.default_rng(seed)
+        azimuth = rng.uniform(0.0, 2.0 * np.pi)
+        axis = np.array([np.cos(azimuth), np.sin(azimuth), 0.0])
+        own = np.array([np.cos(azimuth + 1.1), np.sin(azimuth + 1.1), 0.0])
+        target = np.array([0.20, 0.0, 0.0])
+        reference = target - axis * (speed * 22 + 0.5 * self.RADIUS)
+        targets, references = [], []
+        for step in range(steps):
+            moving = (step % (on + off)) < on
+            reference = reference + (speed * axis if moving else np.zeros(3))
+            if step >= onset and moving:
+                target = target + speed * own
+            targets.append(target + rng.normal(0.0, noise, 3))
+            references.append(reference.copy())
+        return np.array(targets), np.array(references)
+
+    def _fires(self, targets, references, thresholds) -> bool:
+        return evaluate_relation_gate(
+            targets, references, thresholds,
+            interaction_radius=self.RADIUS, horizon=self.HORIZON,
+        ).fired
+
+    def test_one_gate_covers_both_relations(self) -> None:
+        """A capture-specific threshold set was written and deleted.
+
+        The reasoning was that capture inverts the evidence - the body never
+        leaves, so restricting the contrast to what follows first contact should
+        leave nothing to compare. Measured, a carried target keeps a small
+        separation from its carrier and the pauses supply far-field steps
+        anyway: 20 usable deltas rather than none.
+        """
+        targets, references, _ = rollout(300, noise=0.0003)
+        decision = evaluate_relation_gate(
+            targets, references, RelationGateThresholds(),
+            interaction_radius=self.RADIUS, horizon=self.HORIZON,
+        )
+        self.assertGreater(decision.post_contact_far_deltas, 0)
+        self.assertTrue(decision.fired)
+
+    def test_it_fires_on_capture(self) -> None:
+        thresholds = RelationGateThresholds()
+        fired = [
+            self._fires(*rollout(seed, noise=0.0003)[:2], thresholds)
+            for seed in range(300, 320)
+        ]
+        self.assertGreaterEqual(float(np.mean(fired)), 0.90)
+
+    def test_it_refuses_a_target_that_moves_on_its_own(self) -> None:
+        thresholds = RelationGateThresholds()
+        for onset, label in ((12, "before the body could arrive"), (60, "after it passed")):
+            fired = [
+                self._fires(*self._self_moving(seed, onset), thresholds)
+                for seed in range(300, 320)
+            ]
+            with self.subTest(onset=label):
+                self.assertLessEqual(float(np.mean(fired)), 0.10)
+
+    def test_the_controls_are_observably_different_worlds(self) -> None:
+        """A control that produces an identical trajectory is not a control.
+
+        The first version had the target start moving with the same pattern at
+        the same step the body arrived. That is the same data with a different
+        causal story - no gate can separate them and none should be claimed to.
+        These differ in onset and direction, so they are separable in principle.
+        """
+        captured, _, _ = rollout(300, noise=0.0)
+        moving, _ = self._self_moving(300, onset=12, noise=0.0)
+        self.assertGreater(float(np.max(np.abs(captured - moving))), 0.005)
 
 
 if __name__ == "__main__":

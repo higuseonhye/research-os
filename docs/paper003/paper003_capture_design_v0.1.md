@@ -66,18 +66,32 @@ is not yet attached. A correct arm D predicts *when* the reference reaches the
 target, and applies carriage only from that step. So 0.50 is a floor produced by
 a deliberately crude model, not a ceiling on the design.
 
-**A gate that fires on capture.** The current gate restricts its proximity
-contrast to evidence gathered *after* first contact, because for collision the
-discriminating question is whether the target stops once the body leaves. Under
-capture the body never leaves, so there is no post-contact far-field period and
-the gate abstains — the same degeneracy carriage showed. The evidence that
-matters for capture is the opposite one: the target was **still while the body
-was far**, and moves once it arrives. That is pre-contact evidence, which the
-current rule discards.
+**A gate that fires on capture — which turned out to need nothing.**
 
-So capture and collision need different evidence, and the gate has to know which
-relation it is looking at. That is real work, and it is the next step rather than
-a detail.
+The prediction here was that capture inverts the evidence. Under collision the
+discriminating question is whether the target stops once the body leaves, so
+evidence from before the first contact is discarded; under capture the body
+never leaves, so there should be no post-contact far-field period and the gate
+should abstain on every cell.
+
+**Measured, it does not.** A carried target keeps a small separation from its
+carrier, and the pauses supply far-field steps in any case: 20 usable deltas
+rather than none. The same thresholds fire on capture at **1.00** and reject a
+target moving on its own at **0.00**, which is exactly what a capture-specific
+variant gave. That variant was written and then deleted rather than shipped on a
+premise its own test contradicted.
+
+One gate covers both relations.
+
+### A control that was not one
+
+The first control for capture had the target begin moving with the *same*
+pattern at the *same* step the body arrived. That is not a different world: the
+trajectories are identical and only the causal story differs, so no gate can
+separate them and none should be claimed to. It fired at 1.00 with statistics
+identical to capture, which is the correct behaviour and an uninformative test.
+
+The controls now differ in onset and direction, and are rejected at 0.00.
 
 ## What is not settled
 

@@ -306,6 +306,18 @@ class RelationGateThresholds:
     # decide until enough far-field steps have accrued *after* it, separates
     # them completely - treatment 1.00, frictionless slide 0.00.
     contrast_from_first_contact: bool = True
+    # A separate threshold set for the capture relation was written and then
+    # deleted. The reasoning behind it was that capture inverts the evidence:
+    # the body never leaves, so there is no post-contact far-field period and
+    # restricting the contrast to one should make the gate abstain.
+    #
+    # Measured, it does not. A carried target keeps a small separation from its
+    # carrier, and the pauses supply far-field steps in any case, so this rule
+    # leaves 20 usable deltas rather than none. The same thresholds fire on
+    # capture at 1.00 and reject a target that moves on its own at 0.00 - the
+    # identical result the special-cased version gave. One gate covers both
+    # relations, and the variant was removed rather than shipped on a premise
+    # the test contradicted.
     # Compare net displacement per step rather than mean per-step speed. A still
     # target under observation noise moves every step but goes nowhere, so its
     # path length grows with the window while its net displacement does not.
