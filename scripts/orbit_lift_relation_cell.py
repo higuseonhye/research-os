@@ -9,12 +9,16 @@ like a sampling problem - contact happens at 2 to 5 mm here while moving the
 block needs about 40 mm/step - but the real cause was a confusion between two
 different speeds.
 
-`--approach-speed` is what the arm is *commanded*; the arm's achievable speed is
-roughly a sixth of it. `EncounterSpec.reference_speed` is the rate at which the
-scripted goal point advances, and it must be the achievable speed, or the script
-runs away from an arm that cannot follow it. Set to the commanded value it was
-3.3 times the interaction radius, so the scripted body stepped clean over the
-contact zone every time and the encounter contained no contact to observe.
+`--approach-speed` is what the arm is *commanded*; `EncounterSpec.reference_speed`
+is the rate at which the scripted goal point advances, and it must be the
+achievable speed, or the script runs away from an arm that cannot follow it.
+
+**"Roughly a sixth of the commanded value" was wrong**, and the first GPU pilot
+is what showed it. Doubling the command from 40 to 80 mm/step changed nothing at
+all - identical tracking error to the millimetre - because the arm saturates at
+its own limit, measured here at **2.8 to 3.3 mm/step** whatever it is told. The
+command is not the lever; the script speed is. That claim could not have been
+checked on CPU, where there is no command and no arm.
 
 `EncounterSpec.validate` now refuses a speed at or above the radius, the same
 way it already refuses a withdrawal that does not clear it.
@@ -83,8 +87,10 @@ parser.add_argument("--interaction-radius", type=float, default=0.012,
                          "contact here")
 parser.add_argument("--approach-speed", type=float, default=0.04,
                     help="metres per step the arm is COMMANDED toward the "
-                         "scripted point. The arm achieves roughly a sixth of "
-                         "this, so it is not the encounter's speed")
+                         "scripted point. Raising it does NOT make the arm "
+                         "faster - measured, 40 and 80 gave identical tracking "
+                         "to the millimetre, because the arm saturates near "
+                         "3 mm/step. Set --script-speed below that instead")
 parser.add_argument("--script-speed", type=float, default=0.006,
                     help="metres per step the encounter's scripted point "
                          "advances. This must be the arm's ACHIEVABLE speed, "
@@ -128,6 +134,15 @@ parser.add_argument("--schedule", type=str, default="probe",
                          "block back and breaks the pattern estimator")
 parser.add_argument("--burst-on", type=int, default=10)
 parser.add_argument("--burst-off", type=int, default=4)
+parser.add_argument("--preroll", type=int, default=80,
+                    help="steps allowed to bring the arm to the encounter's "
+                         "first point BEFORE the episode starts. The arm begins "
+                         "wherever the scene resets it - a fixed 50.2 mm from "
+                         "the script's start in the first pilot, at every speed "
+                         "tried - and those steps are travel to the start line, "
+                         "not tracking. 0 disables it")
+parser.add_argument("--preroll-tolerance", type=float, default=0.003,
+                    help="metres; how close is close enough to start")
 parser.add_argument("--probe-advance", type=int, default=7)
 parser.add_argument("--probe-withdraw", type=int, default=5,
                     help="steps of withdrawal. It must clear the interaction "
@@ -155,7 +170,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wm_expansion.cell import CellSpec, ContactWorld, run_cell  # noqa: E402
 from wm_expansion.commitment_episode import EpisodeSpec  # noqa: E402
 from wm_expansion.capture_verdict import capture_verdict  # noqa: E402
-from wm_expansion.encounter import EncounterSpec  # noqa: E402
+from wm_expansion.encounter import (  # noqa: E402
+    EncounterSpec,
+    bodies_at,
+    draw_geometry,
+)
 
 
 def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
@@ -225,6 +244,53 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         return bool(terminated[0]) or bool(truncated[0])
 
     target0 = read_object()
+
+    encounter = EncounterSpec(
+        interaction_radius=args.interaction_radius,
+        reference_speed=args.script_speed,
+        pusher_speed=args.script_speed,
+        schedule=args.schedule,
+        burst_on=args.burst_on,
+        burst_off=args.burst_off,
+        probe_advance=args.probe_advance,
+        probe_withdraw=args.probe_withdraw,
+        probe_hold=args.probe_hold,
+        bodies=args.bodies,
+    )
+
+    # Put the arm where the encounter starts, before the encounter starts.
+    #
+    # Measured on the first pilot: the arm begins wherever the scene resets it,
+    # which was a fixed 50.2 mm from the script's first point regardless of
+    # every speed setting tried. Those steps are the arm travelling to the start
+    # line, not following the encounter, and they were being scored as tracking
+    # error - and worse, the block's neighbourhood was being crossed on the way.
+    #
+    # The geometry is redrawn identically inside `run_cell` from the same seed
+    # and the same `target0`, so this reaches the true step-0 position rather
+    # than an approximation of it.
+    geometry = draw_geometry(args.seed, target0, encounter)
+    start = bodies_at(0, geometry, encounter)[0]
+    preroll_steps = 0
+    for preroll_steps in range(1, args.preroll + 1):
+        gap = start - read_ee()
+        if float(np.linalg.norm(gap)) <= args.preroll_tolerance:
+            break
+        reach = float(np.linalg.norm(gap))
+        delta = gap if reach <= args.approach_speed else gap / reach * args.approach_speed
+        action = torch.zeros((args.num_envs, action_dim), device=env.unwrapped.device)
+        action[0, :3] = torch.as_tensor(delta, device=action.device, dtype=action.dtype)
+        # Open on the way in, always. A closed gripper crossing the block's
+        # neighbourhood is a collision before the encounter has begun.
+        if action_dim >= 4:
+            action[0, -1] = float(args.gripper_open if args.grasp else args.gripper)
+        with torch.no_grad():
+            env.step(action)
+    preroll_gap = float(np.linalg.norm(start - read_ee()))
+    # The block must not have been touched getting here, or `target0` is stale
+    # and the geometry `run_cell` redraws is not the one just used.
+    preroll_disturbed = float(np.linalg.norm(read_object() - target0))
+
     record = run_cell(
         target0,
         EpisodeSpec(
@@ -232,18 +298,7 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             dispense_latency=args.dispense_latency,
             interaction_radius=args.interaction_radius,
         ),
-        EncounterSpec(
-            interaction_radius=args.interaction_radius,
-            reference_speed=args.script_speed,
-            pusher_speed=args.script_speed,
-            schedule=args.schedule,
-            burst_on=args.burst_on,
-            burst_off=args.burst_off,
-            probe_advance=args.probe_advance,
-            probe_withdraw=args.probe_withdraw,
-            probe_hold=args.probe_hold,
-            bodies=args.bodies,
-        ),
+        encounter,
         CellSpec(
             condition=args.condition,
             seed=args.seed,
@@ -285,6 +340,14 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "gripper_series": place.gripper_series,
     }
     record["schedule"] = args.schedule
+    # A cell whose pre-roll did not converge started somewhere other than the
+    # encounter's first point, so its tracking error is not the encounter's.
+    record["preroll"] = {
+        "steps": preroll_steps,
+        "gap": preroll_gap,
+        "converged": preroll_gap <= args.preroll_tolerance,
+        "block_disturbed": preroll_disturbed,
+    }
     record["scene_inventory"] = inventory
     record["commanded_bodies"] = commanded
     record["observed_ee"] = observed_ee
