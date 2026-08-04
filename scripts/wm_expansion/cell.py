@@ -268,6 +268,41 @@ class ContactWorld:
         return target, observed, terminated
 
 
+def contact_arrivals(
+    targets: np.ndarray, bodies: np.ndarray, radius: float
+) -> list[int]:
+    """Steps at which a body crossed into contact range of the target.
+
+    The anchor for the commit window. Two anchors that look simpler were tried
+    and are wrong:
+
+    **The target's first motion.** Wrong for the two-body encounter, which
+    contains two transitions on purpose - the prober demonstrates the relation
+    and the pusher applies it - and the one being predicted is the second.
+    Anchored on the first, no eligible step in a two-body collision cell fell
+    inside the window at all, and every cell silently took the fallback.
+
+    **Every step the target resumes moving.** Wrong under a burst schedule: a
+    carried target stops with its carrier and starts again, and reading those as
+    transitions puts the commit window on the target's *own* intermittency -
+    which is the carriage regime, where a single-entity model matches the
+    relational one and H2 fails. A pause is not a new relation.
+
+    A body crossing into range is neither. It is observable, it happens once per
+    approach whatever the target then does, and nothing about which arm profits
+    enters it.
+    """
+
+    if len(targets) < 2 or radius <= 0.0:
+        return []
+    inside = np.linalg.norm(bodies - targets[:, None, :], axis=2).min(axis=1) < radius
+    return [
+        int(step)
+        for step in range(len(inside))
+        if inside[step] and not (step and inside[step - 1])
+    ]
+
+
 def run_cell(
     target0: np.ndarray,
     spec: EpisodeSpec,
@@ -366,6 +401,40 @@ def run_cell(
     usable = [
         c for c in candidates if c["step"] + spec.dispense_latency < len(trajectory)
     ]
+    # The commit window: within one dispense-length of the transition, on
+    # either side.
+    #
+    # Fixed on the structure of the action, which is the only ground available
+    # that no arm appears in. The dispense takes `dispense_latency` steps and
+    # lands where the target then is, so a commit further than that before the
+    # transition completes before anything has happened to the target, and one
+    # further than that after it is measuring a regime the transition no longer
+    # governs. Symmetric because there is no reason to prefer a side, and
+    # preferring one is exactly how "so that arm B fails" would enter.
+    #
+    # What it fixes is not a preference but an artefact. The eligibility screen
+    # admits any step where the target will move, and under capture that is
+    # every step after the arrival, because a carried target rides forever. So
+    # the size of the eligible set - and with it the commit distribution - was
+    # set by `episode_steps`, an arbitrary number, and almost all of its mass
+    # sat in the riding tail where a constant-velocity model absorbs the motion.
+    # The same cell scored differently for running longer.
+    #
+    # Applied uniformly, and it is not selective: `drift`, `noise` and `static`
+    # have no arrival in them at all, keep every eligible step, and commit
+    # exactly as they did before, which is what leaves H4 testable. `slide`
+    # keeps its post-strike steps, which is what makes it the control that could
+    # collapse this paper into Paper 002.
+    arrivals = contact_arrivals(
+        np.asarray([o["target"] for o in observations]),
+        np.asarray([o["references"] for o in observations]),
+        spec.interaction_radius,
+    )
+    in_window = [
+        c for c in usable
+        if any(abs(c["step"] - a) <= spec.dispense_latency for a in arrivals)
+    ]
+    usable = in_window or usable
     if usable:
         if cell.commit_step >= 0:
             chosen = min(usable, key=lambda c: abs(c["step"] - cell.commit_step))
@@ -392,6 +461,18 @@ def run_cell(
         "world": type(world).__name__,
         **geometry.to_dict(),
         "eligible_steps": [c["step"] for c in candidates],
+        # Where the arrivals were, and whether the commit landed in a window.
+        # A cell that committed outside one is not invalid - the conditions with
+        # no arrival in them are meant to - but pooling the two without being
+        # able to tell them apart is how the capture bias got in, and
+        # `commit_offset` is what the analysis reads to check it.
+        "arrivals": arrivals,
+        "commit_offset": (
+            None
+            if (not arrivals or committed_at is None)
+            else min((committed_at - a for a in arrivals), key=abs)
+        ),
+        "committed_in_window": bool(in_window),
         "committed_at": committed_at,
         "d_estimated": d_estimated,
         "gate_fire_rate": (

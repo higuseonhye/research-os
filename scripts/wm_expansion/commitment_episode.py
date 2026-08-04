@@ -392,25 +392,12 @@ class CommitmentEpisode:
         #    under its own dynamics moves during the dispense even with no body
         #    near it, and that cell is worth scoring: it is where a
         #    constant-velocity arm should win and a relational one decline.
-        target_speed = float(np.linalg.norm(target - previous_target))
-        if target_speed * self.spec.dispense_latency > self.spec.tolerance:
+        if self.already_moving():
             return True
 
         # 2. A body will be in contact for long enough during the window to act.
         if reference_future is not None:
-            future = np.asarray(reference_future, dtype=np.float64)
-            if future.ndim == 2:
-                future = future[:, None, :]
-            if future.ndim != 3 or future.shape[2] != target.shape[0]:
-                raise ValueError("reference_future must be [step, dim] or [step, body, dim]")
-            horizon = min(len(future), self.spec.dispense_latency)
-            in_contact = sum(
-                1
-                for step in range(horizon)
-                if float(np.min(np.linalg.norm(future[step] - target, axis=1)))
-                < self.spec.interaction_radius
-            )
-            return in_contact >= self.spec.min_contact_steps
+            return self.contact_within_window(reference_future)
 
         # Fallback when the harness does not supply the bodies' future.
         #
@@ -433,6 +420,45 @@ class CommitmentEpisode:
         closing = float(np.linalg.norm(target - previous_reference)) - separation
         reach = separation - self.spec.interaction_radius
         return closing > 0.0 and 0.0 < reach <= closing * self.spec.dispense_latency
+
+    def already_moving(self) -> bool:
+        """Would the target's present motion alone carry it out of tolerance?
+
+        The first clause of the eligibility screen, exposed separately because
+        the commit window has to be able to tell it from the second - under a
+        capture it is true at every step after the arrival, since a carried
+        target rides forever.
+        """
+
+        if len(self.targets) < 2:
+            return False
+        speed = float(np.linalg.norm(self.targets[-1] - self.targets[-2]))
+        return speed * self.spec.dispense_latency > self.spec.tolerance
+
+    def contact_within_window(self, reference_future: ArrayLike) -> bool:
+        """Will a body be in contact long enough during the dispense to act?
+
+        The second clause of the screen. `reference_future` comes from the
+        harness for the reason `motion_expected` gives: predicting it would
+        route eligibility through arm D's estimator.
+        """
+
+        if len(self.targets) < 2:
+            return False
+        target = self.targets[-1]
+        future = np.asarray(reference_future, dtype=np.float64)
+        if future.ndim == 2:
+            future = future[:, None, :]
+        if future.ndim != 3 or future.shape[2] != target.shape[0]:
+            raise ValueError("reference_future must be [step, dim] or [step, body, dim]")
+        horizon = min(len(future), self.spec.dispense_latency)
+        in_contact = sum(
+            1
+            for step in range(horizon)
+            if float(np.min(np.linalg.norm(future[step] - target, axis=1)))
+            < self.spec.interaction_radius
+        )
+        return in_contact >= self.spec.min_contact_steps
 
     def aims(self, true_landing: ArrayLike | None = None) -> dict[str, np.ndarray]:
         """Each arm's predicted landing point at the moment of commitment.
