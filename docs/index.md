@@ -10,7 +10,7 @@
   <p class="cta-row">
     <a class="button primary" href="program/after_the_spill_v2.html">Program charter</a>
     <a class="button" href="paper002/project_page.html">Paper 002 evidence</a>
-    <a class="button" href="mismatch_lab/README.html">Mismatch Lab</a>
+    <a class="button" href="mismatch_lab/">Mismatch Lab</a>
   </p>
 </section>
 
@@ -85,7 +85,7 @@ Selected proof points:
 | The whole program in one document | [After the Spill v2](program/after_the_spill_v2.md) |
 | The document that tries to break the idea | [D001 Claim & Novelty Audit](program/D001_claim_novelty_audit.md) |
 | The strongest current evidence | [Paper 002 project page](paper002/project_page.html) |
-| The public product/lab surface | [Mismatch Lab](mismatch_lab/README.md) |
+| The public product/lab surface | [Mismatch Lab](mismatch_lab/) |
 | The repository | [GitHub](https://github.com/higuseonhye/research-os) |
 
 ## Boundary
