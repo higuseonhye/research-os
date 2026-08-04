@@ -1,76 +1,141 @@
 # Paper 003 — Missing relation & capability expansion
 
-> **Status:** design v0.1 · Isaac calibration pilot run (10 seeds, excluded from evidence) · not preregistered · Experiment ID TBD
-> **Program context:** builds on [Paper 002](../paper002/README.md) (missing dynamic mode) · next taxonomy cell = missing causal relation
+> **Status 2026-08-04.** Design stage. Not preregistered, no confirmatory data.
+> The relation was **changed today** after measuring three candidates, and
+> several documents in this folder are superseded or carry corrections.
+> **Read this file first** — the folder is not safe to read in alphabetical
+> order.
+>
+> **Program context:** builds on [Paper 002](../paper002/README.md) (missing
+> dynamic mode); this is the next taxonomy cell, a missing causal relation.
 
 ---
 
-## Working title
+## Research question (unchanged)
 
-**Beyond Error Reduction: Does Structural Expansion Enable Task Capability That Repair Cannot?**
+> When repeated failures reveal that the agent's world model is missing not a
+> mode but a **relation** between entities, does adding a prepared
+> relation-module expansion open task capability that neither parameter repair
+> nor a single mode-expert reaches — measured as growth of the achievable-task
+> space, not only reduced prediction error?
 
----
-
-## Research question (v0.1)
-
-> When repeated failures reveal that the agent's world model is missing not a mode but a **relation** between entities, does adding a prepared relation-module expansion open task capability that neither parameter repair nor a single mode-expert reaches — measured as growth of the achievable-task space, not only reduced prediction error?
-
-See [`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) · [`paper003_description_v0.1.md`](paper003_description_v0.1.md)
-
----
-
-## What's new vs Paper 002
-
-| | Paper 002 | Paper 003 |
-| --- | --- | --- |
-| Missing thing | Dynamic mode (static vs drift) | Causal relation (dependency between two entities) |
-| Expansion operator | `add_dynamics_expert` | `add_relation_module` |
-| Primary success metric | Prediction error, recoverability | **+ capability threshold crossing** (0% → achievable) |
+[`paper003_rq_v0.1.md`](paper003_rq_v0.1.md) ·
+[`paper003_description_v0.1.md`](paper003_description_v0.1.md)
 
 ---
 
-## Status
+## What changed, and why it matters
 
-- [x] RQ drafted (v0.1)
-- [x] Method / protocol drafted (v0.1)
-- [x] NAMING.md program roadmap updated
-- [x] Lit review — execution-horizon framing vs internal RQ
-- [x] Related work — relational/graph world models, capability-boundary framing precedent
-- [x] Environment / simulator choice locked — Isaac Sim/ORBIT Reach continuation, physical-coupling relation
-- [x] Relation module + gate implemented and separated on a CPU proxy ([`relation_dynamics.py`](../../scripts/wm_expansion/relation_dynamics.py), 10 tests)
-- [x] **Capability threshold crossing — constructed.** A continuous reach-and-hold task produced no gap; a [commitment-point task](paper003_commitment_task_v0.1.md) does, with arm B's lockout speed predicted exactly from task geometry.
-- [x] **Arm D estimates the reference pattern online** — no longer handed it. Under 20% observation noise at the speed where B is locked out: B 0.00, C 0.29, **D 0.69**, oracle 1.00. The crossing survives; estimating costs ~0.31.
-- [x] **Robustness to irregular timing measured.** The estimator does exploit periodicity — it loses ~0.4 from a strict cycle to ±3 steps of jitter — but the gap holds in the worst case tested (jitter + noise: B 0.08, **D 0.52**).
-- [x] **Preregistration drafted** — [draft v0.1](paper003_prereg_draft_v0.1.md). Arms, task, primary endpoint, and hypotheses H1–H4 locked; **six parameters left open** because they need real physics, not a 1-D proxy.
-- [x] **Episode driver** — all decision logic in [`commitment_episode.py`](../../scripts/wm_expansion/commitment_episode.py), CPU-tested, so the Isaac script is a shell over scene setup
-- [x] **Isaac pilot runner** — [`orbit_reach_relation_pilot.py`](../../scripts/orbit_reach_relation_pilot.py) + [runbook](paper003_pilot_runbook_v0.1.md). Ran in Isaac after eight defects a GPU-less environment could not catch
-- [x] **Calibration pilot run in Isaac** (10 seeds, excluded from evidence) — [RESULTS](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/isaac_relation_pilot_v0.1/RESULTS.md). The operators dissociate: arm C lands the mode cell (0.0 mm, 1.00) and arm D declines there; arm D leads on the relational cell. No regression where the relation is absent.
-- [x] **Commit policy locked** — uniform over eligible steps, with its expected directional effect declared before the run
-- [x] **Arm D estimates the coupling** rather than being handed it — radius and gain fitted from observed contacts
-- [ ] **Sample size** — nine committed treatment cells; arm D's 0.67 vs 0.56 lead is one cell and cannot support a rate comparison
-- [ ] **Real-contact coupling** — [design v0.1](paper003_real_contact_design_v0.1.md). The coupling is currently injected through the target command and arm D inverts the same function, so deliverable 2 is unmet and arm D's model is exactly correct by construction. Next GPU run reads `scene_inventory` to pick between reusing an existing rigid body or adding one.
-- [ ] Speed sweep to locate arm B's near-zero band
-- [ ] Freeze the preregistration, then run confirmatory
+The question is unchanged. What changed is **what "relation" means in the
+implementation**. Three candidates were measured against each other, and the
+decision turned on a single-entity control — a model that sees no second body
+and learns the burst pattern of the *target's own* trajectory.
+
+| Relation | Relation necessary | Effect exceeds tolerance |
+| --- | :---: | :---: |
+| **Collision** — struck and released (what the Isaac line ran all day) | yes | **no** |
+| **Carriage** — rides the reference throughout | **no** | yes |
+| **Capture** — reference arrives at a still target, then carries it | **yes** | **yes** |
+
+**Collision** cannot clear the placement tolerance. The push moves the target
+away, which reduces penetration, which reduces the push, so displacement per
+contact sits at the order of the interaction radius — below the 20 mm criterion.
+Measured five independent ways
+([the ceiling](paper003_displacement_ceiling_v0.1.md)).
+
+**Carriage** clears it easily and makes the relation unnecessary: the
+single-entity model matched the relational arm exactly, so H2 fails.
+
+**Capture is the design.** Before the arrival the target is perfectly still, so
+its own history says nothing; afterwards it rides, so the effect accumulates
+without bound.
+
+---
+
+## Read in this order
+
+### Current
+
+| Document | What it settles |
+| --- | --- |
+| [`paper003_capture_design_v0.1.md`](paper003_capture_design_v0.1.md) | **The relation.** Why capture, and why carriage was recommended and then rejected |
+| [`paper003_displacement_ceiling_v0.1.md`](paper003_displacement_ceiling_v0.1.md) | Why collision cannot work |
+| [`paper003_branch_b_scene_v0.1.md`](paper003_branch_b_scene_v0.1.md) | The Isaac scene with a rigid object, and where 20 mm comes from |
+| [`paper003_related_work_v0.1.md`](paper003_related_work_v0.1.md) · [`paper003_lit_positioning_v0.1.md`](paper003_lit_positioning_v0.1.md) | Positioning |
+
+### Superseded or partly wrong — check the header before citing
+
+| Document | Status |
+| --- | --- |
+| [`paper003_sliding_problem_v0.1.md`](paper003_sliding_problem_v0.1.md) | **Reversed the same day.** Concluded the gate collapses under real contact; it does not |
+| [`paper003_two_body_encounter_v0.1.md`](paper003_two_body_encounter_v0.1.md) | Its tolerance argument is wrong (header says so). The machinery is real; the collision coupling under it is superseded |
+| [`paper003_encounter_does_not_scale_v0.1.md`](paper003_encounter_does_not_scale_v0.1.md) | The scaling diagnosis holds; its proposed fix was overtaken by the change of relation |
+| [`paper003_real_contact_design_v0.1.md`](paper003_real_contact_design_v0.1.md) | Its Branch A/B question is settled — the scene exists |
+
+### Substantially outdated, not yet rewritten
+
+| Document | Problem |
+| --- | --- |
+| [`paper003_prereg_draft_v0.1.md`](paper003_prereg_draft_v0.1.md) | Assumes the **collision** coupling throughout, grades variants by reference speed (measured non-functional), and its sample-size section predates the change of relation. **Needs a rewrite, not an edit** |
+| [`paper003_commitment_task_v0.1.md`](paper003_commitment_task_v0.1.md) | Describes carriage — "a bread slice carried by a tray" — and its arm-B band came from that rejected model |
+| [`paper003_pilot_runbook_v0.1.md`](paper003_pilot_runbook_v0.1.md) | Targets the reach task; the scene is now the lift task |
+
+---
+
+## Settled
+
+- **The scene.** `Isaac-Lift-Block-PSM-IK-Rel-Play-v0` reports
+  `rigid_objects: ['object']` and command `object_pose`. The bootstrap used to
+  delete it as "incompatible"; the incompatibility was two lines setting a debug
+  marker's scale.
+- **The placement tolerance: 20 mm**, on two independent grounds — the task
+  family's own `mdp/terminations.py` threshold, and the block's half-height.
+- **The gate.** Fires on capture at 1.00 and rejects self-moving controls at
+  0.00, using the *same* thresholds as collision. A capture-specific variant was
+  written and deleted after its premise failed a test.
+- **The gate under real contact.** Fires on every Isaac trace containing a
+  strike, with `cv_gain` between −0.20 and −0.75 — a constant-velocity model is
+  *worse* than zero-order, so Paper 002's operator does not absorb the residual.
+- **The cell loop.** `wm_expansion/cell.py` runs the same code the GPU runs with
+  the simulator behind one callback. It has caught six defects before GPU time.
+
+## Open, in order
+
+1. **Connect capture to the cell loop and the encounter.** The coupling and a
+   two-phase relational prediction exist and are tested; nothing drives a cell
+   with them yet.
+2. **The commit window relative to the capture.** Must be fixed on arm-neutral
+   grounds — "so that arm B fails" is not one.
+3. **Rewrite the preregistration**, which assumes collision throughout.
+4. **Then** the confirmatory sample.
+
+## Not in this repository
+
+Isaac records from 2026-08-04 were written on the VESSL pod and never pushed —
+the sweeps under `results/paper003_probe_sweep`, `results/gate_v*`,
+`results/lift_*`. Their **numbers are recorded** in the documents above and under
+[`exp_surg_004_relation_expansion/results/`](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/).
+A rerun should regenerate them rather than hunt for the files, since the
+encounter has changed since.
+
+## Code
+
+| Module | Role |
+| --- | --- |
+| [`wm_expansion/relation_dynamics.py`](../../scripts/wm_expansion/relation_dynamics.py) | Couplings, the gate, the estimators, capture |
+| [`wm_expansion/cell.py`](../../scripts/wm_expansion/cell.py) | One commitment cell, simulator behind a callback |
+| [`wm_expansion/encounter.py`](../../scripts/wm_expansion/encounter.py) | Encounter geometry and schedules |
+| [`wm_expansion/stopping.py`](../../scripts/wm_expansion/stopping.py) | How long a struck object keeps moving |
+| [`wm_expansion/commitment_episode.py`](../../scripts/wm_expansion/commitment_episode.py) | The episode driver and the arms |
+| [`orbit_lift_relation_cell.py`](../../scripts/orbit_lift_relation_cell.py) | Isaac adapter for the lift scene |
+| [`orbit_lift_stopping_probe.py`](../../scripts/orbit_lift_stopping_probe.py) | Strike-and-measure probe |
+
+224 tests, all CPU.
 
 ---
 
 ## Not claiming (public, draft)
 
-General causal discovery · relation invention outside the prepared operator · capability emergence outside the tested task family · clinical or hardware deployment.
-
----
-
-## Links
-
-| Doc | Purpose |
-| --- | --- |
-| [paper003_rq_v0.1.md](paper003_rq_v0.1.md) | Central question, sub-questions, framing note |
-| [paper003_description_v0.1.md](paper003_description_v0.1.md) | Method draft, protocol, capability-threshold metric definition |
-| [paper003_prereg_draft_v0.1.md](paper003_prereg_draft_v0.1.md) | **Draft preregistration** — locked arms/endpoint/hypotheses, and the six parameters the calibration pilot must set |
-| [paper003_pilot_runbook_v0.1.md](paper003_pilot_runbook_v0.1.md) | How to run the calibration pilot, what it must produce, and the runner's known limits |
-| [paper003_real_contact_design_v0.1.md](paper003_real_contact_design_v0.1.md) | Replacing the injected coupling with real contact physics, and what that changes about the claim |
-| [paper003_commitment_task_v0.1.md](paper003_commitment_task_v0.1.md) | The task shape that makes capability threshold crossing measurable, and the breakfast-domain scope boundary |
-| [paper003_related_work_v0.1.md](paper003_related_work_v0.1.md) | Core novelty comparison — relational/graph world models, capability-boundary framing precedent |
-| [paper003_lit_positioning_v0.1.md](paper003_lit_positioning_v0.1.md) | Execution-horizon literature (Garg/Shkurti) — narrower, entry-framing only |
-| [Paper 002](../paper002/README.md) | Parent method this reuses (two-encounter protocol, expansion gate) |
-| [NAMING.md](../NAMING.md) | Program-level roadmap (Paper 003 row) |
+General causal discovery · relation invention outside the prepared operator ·
+capability emergence outside the tested task family · clinical or hardware
+deployment.
