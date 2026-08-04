@@ -63,6 +63,9 @@ without bound.
 | Document | What it settles |
 | --- | --- |
 | [`paper003_capture_design_v0.1.md`](paper003_capture_design_v0.1.md) | **The relation.** Why capture, and why carriage was recommended and then rejected |
+| [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md) | **The preregistration.** Locked in design, open in numbers until an Isaac calibration pilot for capture |
+| [`paper003_self_arm_prereg_v1.0.md`](paper003_self_arm_prereg_v1.0.md) | **H2's decisive comparison**, and its rule fixed before the arm existed |
+| [`paper003_onset_is_not_predictable_v0.1.md`](paper003_onset_is_not_predictable_v0.1.md) | **What the paper may not claim**, and why the three-step band is the right answer |
 | [`paper003_displacement_ceiling_v0.1.md`](paper003_displacement_ceiling_v0.1.md) | Why collision cannot work |
 | [`paper003_branch_b_scene_v0.1.md`](paper003_branch_b_scene_v0.1.md) | The Isaac scene with a rigid object, and where 20 mm comes from |
 | [`paper003_related_work_v0.1.md`](paper003_related_work_v0.1.md) · [`paper003_lit_positioning_v0.1.md`](paper003_lit_positioning_v0.1.md) | Positioning |
@@ -80,7 +83,7 @@ without bound.
 
 | Document | Problem |
 | --- | --- |
-| [`paper003_prereg_draft_v0.1.md`](paper003_prereg_draft_v0.1.md) | Assumes the **collision** coupling throughout, grades variants by reference speed (measured non-functional), and its sample-size section predates the change of relation. **Needs a rewrite, not an edit** |
+| [`paper003_prereg_draft_v0.1.md`](paper003_prereg_draft_v0.1.md) | **Superseded entirely** by [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md). Collision throughout; provenance only, not to be cited for any design decision |
 | [`paper003_commitment_task_v0.1.md`](paper003_commitment_task_v0.1.md) | Describes carriage — "a bread slice carried by a tray" — and its arm-B band came from that rejected model |
 | [`paper003_pilot_runbook_v0.1.md`](paper003_pilot_runbook_v0.1.md) | Targets the reach task; the scene is now the lift task |
 
@@ -139,29 +142,58 @@ without bound.
    [The measurement](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/capture_arms_v0.1/RESULTS.md)
 4. ~~Decide how the gate admits a capture.~~ **Done** — carriage, as a second
    form of positive evidence in the same gate. See Settled, above.
-5. **The overlap between the commit window and arm D's readiness.** The window
-   runs to ±6 around the arrival; arm D cannot act before +4, so 3 of its 13
-   steps are usable and the marginal rate is 0.23 against a conditional 0.78.
-   **Neither side may be moved to fix this** — the window is fixed on the
-   structure of the action and the evidence requirement on the collision
-   equilibrium. It changes through the encounter or not at all, on grounds
-   stated before the run.
+5. ~~The overlap between the commit window and arm D's readiness.~~ **Not a
+   defect, and settled.** Arm D cannot act before +4 because **there is nothing
+   to act on before the capture**: `static` and `noise` are worlds where a body
+   arrives at the target and nothing happens, and it arrives *closer* than in
+   the treatment — 12 and 14 mm against 42 mm, in 1.00 of cells. Up to contact,
+   a capturing approach and a non-capturing one are the same observation. An arm
+   that declined there was correct.
+   [Why](paper003_onset_is_not_predictable_v0.1.md)
 6. ~~Measure the single-entity arm under capture + burst.~~ **Done, and H2
    stands.** Preregistered rule locked before the arm was implemented; 200
    paired cells; **arm D 0.650, SELF 0.000**, 130 discordant pairs all in D's
    favour, one-sided exact McNemar p = 7.3 × 10⁻⁴⁰, margin +0.650. SELF acted
    on 0.675 of cells and was not broken — it holds a median of 4 steps of its
    own motion against a 14-step cycle and extrapolates through a pause it
-   cannot see. **Limitation, recorded:** that disadvantage rests on the window
-   ending at +6, so the protection is bounded in time rather than absolute.
+   cannot see.
    [Rule](paper003_self_arm_prereg_v1.0.md) ·
    [Result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_v1.0/RESULTS.md)
-7. **Redraw the two-body encounter for capture.** It was drawn for collision and
-   does not survive: the prober captures the target and carries it out of the
-   pusher's approach line, so 13 of 40 cells did not resolve and none committed
-   in the window.
-8. **Rewrite the preregistration**, which assumes collision throughout.
-9. **Then** the confirmatory sample.
+
+   **The limitation that came with it is now measured too.** The protection is
+   bounded in time, and the bound is **+30** — a little over two burst cycles
+   after the arrival, on fresh seeds. The protocol band is [−6, +6] and SELF
+   scores ≤ 0.02 inside it, so the catch-up sits five times further out than any
+   commit the protocol makes. What stops arm D first is **the gate**: `cv_gain`
+   climbs as the carry lengthens and arm D declines exactly where it crosses the
+   ceiling, so the clause written for `drift` lands unprompted on the boundary
+   of H2's validity. Past it the sufficient model is a single-entity *periodic*
+   one — neither B, nor C, nor D, and proposed by neither paper.
+   [The bound](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_bound_v0.1/RESULTS.md)
+7. ~~Redraw the two-body encounter for capture.~~ **Retired for this relation,
+   not redrawn.** Under capture the first body to arrive consumes the target, so
+   "demonstrate on one body, apply with another" has nothing to apply to. A
+   decoy repair was designed and rejected for the same reason as item 5: its
+   strong form requires predicting the onset, which would drive arm D to zero on
+   `static` and `noise` and fail H4, and its weak form moves the usable band by
+   a step or two. The two-body encounter stays with collision.
+   [Why](paper003_onset_is_not_predictable_v0.1.md)
+8. ~~Rewrite the preregistration, which assumes collision throughout.~~
+   **Done** — [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md), which
+   supersedes the draft entirely. Locked in design: arms including SELF, the
+   commit window, the confirmatory test, the sizing *rule*, the scope limits,
+   and a list of tuning that will not be done. **Open in numbers**, all marked
+   `PENDING`, because none of them may be inherited from injected coupling.
+9. **An Isaac calibration pilot for capture.**
+   [Runbook](paper003_capture_pilot_runbook_v0.1.md) ·
+   `scripts/run_paper003_capture_pilot.sh`. The first thing that could end
+   this design, and it is not a formality: every result so far is arithmetic —
+   the cell computes the target's motion and writes it into the command.
+   Whether the lift scene produces a *capture* rather than a collision is
+   unmeasured. The pilot must also give the engagement rate under contact
+   jitter (which sets `n`), `normal_alignment` under real contact, and the
+   observation noise the gate's margin is stated against.
+10. **Then** the confirmatory sample. Not on this machine — GPU, on the pod.
 
 ## Not in this repository
 
@@ -186,6 +218,8 @@ encounter has changed since.
 | [`orbit_lift_stopping_probe.py`](../../scripts/orbit_lift_stopping_probe.py) | Strike-and-measure probe |
 
 | [`paper003_self_arm.py`](../../scripts/paper003_self_arm.py) | The preregistered SELF arm test, with no flag to relax the rule |
+| [`paper003_self_arm_bound.py`](../../scripts/paper003_self_arm_bound.py) | Off-protocol probe: where the single-entity arm catches up |
+| [`wm_expansion/capture_verdict.py`](../../scripts/wm_expansion/capture_verdict.py) | Was that trace a capture, a collision, or nothing |
 
 232 tests, all CPU.
 

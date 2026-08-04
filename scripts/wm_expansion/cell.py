@@ -295,12 +295,20 @@ def contact_arrivals(
 
     if len(targets) < 2 or radius <= 0.0:
         return []
-    inside = np.linalg.norm(bodies - targets[:, None, :], axis=2).min(axis=1) < radius
-    return [
-        int(step)
+    # Per body, not against the nearest. Taking the minimum first hides every
+    # arrival after the first while any body remains inside - which under a
+    # capture is forever, since the carrier never leaves. Measured that way, a
+    # two-body capture cell reported one arrival where the pusher reached the
+    # target in 0.68 of cells, and the second arrival - the one the two-body
+    # encounter exists for - was invisible.
+    inside = np.linalg.norm(bodies - targets[:, None, :], axis=2) < radius
+    steps = {
+        step
+        for body in range(inside.shape[1])
         for step in range(len(inside))
-        if inside[step] and not (step and inside[step - 1])
-    ]
+        if inside[step, body] and not (step and inside[step - 1, body])
+    }
+    return sorted(steps)
 
 
 def run_cell(
@@ -367,6 +375,14 @@ def run_cell(
                 "gate_fired": bool(episode.gate_fired()),
                 "proximity_contrast": float(gate.proximity_contrast),
                 "constant_velocity_gain": float(gate.constant_velocity_gain),
+                # Which form of positive evidence the gate found, and the
+                # carriage statistics behind it. Under real contact this is the
+                # first thing to read: a cell that fires through `proximity` is
+                # a collision whatever the scene was meant to produce, and a
+                # capture pilot that reports it has not produced a capture.
+                "gate_evidence": gate.evidence,
+                "carriage_agreement": float(gate.carriage_agreement),
+                "carriage_run": int(gate.carriage_run),
             }
         )
 
