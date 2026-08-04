@@ -108,6 +108,10 @@ def run_probe(env: Any, args: argparse.Namespace) -> dict[str, Any]:
 
     action_dim = env.action_space.shape[-1]
     positions: list[list[float]] = []
+    #: The end effector's pose every step. Needed because the relation gate
+    #: reads both trajectories, and the decisive test is not the toy model's
+    #: retention proxy but the real gate run on a real-contact trace.
+    ee_positions: list[list[float]] = []
     separations: list[float] = []
     phases: list[str] = []
     struck_at: int | None = None
@@ -116,8 +120,10 @@ def run_probe(env: Any, args: argparse.Namespace) -> dict[str, Any]:
 
     for step in range(args.episode_steps):
         obj = object_pose()
+        ee = ee_pose()
         positions.append(obj.tolist())
-        separations.append(float(np.linalg.norm(obj - ee_pose())))
+        ee_positions.append(ee.tolist())
+        separations.append(float(np.linalg.norm(obj - ee)))
         if (
             struck_at is None
             and step > settle_steps
@@ -174,6 +180,7 @@ def run_probe(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "stopping": None if estimate is None else estimate.to_dict(),
         "outlook": gate_outlook(estimate, args.dispense_latency),
         "positions": positions,
+        "ee_positions": ee_positions,
         "separations": separations,
     }
 
