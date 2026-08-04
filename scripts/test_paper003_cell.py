@@ -153,6 +153,40 @@ class ConditionTests(unittest.TestCase):
         self.assertGreaterEqual(rates["D"], rates["B"])
 
 
+class ArrivalTests(unittest.TestCase):
+    """The anchor the commit window hangs on."""
+
+    def test_a_second_body_arriving_is_seen_while_the_first_is_still_there(self) -> None:
+        """The defect a capture makes unmissable.
+
+        `contact_arrivals` took the minimum separation across bodies before
+        looking for a crossing, so no arrival after the first registered while
+        *any* body stayed inside the radius. Under collision that hid nothing -
+        the prober withdraws, the minimum goes back out, and the pusher's
+        arrival crosses. Under capture the carrier never leaves, so a two-body
+        cell reported one arrival while the pusher reached the target in 0.68 of
+        cells, and the second arrival - the one the two-body encounter exists
+        for - was invisible to the window.
+        """
+
+        for coupling in ("collision", "capture"):
+            found = [
+                len(cell("coupled", seed=seed, bodies=2, coupling=coupling)["arrivals"])
+                for seed in range(300, 320)
+            ]
+            with self.subTest(coupling=coupling):
+                self.assertGreaterEqual(float(np.median(found)), 2.0)
+
+    def test_one_body_is_unaffected(self) -> None:
+        """The confirmatory population is single-body, so it must not move."""
+
+        for seed in range(300, 310):
+            record = cell("coupled", seed=seed, bodies=1, coupling="capture",
+                          schedule="burst")
+            with self.subTest(seed=seed):
+                self.assertEqual(len(record["arrivals"]), 1)
+
+
 class TwoBodyTests(unittest.TestCase):
     """Both defects that made a two-body run silently identical to a one-body one."""
 
