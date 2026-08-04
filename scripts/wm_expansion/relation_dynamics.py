@@ -845,6 +845,14 @@ def capture_displacement(
     what a held target inherits. Before capture the target does not move at all
     - not a small push, nothing - which is exactly what makes its own history
     uninformative and the relation necessary.
+
+    **The step it takes hold on is not a carrying step.** `reference` is the
+    body where it now is, having already moved; the target is where it still
+    is. Handing it the body's step as well moved it away from its carrier by
+    exactly that step, so a target captured at 49.9 mm rode at 64.7 mm - outside
+    the radius it was captured at, permanently, and by a margin that grows with
+    the approach speed. Anything reading separations saw the carrier re-arrive
+    once per burst cycle as a result.
     """
 
     spec.validate()
@@ -858,7 +866,7 @@ def capture_displacement(
         separation = float(np.linalg.norm(target_arr - reference_arr))
         if separation >= spec.capture_radius:
             return np.zeros_like(target_arr), False
-        held = True
+        return np.zeros_like(target_arr), True
     return step_arr.copy(), True
 
 
@@ -906,10 +914,11 @@ def predict_capture(
     for step in steps:
         motion = float(step) * direction
         rolling_reference = rolling_reference + motion
-        if not held:
-            separation = float(np.linalg.norm(rolling_target - rolling_reference))
-            if separation < spec.capture_radius:
-                held = True
+        # The arrival step carries nothing, matching `capture_displacement`. A
+        # prediction that carried on it would be a step ahead of the world for
+        # the rest of the horizon.
         if held:
             rolling_target = rolling_target + motion
+        elif float(np.linalg.norm(rolling_target - rolling_reference)) < spec.capture_radius:
+            held = True
     return rolling_target - start

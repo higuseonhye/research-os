@@ -68,6 +68,15 @@ a deliberately crude model, not a ceiling on the design.
 
 **A gate that fires on capture — which turned out to need nothing.**
 
+> **Reversed later the same day. Everything from here to the end of this
+> section is wrong.** The gate fires on capture at **0.00**, not 1.00, and has
+> no post-contact far-field steps at all. The prediction below was correct and
+> the measurement that overturned it was reading an off-by-one in
+> `capture_displacement`: a captured target was thrown one body-step past its
+> carrier, which put the riding separation outside the radius and sorted the
+> pauses into the far field. The variant deleted for failing its own test was
+> deleted against an artefact.
+
 The prediction here was that capture inverts the evidence. Under collision the
 discriminating question is whether the target stops once the body leaves, so
 evidence from before the first contact is discarded; under capture the body

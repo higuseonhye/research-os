@@ -90,9 +90,16 @@ without bound.
   marker's scale.
 - **The placement tolerance: 20 mm**, on two independent grounds — the task
   family's own `mdp/terminations.py` threshold, and the block's half-height.
-- **The gate.** Fires on capture at 1.00 and rejects self-moving controls at
-  0.00, using the *same* thresholds as collision. A capture-specific variant was
-  written and deleted after its premise failed a test.
+- ~~**The gate.** Fires on capture at 1.00 using the *same* thresholds as
+  collision.~~ **Reversed 2026-08-04.** The gate fires on capture at **0.00**,
+  with no post-contact far-field steps in any of 20 rollouts. The 1.00 came from
+  an off-by-one in `capture_displacement`, which threw a captured target one
+  body-step past its carrier so that the pauses sorted into the far field. The
+  capture-specific variant was deleted against that artefact, and its premise
+  was right. It still rejects self-moving controls at 0.00.
+
+  **This blocks the paper**: `can_estimate` requires the gate, so arm D cannot
+  act under capture and scores exactly arm B.
 - **The gate under real contact.** Fires on every Isaac trace containing a
   strike, with `cv_gain` between −0.20 and −0.75 — a constant-velocity model is
   *worse* than zero-order, so Paper 002's operator does not absorb the residual.

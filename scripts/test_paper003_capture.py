@@ -67,12 +67,38 @@ class CouplingTests(unittest.TestCase):
         np.testing.assert_array_equal(delta, np.zeros(3))
         self.assertFalse(held)
 
-    def test_arrival_takes_hold_and_the_target_inherits_the_motion(self) -> None:
-        delta, held = capture_displacement(
+    def test_arrival_takes_hold_where_it_arrived_and_carries_from_the_next_step(
+        self,
+    ) -> None:
+        """The arrival step moves the target not at all.
+
+        This asserted the opposite until 2026-08-04. The body has already moved
+        when the separation is tested, so handing the target that same step
+        displaces it *away* from its carrier by exactly one step: captured at
+        49.9 mm, carried at 64.7 mm, outside the radius it was captured at for
+        the rest of the episode. Every separation-based reader saw the carrier
+        re-arrive once per burst cycle as a result.
+        """
+
+        arrival, held = capture_displacement(
             np.array([0.20, 0.0, 0.0]), np.array([0.195, 0.0, 0.0]), STEP, self.spec, False
         )
-        np.testing.assert_allclose(delta, STEP)
+        np.testing.assert_array_equal(arrival, np.zeros(3))
         self.assertTrue(held)
+
+        carried, held = capture_displacement(
+            np.array([0.20, 0.0, 0.0]), np.array([0.195, 0.0, 0.0]), STEP, self.spec, held
+        )
+        np.testing.assert_allclose(carried, STEP)
+        self.assertTrue(held)
+
+    def test_a_carried_target_keeps_the_separation_it_was_captured_at(self) -> None:
+        """The property the arrival-step fix exists for."""
+
+        targets, references, captured = rollout(300)
+        separations = np.linalg.norm(targets[captured:] - references[captured:], axis=1)
+        self.assertLess(float(np.max(separations)), self.spec.capture_radius)
+        np.testing.assert_allclose(separations, separations[0], atol=1e-12)
 
     def test_once_held_it_stays_held_however_far_the_body_goes(self) -> None:
         """Capture is a state change, not a proximity condition - which is why
@@ -235,30 +261,52 @@ class GateTests(unittest.TestCase):
             interaction_radius=self.RADIUS, horizon=self.HORIZON,
         ).fired
 
-    def test_one_gate_covers_both_relations(self) -> None:
-        """A capture-specific threshold set was written and deleted.
+    def test_capture_leaves_the_gate_no_far_field_to_compare(self) -> None:
+        """Capture inverts the evidence, as originally predicted.
 
-        The reasoning was that capture inverts the evidence - the body never
-        leaves, so restricting the contrast to what follows first contact should
-        leave nothing to compare. Measured, a carried target keeps a small
-        separation from its carrier and the pauses supply far-field steps
-        anyway: 20 usable deltas rather than none.
+        **This test asserted the opposite until 2026-08-04**, and a
+        capture-specific threshold set was written and then deleted on the
+        strength of what it reported. The prediction was that a body which never
+        leaves supplies no post-contact far-field period, so a contrast measured
+        from first contact onward has nothing to compare and the gate must
+        abstain. It was recorded as refuted: a carried target appeared to keep a
+        separation *outside* the radius, and the pauses appeared to supply 20
+        usable far-field deltas.
+
+        Both appearances came from the arrival-step off-by-one in
+        `capture_displacement`. The target was thrown one body-step past its
+        carrier at the moment of capture, which put the riding separation above
+        the radius; the near-field allowance then covered that during motion but
+        not during a pause, so the pauses sorted into the far field. With the
+        capture holding at the separation it arrived at, the carrier is inside
+        the radius at every step and the far-field class is empty.
+
+        The prediction was right, and the variant deleted for failing its own
+        test was deleted against an artefact.
         """
+
         targets, references, _ = rollout(300, noise=0.0003)
         decision = evaluate_relation_gate(
             targets, references, RelationGateThresholds(),
             interaction_radius=self.RADIUS, horizon=self.HORIZON,
         )
-        self.assertGreater(decision.post_contact_far_deltas, 0)
-        self.assertTrue(decision.fired)
+        self.assertEqual(decision.post_contact_far_deltas, 0)
+        self.assertFalse(decision.fired)
 
-    def test_it_fires_on_capture(self) -> None:
+    def test_it_does_not_fire_on_capture_at_any_seed(self) -> None:
+        """0.00, not "rarely" - and this is a blocking result, not a tuning one.
+
+        `can_estimate` requires the gate, so an abstaining gate means arm D
+        never acts under capture and scores exactly arm B. Paper 003's relation
+        cannot be measured through this gate as it stands.
+        """
+
         thresholds = RelationGateThresholds()
         fired = [
             self._fires(*rollout(seed, noise=0.0003)[:2], thresholds)
             for seed in range(300, 320)
         ]
-        self.assertGreaterEqual(float(np.mean(fired)), 0.90)
+        self.assertEqual(float(np.mean(fired)), 0.0)
 
     def test_it_refuses_a_target_that_moves_on_its_own(self) -> None:
         thresholds = RelationGateThresholds()
