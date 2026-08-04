@@ -64,6 +64,11 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--task", type=str, default="Isaac-Lift-Block-PSM-IK-Rel-Play-v0")
 parser.add_argument("--num_envs", type=int, default=1)
 parser.add_argument("--seed", type=int, default=300)
+parser.add_argument("--seeds", type=int, default=1,
+                    help="how many consecutive seeds to run from --seed, "
+                         "in ONE Isaac launch. The simulator's startup "
+                         "dominates a single cell, so a 40-cell sweep was "
+                         "40 launches before this. 1 is the old behaviour")
 parser.add_argument("--condition", type=str, default="coupled",
                     choices=["coupled", "drift", "static", "noise", "slide"])
 parser.add_argument("--episode-steps", type=int, default=90)
@@ -90,7 +95,39 @@ parser.add_argument("--script-speed", type=float, default=0.006,
                          "an eligible step")
 parser.add_argument("--gripper", type=float, default=-1.0,
                     help="closed. An open gripper straddles the block: the frame "
-                         "point reached 0.3 mm from its centre without moving it")
+                         "point reached 0.3 mm from its centre without moving it. "
+                         "Ignored when --grasp is set, which schedules it")
+parser.add_argument("--grasp", action="store_true",
+                    help="produce a CAPTURE rather than a collision: approach "
+                         "with the gripper OPEN, close it once the end effector "
+                         "is within --grasp-radius of the block, and keep it "
+                         "closed. "
+                         "This is the whole capture relation, physically. The "
+                         "straddling that made an open gripper useless for a "
+                         "push probe - the frame point reached 0.3 mm from the "
+                         "block's centre without moving it - is exactly what "
+                         "capture needs: the target must be *perfectly* still "
+                         "before the arrival, or its own history carries "
+                         "information and the single-entity arm has something "
+                         "to learn from. Closing then takes hold, and the block "
+                         "rides. Nothing before, everything after")
+parser.add_argument("--grasp-radius", type=float, default=0.012,
+                    help="metres. The separation at which the gripper closes, "
+                         "and therefore the physical capture radius. Arm D does "
+                         "not receive this - it estimates the radius from the "
+                         "observed onset, the same refusal `estimate_coupling` "
+                         "makes")
+parser.add_argument("--gripper-open", type=float, default=1.0)
+parser.add_argument("--gripper-close", type=float, default=-1.0)
+parser.add_argument("--schedule", type=str, default="probe",
+                    choices=["probe", "burst"],
+                    help="`burst` only ever advances and is what capture is "
+                         "paired with: a body that arrives and carries the "
+                         "target off has no reason to withdraw. `probe` "
+                         "withdraws, which under capture drags the captured "
+                         "block back and breaks the pattern estimator")
+parser.add_argument("--burst-on", type=int, default=10)
+parser.add_argument("--burst-off", type=int, default=4)
 parser.add_argument("--probe-advance", type=int, default=7)
 parser.add_argument("--probe-withdraw", type=int, default=5,
                     help="steps of withdrawal. It must clear the interaction "
@@ -117,6 +154,7 @@ from omni.isaac.lab_tasks.utils import parse_env_cfg  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wm_expansion.cell import CellSpec, ContactWorld, run_cell  # noqa: E402
 from wm_expansion.commitment_episode import EpisodeSpec  # noqa: E402
+from wm_expansion.capture_verdict import capture_verdict  # noqa: E402
 from wm_expansion.encounter import EncounterSpec  # noqa: E402
 
 
@@ -155,9 +193,27 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         step = aim if reach <= args.approach_speed else aim / reach * args.approach_speed
         action = torch.zeros((args.num_envs, action_dim), device=env.unwrapped.device)
         action[0, :3] = torch.as_tensor(step, device=action.device, dtype=action.dtype)
-        if args.gripper != 0.0 and action_dim >= 4:
-            action[0, -1] = float(args.gripper)
+
+        # The gripper is what makes this a capture rather than a collision, so
+        # it is scheduled on the *observed* separation rather than on a step
+        # count: the block is taken hold of when the arm actually reaches it,
+        # not when the script says it should have.
+        gripper = args.gripper
+        if args.grasp:
+            if not place.grasped:
+                separation = float(np.linalg.norm(read_object() - read_ee()))
+                if separation < args.grasp_radius:
+                    place.grasped = True  # type: ignore[attr-defined]
+                    place.grasp_step = len(commanded) - 1  # type: ignore[attr-defined]
+            gripper = args.gripper_close if place.grasped else args.gripper_open
+        if gripper != 0.0 and action_dim >= 4:
+            action[0, -1] = float(gripper)
+        place.gripper_series.append(float(gripper))  # type: ignore[attr-defined]
         place.pending = action  # type: ignore[attr-defined]
+
+    place.grasped = False  # type: ignore[attr-defined]
+    place.grasp_step = None  # type: ignore[attr-defined]
+    place.gripper_series = []  # type: ignore[attr-defined]
 
     def step_physics() -> bool:
         action = getattr(place, "pending", None)
@@ -180,6 +236,9 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             interaction_radius=args.interaction_radius,
             reference_speed=args.script_speed,
             pusher_speed=args.script_speed,
+            schedule=args.schedule,
+            burst_on=args.burst_on,
+            burst_off=args.burst_off,
             probe_advance=args.probe_advance,
             probe_withdraw=args.probe_withdraw,
             probe_hold=args.probe_hold,
@@ -212,6 +271,20 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         float(np.linalg.norm(np.asarray(c) - np.asarray(e)))
         for c, e in zip(commanded, observed_ee)
     ]
+    # Whether the scene produced a capture at all - the first thing that could
+    # end this design, and not something the runner may assume. Everything
+    # measured so far is arithmetic: the cell computed the block's motion and
+    # wrote it into the command. Here it is read back out of physics, and the
+    # same statistic the gate and arm D use decides what happened.
+    verdict = capture_verdict(record)
+    record["capture"] = verdict
+    record["grasp"] = {
+        "requested": bool(args.grasp),
+        "radius": args.grasp_radius,
+        "closed_at": place.grasp_step,
+        "gripper_series": place.gripper_series,
+    }
+    record["schedule"] = args.schedule
     record["scene_inventory"] = inventory
     record["commanded_bodies"] = commanded
     record["observed_ee"] = observed_ee
@@ -225,17 +298,8 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     return record
 
 
-def main() -> None:
-    cfg = parse_env_cfg(args_cli.task, num_envs=args_cli.num_envs)
-    env = gym.make(args_cli.task, cfg=cfg)
-    try:
-        record = run(env, args_cli)
-    finally:
-        env.close()
-
-    out_dir = Path(args_cli.out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    name = f"cell_{args_cli.condition}_seed{args_cli.seed}.json"
+def report(record: dict[str, Any], out_dir: Path, args: argparse.Namespace) -> list[str]:
+    name = f"cell_{args.condition}_seed{args.seed}.json"
     (out_dir / name).write_text(json.dumps(record, indent=2))
 
     lines = [f"wrote {out_dir / name}"]
@@ -251,8 +315,8 @@ def main() -> None:
         lines.append(
             f"ee_error median={1000 * (record['ee_error_median'] or 0):.1f} mm "
             f"max={1000 * (record['ee_error_max'] or 0):.1f} mm  "
-            f"(script {1000 * args_cli.script_speed:.1f} mm/step, "
-            f"commanded {1000 * args_cli.approach_speed:.1f})"
+            f"(script {1000 * args.script_speed:.1f} mm/step, "
+            f"commanded {1000 * args.approach_speed:.1f})"
         )
         # Judged against the interaction radius, not the script speed. An error
         # of half the radius already means the body is not where the script says
@@ -260,18 +324,90 @@ def main() -> None:
         # regardless of how fast the script happens to be moving. The first real
         # cell had a median error of 9.5 mm against a 12 mm radius and passed a
         # script-speed test, while eligibility never opened.
-        if (record["ee_error_median"] or 0) > 0.5 * args_cli.interaction_radius:
+        if (record["ee_error_median"] or 0) > 0.5 * args.interaction_radius:
             lines.append(
                 f"ARM LAGGING - median error "
                 f"{1000 * record['ee_error_median']:.1f} mm against a "
-                f"{1000 * args_cli.interaction_radius:.1f} mm radius. The body "
+                f"{1000 * args.interaction_radius:.1f} mm radius. The body "
                 "is not where the script says; lower --script-speed or raise "
                 "--approach-speed before reading anything from this cell"
             )
-    (out_dir / f"cell_{args_cli.condition}_seed{args_cli.seed}.txt").write_text(
+    # The pilot's first question, printed where it cannot be missed.
+    verdict = record.get("capture") or {}
+    if verdict:
+        lines.append(
+            f"CAPTURE VERDICT: {verdict.get('verdict', '?').upper()}"
+            f"  ({verdict.get('reason', '')})"
+        )
+        if verdict.get("verdict") != "capture":
+            lines.append(
+                "  -> this cell is NOT the relation the paper is about. Arm "
+                "scores from it must not be pooled with capture cells."
+            )
+    (out_dir / f"cell_{args.condition}_seed{args.seed}.txt").write_text(
         "\n".join(lines) + "\n"
     )
     print("\n".join(lines))
+    return lines
+
+
+def main() -> None:
+    """One Isaac launch, many cells.
+
+    Each `env.reset(seed=...)` redraws the encounter, and the simulator's
+    startup dominates a single cell's cost, so the seed loop lives inside one
+    launch rather than in the shell. A forty-cell sweep was forty launches
+    before this.
+
+    **Untested on GPU at the time of writing** - there was no Isaac in the
+    environment this was authored in. `--seeds 1` is the old single-cell
+    behaviour exactly, and is the fallback if the loop misbehaves.
+    """
+
+    cfg = parse_env_cfg(args_cli.task, num_envs=args_cli.num_envs)
+    env = gym.make(args_cli.task, cfg=cfg)
+    out_dir = Path(args_cli.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    verdicts: list[str] = []
+    engaged: list[bool] = []
+    first_seed = args_cli.seed
+    try:
+        for index in range(max(1, args_cli.seeds)):
+            args_cli.seed = first_seed + index
+            record = run(env, args_cli)
+            report(record, out_dir, args_cli)
+            if not record.get("failed"):
+                verdicts.append((record.get("capture") or {}).get("verdict", "?"))
+                engaged.append(bool(record.get("d_estimated")))
+            print()
+    finally:
+        args_cli.seed = first_seed
+        env.close()
+
+    if len(verdicts) > 1:
+        captures = verdicts.count("capture")
+        summary = [
+            f"cells: {len(verdicts)}",
+            f"  capture   {captures}",
+            f"  collision {verdicts.count('collision')}",
+            f"  none      {verdicts.count('none')}",
+            "",
+            # The number the preregistration's sizing rule reads, and the reason
+            # this sweep exists at all. It must come from real contact.
+            f"engagement (arm D acted): "
+            f"{sum(engaged) / len(engaged):.2f} over {len(engaged)} cells",
+        ]
+        if captures == 0:
+            summary.append("")
+            summary.append(
+                "NO CAPTURE IN ANY CELL. The scene did not produce the relation "
+                "the paper is about, and no amount of arm scoring fixes that. "
+                "Read paper003_prereg_v1.0.md, 'What the calibration pilot must "
+                "produce', before changing anything else."
+            )
+        (out_dir / "SUMMARY.txt").write_text("\n".join(summary) + "\n")
+        print("\n".join(summary))
 
 
 if __name__ == "__main__":

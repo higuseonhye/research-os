@@ -375,6 +375,14 @@ def run_cell(
                 "gate_fired": bool(episode.gate_fired()),
                 "proximity_contrast": float(gate.proximity_contrast),
                 "constant_velocity_gain": float(gate.constant_velocity_gain),
+                # Which form of positive evidence the gate found, and the
+                # carriage statistics behind it. Under real contact this is the
+                # first thing to read: a cell that fires through `proximity` is
+                # a collision whatever the scene was meant to produce, and a
+                # capture pilot that reports it has not produced a capture.
+                "gate_evidence": gate.evidence,
+                "carriage_agreement": float(gate.carriage_agreement),
+                "carriage_run": int(gate.carriage_run),
             }
         )
 

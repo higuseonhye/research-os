@@ -184,7 +184,9 @@ without bound.
    commit window, the confirmatory test, the sizing *rule*, the scope limits,
    and a list of tuning that will not be done. **Open in numbers**, all marked
    `PENDING`, because none of them may be inherited from injected coupling.
-9. **An Isaac calibration pilot for capture.** The first thing that could end
+9. **An Isaac calibration pilot for capture.**
+   [Runbook](paper003_capture_pilot_runbook_v0.1.md) ·
+   `scripts/run_paper003_capture_pilot.sh`. The first thing that could end
    this design, and it is not a formality: every result so far is arithmetic —
    the cell computes the target's motion and writes it into the command.
    Whether the lift scene produces a *capture* rather than a collision is
@@ -217,6 +219,7 @@ encounter has changed since.
 
 | [`paper003_self_arm.py`](../../scripts/paper003_self_arm.py) | The preregistered SELF arm test, with no flag to relax the rule |
 | [`paper003_self_arm_bound.py`](../../scripts/paper003_self_arm_bound.py) | Off-protocol probe: where the single-entity arm catches up |
+| [`wm_expansion/capture_verdict.py`](../../scripts/wm_expansion/capture_verdict.py) | Was that trace a capture, a collision, or nothing |
 
 232 tests, all CPU.
 
