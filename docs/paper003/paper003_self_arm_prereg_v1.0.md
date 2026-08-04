@@ -118,6 +118,36 @@ been ruled out. Paper 003 becomes a paper about what the missing-relation cell
 requires and why three candidate relations did not supply it — which is a
 result, and is the reason this rule can be fixed without fear.
 
+---
+
+## Outcome, recorded 2026-08-04
+
+**Case A. H2 stands.** 200 paired cells from 623 seeds.
+
+| | |
+| --- | ---: |
+| `p_D` | 0.650 |
+| `p_SELF` | 0.000 |
+| Discordant: D only / SELF only | 130 / 0 |
+| One-sided exact McNemar | p = 7.3 × 10⁻⁴⁰ |
+| Margin | +0.650 |
+
+Both conditions passed. Nothing in this document was changed to reach that.
+
+SELF acted on 0.675 of cells and landed on none of them, and it was not broken:
+its median miss when acting was 60.0 mm against 30.0 mm when it declined to arm
+B — it extrapolates through a pause it cannot see, and 60 mm is exactly one
+pause at 15 mm/step. It holds a median of 4 steps of its own motion at
+commitment against a 14-step cycle.
+
+[Full record](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_v1.0/RESULTS.md)
+
+**One limitation is recorded there and not resolved:** SELF's disadvantage rests
+on how little of its own history it holds at +4 to +6, so the protection is
+bounded in time rather than absolute. Where the bound lies is a separate
+question on fresh seeds, and the clause below is why it was not answered by
+widening this run.
+
 ## Not permitted after the run
 
 - Changing α, the margin, n, the offset band, or the test.

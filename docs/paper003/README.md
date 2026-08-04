@@ -1,6 +1,10 @@
 # Paper 003 — Missing relation & capability expansion
 
-> **Status 2026-08-04.** Design stage. Not preregistered, no confirmatory data.
+> **Status 2026-08-04.** Design stage. The main preregistration is still
+> unwritten and there is no confirmatory *physical* data — but H2's decisive
+> arm comparison **is** preregistered and settled: see
+> [the SELF arm rule](paper003_self_arm_prereg_v1.0.md) and
+> [its result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_v1.0/RESULTS.md).
 > The relation was **changed today** after measuring three candidates, and
 > several documents in this folder are superseded or carry corrections.
 > **Read this file first** — the folder is not safe to read in alphabetical
@@ -122,10 +126,11 @@ without bound.
    `contact_arrivals`. Fixed on the structure of the action: the dispense takes
    `dispense_latency` steps, so a commit further out than that either completes
    before anything has happened or measures a regime the arrival no longer
-   governs. What it removes is an artefact, not a preference — under capture the
-   eligibility screen admits every step after the arrival, so the commit
-   distribution was being set by `episode_steps` and sat almost entirely in the
-   riding tail where a constant-velocity model absorbs the motion.
+   governs. Symmetric because there is no reason to prefer a side. What it
+   removes is an artefact, not a preference — under capture the eligibility
+   screen admits every step after the arrival, so the commit distribution was
+   being set by `episode_steps` and sat almost entirely in the riding tail where
+   a constant-velocity model absorbs the motion.
 3. ~~Score the arms under capture in a cell.~~ **Done.** Under `capture` +
    `burst`, where arm D can act it is right **0.78** of the time against 0.06
    where it declines; by commit offset the relation pays **0.53 → 0.71** against
@@ -141,10 +146,16 @@ without bound.
    structure of the action and the evidence requirement on the collision
    equilibrium. It changes through the encounter or not at all, on grounds
    stated before the run.
-6. **Measure the single-entity arm under capture + burst.** A carried target
-   rides its carrier's intermittency, so its own trajectory carries the burst
-   pattern — the threat that carriage was rejected over, now applying to every
-   commit at offset ≥ +4. The cell does not score that arm.
+6. ~~Measure the single-entity arm under capture + burst.~~ **Done, and H2
+   stands.** Preregistered rule locked before the arm was implemented; 200
+   paired cells; **arm D 0.650, SELF 0.000**, 130 discordant pairs all in D's
+   favour, one-sided exact McNemar p = 7.3 × 10⁻⁴⁰, margin +0.650. SELF acted
+   on 0.675 of cells and was not broken — it holds a median of 4 steps of its
+   own motion against a 14-step cycle and extrapolates through a pause it
+   cannot see. **Limitation, recorded:** that disadvantage rests on the window
+   ending at +6, so the protection is bounded in time rather than absolute.
+   [Rule](paper003_self_arm_prereg_v1.0.md) ·
+   [Result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_v1.0/RESULTS.md)
 7. **Redraw the two-body encounter for capture.** It was drawn for collision and
    does not survive: the prober captures the target and carries it out of the
    pusher's approach line, so 13 of 40 cells did not resolve and none committed
@@ -174,7 +185,9 @@ encounter has changed since.
 | [`orbit_lift_relation_cell.py`](../../scripts/orbit_lift_relation_cell.py) | Isaac adapter for the lift scene |
 | [`orbit_lift_stopping_probe.py`](../../scripts/orbit_lift_stopping_probe.py) | Strike-and-measure probe |
 
-225 tests, all CPU.
+| [`paper003_self_arm.py`](../../scripts/paper003_self_arm.py) | The preregistered SELF arm test, with no flag to relax the rule |
+
+232 tests, all CPU.
 
 ---
 

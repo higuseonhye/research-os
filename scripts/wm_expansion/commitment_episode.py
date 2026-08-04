@@ -42,7 +42,12 @@ ArrayLike = Sequence[float] | np.ndarray
 
 #: Arms scored every episode. `D_oracle` is diagnostic and excluded from
 #: primary estimates - see the preregistration draft.
-EPISODE_ARMS = ("A", "B", "C", "D", "D_oracle")
+#:
+#: `SELF` is the hypothesis's most dangerous competitor and the arm that already
+#: killed one design: under carriage it matched the relational arm exactly, and
+#: that is why capture was chosen instead. See
+#: docs/paper003/paper003_self_arm_prereg_v1.0.md.
+EPISODE_ARMS = ("A", "B", "C", "D", "SELF", "D_oracle")
 
 
 @dataclass
@@ -274,6 +279,38 @@ class CommitmentEpisode:
             target, self._body_history(body), horizon, self.estimator, coupling
         )
 
+    def _project_self(self, horizon: int) -> np.ndarray | None:
+        """The SELF arm: the target's own trajectory, and nothing else.
+
+        No reference body is read here at all - not the acting one, not the
+        carrier, not their number. The arm is the claim that whatever the target
+        is about to do is already written in what it has been doing, which under
+        an intermittent carry is a live possibility rather than a straw man: a
+        carried target rides its carrier's bursts, so the carrier's pattern
+        appears in the target's own history a few steps after the capture.
+
+        Same estimator and same horizon as arm D uses on the carrier, so the two
+        differ in *what they observe* and in nothing else. Returns None when the
+        pattern is not identifiable, and the caller then falls back to the
+        target's current position - the same fallback arm D takes.
+        """
+
+        history = np.asarray(self.targets, dtype=np.float64)
+        if len(history) < 2:
+            return None
+        total = np.diff(history, axis=0).sum(axis=0)
+        norm = float(np.linalg.norm(total))
+        if norm <= 0.0:
+            return np.zeros(history.shape[1])  # a still target continues still
+
+        direction = total / norm
+        steps = self.estimator.predict_steps(list(history @ direction), horizon)
+        if steps is None:
+            return None
+        # No coupling to re-apply at each step: this arm has no second entity to
+        # roll forward, which is the whole of what distinguishes it from arm D.
+        return float(np.sum(steps)) * direction
+
     def _project_capture(
         self, target: np.ndarray, horizon: int, capture: CaptureEstimate
     ) -> np.ndarray | None:
@@ -380,6 +417,17 @@ class CommitmentEpisode:
             and (self._coupling() is not None or self._capture() is not None)
         )
 
+    def can_estimate_self(self) -> bool:
+        """Is the SELF arm acting, or falling back to zero-order?
+
+        Diagnostic only, and it decides nothing - but without it a SELF arm that
+        never identified a pattern is indistinguishable in the output from one
+        that identified a pattern and was wrong, and those are opposite readings
+        of the same number.
+        """
+
+        return self._project_self(self.spec.dispense_latency) is not None
+
     @property
     def ready(self) -> bool:
         """Eligible to commit.
@@ -467,9 +515,7 @@ class CommitmentEpisode:
         """Would the target's present motion alone carry it out of tolerance?
 
         The first clause of the eligibility screen, exposed separately because
-        the commit window has to be able to tell it from the second - under a
-        capture it is true at every step after the arrival, since a carried
-        target rides forever.
+        the commit window needs it negated - see `transition_in_window`.
         """
 
         if len(self.targets) < 2:
@@ -548,6 +594,15 @@ class CommitmentEpisode:
                 if capture is not None:
                     predicted = self._project_capture(target, horizon, capture)
         out["D"] = target.copy() if predicted is None else target + predicted
+
+        # Deliberately outside the gate. Arm D may act only when the relation
+        # gate fires; this arm acts whenever its own pattern is identifiable.
+        # The asymmetry favours SELF and is not to be corrected - a relation
+        # that beats an ungated single-entity competitor has answered the
+        # objection in its strongest form, and gating SELF would be tuning the
+        # competitor down. Fixed in the preregistration.
+        own = self._project_self(horizon)
+        out["SELF"] = target.copy() if own is None else target + own
 
         if true_landing is not None:
             out["D_oracle"] = np.asarray(true_landing, dtype=np.float64)

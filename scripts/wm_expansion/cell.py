@@ -384,6 +384,7 @@ def run_cell(
                     # Without this the two are indistinguishable in the output
                     # and a fallback reads as a failed relational prediction.
                     "d_estimated": episode.can_estimate(),
+                    "self_estimated": episode.can_estimate_self(),
                     "aims": {k: v.copy() for k, v in episode.aims().items()},
                 }
             )
@@ -395,6 +396,7 @@ def run_cell(
 
     committed_at: int | None = None
     d_estimated = False
+    self_estimated = False
     aims: dict[str, np.ndarray] | None = None
     resolved: dict[str, bool] | None = None
 
@@ -421,7 +423,7 @@ def run_cell(
     # The same cell scored differently for running longer.
     #
     # Applied uniformly, and it is not selective: `drift`, `noise` and `static`
-    # have no arrival in them at all, keep every eligible step, and commit
+    # have no transition in them at all, keep every eligible step, and commit
     # exactly as they did before, which is what leaves H4 testable. `slide`
     # keeps its post-strike steps, which is what makes it the control that could
     # collapse this paper into Paper 002.
@@ -444,6 +446,7 @@ def run_cell(
             chosen = usable[int(np.random.default_rng(cell.seed).integers(len(usable)))]
         committed_at = int(chosen["step"])
         d_estimated = bool(chosen["d_estimated"])
+        self_estimated = bool(chosen["self_estimated"])
         landing = trajectory[committed_at + spec.dispense_latency]
         aims = dict(chosen["aims"])
         aims["D_oracle"] = landing.copy()
@@ -461,11 +464,11 @@ def run_cell(
         "world": type(world).__name__,
         **geometry.to_dict(),
         "eligible_steps": [c["step"] for c in candidates],
-        # Where the arrivals were, and whether the commit landed in a window.
-        # A cell that committed outside one is not invalid - the conditions with
-        # no arrival in them are meant to - but pooling the two without being
-        # able to tell them apart is how the capture bias got in, and
-        # `commit_offset` is what the analysis reads to check it.
+        # Where the transition was, and whether the commit landed in its window.
+        # A cell that committed outside the window is not invalid - the
+        # conditions with no transition in them are meant to - but pooling the
+        # two without being able to tell them apart is how the capture bias got
+        # in, and `commit_offset` is what the analysis reads to check it.
         "arrivals": arrivals,
         "commit_offset": (
             None
@@ -475,6 +478,7 @@ def run_cell(
         "committed_in_window": bool(in_window),
         "committed_at": committed_at,
         "d_estimated": d_estimated,
+        "self_estimated": self_estimated,
         "gate_fire_rate": (
             sum(o["gate_fired"] for o in observations) / len(observations)
             if observations

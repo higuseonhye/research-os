@@ -16,6 +16,14 @@ the design achieves.
 | **Carriage** — target rides the reference | 0.00 | 0.25 | **1.00** | 1.00 |
 | **Capture** — reference arrives, then carries | 0.33 | 0.36 | **0.33** | 0.50 |
 
+> **Superseded for capture, 2026-08-04, by a preregistered run.** The capture
+> row above came from a deliberately crude proxy. Measured in the cell, on 200
+> paired cells with the rule locked in advance: **SELF 0.000, D 0.650**, 130
+> discordant pairs none of them SELF's, margin +0.650. The 0.50 was a floor, as
+> this section says below, and the argument this table was built to make holds.
+> [Rule](paper003_self_arm_prereg_v1.0.md) ·
+> [Result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_v1.0/RESULTS.md)
+
 Under carriage the single-entity model is **identical to the relational one**.
 The intermittency that makes the task hard is written into the target's own
 trajectory, so nothing needs to look at a second entity. H2 fails outright.
@@ -69,10 +77,10 @@ a deliberately crude model, not a ceiling on the design.
 **A gate that fires on capture — which turned out to need nothing.**
 
 > **Reversed later the same day. Everything from here to the end of this
-> section is wrong.** The gate fires on capture at **0.00**, not 1.00, and has
-> no post-contact far-field steps at all. The prediction below was correct and
-> the measurement that overturned it was reading an off-by-one in
-> `capture_displacement`: a captured target was thrown one body-step past its
+> section is wrong.** The proximity contrast fires on capture at **0.00**, not
+> 1.00, and finds no post-contact far-field steps at all. The prediction below
+> was correct and the measurement that overturned it was reading an off-by-one
+> in `capture_displacement`: a captured target was thrown one body-step past its
 > carrier, which put the riding separation outside the radius and sorted the
 > pauses into the far field. The variant deleted for failing its own test was
 > deleted against an artefact.
