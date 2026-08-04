@@ -101,13 +101,17 @@ without bound.
 
 ## Open, in order
 
-1. **Connect capture to the cell loop and the encounter.** The coupling and a
-   two-phase relational prediction exist and are tested; nothing drives a cell
-   with them yet.
+1. ~~Connect capture to the cell loop and the encounter.~~ **Done.**
+   `CellSpec(coupling="capture")` drives a cell, paired with the `burst`
+   schedule — a body that arrives and carries the target off has no reason to
+   withdraw. Under `probe` the carried target is dragged back with it.
 2. **The commit window relative to the capture.** Must be fixed on arm-neutral
-   grounds — "so that arm B fails" is not one.
-3. **Rewrite the preregistration**, which assumes collision throughout.
-4. **Then** the confirmatory sample.
+   grounds — "so that arm B fails" is not one. **This is the next decision, and
+   it is a judgement rather than an implementation.**
+3. **Score the arms under capture in a cell.** The relation and the loop now
+   meet; nothing has been measured through them together.
+4. **Rewrite the preregistration**, which assumes collision throughout.
+5. **Then** the confirmatory sample.
 
 ## Not in this repository
 
@@ -130,7 +134,7 @@ encounter has changed since.
 | [`orbit_lift_relation_cell.py`](../../scripts/orbit_lift_relation_cell.py) | Isaac adapter for the lift scene |
 | [`orbit_lift_stopping_probe.py`](../../scripts/orbit_lift_stopping_probe.py) | Strike-and-measure probe |
 
-224 tests, all CPU.
+225 tests, all CPU.
 
 ---
 

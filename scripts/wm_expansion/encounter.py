@@ -55,7 +55,13 @@ class EncounterSpec:
             raise ValueError("burst_on and burst_off must be >= 1")
         if self.probe_advance < 1 or self.probe_withdraw < 1 or self.probe_hold < 0:
             raise ValueError("probe phases must be >= 1, hold >= 0")
-        if self.probe_withdraw * self.reference_speed <= self.interaction_radius:
+        # Only `probe` withdraws, so only `probe` needs the withdrawal to clear
+        # the radius. Applying it to `burst` refused schedules that have no
+        # withdrawal at all - which is the schedule the capture relation wants,
+        # since a body that arrives and carries the target off never leaves.
+        if self.schedule == "probe" and (
+            self.probe_withdraw * self.reference_speed <= self.interaction_radius
+        ):
             raise ValueError(
                 "the withdrawal must clear the interaction radius, or the target "
                 "is never observed after the body leaves and the relation stays "

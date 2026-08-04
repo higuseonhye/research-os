@@ -24,12 +24,13 @@ from wm_expansion.encounter import EncounterSpec, bodies_at, draw_geometry
 TARGET = np.array([0.20, 0.0, 0.40])
 
 
-def cell(condition: str = "coupled", seed: int = 300, bodies: int = 1, **kwargs) -> dict:
+def cell(condition: str = "coupled", seed: int = 300, bodies: int = 1,
+         coupling: str = "collision", schedule: str = "probe", **kwargs) -> dict:
     return run_cell(
         TARGET,
         EpisodeSpec(),
-        EncounterSpec(bodies=bodies),
-        CellSpec(condition=condition, seed=seed, **kwargs),
+        EncounterSpec(bodies=bodies, schedule=schedule),
+        CellSpec(condition=condition, seed=seed, coupling=coupling, **kwargs),
         drive=lambda target: False,
     )
 
@@ -134,13 +135,43 @@ class TwoBodyTests(unittest.TestCase):
 
     def test_both_bodies_actually_reach_the_target(self) -> None:
         """The first must strike to demonstrate the relation; the second must
-        arrive to apply it. Either missing makes the encounter meaningless."""
+        arrive to apply it. Either missing makes the encounter meaningless.
+
+        Checked under the collision coupling, because separation is the right
+        measure only there. Under capture the target is picked up where it was
+        and then moves with its carrier, so the recorded separation is the one
+        from before the carrier's step - a whole step stale, and above the
+        capture radius even though the capture happened.
+        """
         radius = EncounterSpec().interaction_radius
         for seed in range(300, 320):
-            closest = separations(cell("coupled", seed=seed, bodies=2))
+            record = cell("coupled", seed=seed, bodies=2, coupling="collision")
+            closest = separations(record)
             with self.subTest(seed=seed):
                 self.assertLess(closest[0], radius, "first body never made contact")
                 self.assertLess(closest[1], radius, "second body never made contact")
+
+    def test_capture_takes_hold_and_carries(self) -> None:
+        """The capture relation's own check: the target is still, then moves,
+        and keeps going past the placement tolerance - which is exactly what a
+        collision cannot do, its displacement being capped near the interaction
+        radius.
+
+        Run on the `burst` schedule, which is capture's pairing: a body that
+        arrives and carries the target off has no reason to withdraw, and under
+        `probe` the carried target is dragged back with it.
+        """
+        tolerance = EpisodeSpec().tolerance
+        for seed in range(300, 312):
+            record = cell("coupled", seed=seed, bodies=1,
+                          coupling="capture", schedule="burst")
+            targets = np.array([o["target"] for o in record["observations"]])
+            moved = np.linalg.norm(np.diff(targets, axis=0), axis=1)
+            with self.subTest(seed=seed):
+                self.assertEqual(float(moved[0]), 0.0, "moved before any contact")
+                self.assertGreater(float(np.max(moved)), 0.0, "never captured")
+                travelled = float(np.linalg.norm(targets[-1] - targets[0]))
+                self.assertGreater(travelled, tolerance, "capped like a collision")
 
     def test_the_first_body_stops_after_one_strike(self) -> None:
         """A cycling first body keeps pushing the target, and the second body's
