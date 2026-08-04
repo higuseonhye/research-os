@@ -155,10 +155,20 @@ without bound.
    favour, one-sided exact McNemar p = 7.3 × 10⁻⁴⁰, margin +0.650. SELF acted
    on 0.675 of cells and was not broken — it holds a median of 4 steps of its
    own motion against a 14-step cycle and extrapolates through a pause it
-   cannot see. **Limitation, recorded:** that disadvantage rests on the window
-   ending at +6, so the protection is bounded in time rather than absolute.
+   cannot see.
    [Rule](paper003_self_arm_prereg_v1.0.md) ·
    [Result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_v1.0/RESULTS.md)
+
+   **The limitation that came with it is now measured too.** The protection is
+   bounded in time, and the bound is **+30** — a little over two burst cycles
+   after the arrival, on fresh seeds. The protocol band is [−6, +6] and SELF
+   scores ≤ 0.02 inside it, so the catch-up sits five times further out than any
+   commit the protocol makes. What stops arm D first is **the gate**: `cv_gain`
+   climbs as the carry lengthens and arm D declines exactly where it crosses the
+   ceiling, so the clause written for `drift` lands unprompted on the boundary
+   of H2's validity. Past it the sufficient model is a single-entity *periodic*
+   one — neither B, nor C, nor D, and proposed by neither paper.
+   [The bound](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_bound_v0.1/RESULTS.md)
 7. ~~Redraw the two-body encounter for capture.~~ **Retired for this relation,
    not redrawn.** Under capture the first body to arrive consumes the target, so
    "demonstrate on one body, apply with another" has nothing to apply to. A
@@ -193,6 +203,7 @@ encounter has changed since.
 | [`orbit_lift_stopping_probe.py`](../../scripts/orbit_lift_stopping_probe.py) | Strike-and-measure probe |
 
 | [`paper003_self_arm.py`](../../scripts/paper003_self_arm.py) | The preregistered SELF arm test, with no flag to relax the rule |
+| [`paper003_self_arm_bound.py`](../../scripts/paper003_self_arm_bound.py) | Off-protocol probe: where the single-entity arm catches up |
 
 232 tests, all CPU.
 
