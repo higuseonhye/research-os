@@ -314,6 +314,19 @@ class RelationGateThresholds:
     # against 0.86 and 0.66 for this one. Since the real noise has never been
     # measured, the gate should not depend on it being small.
     contrast_uses_displacement: bool = True
+    # Count a step as near if the body could have been within the radius at any
+    # point during it, allowing for how far it moved since the last observation.
+    #
+    # A body travelling further per step than the radius crosses the
+    # neighbourhood between observations, so both samples show it far even
+    # though it was near. Calling that step "far" is an artefact of discrete
+    # sampling, not a fact about the world, and it is the same correction
+    # `estimate_stopping` already makes.
+    #
+    # It cannot manufacture a relation on its own: the contrast also requires
+    # the target to have *moved* in those steps, and a fly-by that never touches
+    # leaves it still. Pinned by a test.
+    proximity_allows_travel: bool = True
     # A statistic crossing a threshold once is a draw, not evidence. With ~70
     # prefixes evaluated per episode, the observation-noise control crossed by
     # chance in 0.30 of trials against H3's 0.10 ceiling; requiring two
@@ -574,9 +587,16 @@ def evaluate_relation_gate(
     # "Near" means near the closest body: with two bodies the target is in
     # contact whenever either is within the radius, and a distant body must not
     # make a real contact look far.
-    all_separations, _ = _nearest_reference(target_arr, reference_arr)
+    all_separations, nearest_body = _nearest_reference(target_arr, reference_arr)
     separations = all_separations[:-1]
-    near = separations < interaction_radius
+    allowance = np.zeros_like(separations)
+    if thresholds.proximity_allows_travel and len(reference_arr) > 1:
+        # The *nearest* body's own travel, not the smallest across bodies: it is
+        # the one whose crossing could have been missed.
+        body_steps = np.linalg.norm(np.diff(reference_arr, axis=0), axis=2)
+        index = nearest_body[: len(separations)]
+        allowance = body_steps[np.arange(len(index)), index]
+    near = separations < interaction_radius + allowance
     near_fraction = float(np.mean(near))
 
     # Only evidence gathered from the first contact onward can distinguish "the

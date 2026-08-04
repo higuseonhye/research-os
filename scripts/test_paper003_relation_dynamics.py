@@ -306,6 +306,69 @@ class PersistenceTests(unittest.TestCase):
             RelationGateThresholds(min_consecutive_fires=0).validate()
 
 
+class ProximityAllowanceTests(unittest.TestCase):
+    """A body can cross the neighbourhood between two observations.
+
+    Counting that step as "far" is an artefact of discrete sampling, not a fact
+    about the world - it is the same correction `estimate_stopping` makes. The
+    danger is that a looser proximity test manufactures a relation, so the
+    negative case matters more than the positive one.
+    """
+
+    RADIUS = 0.012
+
+    def _sweep(self, speed: float, touches: bool, steps: int = 24) -> tuple[list, list]:
+        """A body sweeping past the target, optionally displacing it."""
+        target = np.array([0.20, 0.0])
+        body = np.array([0.20 - 0.20, 0.0])
+        targets, bodies = [], []
+        for _ in range(steps):
+            body = body + np.array([speed, 0.0])
+            gap = float(np.linalg.norm(target - body))
+            if touches and gap < self.RADIUS:
+                target = target + np.array([0.4 * (self.RADIUS - gap), 0.0])
+            targets.append(target.copy())
+            bodies.append(body.copy())
+        return targets, bodies
+
+    def test_a_fast_fly_by_that_never_touches_does_not_fire(self) -> None:
+        """The guard on the whole idea. The body sweeps through at 40 mm a step
+        against a 12 mm radius, so the allowance marks those steps near - and
+        the target never moved, so there is no relation to find."""
+        targets, bodies = self._sweep(0.040, touches=False)
+        decision = evaluate_relation_gate(
+            targets, bodies, RelationGateThresholds(),
+            interaction_radius=self.RADIUS, horizon=6,
+        )
+        self.assertFalse(decision.fired)
+
+    def test_a_fast_pass_that_does_displace_is_not_lost_to_sampling(self) -> None:
+        targets, bodies = self._sweep(0.040, touches=True)
+        with_allowance = evaluate_relation_gate(
+            targets, bodies, RelationGateThresholds(),
+            interaction_radius=self.RADIUS, horizon=6,
+        )
+        without = evaluate_relation_gate(
+            targets, bodies, RelationGateThresholds(proximity_allows_travel=False),
+            interaction_radius=self.RADIUS, horizon=6,
+        )
+        self.assertGreater(with_allowance.near_fraction, without.near_fraction)
+
+    def test_a_slow_body_is_unaffected(self) -> None:
+        """The allowance is a sampling correction, so where sampling is fine it
+        must change nothing."""
+        targets, bodies = self._sweep(0.002, touches=True, steps=120)
+        allowed = evaluate_relation_gate(
+            targets, bodies, RelationGateThresholds(),
+            interaction_radius=self.RADIUS, horizon=6,
+        )
+        plain = evaluate_relation_gate(
+            targets, bodies, RelationGateThresholds(proximity_allows_travel=False),
+            interaction_radius=self.RADIUS, horizon=6,
+        )
+        self.assertAlmostEqual(allowed.proximity_contrast, plain.proximity_contrast, places=6)
+
+
 class NormalAlignmentTests(unittest.TestCase):
     """The diagnostic for the one failure mode no other recorded statistic sees.
 

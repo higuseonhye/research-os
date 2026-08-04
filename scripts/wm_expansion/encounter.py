@@ -61,6 +61,27 @@ class EncounterSpec:
                 "is never observed after the body leaves and the relation stays "
                 "unidentifiable"
             )
+        # A body that advances further per step than the interaction radius
+        # steps over the contact zone between observations: the encounter has no
+        # observable contact episode in it, however the gate is configured.
+        #
+        # This is the ratio the design was drawn at - 15 mm against a 50 mm
+        # radius, 0.3 - and porting to a scene where contact happens at 2 to
+        # 5 mm silently broke it: 40 mm against 12 mm is 3.3, and eligibility
+        # never opened in any cell.
+        #
+        # Note this is the speed of the *scripted* point. On a real arm the
+        # command is a goal, not a teleport, and the arm's achievable speed is
+        # what belongs here - measured at roughly a sixth of the commanded
+        # value in the lift scene.
+        for name, speed in (("reference_speed", self.reference_speed),
+                            ("pusher_speed", self.pusher_speed)):
+            if speed >= self.interaction_radius:
+                raise ValueError(
+                    f"{name} ({speed}) must stay below the interaction radius "
+                    f"({self.interaction_radius}), or a body crosses the contact "
+                    "zone between observations and no contact is ever seen"
+                )
         if self.bodies not in (1, 2):
             raise ValueError("bodies must be 1 or 2")
         if self.pusher_start_step < 0:

@@ -1,21 +1,23 @@
 """Paper 003's commitment cell against a real rigid object.
 
-STATUS: **never run, and known to be incomplete.** The first cell in which the
-target is a physical body rather than a point written into a command.
+STATUS: **never run.** The first cell in which the target is a physical body
+rather than a point written into a command.
 
-The open problem, found on CPU against a stub arm before any GPU time: the
-encounter's scripted speed and the contact radius are in conflict. Moving the
-block at all needs about 40 mm/step - measured, not guessed - while contact in
-this scene happens at 2 to 5 mm. A body advancing 40 mm per step steps straight
-over a 12 mm contact window, so the gate sees no contact and eligibility never
-opens. It is the same sampling problem `estimate_stopping` now corrects for with
-a travel allowance, appearing again inside the encounter itself.
+A conflict found on CPU and since resolved, recorded because the diagnosis was
+wrong twice before it was right. Eligibility never opened in any cell. It looked
+like a sampling problem - contact happens at 2 to 5 mm here while moving the
+block needs about 40 mm/step - but the real cause was a confusion between two
+different speeds.
 
-Do not read a result from this file until that is settled. The likely
-resolutions - a travel allowance in the gate's own proximity test, a finer
-substep between observations, or an encounter whose approach slows near the
-block - have different consequences for what the gate means, so the choice is a
-design decision rather than a parameter.
+`--approach-speed` is what the arm is *commanded*; the arm's achievable speed is
+roughly a sixth of it. `EncounterSpec.reference_speed` is the rate at which the
+scripted goal point advances, and it must be the achievable speed, or the script
+runs away from an arm that cannot follow it. Set to the commanded value it was
+3.3 times the interaction radius, so the scripted body stepped clean over the
+contact zone every time and the encounter contained no contact to observe.
+
+`EncounterSpec.validate` now refuses a speed at or above the radius, the same
+way it already refuses a withdrawal that does not clear it.
 
 What is different from `orbit_reach_relation_pilot.py`:
 
