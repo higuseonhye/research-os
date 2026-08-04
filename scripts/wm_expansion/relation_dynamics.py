@@ -782,3 +782,122 @@ class RelationalTargetModel:
             reference = reference + self.reference_velocity
             target = target + coupling_displacement(target, reference, spec)
         return target
+
+
+# --------------------------------------------------------------------------
+# Capture: the reference arrives at a still target and carries it away
+# --------------------------------------------------------------------------
+
+
+@dataclass
+class CaptureSpec:
+    """The relation the paper is actually about.
+
+    Two other relations were measured and rejected, and the reasons are the
+    design (see docs/paper003/paper003_capture_design_v0.1.md):
+
+    **Collision** - struck and released - makes the relation necessary, since
+    nothing in a still target's history predicts an approaching body. But the
+    push moves the target away, which reduces penetration, which reduces the
+    push, so displacement per contact is on the order of the interaction radius
+    and never clears the placement tolerance. Measured five independent ways.
+
+    **Carriage** - riding throughout - clears the tolerance easily, and fails
+    the paper's central claim: a single-entity model that learns the burst
+    pattern of the *target's own* trajectory matches the relational arm exactly.
+    The relation is not necessary, so H2 fails.
+
+    **Capture** has neither failure. Before the arrival the target is still, so
+    its own history says nothing; afterwards it rides, so the effect accumulates
+    without bound.
+    """
+
+    capture_radius: float = 0.012
+    """Separation at which the reference takes hold. Once held, held."""
+
+    def validate(self) -> None:
+        if self.capture_radius <= 0.0:
+            raise ValueError("capture_radius must be > 0")
+
+
+def capture_displacement(
+    target: ArrayLike,
+    reference: ArrayLike,
+    reference_step: ArrayLike,
+    spec: CaptureSpec,
+    held: bool,
+) -> tuple[np.ndarray, bool]:
+    """The target's displacement this step, and whether it is now held.
+
+    `reference_step` is the reference's own displacement this step, which is
+    what a held target inherits. Before capture the target does not move at all
+    - not a small push, nothing - which is exactly what makes its own history
+    uninformative and the relation necessary.
+    """
+
+    spec.validate()
+    target_arr = np.asarray(target, dtype=np.float64)
+    reference_arr = np.asarray(reference, dtype=np.float64)
+    step_arr = np.asarray(reference_step, dtype=np.float64)
+    if target_arr.shape != reference_arr.shape or target_arr.shape != step_arr.shape:
+        raise ValueError("target, reference and step must share a shape")
+
+    if not held:
+        separation = float(np.linalg.norm(target_arr - reference_arr))
+        if separation >= spec.capture_radius:
+            return np.zeros_like(target_arr), False
+        held = True
+    return step_arr.copy(), True
+
+
+def predict_capture(
+    target: ArrayLike,
+    reference_history: ArrayLike,
+    horizon: int,
+    estimator,
+    spec: CaptureSpec,
+    held: bool = False,
+) -> np.ndarray | None:
+    """Arm D under capture: predict *when* the reference arrives, then carry.
+
+    The two phases are the whole point. A prediction that applies the
+    reference's motion to the target immediately is wrong before the capture,
+    because the target is not attached yet - it scored 0.50 against arm B's 0.33
+    as a deliberately crude proxy, and that number is a floor rather than a
+    ceiling on this design.
+
+    Returns the predicted displacement, or None when the reference's pattern is
+    not identifiable and the arm must decline rather than guess.
+    """
+
+    if horizon < 0:
+        raise ValueError("horizon must be >= 0")
+    spec.validate()
+    history = _paired_array(reference_history)
+    if len(history) < 2:
+        return None
+
+    deltas = np.diff(history, axis=0)
+    total = deltas.sum(axis=0)
+    norm = float(np.linalg.norm(total))
+    start = np.asarray(target, dtype=np.float64)
+    if norm <= 0.0:
+        return np.zeros_like(start)
+
+    direction = total / norm
+    steps = estimator.predict_steps(list(history @ direction), horizon)
+    if steps is None:
+        return None
+
+    rolling_reference = np.asarray(history[-1], dtype=np.float64)
+    rolling_target = start.copy()
+    for step in steps:
+        motion = float(step) * direction
+        rolling_reference = rolling_reference + motion
+        if not held:
+            separation = float(np.linalg.norm(rolling_target - rolling_reference))
+            if separation < spec.capture_radius:
+                held = True
+        if held:
+            rolling_target = rolling_target + motion
+    return rolling_target - start
