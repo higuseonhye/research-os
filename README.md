@@ -60,7 +60,7 @@ Each paper answers the same question with a different change operator.
 | --- | --- | --- |
 | **Paper 001: Recoverability** | When is the post-mismatch state still recoverable? | Tier C complete |
 | **Paper 002: Model Adequacy** | When should repair give way to model-order expansion? | Tier C complete |
-| **Paper 003: Representation Expansion** | Does expansion open capability that repair cannot reach? | Design/calibration |
+| **Paper 003: Representation Expansion** | Does expansion open capability that repair cannot reach? | Design/calibration · [H2's decisive comparison preregistered and passed](docs/paper003/paper003_self_arm_prereg_v1.0.md) |
 | **Paper 004: Experience Disposition** | Should an experience be ignored, stored, repaired from, or escalated? | Program-defined |
 | **Paper 005: Recovery Orchestration** | How should multiple recovery operators be coordinated? | Program-defined |
 
