@@ -25,13 +25,17 @@ import numpy as np
 
 from .commitment_task import ReferencePatternEstimator
 from .relation_dynamics import (
+    CaptureEstimate,
+    CaptureSpec,
     CouplingSpec,
+    estimate_capture,
     estimate_coupling,
     RelationGateDecision,
     RelationGateThresholds,
     coupling_displacement,
     evaluate_relation_gate,
     gate_fired_persistently,
+    predict_capture,
 )
 
 ArrayLike = Sequence[float] | np.ndarray
@@ -229,6 +233,24 @@ class CommitmentEpisode:
             search_radius=self.spec.interaction_radius * 3.0,
         )
 
+    def _capture(self) -> CaptureEstimate | None:
+        """Is the target being carried, and by whom - inferred, not declared.
+
+        The episode is not told which relation it is watching. Being told would
+        hand arm D the generating model, the same loan `_coupling` exists to
+        refuse, and would make a capture result unfalsifiable: the arm would
+        succeed because the harness selected its model for it.
+
+        Under a capture the collision fit is not merely worse but wrong in kind
+        - displacement does not fall off with separation, it equals the
+        carrier's own step - so `estimate_coupling` declines and arm D would
+        silently degrade into arm B. This is what it degrades into instead.
+        """
+
+        if len(self.targets) < 2:
+            return None
+        return estimate_capture(self.targets, self.references)
+
     def _body_history(self, body: int) -> np.ndarray:
         """One body's trajectory as [time, dim]."""
         return np.asarray([step[body] for step in self.references], dtype=np.float64)
@@ -250,6 +272,26 @@ class CommitmentEpisode:
             return None
         return project_reference_motion(
             target, self._body_history(body), horizon, self.estimator, coupling
+        )
+
+    def _project_capture(
+        self, target: np.ndarray, horizon: int, capture: CaptureEstimate
+    ) -> np.ndarray | None:
+        """Arm D under capture: roll the carrier forward and ride it.
+
+        Rolled with the body that took hold rather than with `_acting_body`.
+        The two agree while the carrier is the only body inside the radius, and
+        differ exactly where it matters - a second body closing on an
+        already-carried target is not what moves it.
+        """
+
+        return predict_capture(
+            target,
+            self._body_history(capture.body),
+            horizon,
+            self.estimator,
+            CaptureSpec(capture_radius=capture.capture_radius),
+            held=capture.held,
         )
 
     def gate_decision(self) -> RelationGateDecision:
@@ -335,7 +377,7 @@ class CommitmentEpisode:
         return (
             self._projection_available()
             and self.gate_fired()
-            and self._coupling() is not None
+            and (self._coupling() is not None or self._capture() is not None)
         )
 
     @property
@@ -485,12 +527,26 @@ class CommitmentEpisode:
         # static and noise conditions, where the reference moves but the target
         # is uncoupled. An unusable estimate falls back the same way rather than
         # fabricating an aim; the arm is penalised for it, which is correct.
-        coupling = self._coupling() if self.gate_fired() else None
-        predicted = (
-            None
-            if coupling is None
-            else self._project(target, horizon, coupling)
-        )
+        # Two relations, and the order between them is not a preference. The
+        # collision fit is the more constrained model - it requires displacement
+        # to fall off linearly with separation, across a spread of separations,
+        # at 0.80 fit quality - so where it succeeds it has been tested against
+        # data a carry cannot produce. Under a carry the separation is constant,
+        # there is no spread, and it declines. Capture is what is left when
+        # displacement does not depend on separation at all.
+        #
+        # Trying capture first would break the collision path: a struck target
+        # rides at the body's speed while it sits at the equilibrium separation,
+        # so a carry is briefly the correct reading of a collision trace.
+        predicted = None
+        if self.gate_fired():
+            coupling = self._coupling()
+            if coupling is not None:
+                predicted = self._project(target, horizon, coupling)
+            else:
+                capture = self._capture()
+                if capture is not None:
+                    predicted = self._project_capture(target, horizon, capture)
         out["D"] = target.copy() if predicted is None else target + predicted
 
         if true_landing is not None:

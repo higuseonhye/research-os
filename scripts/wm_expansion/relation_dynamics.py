@@ -870,6 +870,135 @@ def capture_displacement(
     return step_arr.copy(), True
 
 
+def _first_run(rides: np.ndarray, length: int) -> tuple[int | None, int]:
+    """Start and body of the earliest run of `length` consecutive True steps.
+
+    `rides` is ``[step, body]``. Runs are looked for within a single body's
+    column: a run assembled from whichever body matched best on each step is
+    not one carrier holding on, which is the thing being detected.
+    """
+
+    best: tuple[int, int] | None = None
+    for body in range(rides.shape[1]):
+        column = rides[:, body]
+        run = 0
+        for index, riding in enumerate(column):
+            run = run + 1 if riding else 0
+            if run >= length:
+                start = index - length + 1
+                if best is None or start < best[0]:
+                    best = (start, body)
+                break
+    return (None, -1) if best is None else best
+
+
+@dataclass(frozen=True)
+class CaptureEstimate:
+    """What an arm can infer about a capture from observation alone.
+
+    The parallel to `estimate_coupling` is deliberate and for the same reason:
+    an arm handed `CaptureSpec.capture_radius` from the harness would be rolling
+    forward with the generating model, and its accuracy would measure the loan.
+    """
+
+    capture_radius: float
+    """Separation at the step the target began to ride. The only observable
+    estimate of the radius: it is where taking hold actually happened."""
+    held: bool
+    """Is the target riding *now*. False after a release, which stops the arm
+    from carrying a target that has already been let go."""
+    onset: int
+    """Index of the first riding step, in the observation history."""
+    body: int
+    """Which body took hold. Not merely that one did - with two bodies the
+    prediction must be rolled forward with the carrier, not the nearest."""
+
+
+def estimate_capture(
+    target_positions: Iterable[ArrayLike],
+    reference_positions: Iterable[ArrayLike],
+    motion_floor_ratio: float = 0.25,
+    agreement: float = 0.25,
+    min_ride_steps: int = 3,
+) -> CaptureEstimate | None:
+    """Recover a capture from observation: did a body take hold, and where.
+
+    A riding target and its carrier move by the *same* displacement, so the test
+    is that the two deltas agree to within `agreement` of the target's own step.
+    Nothing about the generating process enters; the same statistic would
+    identify a carried object in an Isaac trace.
+
+    **A single agreeing step is not evidence**, and this is not a noise
+    argument. A struck target has an equilibrium separation where the push
+    exactly equals the body's own advance - with gain 0.5 and a 50 mm radius,
+    20 mm - and at that separation collision and carriage are the same
+    observation. What separates them is persistence: the equilibrium is passed
+    through, a capture holds. `min_ride_steps` consecutive agreeing steps is the
+    requirement, and it is why one agreeing step is discarded.
+
+    Returns None when no such run is observed, which is the honest answer
+    before a capture has happened and is what makes the arm decline rather than
+    invent an onset. Note what that implies: in an encounter where the tested
+    capture is the *first* one, there is nothing to estimate from, and the
+    relational arm cannot act before the arrival. An encounter that wants arm D
+    to predict the onset has to demonstrate a capture first.
+    """
+
+    targets = _paired_array(target_positions)
+    references = _reference_array(reference_positions)
+    if len(targets) != len(references) or len(targets) < 2:
+        return None
+    if not 0.0 < agreement < 1.0:
+        raise ValueError("agreement must be in (0, 1)")
+    if min_ride_steps < 1:
+        raise ValueError("min_ride_steps must be >= 1")
+
+    target_steps = np.diff(targets, axis=0)
+    lengths = np.linalg.norm(target_steps, axis=1)
+    largest = float(np.max(lengths)) if lengths.size else 0.0
+    if largest <= 0.0:
+        return None  # the target never moved; nothing took hold
+
+    # A pause is not a release. Under the burst schedule the carrier stops for
+    # `burst_off` steps and the target stops with it, so those steps carry no
+    # evidence either way and must not be read as divergence - an earlier
+    # version scored them as a release and reported `held=False` on every
+    # captured cell it saw.
+    moving = lengths >= motion_floor_ratio * largest
+    if not moving.any():
+        return None
+
+    # Which body, if any, moved by what the target moved by - per body, since a
+    # run has to be attributed to one carrier rather than to whichever body
+    # happened to match best on each step.
+    mismatch = np.linalg.norm(
+        np.diff(references, axis=0) - target_steps[:, None, :], axis=2
+    )
+    rides = moving[:, None] & (mismatch <= agreement * lengths[:, None])
+
+    onset, body = _first_run(rides, min_ride_steps)
+    if onset is None:
+        return None
+
+    radius = float(np.linalg.norm(targets[onset] - references[onset][body]))
+    if radius <= 0.0:
+        return None
+
+    # Held unless a later moving step disagrees with the same body. Steps where
+    # a *different* body happens to match better are not evidence of a release
+    # either, so the check is against the carrier alone.
+    after = np.arange(len(lengths)) > onset
+    diverged = moving & after & (
+        mismatch[:, body] > agreement * np.maximum(lengths, largest * motion_floor_ratio)
+    )
+    return CaptureEstimate(
+        capture_radius=radius,
+        held=not bool(diverged.any()),
+        onset=onset,
+        body=body,
+    )
+
+
 def predict_capture(
     target: ArrayLike,
     reference_history: ArrayLike,
