@@ -243,9 +243,20 @@ def main() -> None:
             f"(script {1000 * args_cli.script_speed:.1f} mm/step, "
             f"commanded {1000 * args_cli.approach_speed:.1f})"
         )
-        if (record["ee_error_median"] or 0) > 2.0 * args_cli.script_speed:
-            lines.append("ARM LAGGING - the script is faster than the arm can "
-                         "follow; lower --script-speed before reading anything")
+        # Judged against the interaction radius, not the script speed. An error
+        # of half the radius already means the body is not where the script says
+        # it is, so the contact geometry the gate reasons about is wrong -
+        # regardless of how fast the script happens to be moving. The first real
+        # cell had a median error of 9.5 mm against a 12 mm radius and passed a
+        # script-speed test, while eligibility never opened.
+        if (record["ee_error_median"] or 0) > 0.5 * args_cli.interaction_radius:
+            lines.append(
+                f"ARM LAGGING - median error "
+                f"{1000 * record['ee_error_median']:.1f} mm against a "
+                f"{1000 * args_cli.interaction_radius:.1f} mm radius. The body "
+                "is not where the script says; lower --script-speed or raise "
+                "--approach-speed before reading anything from this cell"
+            )
     (out_dir / f"cell_{args_cli.condition}_seed{args_cli.seed}.txt").write_text(
         "\n".join(lines) + "\n"
     )
