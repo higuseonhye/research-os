@@ -1,6 +1,10 @@
 # Paper 003 — Missing relation & capability expansion
 
-> **Status 2026-08-04.** Design stage. Not preregistered, no confirmatory data.
+> **Status 2026-08-04.** Design stage. The main preregistration is still
+> unwritten and there is no confirmatory *physical* data — but H2's decisive
+> arm comparison **is** preregistered and settled: see
+> [the SELF arm rule](paper003_self_arm_prereg_v1.0.md) and
+> [its result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_v1.0/RESULTS.md).
 > The relation was **changed today** after measuring three candidates, and
 > several documents in this folder are superseded or carry corrections.
 > **Read this file first** — the folder is not safe to read in alphabetical
@@ -90,9 +94,21 @@ without bound.
   marker's scale.
 - **The placement tolerance: 20 mm**, on two independent grounds — the task
   family's own `mdp/terminations.py` threshold, and the block's half-height.
-- **The gate.** Fires on capture at 1.00 and rejects self-moving controls at
-  0.00, using the *same* thresholds as collision. A capture-specific variant was
-  written and deleted after its premise failed a test.
+- **The gate, and it now has two forms of positive evidence.** The claim that
+  one threshold set covered both relations was **wrong, and corrected
+  2026-08-04**: with an off-by-one fixed in `capture_displacement`, the
+  proximity contrast abstains on *every* capture cell — a carrier that never
+  leaves supplies no far field. The 1.00 previously recorded came from that
+  defect, which threw a captured target one body-step past its carrier so the
+  pauses sorted into the far field.
+
+  One gate still covers both relations, by admitting **carriage** as a second
+  form of positive evidence: the target's displacement *is* a body's
+  displacement, on ≥ 0.80 of moving steps with a run of ≥ 3. Collision still
+  enters through the contrast; capture enters here; every other clause applies
+  unchanged. The constant-velocity ceiling is what keeps `drift` out, which
+  agrees with its body on 0.71 of steps and would otherwise pass.
+  [The measurement](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/capture_arms_v0.1/RESULTS.md)
 - **The gate under real contact.** Fires on every Isaac trace containing a
   strike, with `cv_gain` between −0.20 and −0.75 — a constant-velocity model is
   *worse* than zero-order, so Paper 002's operator does not absorb the residual.
@@ -105,13 +121,47 @@ without bound.
    `CellSpec(coupling="capture")` drives a cell, paired with the `burst`
    schedule — a body that arrives and carries the target off has no reason to
    withdraw. Under `probe` the carried target is dragged back with it.
-2. **The commit window relative to the capture.** Must be fixed on arm-neutral
-   grounds — "so that arm B fails" is not one. **This is the next decision, and
-   it is a judgement rather than an implementation.**
-3. **Score the arms under capture in a cell.** The relation and the loop now
-   meet; nothing has been measured through them together.
-4. **Rewrite the preregistration**, which assumes collision throughout.
-5. **Then** the confirmatory sample.
+2. ~~The commit window relative to the capture.~~ **Done.** Within one
+   dispense-length of a body's arrival, on either side, anchored on
+   `contact_arrivals`. Fixed on the structure of the action: the dispense takes
+   `dispense_latency` steps, so a commit further out than that either completes
+   before anything has happened or measures a regime the arrival no longer
+   governs. Symmetric because there is no reason to prefer a side. What it
+   removes is an artefact, not a preference — under capture the eligibility
+   screen admits every step after the arrival, so the commit distribution was
+   being set by `episode_steps` and sat almost entirely in the riding tail where
+   a constant-velocity model absorbs the motion.
+3. ~~Score the arms under capture in a cell.~~ **Done.** Under `capture` +
+   `burst`, where arm D can act it is right **0.78** of the time against 0.06
+   where it declines; by commit offset the relation pays **0.53 → 0.71** against
+   0.00 for parameter repair and ≤ 0.07 for the mode operator. All four
+   controls and the collision cells are unchanged.
+   [The measurement](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/capture_arms_v0.1/RESULTS.md)
+4. ~~Decide how the gate admits a capture.~~ **Done** — carriage, as a second
+   form of positive evidence in the same gate. See Settled, above.
+5. **The overlap between the commit window and arm D's readiness.** The window
+   runs to ±6 around the arrival; arm D cannot act before +4, so 3 of its 13
+   steps are usable and the marginal rate is 0.23 against a conditional 0.78.
+   **Neither side may be moved to fix this** — the window is fixed on the
+   structure of the action and the evidence requirement on the collision
+   equilibrium. It changes through the encounter or not at all, on grounds
+   stated before the run.
+6. ~~Measure the single-entity arm under capture + burst.~~ **Done, and H2
+   stands.** Preregistered rule locked before the arm was implemented; 200
+   paired cells; **arm D 0.650, SELF 0.000**, 130 discordant pairs all in D's
+   favour, one-sided exact McNemar p = 7.3 × 10⁻⁴⁰, margin +0.650. SELF acted
+   on 0.675 of cells and was not broken — it holds a median of 4 steps of its
+   own motion against a 14-step cycle and extrapolates through a pause it
+   cannot see. **Limitation, recorded:** that disadvantage rests on the window
+   ending at +6, so the protection is bounded in time rather than absolute.
+   [Rule](paper003_self_arm_prereg_v1.0.md) ·
+   [Result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_v1.0/RESULTS.md)
+7. **Redraw the two-body encounter for capture.** It was drawn for collision and
+   does not survive: the prober captures the target and carries it out of the
+   pusher's approach line, so 13 of 40 cells did not resolve and none committed
+   in the window.
+8. **Rewrite the preregistration**, which assumes collision throughout.
+9. **Then** the confirmatory sample.
 
 ## Not in this repository
 
@@ -127,6 +177,7 @@ encounter has changed since.
 | Module | Role |
 | --- | --- |
 | [`wm_expansion/relation_dynamics.py`](../../scripts/wm_expansion/relation_dynamics.py) | Couplings, the gate, the estimators, capture |
+| [`paper003_capture_arms.py`](../../scripts/paper003_capture_arms.py) | Scores every arm under each relation, in the commit window |
 | [`wm_expansion/cell.py`](../../scripts/wm_expansion/cell.py) | One commitment cell, simulator behind a callback |
 | [`wm_expansion/encounter.py`](../../scripts/wm_expansion/encounter.py) | Encounter geometry and schedules |
 | [`wm_expansion/stopping.py`](../../scripts/wm_expansion/stopping.py) | How long a struck object keeps moving |
@@ -134,7 +185,9 @@ encounter has changed since.
 | [`orbit_lift_relation_cell.py`](../../scripts/orbit_lift_relation_cell.py) | Isaac adapter for the lift scene |
 | [`orbit_lift_stopping_probe.py`](../../scripts/orbit_lift_stopping_probe.py) | Strike-and-measure probe |
 
-225 tests, all CPU.
+| [`paper003_self_arm.py`](../../scripts/paper003_self_arm.py) | The preregistered SELF arm test, with no flag to relax the rule |
+
+232 tests, all CPU.
 
 ---
 

@@ -25,20 +25,29 @@ import numpy as np
 
 from .commitment_task import ReferencePatternEstimator
 from .relation_dynamics import (
+    CaptureEstimate,
+    CaptureSpec,
     CouplingSpec,
+    estimate_capture,
     estimate_coupling,
     RelationGateDecision,
     RelationGateThresholds,
     coupling_displacement,
     evaluate_relation_gate,
     gate_fired_persistently,
+    predict_capture,
 )
 
 ArrayLike = Sequence[float] | np.ndarray
 
 #: Arms scored every episode. `D_oracle` is diagnostic and excluded from
 #: primary estimates - see the preregistration draft.
-EPISODE_ARMS = ("A", "B", "C", "D", "D_oracle")
+#:
+#: `SELF` is the hypothesis's most dangerous competitor and the arm that already
+#: killed one design: under carriage it matched the relational arm exactly, and
+#: that is why capture was chosen instead. See
+#: docs/paper003/paper003_self_arm_prereg_v1.0.md.
+EPISODE_ARMS = ("A", "B", "C", "D", "SELF", "D_oracle")
 
 
 @dataclass
@@ -229,6 +238,24 @@ class CommitmentEpisode:
             search_radius=self.spec.interaction_radius * 3.0,
         )
 
+    def _capture(self) -> CaptureEstimate | None:
+        """Is the target being carried, and by whom - inferred, not declared.
+
+        The episode is not told which relation it is watching. Being told would
+        hand arm D the generating model, the same loan `_coupling` exists to
+        refuse, and would make a capture result unfalsifiable: the arm would
+        succeed because the harness selected its model for it.
+
+        Under a capture the collision fit is not merely worse but wrong in kind
+        - displacement does not fall off with separation, it equals the
+        carrier's own step - so `estimate_coupling` declines and arm D would
+        silently degrade into arm B. This is what it degrades into instead.
+        """
+
+        if len(self.targets) < 2:
+            return None
+        return estimate_capture(self.targets, self.references)
+
     def _body_history(self, body: int) -> np.ndarray:
         """One body's trajectory as [time, dim]."""
         return np.asarray([step[body] for step in self.references], dtype=np.float64)
@@ -250,6 +277,58 @@ class CommitmentEpisode:
             return None
         return project_reference_motion(
             target, self._body_history(body), horizon, self.estimator, coupling
+        )
+
+    def _project_self(self, horizon: int) -> np.ndarray | None:
+        """The SELF arm: the target's own trajectory, and nothing else.
+
+        No reference body is read here at all - not the acting one, not the
+        carrier, not their number. The arm is the claim that whatever the target
+        is about to do is already written in what it has been doing, which under
+        an intermittent carry is a live possibility rather than a straw man: a
+        carried target rides its carrier's bursts, so the carrier's pattern
+        appears in the target's own history a few steps after the capture.
+
+        Same estimator and same horizon as arm D uses on the carrier, so the two
+        differ in *what they observe* and in nothing else. Returns None when the
+        pattern is not identifiable, and the caller then falls back to the
+        target's current position - the same fallback arm D takes.
+        """
+
+        history = np.asarray(self.targets, dtype=np.float64)
+        if len(history) < 2:
+            return None
+        total = np.diff(history, axis=0).sum(axis=0)
+        norm = float(np.linalg.norm(total))
+        if norm <= 0.0:
+            return np.zeros(history.shape[1])  # a still target continues still
+
+        direction = total / norm
+        steps = self.estimator.predict_steps(list(history @ direction), horizon)
+        if steps is None:
+            return None
+        # No coupling to re-apply at each step: this arm has no second entity to
+        # roll forward, which is the whole of what distinguishes it from arm D.
+        return float(np.sum(steps)) * direction
+
+    def _project_capture(
+        self, target: np.ndarray, horizon: int, capture: CaptureEstimate
+    ) -> np.ndarray | None:
+        """Arm D under capture: roll the carrier forward and ride it.
+
+        Rolled with the body that took hold rather than with `_acting_body`.
+        The two agree while the carrier is the only body inside the radius, and
+        differ exactly where it matters - a second body closing on an
+        already-carried target is not what moves it.
+        """
+
+        return predict_capture(
+            target,
+            self._body_history(capture.body),
+            horizon,
+            self.estimator,
+            CaptureSpec(capture_radius=capture.capture_radius),
+            held=capture.held,
         )
 
     def gate_decision(self) -> RelationGateDecision:
@@ -335,8 +414,19 @@ class CommitmentEpisode:
         return (
             self._projection_available()
             and self.gate_fired()
-            and self._coupling() is not None
+            and (self._coupling() is not None or self._capture() is not None)
         )
+
+    def can_estimate_self(self) -> bool:
+        """Is the SELF arm acting, or falling back to zero-order?
+
+        Diagnostic only, and it decides nothing - but without it a SELF arm that
+        never identified a pattern is indistinguishable in the output from one
+        that identified a pattern and was wrong, and those are opposite readings
+        of the same number.
+        """
+
+        return self._project_self(self.spec.dispense_latency) is not None
 
     @property
     def ready(self) -> bool:
@@ -392,25 +482,12 @@ class CommitmentEpisode:
         #    under its own dynamics moves during the dispense even with no body
         #    near it, and that cell is worth scoring: it is where a
         #    constant-velocity arm should win and a relational one decline.
-        target_speed = float(np.linalg.norm(target - previous_target))
-        if target_speed * self.spec.dispense_latency > self.spec.tolerance:
+        if self.already_moving():
             return True
 
         # 2. A body will be in contact for long enough during the window to act.
         if reference_future is not None:
-            future = np.asarray(reference_future, dtype=np.float64)
-            if future.ndim == 2:
-                future = future[:, None, :]
-            if future.ndim != 3 or future.shape[2] != target.shape[0]:
-                raise ValueError("reference_future must be [step, dim] or [step, body, dim]")
-            horizon = min(len(future), self.spec.dispense_latency)
-            in_contact = sum(
-                1
-                for step in range(horizon)
-                if float(np.min(np.linalg.norm(future[step] - target, axis=1)))
-                < self.spec.interaction_radius
-            )
-            return in_contact >= self.spec.min_contact_steps
+            return self.contact_within_window(reference_future)
 
         # Fallback when the harness does not supply the bodies' future.
         #
@@ -433,6 +510,43 @@ class CommitmentEpisode:
         closing = float(np.linalg.norm(target - previous_reference)) - separation
         reach = separation - self.spec.interaction_radius
         return closing > 0.0 and 0.0 < reach <= closing * self.spec.dispense_latency
+
+    def already_moving(self) -> bool:
+        """Would the target's present motion alone carry it out of tolerance?
+
+        The first clause of the eligibility screen, exposed separately because
+        the commit window needs it negated - see `transition_in_window`.
+        """
+
+        if len(self.targets) < 2:
+            return False
+        speed = float(np.linalg.norm(self.targets[-1] - self.targets[-2]))
+        return speed * self.spec.dispense_latency > self.spec.tolerance
+
+    def contact_within_window(self, reference_future: ArrayLike) -> bool:
+        """Will a body be in contact long enough during the dispense to act?
+
+        The second clause of the screen. `reference_future` comes from the
+        harness for the reason `motion_expected` gives: predicting it would
+        route eligibility through arm D's estimator.
+        """
+
+        if len(self.targets) < 2:
+            return False
+        target = self.targets[-1]
+        future = np.asarray(reference_future, dtype=np.float64)
+        if future.ndim == 2:
+            future = future[:, None, :]
+        if future.ndim != 3 or future.shape[2] != target.shape[0]:
+            raise ValueError("reference_future must be [step, dim] or [step, body, dim]")
+        horizon = min(len(future), self.spec.dispense_latency)
+        in_contact = sum(
+            1
+            for step in range(horizon)
+            if float(np.min(np.linalg.norm(future[step] - target, axis=1)))
+            < self.spec.interaction_radius
+        )
+        return in_contact >= self.spec.min_contact_steps
 
     def aims(self, true_landing: ArrayLike | None = None) -> dict[str, np.ndarray]:
         """Each arm's predicted landing point at the moment of commitment.
@@ -459,13 +573,36 @@ class CommitmentEpisode:
         # static and noise conditions, where the reference moves but the target
         # is uncoupled. An unusable estimate falls back the same way rather than
         # fabricating an aim; the arm is penalised for it, which is correct.
-        coupling = self._coupling() if self.gate_fired() else None
-        predicted = (
-            None
-            if coupling is None
-            else self._project(target, horizon, coupling)
-        )
+        # Two relations, and the order between them is not a preference. The
+        # collision fit is the more constrained model - it requires displacement
+        # to fall off linearly with separation, across a spread of separations,
+        # at 0.80 fit quality - so where it succeeds it has been tested against
+        # data a carry cannot produce. Under a carry the separation is constant,
+        # there is no spread, and it declines. Capture is what is left when
+        # displacement does not depend on separation at all.
+        #
+        # Trying capture first would break the collision path: a struck target
+        # rides at the body's speed while it sits at the equilibrium separation,
+        # so a carry is briefly the correct reading of a collision trace.
+        predicted = None
+        if self.gate_fired():
+            coupling = self._coupling()
+            if coupling is not None:
+                predicted = self._project(target, horizon, coupling)
+            else:
+                capture = self._capture()
+                if capture is not None:
+                    predicted = self._project_capture(target, horizon, capture)
         out["D"] = target.copy() if predicted is None else target + predicted
+
+        # Deliberately outside the gate. Arm D may act only when the relation
+        # gate fires; this arm acts whenever its own pattern is identifiable.
+        # The asymmetry favours SELF and is not to be corrected - a relation
+        # that beats an ungated single-entity competitor has answered the
+        # objection in its strongest form, and gating SELF would be tuning the
+        # competitor down. Fixed in the preregistration.
+        own = self._project_self(horizon)
+        out["SELF"] = target.copy() if own is None else target + own
 
         if true_landing is not None:
             out["D_oracle"] = np.asarray(true_landing, dtype=np.float64)

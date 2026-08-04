@@ -51,7 +51,7 @@ class RecordTests(unittest.TestCase):
                     self.assertTrue(record["valid"], "cell did not resolve")
                     self.assertIsNotNone(record["committed_at"])
                     self.assertEqual(
-                        set(record["resolved"]), {"A", "B", "C", "D", "D_oracle"}
+                        set(record["resolved"]), {"A", "B", "C", "D", "SELF", "D_oracle"}
                     )
 
     def test_the_oracle_always_lands(self) -> None:
@@ -111,14 +111,37 @@ class ConditionTests(unittest.TestCase):
     def test_a_post_contact_slide_also_belongs_to_the_mode_operator(self) -> None:
         """The control that would collapse Paper 003 into Paper 002.
 
-        Not asserted at exactly 1.0: a slide that begins late in the dispense
-        window leaves the velocity estimate short, and one seed in twenty misses.
-        What matters is that the mode operator dominates and the relational one
-        declines outright.
+        The threshold here was 0.9 until the commit window was fixed to the
+        transition on 2026-08-04. That number described the old commit
+        distribution - uniform over every eligible step, so almost always deep
+        into the slide - rather than anything the control claims. The window now
+        also admits commits in the first steps after the strike, where a
+        constant-velocity model has not yet seen two steps of velocity and
+        cannot extrapolate. That is a property of the arm, measured, not a
+        weakening of the control.
+
+        So the claim is asserted where it lives: the mode operator dominates
+        overall, is *exact* once its estimate exists, and the relational one
+        declines outright at every offset.
         """
+
+        records = [
+            record
+            for seed in range(300, 320)
+            if (record := cell("slide", seed=seed))["resolved"] is not None
+        ]
         rates = self._rates("slide")
-        self.assertGreaterEqual(rates["C"], 0.9)
+        self.assertGreaterEqual(rates["C"], 0.7)
         self.assertEqual(rates["D"], 0.0)
+        self.assertEqual(rates["B"], 0.0)
+
+        settled = [
+            r["resolved"]["C"]
+            for r in records
+            if r["commit_offset"] is not None and r["commit_offset"] >= 3
+        ]
+        self.assertTrue(settled, "no cell committed clear of the strike")
+        self.assertEqual(float(np.mean(settled)), 1.0)
 
     def test_the_mode_operator_is_actively_harmful_on_noise(self) -> None:
         rates = self._rates("noise")
@@ -137,11 +160,11 @@ class TwoBodyTests(unittest.TestCase):
         """The first must strike to demonstrate the relation; the second must
         arrive to apply it. Either missing makes the encounter meaningless.
 
-        Checked under the collision coupling, because separation is the right
-        measure only there. Under capture the target is picked up where it was
-        and then moves with its carrier, so the recorded separation is the one
-        from before the carrier's step - a whole step stale, and above the
-        capture radius even though the capture happened.
+        Checked under the collision coupling, because closest approach is the
+        right measure only there. Under capture the target is picked up where it
+        was and then holds that separation for the rest of the episode, so the
+        closest approach is fixed at the capture radius and says nothing about
+        whether the *second* body ever arrived - which is what this is asking.
         """
         radius = EncounterSpec().interaction_radius
         for seed in range(300, 320):

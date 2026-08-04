@@ -111,6 +111,95 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(predicted.shape, (dims,))
 
 
+class SelfArmTests(unittest.TestCase):
+    """The single-entity competitor, pinned to its preregistered definition.
+
+    Every fixture here is synthetic or collision-based. None of them is a
+    `capture` + `burst` cell in the [+4, +6] band, which is the population the
+    decision rule in `docs/paper003/paper003_self_arm_prereg_v1.0.md` reserves
+    for the confirmatory run - implementing an arm against the data that is
+    meant to judge it is the thing preregistration exists to prevent.
+    """
+
+    def setUp(self) -> None:
+        self.spec = EpisodeSpec()
+
+    def _episode(self, targets, references) -> CommitmentEpisode:
+        episode = CommitmentEpisode(spec=self.spec)
+        for target, reference in zip(targets, references):
+            episode.observe(target, reference)
+        return episode
+
+    def _riding(self, steps: int = 40, on: int = 10, off: int = 4, speed: float = 0.015):
+        """A target moving in bursts, and a body doing something unrelated."""
+        axis = np.array([1.0, 0.0, 0.0])
+        target = np.array([0.20, 0.0, 0.40])
+        targets, references = [], []
+        for step in range(steps):
+            if (step % (on + off)) < on:
+                target = target + speed * axis
+            targets.append(target.copy())
+            references.append(np.array([0.0, float(step), 0.0]))
+        return targets, references
+
+    def test_it_does_not_look_at_the_reference_at_all(self) -> None:
+        """The defining property. Same target history, any body: same aim.
+
+        If this ever fails, the arm has stopped being a single-entity model and
+        the comparison it exists for is void.
+        """
+
+        targets, references = self._riding()
+        elsewhere = [r * 3.0 + np.array([1.0, 2.0, 3.0]) for r in references]
+        first = self._episode(targets, references).aims()["SELF"]
+        second = self._episode(targets, elsewhere).aims()["SELF"]
+        np.testing.assert_allclose(first, second)
+
+    def test_it_predicts_a_target_that_carries_its_own_pattern(self) -> None:
+        """The hazard, in its simplest form: the burst pattern is in the target.
+
+        Not a capture cell - the body here is nowhere near and moving on an
+        unrelated axis - but the same statistical situation, and the arm has to
+        be able to exploit it or the comparison is not adversarial.
+        """
+
+        targets, references = self._riding(steps=40)
+        episode = self._episode(targets[:30], references[:30])
+        self.assertTrue(episode.can_estimate_self())
+        aim = episode.aims()["SELF"]
+        self.assertFalse(np.allclose(aim, episode.aims()["B"]))
+        landing = targets[30 - 1 + self.spec.dispense_latency]
+        self.assertLess(float(np.linalg.norm(aim - landing)), self.spec.tolerance)
+
+    def test_a_still_target_gives_it_nothing_and_it_becomes_zero_order(self) -> None:
+        """The argument capture was chosen on, stated as a test.
+
+        Before the arrival the target has not moved, so its own history contains
+        no information about what is about to happen to it and this arm can only
+        aim where the target already is.
+        """
+
+        targets = [np.array([0.20, 0.0, 0.40]) for _ in range(20)]
+        references = [np.array([0.0, float(step) * 0.01, 0.0]) for step in range(20)]
+        episode = self._episode(targets, references)
+        np.testing.assert_allclose(episode.aims()["SELF"], episode.aims()["B"])
+
+    def test_it_is_not_gated(self) -> None:
+        """Deliberately the easier deal, and fixed in the preregistration.
+
+        Arm D may act only when the relation gate fires. This arm acts whenever
+        its own pattern is identifiable, which favours it - and a relation that
+        beats an ungated competitor has answered the objection in its strongest
+        form. A change that gates SELF fails here.
+        """
+
+        targets, references = self._riding()
+        episode = self._episode(targets[:30], references[:30])
+        self.assertFalse(episode.gate_fired(), "fixture should not fire the gate")
+        self.assertTrue(episode.can_estimate_self())
+        self.assertFalse(np.allclose(episode.aims()["SELF"], episode.aims()["B"]))
+
+
 class EpisodeDriverTests(unittest.TestCase):
     def setUp(self) -> None:
         self.spec = EpisodeSpec()
@@ -161,14 +250,14 @@ class EpisodeDriverTests(unittest.TestCase):
         without = episode.aims()
         self.assertNotIn("D_oracle", without)
         with_oracle = episode.aims(true_landing=np.zeros(3))
-        self.assertEqual(set(with_oracle), {"A", "B", "C", "D", "D_oracle"})
+        self.assertEqual(set(with_oracle), {"A", "B", "C", "D", "SELF", "D_oracle"})
 
     def test_oracle_always_lands_and_resolve_reports_per_arm(self) -> None:
         episode = self._drive(20)
         landing = self.targets[20 + self.spec.dispense_latency]
         result = episode.resolve(episode.aims(true_landing=landing), landing)
         self.assertTrue(result["D_oracle"])
-        self.assertEqual(set(result), {"A", "B", "C", "D", "D_oracle"})
+        self.assertEqual(set(result), {"A", "B", "C", "D", "SELF", "D_oracle"})
 
     def test_relation_arm_beats_zero_order_on_a_coupled_landing(self) -> None:
         """The property the whole paper rests on, exercised end to end."""
