@@ -497,7 +497,11 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     # measured so far is arithmetic: the cell computed the block's motion and
     # wrote it into the command. Here it is read back out of physics, and the
     # same statistic the gate and arm D use decides what happened.
-    verdict = capture_verdict(record)
+    verdict = capture_verdict(
+        record,
+        tolerance=args.tolerance,
+        interaction_radius=args.interaction_radius,
+    )
     record["capture"] = verdict
     record["grasp"] = {
         "requested": bool(args.grasp),

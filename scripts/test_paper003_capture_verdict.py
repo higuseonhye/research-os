@@ -84,3 +84,57 @@ class VerdictTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SlipTests(unittest.TestCase):
+    """A carry keeps its distance. Agreeing step by step is not enough.
+
+    `_ride_mask` tolerates a mismatch of 25% of the target's own step, so a
+    target that falls a little behind every step still scores near-perfect
+    agreement while drifting arbitrarily far. Measured in the Isaac pilot,
+    objects verdicted as carried had reached median separations of 3, 50, 63,
+    55 and 178 mm from the arm holding them, at 0.98 agreement over runs of 111.
+    """
+
+    def _slipping(self, per_step: float) -> dict:
+        """A capture cell with the target losing `per_step` metres each step."""
+
+        record = cell()
+        targets = [np.asarray(o["target"]) for o in record["observations"]]
+        moved = [
+            index
+            for index in range(1, len(targets))
+            if float(np.linalg.norm(targets[index] - targets[index - 1])) > 1e-9
+        ]
+        onset = moved[0] if moved else len(targets)
+        drift = np.array([0.0, 1.0, 0.0])
+        for index, observation in enumerate(record["observations"]):
+            if index >= onset:
+                observation["target"] = (
+                    np.asarray(observation["target"]) + (index - onset) * per_step * drift
+                ).tolist()
+        return record
+
+    def test_a_slipping_carry_is_not_a_capture(self) -> None:
+        # 2 mm of drift per step against a 15 mm/step carry: inside the 25%
+        # per-step tolerance and therefore invisible to the agreement test,
+        # while accumulating past the radius within a few dozen steps. That gap
+        # between what a step permits and what a run accumulates is the defect.
+        radius = 0.05
+        record = self._slipping(0.002)
+
+        # It passes the per-step test comfortably - that is the whole problem.
+        loose = capture_verdict(record)
+        self.assertGreater(loose["carriage_agreement"], 0.80)
+
+        # And fails once the separation has to stay inside the radius.
+        strict = capture_verdict(record, interaction_radius=radius)
+        self.assertNotEqual(strict["verdict"], "capture", strict.get("reason"))
+
+    def test_a_true_carry_still_passes_with_the_radius(self) -> None:
+        """The check must not reject the thing it exists to admit."""
+
+        for seed in range(300, 310):
+            verdict = capture_verdict(cell(seed=seed), interaction_radius=0.05)
+            with self.subTest(seed=seed):
+                self.assertEqual(verdict["verdict"], "capture", verdict.get("reason"))

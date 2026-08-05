@@ -69,11 +69,37 @@ bounded through the riding run, not merely the steps to agree. The gate already
 does this via contact; the verdict and the evidence statistic have to follow it,
 not the other way round.
 
-**Not yet decided, and not to be decided by what makes the numbers work:** what
-"bounded" is measured against — the separation at the grasp, or the measured
-capture radius, or a fraction of the total carry. Each is defensible and they
-give different answers, so the choice is stated before the re-measurement, as
-every other threshold this week has been.
+## Decided 2026-08-05, before re-measuring: the measured capture radius
+
+Of the three candidates, this one **introduces no new parameter**, which the
+others do. The grasp separation needs a tolerance band around it; a fraction of
+the total carry needs the fraction, and would call 20 mm of drift over a 200 mm
+carry a success.
+
+More to the point, it is not really a choice. `capture_verdict` was trusted for
+one reason, stated in its own docstring: it decides "with the same statistics the
+gate and arm D use, not with a separate rule invented for the pilot". That
+property had quietly broken — the gate called `carriage_evidence` with the
+radius and the verdict called it without — and the verdict then certified
+exactly the cells the gate was refusing. **Restoring the invariant is the fix;
+the radius was already fixed by measurement at 2.5 mm.**
+
+### Where the bound had to go
+
+Three attempts, and the first two moved numbers without moving the verdict:
+
+1. Passing the radius to `carriage_evidence` from the verdict changed only the
+   *reported* agreement. The verdict branches on `estimate_capture`, not on
+   that number.
+2. Passing it to `estimate_capture` too was still not enough. It finds the
+   *first* run of three agreeing steps, and the first three steps after a grasp
+   are inside the radius however badly the carry later comes apart.
+3. It belongs in `_ride_mask`, which all three callers share, **and in what
+   `held` means.** Held is a statement about now: an object the carrier has
+   drifted away from is not held, however well each individual step agreed. The
+   verdict now requires it.
+
+The first two are recorded because each looked like the fix and neither was.
 
 ## Where things stood
 

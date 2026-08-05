@@ -980,6 +980,7 @@ def _ride_mask(
     references: np.ndarray,
     motion_floor_ratio: float,
     agreement: float,
+    interaction_radius: float | None = None,
 ) -> tuple[np.ndarray, np.ndarray] | None:
     """``[step, body]`` - did the target move by what this body moved by.
 
@@ -999,7 +1000,25 @@ def _ride_mask(
     if not moving.any():
         return None
     mismatch = np.linalg.norm(np.diff(references, axis=0) - target_steps[:, None, :], axis=2)
-    return moving[:, None] & (mismatch <= agreement * lengths[:, None]), moving
+    rides = moving[:, None] & (mismatch <= agreement * lengths[:, None])
+
+    # A carry keeps its distance, and agreeing step by step does not imply it.
+    # The per-step test tolerates `agreement` of the target's own step, so a
+    # target losing a fraction of a millimetre every step scores near-perfect
+    # agreement while drifting arbitrarily far - measured in the Isaac pilot,
+    # objects "carried" at 0.98 over a run of 111 had reached median separations
+    # of 3, 50, 63, 55 and 178 mm from the arm holding them.
+    #
+    # The bound belongs here rather than in one caller, so that the gate, the
+    # verdict and arm D cannot disagree about what a carry is. They did: the
+    # gate applied it, the verdict did not, and the verdict certified slips the
+    # gate was correctly refusing.
+    if interaction_radius is not None:
+        if interaction_radius <= 0.0:
+            raise ValueError("interaction_radius must be > 0")
+        separations = np.linalg.norm(references[:-1] - targets[:-1, None, :], axis=2)
+        rides = rides & (separations < interaction_radius)
+    return rides, moving
 
 
 def carriage_evidence(
@@ -1028,7 +1047,9 @@ def carriage_evidence(
     references = _reference_array(reference_positions)
     if len(targets) != len(references) or len(targets) < 2:
         return 0.0, 0
-    masked = _ride_mask(targets, references, motion_floor_ratio, agreement)
+    masked = _ride_mask(
+        targets, references, motion_floor_ratio, agreement, interaction_radius
+    )
     if masked is None:
         return 0.0, 0
     rides, moving = masked
@@ -1046,14 +1067,6 @@ def carriage_evidence(
     # Contact is the definition of carrying rather than a tuned threshold, and
     # it separates the two outright.
     # See docs/paper003/paper003_where_collapse_is_defended_v0.1.md.
-    if interaction_radius is not None:
-        if interaction_radius <= 0.0:
-            raise ValueError("interaction_radius must be > 0")
-        separations = np.linalg.norm(
-            references[:-1] - targets[:-1, None, :], axis=2
-        )
-        rides = rides & (separations < interaction_radius)
-
     if not moving.any() or not rides.shape[1]:
         return 0.0, 0
     fraction = float(np.mean(rides.any(axis=1)[moving]))
@@ -1116,6 +1129,7 @@ def estimate_capture(
     motion_floor_ratio: float = 0.25,
     agreement: float = 0.25,
     min_ride_steps: int = 3,
+    interaction_radius: float | None = None,
 ) -> CaptureEstimate | None:
     """Recover a capture from observation: did a body take hold, and where.
 
@@ -1157,7 +1171,9 @@ def estimate_capture(
     #
     # The mask is the same one the gate's carriage evidence is computed from, so
     # a cell the gate admitted as a carry is one this can fit.
-    masked = _ride_mask(targets, references, motion_floor_ratio, agreement)
+    masked = _ride_mask(
+        targets, references, motion_floor_ratio, agreement, interaction_radius
+    )
     if masked is None:
         return None
     rides, moving = masked
@@ -1182,6 +1198,13 @@ def estimate_capture(
     diverged = moving & after & (
         mismatch[:, body] > agreement * np.maximum(lengths, largest * motion_floor_ratio)
     )
+    # Held means held *now*, and an object the carrier has drifted away from is
+    # not. Without this, a carry that slipped apart over sixty steps still
+    # reported `held=True`, because every individual step's mismatch stayed
+    # inside the tolerance that the drift was accumulating from.
+    if interaction_radius is not None:
+        separations = np.linalg.norm(references[:, body] - targets, axis=1)
+        diverged = diverged | (separations[1:] >= interaction_radius) & after
     return CaptureEstimate(
         capture_radius=radius,
         held=not bool(diverged.any()),

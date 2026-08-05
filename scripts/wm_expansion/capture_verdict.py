@@ -37,6 +37,7 @@ def capture_verdict(
     dispense_latency: int = 6,
     min_still_steps: int = 3,
     still_fraction: float = 0.25,
+    interaction_radius: float | None = None,
 ) -> dict[str, Any]:
     """Classify one cell record. Diagnostic only - nothing gates on it.
 
@@ -70,8 +71,30 @@ def capture_verdict(
     if float(np.max(steps)) <= 0.0:
         return {"verdict": "none", "reason": "the target never moved"}
 
-    agreement, run = carriage_evidence(targets, bodies)
-    estimate = estimate_capture(targets, bodies)
+    # **With the radius, the same way the gate calls it.**
+    #
+    # This called it without, and the two then disagreed about what a carry is.
+    # `_ride_mask` compares per-step displacement vectors and tolerates 25% of
+    # the target's own step - about 0.75 mm at this speed - so sixty steps of
+    # near-agreement integrate into forty-five millimetres of drift while
+    # scoring 0.98 over a run of 111. Measured in the pilot, objects verdicted
+    # as carried had drifted to median separations of 3, 50, 63, 55 and 178 mm
+    # from the arm that was supposedly holding them.
+    #
+    # Carrying is a statement about relative position being *maintained*, and
+    # per-step agreement is a local proxy that does not imply it. The gate was
+    # already checking the accumulated quantity through its contact
+    # requirement, and was refusing these cells correctly while this function
+    # certified them.
+    #
+    # No new threshold: the bound is the measured capture radius the gate
+    # already uses. What this restores is the property the verdict was trusted
+    # for - that a trace it certifies is a capture by the measure the arms are
+    # scored through.
+    agreement, run = carriage_evidence(
+        targets, bodies, interaction_radius=interaction_radius
+    )
+    estimate = estimate_capture(targets, bodies, interaction_radius=interaction_radius)
 
     out: dict[str, Any] = {
         "carriage_agreement": float(agreement),
@@ -119,7 +142,16 @@ def capture_verdict(
 
     # Both properties capture was chosen for, checked separately so a failure
     # says which one failed.
-    if first_motion < min_still_steps:
+    if not estimate.held:
+        out.update(
+            verdict="collision",
+            reason=(
+                "it was taken hold of and then lost - the carrier drifted away "
+                "from it, or their motions came apart. A carry keeps its "
+                "distance, and agreeing step by step does not imply that"
+            ),
+        )
+    elif first_motion < min_still_steps:
         out.update(
             verdict="collision",
             reason=(
