@@ -1048,16 +1048,23 @@ def _ride_mask(
     separations = np.linalg.norm(references - targets[:, None, :], axis=2)
     for body in range(rides.shape[1]):
         for start, stop in _runs(rides[:, body]):
-            window = separations[start : stop + 2, body]
-            closest = float(np.min(window))
-
-            # Carrying begins with taking hold, so a run must contain a moment
-            # of actual contact. This is what rejects `drift`, whose target
-            # tracks a body's own axis at its own speed - separation constant,
-            # slip zero, and the body 183 mm away throughout. Required once in
-            # the run rather than at every step: an object genuinely held sits a
-            # few millimetres from `ee_frame`, which is a virtual point between
-            # the jaws, and one cell holds at a constant 3.35 mm.
+            # Taking hold comes *before* riding, so contact is looked for up to
+            # the run rather than inside it.
+            #
+            # Traced step by step in a physical cell: the arm closes at 0.65 mm
+            # while the block is still at rest, the block accelerates from rest
+            # over the next three steps, and only from the fourth does it match
+            # the arm - by which point it has settled to a constant 2.95 mm.
+            # Every step of that ride is a clean carry, mismatch under 0.3 mm,
+            # separation flat to a hundredth of a millimetre. Looking for
+            # contact *within* the run finds 2.95 mm against a 2.5 mm radius and
+            # throws the whole thing away, which is how a run of clean carries
+            # became `collision` in 24 cells out of 24.
+            #
+            # `drift` is still rejected: its body never comes within 183 mm of
+            # the target at any point, so there is no moment of contact anywhere
+            # before or during the ride.
+            closest = float(np.min(separations[: stop + 2, body]))
             if interaction_radius is not None and closest >= interaction_radius:
                 rides[start : stop + 1, body] = False
                 continue
