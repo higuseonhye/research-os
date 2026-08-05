@@ -185,6 +185,13 @@ parser.add_argument("--probe-withdraw", type=int, default=5,
 parser.add_argument("--probe-hold", type=int, default=2)
 parser.add_argument("--commit-policy", type=str, default="uniform",
                     choices=["uniform", "first"])
+parser.add_argument("--episode-length-s", type=float, default=120.0,
+                    help="seconds before the environment truncates the "
+                         "episode and RESETS, which teleports the object "
+                         "and looks exactly like a violent ejection. The "
+                         "scene's own value cut every run short at about "
+                         "93 steps; generous here because nothing in this "
+                         "design wants an episode to end on its own")
 parser.add_argument("--out-dir", type=str, default="results/lift_cells")
 AppLauncher.add_app_launcher_args(parser)
 args_cli = parser.parse_args()
@@ -536,6 +543,8 @@ def main() -> None:
     """
 
     cfg = parse_env_cfg(args_cli.task, num_envs=args_cli.num_envs)
+    # Before `gym.make`, or the env is built with the old limit.
+    cfg.episode_length_s = float(args_cli.episode_length_s)
     env = gym.make(args_cli.task, cfg=cfg)
     out_dir = Path(args_cli.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
