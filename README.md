@@ -60,7 +60,7 @@ Each paper answers the same question with a different change operator.
 | --- | --- | --- |
 | **Paper 001: Recoverability** | When is the post-mismatch state still recoverable? | Tier C complete |
 | **Paper 002: Model Adequacy** | When should repair give way to model-order expansion? | Tier C complete |
-| **Paper 003: Representation Expansion** | Does expansion open capability that repair cannot reach? | **Negative under real contact.** The relation is unnecessary where the carrier cannot stop — Paper 002's mode operator lands 0.957–1.000 of physical cells. [Closed](docs/paper003/paper003_prereg_v1.0.md#closure--what-the-pilot-returned-and-what-it-licenses) · [result](experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/physical_h2_v1.0/RESULTS.md) |
+| **Paper 003: Representation Expansion** | Does expansion open capability that repair cannot reach? | **Negative under real contact, and written up.** Paper 002's mode operator lands 0.957–1.000 of physical cells where the relational arm lands 0.174–0.583. [Manuscript](docs/paper003/paper003_manuscript_negative_v1.0.md) · [prereg, closed](docs/paper003/paper003_prereg_v1.0.md#closure--what-the-pilot-returned-and-what-it-licenses) |
 | **Paper 004: Experience Disposition** | Should an experience be ignored, stored, repaired from, or escalated? | Program-defined |
 | **Paper 005: Recovery Orchestration** | How should multiple recovery operators be coordinated? | Program-defined |
 
