@@ -82,6 +82,7 @@ without bound.
 
 | Document | What it settles |
 | --- | --- |
+| [`paper003_manuscript_negative_v0.1.md`](paper003_manuscript_negative_v0.1.md) | **The paper.** Four candidate relations, the requirement each fails, and the physical criterion a missing-relation scene must satisfy |
 | [`paper003_capture_design_v0.1.md`](paper003_capture_design_v0.1.md) | **The relation.** Why capture, and why carriage was recommended and then rejected |
 | [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md) | **The preregistration, CLOSED.** Locked in design; the pilot ran and the design's precondition failed. Read its closure section for what may and may not be reported |
 | [`paper003_self_arm_prereg_v1.0.md`](paper003_self_arm_prereg_v1.0.md) | **H2's decisive comparison**, and its rule fixed before the arm existed |

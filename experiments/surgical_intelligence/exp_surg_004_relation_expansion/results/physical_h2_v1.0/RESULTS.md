@@ -80,6 +80,33 @@ with pauses long enough for the arm to actually stop:
 **Arm C does not move: 0.957 to 0.958.** The pause the whole argument turned on
 changes nothing about whether a constant-velocity model suffices.
 
+#### But this configuration does not cleanly test what it was built to test
+
+**Arm B rises from 0.087 to 0.625.** Arm B is a zero-order aim — it succeeds
+when the target barely moves during the dispense. With 25 steps of pause in a
+29-step cycle, most of the carry is dead time, so most commit windows land where
+*nothing is happening* and the trivial arm wins.
+
+That is reading (iii) of three written down **before** this run: *"C drops but B
+is also high → the task setup is broken and eligibility must exclude pause-window
+commits."* C did not drop, but B's rise is the same symptom: **these cells got
+easier, they did not get more relational.** Every arm rose except C, which had
+nowhere to rise to.
+
+So the `burst_off` 25 row is reported and is **not** the row the conclusion rests
+on. The conclusion rests on the two configurations where arm B is at 0.087 and
+0.133 — cells that are genuinely hard for a zero-order model — and arm C is at
+0.957 and 1.000 anyway.
+
+What `burst_off` 25 does establish, and it is not nothing: the derived pause was
+applied, the intermittency was physically present, and **arm C still landed
+everything**. A configuration that made the task easier for every other arm left
+the mode operator exactly where it was.
+
+Fixing this properly means excluding commits whose dispense window contains no
+target motion, which changes the preregistered commit policy. That is a new
+design, not a repair of this one, and it is not done here.
+
 ### The number that ends it
 
 Across both needle configurations, 47 physical cells:
