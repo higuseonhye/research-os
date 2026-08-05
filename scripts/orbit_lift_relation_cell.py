@@ -105,9 +105,11 @@ parser.add_argument("--gripper", type=float, default=-1.0,
                          "Ignored when --grasp is set, which schedules it")
 parser.add_argument("--grasp", action="store_true",
                     help="produce a CAPTURE rather than a collision: approach "
-                         "with the gripper OPEN, close it once the end effector "
-                         "is within --grasp-radius of the block, and keep it "
-                         "closed. "
+                         "with the gripper OPEN, close it at the closest "
+                         "approach to the block, and keep it closed. Also aims "
+                         "the encounter at the block's centre rather than up to "
+                         "6 mm off it, because a grasp is a rendezvous and a "
+                         "jaw closing off-centre ejects the block. "
                          "This is the whole capture relation, physically. The "
                          "straddling that made an open gripper useless for a "
                          "push probe - the frame point reached 0.3 mm from the "
@@ -117,12 +119,18 @@ parser.add_argument("--grasp", action="store_true",
                          "information and the single-entity arm has something "
                          "to learn from. Closing then takes hold, and the block "
                          "rides. Nothing before, everything after")
-parser.add_argument("--grasp-radius", type=float, default=0.012,
-                    help="metres. The separation at which the gripper closes, "
-                         "and therefore the physical capture radius. Arm D does "
-                         "not receive this - it estimates the radius from the "
-                         "observed onset, the same refusal `estimate_coupling` "
-                         "makes")
+parser.add_argument("--grasp-epsilon", type=float, default=0.0002,
+                    help="metres of decrease that still counts as approaching. "
+                         "Below this the separation is treated as no longer "
+                         "closing, which is the arrival")
+parser.add_argument("--grasp-radius", type=float, default=0.030,
+                    help="metres. No longer the trigger - the gripper closes at "
+                         "the closest approach - but a sanity bound on it, so a "
+                         "pass that never got near the block cannot be read as "
+                         "an arrival. Deliberately loose. Arm D does not receive "
+                         "the capture radius either way; it estimates it from "
+                         "the observed onset, the same refusal "
+                         "`estimate_coupling` makes")
 parser.add_argument("--gripper-open", type=float, default=1.0)
 parser.add_argument("--gripper-close", type=float, default=-1.0)
 parser.add_argument("--schedule", type=str, default="probe",
@@ -238,10 +246,25 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         gripper = args.gripper
         if args.grasp:
             if not place.grasped:
+                # Close at the closest approach, not at a threshold.
+                #
+                # A radius is a knob: too small and the gripper never closes,
+                # too large and it closes harder off-centre, driving a jaw into
+                # the block - measured, the block left at 2.6 m/s from an arm
+                # moving 2 mm/step. The arrival is an observable event instead:
+                # the separation stops decreasing. That is what
+                # `capture_displacement` means by taking hold.
+                #
+                # It costs one step of lateness, because a minimum is only
+                # recognisable once passed. At 2 mm/step that is 2 mm.
                 separation = float(np.linalg.norm(read_object() - read_ee()))
-                if separation < args.grasp_radius:
+                closing = separation < place.closest - args.grasp_epsilon
+                if closing:
+                    place.closest = separation  # type: ignore[attr-defined]
+                elif place.closest < args.grasp_radius:
                     place.grasped = True  # type: ignore[attr-defined]
                     place.grasp_step = len(commanded) - 1  # type: ignore[attr-defined]
+                    place.grasp_separation = separation  # type: ignore[attr-defined]
             gripper = args.gripper_close if place.grasped else args.gripper_open
         if gripper != 0.0 and action_dim >= 4:
             action[0, -1] = float(gripper)
@@ -250,6 +273,8 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
 
     place.grasped = False  # type: ignore[attr-defined]
     place.grasp_step = None  # type: ignore[attr-defined]
+    place.closest = float("inf")  # type: ignore[attr-defined]
+    place.grasp_separation = None  # type: ignore[attr-defined]
     place.gripper_series = []  # type: ignore[attr-defined]
 
     def step_physics() -> bool:
@@ -286,6 +311,9 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         schedule=args.schedule,
         burst_on=args.burst_on,
         burst_off=args.burst_off,
+        # A grasp has to meet the block, not pass beside it. See
+        # docs/paper003/paper003_rendezvous_v0.1.md.
+        lateral_offset_scale=0.0 if args.grasp else 0.5,
         probe_advance=args.probe_advance,
         probe_withdraw=args.probe_withdraw,
         probe_hold=args.probe_hold,
@@ -393,6 +421,8 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "requested": bool(args.grasp),
         "radius": args.grasp_radius,
         "closed_at": place.grasp_step,
+        "closed_at_separation": place.grasp_separation,
+        "closest_seen": None if place.closest == float("inf") else place.closest,
         "gripper_series": place.gripper_series,
     }
     record["schedule"] = args.schedule

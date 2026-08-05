@@ -217,3 +217,50 @@ class WindowTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LateralOffsetTests(unittest.TestCase):
+    """A grasp is a rendezvous; a collision is a fly-by.
+
+    See docs/paper003/paper003_rendezvous_v0.1.md.
+    """
+
+    def test_zero_scale_aims_at_the_centre(self) -> None:
+        target = np.array([0.20, 0.0, 0.40])
+        spec = EncounterSpec(lateral_offset_scale=0.0)
+        for seed in range(300, 320):
+            geometry = draw_geometry(seed, target, spec)
+            with self.subTest(seed=seed):
+                self.assertEqual(geometry.lateral_offset, 0.0)
+
+    def test_the_approach_azimuth_stays_random_either_way(self) -> None:
+        """The substantive variation must survive. Fixing the axis once made the
+        whole interaction translation-invariant - ten seeds, one encounter."""
+
+        target = np.array([0.20, 0.0, 0.40])
+        for scale in (0.0, 0.5):
+            spec = EncounterSpec(lateral_offset_scale=scale)
+            azimuths = {
+                round(draw_geometry(seed, target, spec).azimuth, 6)
+                for seed in range(300, 320)
+            }
+            with self.subTest(scale=scale):
+                self.assertGreater(len(azimuths), 15)
+
+    def test_a_centred_approach_passes_through_the_target(self) -> None:
+        target = np.array([0.20, 0.0, 0.40])
+        spec = EncounterSpec(lateral_offset_scale=0.0, schedule="burst",
+                             reference_speed=0.002, pusher_speed=0.002,
+                             interaction_radius=0.012)
+        for seed in range(300, 310):
+            geometry = draw_geometry(seed, target, spec)
+            closest = min(
+                float(np.linalg.norm(bodies_at(step, geometry, spec)[0] - target))
+                for step in range(200)
+            )
+            with self.subTest(seed=seed):
+                self.assertLess(closest, 0.001, "the script never reaches the block")
+
+    def test_an_out_of_range_scale_is_refused(self) -> None:
+        with self.assertRaises(ValueError):
+            EncounterSpec(lateral_offset_scale=1.5).validate()

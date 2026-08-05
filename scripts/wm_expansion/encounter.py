@@ -36,6 +36,24 @@ class EncounterSpec:
     probe_withdraw: int = 5
     probe_hold: int = 2
 
+    lateral_offset_scale: float = 0.5
+    """How far off-centre the approach may be drawn, as a fraction of the radius.
+
+    0.5 varies the contact geometry, which is the point under **collision**: a
+    body that sweeps past and strikes should not repeat one head-on pass.
+
+    **0 for a grasp.** A gripper closing on a block that is not between its jaws
+    drives one jaw into it - measured, the block left at 2.6 m/s from an arm
+    moving at 2 mm/step, which is the solver separating an interpenetration
+    rather than a push. With a 7.3 mm tracking error, a 6 mm offset put the end
+    effector 10.3 mm from the block's centre.
+
+    The approach *azimuth* stays randomised either way, and that is the
+    substantive variation: fixing the axis once made the whole interaction
+    translation-invariant, so ten seeds gave ten positions and one encounter.
+    See docs/paper003/paper003_rendezvous_v0.1.md.
+    """
+
     #: A second body turns the task from "extrapolate this body" into "apply the
     #: relation to a body it was not learned on". At the commitment the target
     #: is stationary - the first body has gone, the second has not arrived - so
@@ -88,6 +106,8 @@ class EncounterSpec:
                     f"({self.interaction_radius}), or a body crosses the contact "
                     "zone between observations and no contact is ever seen"
                 )
+        if not 0.0 <= self.lateral_offset_scale <= 1.0:
+            raise ValueError("lateral_offset_scale must be in [0, 1]")
         if self.bodies not in (1, 2):
             raise ValueError("bodies must be 1 or 2")
         if self.pusher_start_step < 0:
@@ -173,7 +193,7 @@ def draw_geometry(seed: int, target: np.ndarray, spec: EncounterSpec) -> Encount
     azimuth = float(rng.uniform(0.0, 2.0 * np.pi))
     axis = np.array([np.cos(azimuth), np.sin(azimuth), 0.0])
     lateral = np.array([-axis[1], axis[0], 0.0])
-    offset = float(rng.uniform(-0.5, 0.5)) * spec.interaction_radius
+    offset = float(rng.uniform(-1.0, 1.0)) * spec.lateral_offset_scale * spec.interaction_radius
 
     # How far the first body starts back. Under `burst` it must stay outside the
     # radius long enough for one full cycle to be observed, or the encounter is
