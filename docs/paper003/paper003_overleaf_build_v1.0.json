@@ -15,5 +15,20 @@
     "Verify every entry in the .bib against published records; volumes, pages and years are unchecked.",
     "Two references named in the positioning document are deliberately absent - see the .bib header.",
     "Set \\draftnotefalse in the .tex to remove the verification banner."
+  ],
+  "outputs": {
+    "docs/paper003/paper003_manuscript_negative_v1.0.pdf": {
+      "sha256": "3533735646cabdb23adee458c20b4505dbe973b05066fd790e8d5124fb197e02",
+      "pages": 11,
+      "figures_embedded": 4,
+      "compiled_on": "Overleaf",
+      "draft_banner": "present - \\draftnotetrue was left set"
+    }
+  },
+  "verified_after_compile": [
+    "no unresolved cross-references (no '??' in the extracted text)",
+    "all 12 bibliography entries cited; citation labels [1]-[12] all resolve",
+    "4 of 4 figures embedded, pages 5-8",
+    "section and figure references resolve to numbers"
   ]
 }
