@@ -64,7 +64,7 @@ audit:
 | --- | --- | --- |
 | **Paper 001: Recoverability** | Measures whether a system can still recover from the same post-mismatch state | Tier C complete |
 | **Paper 002: Model Adequacy** | Tests when parameter repair should give way to a prepared model-order expansion | Tier C complete |
-| **Paper 003: Representation Expansion** | Tests whether adding a missing relation can open capability repair cannot reach | Design/calibration |
+| **Paper 003: Representation Expansion** | Tests whether adding a missing relation can open capability repair cannot reach | Negative under real contact; written up |
 | **Mismatch Lab** | Public surface for diff, replay, explanation, and benchmark design | Spec/demo |
 | **Builder Lab** | Public execution surface for small Physical AI experiments | Planning |
 
@@ -72,7 +72,7 @@ Selected proof points:
 
 - Paper 001: REPLAN 19/20 vs CONTINUE 0/20 under a fixed mismatch state.
 - Paper 002: 400/400 valid confirmatory cells; gated expansion improves prediction-linked control without static regression in the tested target-drift family.
-- Paper 003: design-stage relation/mode dissociation; not yet confirmatory evidence.
+- Paper 003: the prepared relation operator did not transfer to real contact; the mode operator remained sufficient in the tested scene.
 
 ## Program Map
 

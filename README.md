@@ -79,6 +79,10 @@ Paper success is useful; program coherence is mandatory.
 Products are not side effects of papers. They are platforms for testing the
 program's claims in actual workflows.
 
+Builder Lab is the physical execution surface for the same program. It starts in
+Planning state and does not claim hardware evidence until EXP-001 produces a
+reproducible run.
+
 ## Operating rules
 
 1. New ideas do not automatically become new papers. First ask whether they fit

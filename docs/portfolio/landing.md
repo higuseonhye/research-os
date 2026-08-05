@@ -44,7 +44,7 @@ Recommended first-screen copy:
 | --- | --- |
 | **Paper 001** | Shows recoverability can be measured at a fixed post-mismatch state |
 | **Paper 002** | Provides the strongest current confirmatory evidence for repair-vs-expansion |
-| **Paper 003** | Shows the next design frontier: representation expansion as capability, not just lower error |
+| **Paper 003** | Records a negative real-contact result: the prepared relation operator did not beat the smaller mode operator |
 | **Mismatch Lab** | Converts the research program into a public interface and benchmark direction |
 | **Builder Lab** | Quietly opens the build track; current status is Planning until EXP-001 runs |
 
