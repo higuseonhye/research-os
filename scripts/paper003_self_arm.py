@@ -4,8 +4,15 @@ Implements the decision rule in `docs/paper003/paper003_self_arm_prereg_v1.0.md`
 exactly, and nothing else. The rule was locked before this file was written.
 
     population   capture coupling, burst schedule, 1 body, condition `coupled`
-    eligibility  valid and resolved, commit offset in [+4, +6]
-    sample       n = 200 eligible cells, seeds from 300 upward
+    eligibility  valid and resolved, commit offset in [+4, +8]
+    sample       n = 200 eligible cells, seeds from 3000 upward
+
+The band and the seeds moved once, under the amendment recorded in the rule:
+`dispense_latency` was derived from the physical carry speed and rose from 6 to
+8, the commit window is one dispense-length either side of the arrival, and the
+band is where arm D can act - measured on seeds 2000-2119, disjoint from these.
+Nothing else moved: the arm, the asymmetry, alpha, the margin, n and the test
+are as first locked.
     pairing      SELF and D scored on the same cell
     test         one-sided exact McNemar on discordant pairs, alpha = 0.05
     margin       p_D - p_SELF >= 0.15
@@ -32,10 +39,10 @@ TARGET = np.array([0.20, 0.0, 0.40])
 
 # Preregistered. Not command-line options.
 SAMPLE = 200
-OFFSET_BAND = (4, 6)
+OFFSET_BAND = (4, 8)
 ALPHA = 0.05
 MARGIN = 0.15
-FIRST_SEED = 300
+FIRST_SEED = 3000
 
 
 def collect(sample: int = SAMPLE, seed_cap: int = 20_000) -> tuple[list[dict], int]:

@@ -148,6 +148,51 @@ bounded in time rather than absolute. Where the bound lies is a separate
 question on fresh seeds, and the clause below is why it was not answered by
 widening this run.
 
+## Amendment, 2026-08-05 — recorded before the re-run
+
+Invoked under the clause below, which says a proposal is recorded here with the
+result that prompted it and applies to a future run on fresh seeds.
+
+**What prompted it.** `dispense_latency` was derived from the physical scene and
+rose from 6 to 8 — the block carries at 2.86 mm/step at the tenth percentile
+against a 20 mm tolerance, so six steps leave the target inside tolerance and the
+cell poses no prediction problem.
+[The derivation](paper003_derived_from_physics_v0.1.md)
+
+The commit window is one dispense-length either side of the arrival, so it moved
+with it. The band this comparison runs in is defined as *where arm D can act at
+all*, and that is measured, not chosen.
+
+**What changes.**
+
+| | before | after |
+| --- | --- | --- |
+| `dispense_latency` | 6 | **8** |
+| commit window | ±6 | **±8** |
+| offset band | [+4, +6] | **[+4, +8]** |
+| seeds | 300–922 | **from 3000** |
+
+The band was measured on seeds 2000–2119, disjoint from both the original run
+and the re-run, before this amendment was written. Arm D acts on 0.00 of cells
+at every offset from −7 to +3 and on 0.75–0.94 from +4 to +8. The lower bound is
+unchanged, because what sets it is unchanged: three carriage steps plus two
+consecutive gate crossings.
+
+**What does not change.** The arm's definition, its ungated asymmetry, α = 0.05,
+the margin of 0.15, `n` = 200, the pairing, and the test. The band moves because
+the window moved, and for no other reason.
+
+**The gate also changed** since the original run — the constant-velocity ceiling
+is now scoped to the proximity path, with contact doing the work on the carriage
+path. That changes when arm D may act and is another reason the original result
+cannot simply be carried forward.
+[Why](paper003_where_collapse_is_defended_v0.1.md)
+
+**Case A stands as what it was**: a comparison at `dispense_latency` 6, on seeds
+300–922, of a task the physical scene cannot pose. It is not retracted and it is
+not evidence for the amended design. The re-run may fail, and if it does, that is
+the result.
+
 ## Not permitted after the run
 
 - Changing α, the margin, n, the offset band, or the test.
