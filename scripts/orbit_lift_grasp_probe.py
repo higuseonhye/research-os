@@ -64,6 +64,18 @@ parser.add_argument("--close-at", type=float, default=-1.0,
                     help="metres; close the gripper at this separation instead of "
                          "at the closest the arm can reach. A sweep over this "
                          "maps where holding turns into throwing")
+parser.add_argument("--hold-gripper", type=str, default="close",
+                    choices=["close", "open"],
+                    help="what to do at the arrival. `open` is the control: if "
+                         "the object leaves anyway, the ejection is not the "
+                         "gripper and every reading so far has the wrong cause")
+parser.add_argument("--close-over", type=int, default=1,
+                    help="steps to ramp the finger command over. 1 commands full "
+                         "closure in a single step, which may sweep the jaws "
+                         "through the object rather than onto it - a needle and "
+                         "a block, which share nothing in size or shape, left at "
+                         "38.1 and 36.2 mm, and objects do not agree like that "
+                         "unless the cause is upstream of them")
 parser.add_argument("--hold", type=int, default=20,
                     help="steps to hold still after closing. An ejection shows "
                          "here, before the arm has moved at all")
@@ -146,8 +158,17 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
 
     # 2. Close, and hold still. An ejection shows here, before anything moves.
     hold_positions = []
-    for _ in range(args.hold):
-        step(None, args.gripper_close)
+    target_grip = args.gripper_close if args.hold_gripper == "close" else args.gripper_open
+    for index in range(args.hold):
+        # Ramp rather than slam, when asked. A finger command that jumps to its
+        # limit in one step moves the jaws further in that step than the object
+        # is wide.
+        if args.close_over > 1 and index < args.close_over:
+            fraction = (index + 1) / args.close_over
+            grip = args.gripper_open + fraction * (target_grip - args.gripper_open)
+        else:
+            grip = target_grip
+        step(None, grip)
         hold_positions.append(block().tolist())
     after_hold = block()
     hold_travel = float(np.linalg.norm(after_hold - before_close))
@@ -187,6 +208,11 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "close_at_requested": args.close_at if args.close_at > 0.0 else None,
         "hold_travel": hold_travel,
         "hold_max_step": hold_max_step,
+        # When it moved, not just how far. A launch on the first step is the
+        # jaws sweeping through; a drift over many steps is something else.
+        "hold_step_series": [round(float(x), 6) for x in hold_steps],
+        "hold_gripper": args.hold_gripper,
+        "close_over": args.close_over,
         "carry_travel": carried,
         "carriage_agreement": float(agreement),
         "carriage_run": int(run_length),
