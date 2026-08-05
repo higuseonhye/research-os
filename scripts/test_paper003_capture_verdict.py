@@ -117,29 +117,41 @@ class SlipTests(unittest.TestCase):
     3.35 mm.
     """
 
-    def _slipping(self, per_step: float) -> dict:
-        """A capture cell with the target losing `per_step` metres each step."""
+    def _slipping(self, fraction: float) -> dict:
+        """A capture cell where the target keeps only `1 - fraction` of the carry.
+
+        The slip is proportional to what the carrier actually moved that step,
+        which is what slipping is. A first version added a fixed offset every
+        step, so the target kept drifting during the burst's pauses while the
+        carrier stood still - a disagreement no real slip produces, and the
+        fixture rejected itself for it.
+        """
 
         record = cell()
-        targets = [np.asarray(o["target"]) for o in record["observations"]]
-        moved = [
-            index
-            for index in range(1, len(targets))
-            if float(np.linalg.norm(targets[index] - targets[index - 1])) > 1e-9
+        targets = [np.asarray(o["target"], dtype=float) for o in record["observations"]]
+        steps = [
+            targets[index] - targets[index - 1] for index in range(1, len(targets))
         ]
-        onset = moved[0] if moved else len(targets)
-        drift = np.array([0.0, 1.0, 0.0])
+        lost = np.zeros(3)
         for index, observation in enumerate(record["observations"]):
-            if index >= onset:
-                observation["target"] = (
-                    np.asarray(observation["target"]) + (index - onset) * per_step * drift
-                ).tolist()
+            if index > 0:
+                lost = lost - fraction * steps[index - 1]
+            observation["target"] = (targets[index] + lost).tolist()
         return record
 
     def test_a_carry_that_slips_is_still_a_capture(self) -> None:
-        """Deliberately, and this test asserted the opposite for one commit."""
+        """Deliberately, and this test asserted the opposite for one commit.
 
-        verdict = capture_verdict(self._slipping(0.002), interaction_radius=0.05)
+        The radius here is 60 mm rather than the cell's own 50 mm, and that is
+        not to make the test pass. The CPU cell sets its capture radius *equal*
+        to the interaction radius, so an injected capture holds at exactly the
+        contact threshold and any slip at all crosses it on the first step. In
+        Isaac the two differ four-fold - a 0.65 mm grasp inside a 2.5 mm radius -
+        so the boundary coincidence is a property of the proxy, and testing
+        against it would measure the fixture rather than the rule.
+        """
+
+        verdict = capture_verdict(self._slipping(0.14), interaction_radius=0.06)
         self.assertEqual(verdict["verdict"], "capture", verdict.get("reason"))
 
     def test_a_body_that_never_took_hold_is_not_carrying(self) -> None:

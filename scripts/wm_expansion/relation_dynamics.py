@@ -981,6 +981,7 @@ def _ride_mask(
     motion_floor_ratio: float,
     agreement: float,
     interaction_radius: float | None = None,
+    min_ride_steps: int = 3,
 ) -> tuple[np.ndarray, np.ndarray] | None:
     """``[step, body]`` - did the target move by what this body moved by.
 
@@ -1021,6 +1022,29 @@ def _ride_mask(
     # quarter that is already declared acceptable per step, now applied to the
     # run, which is where it was accumulating without limit. See
     # docs/paper003/paper003_carry_is_not_slip_v0.1.md.
+    # A release needs to persist, exactly as a ride does.
+    #
+    # `min_ride_steps` consecutive agreeing steps are required before a carry is
+    # believed; one *disagreeing* step was enough to end it. That asymmetry
+    # fragmented real carries - a single noisy step split a 178-step ride into
+    # pieces, and then the pieces failed twice over: too short to make a run,
+    # and starting after the object had drifted, so with no moment of contact
+    # in them. Measured, it put 23 of 24 physical captures into `collision`,
+    # under two different reasons that were the same defect.
+    #
+    # So gaps shorter than `min_ride_steps` do not break a ride. Nothing new is
+    # introduced: it is the same number, applied to the other direction.
+    # Only *moving* steps can agree or disagree; a pause neither breaks a ride
+    # nor bridges one, so the gap is measured over moving steps alone. Filling
+    # non-moving steps instead marks a stationary target as riding, which broke
+    # nine tests when it was tried.
+    moving_at = np.flatnonzero(moving)
+    for body in range(rides.shape[1]):
+        agreeing = rides[moving_at, body]
+        for start, stop in _runs(~agreeing):
+            if 0 < start and stop < len(agreeing) - 1 and stop - start + 1 < min_ride_steps:
+                rides[moving_at[start : stop + 1], body] = True
+
     separations = np.linalg.norm(references - targets[:, None, :], axis=2)
     for body in range(rides.shape[1]):
         for start, stop in _runs(rides[:, body]):
@@ -1216,7 +1240,8 @@ def estimate_capture(
     # The mask is the same one the gate's carriage evidence is computed from, so
     # a cell the gate admitted as a carry is one this can fit.
     masked = _ride_mask(
-        targets, references, motion_floor_ratio, agreement, interaction_radius
+        targets, references, motion_floor_ratio, agreement, interaction_radius,
+        min_ride_steps,
     )
     if masked is None:
         return None
@@ -1235,23 +1260,24 @@ def estimate_capture(
     if radius <= 0.0:
         return None
 
-    # Held unless a later moving step disagrees with the same body. Steps where
-    # a *different* body happens to match better are not evidence of a release
-    # either, so the check is against the carrier alone.
-    after = np.arange(len(lengths)) > onset
-    diverged = moving & after & (
-        mismatch[:, body] > agreement * np.maximum(lengths, largest * motion_floor_ratio)
-    )
-    # Held means held *now*, and an object the carrier has drifted away from is
-    # not. Without this, a carry that slipped apart over sixty steps still
-    # reported `held=True`, because every individual step's mismatch stayed
-    # inside the tolerance that the drift was accumulating from.
-    # No separate radius test here. `_ride_mask` now bounds the *growth* of the
-    # separation over each run, which is what "still held" means, and an
-    # absolute test here rejected a cell holding at a constant 3.35 mm.
+    # Held means riding **now**, read off the same mask everything else uses.
+    #
+    # This was "no moving step after the onset ever disagreed", which is a far
+    # stronger claim: one noisy step in a hundred and seventy-eight ended the
+    # hold. Together with runs being split by the same single steps, that put 23
+    # of 24 physical captures into `collision` under two different reasons which
+    # were the same defect.
+    #
+    # The mask already treats a gap shorter than `min_ride_steps` as noise
+    # rather than a release - the same number that is required to believe a ride
+    # in the first place - so the last moving step being inside a ride is the
+    # honest reading of "still held".
+    moving_steps = np.flatnonzero(moving)
+    still_held = bool(rides[moving_steps[-1], body]) if moving_steps.size else False
+
     return CaptureEstimate(
         capture_radius=radius,
-        held=not bool(diverged.any()),
+        held=still_held,
         onset=onset,
         body=body,
     )
