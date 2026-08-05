@@ -119,6 +119,14 @@ parser.add_argument("--grasp", action="store_true",
                          "information and the single-entity arm has something "
                          "to learn from. Closing then takes hold, and the block "
                          "rides. Nothing before, everything after")
+parser.add_argument("--approach", type=str, default="script",
+                    choices=["script", "servo"],
+                    help="`script` chases the encounter's scripted point, "
+                         "which cannot produce a capture here: the arm's "
+                         "steady-state error is 7.3 mm against a measured "
+                         "capture radius under 1 mm. `servo` goes to the "
+                         "object until it takes hold, then carries along "
+                         "the drawn axis on the burst schedule")
 parser.add_argument("--grasp-closing-steps", type=int, default=4,
                     help="consecutive steps of genuine approach required "
                          "before a halt counts as an arrival. Without it "
@@ -245,6 +253,30 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         and whether it does is visible in `ee_error` afterwards.
         """
         place.scripted = np.asarray(bodies, dtype=np.float64)  # type: ignore[attr-defined]
+
+        # Under `--approach servo` the encounter supplies a *direction*, not
+        # positions. The measured capture radius is under 1 mm and the arm's
+        # steady-state error following a moving script is 7.3 mm, so no script
+        # can put the end effector where a grasp is possible; only going to the
+        # object can. After the grasp the arm runs the burst schedule along the
+        # drawn axis, from where it actually is.
+        # See docs/paper003/paper003_servo_encounter_v0.1.md.
+        if args.approach == "servo":
+            if place.grasped:
+                moving = (
+                    (place.carry_step % (args.burst_on + args.burst_off))
+                    < args.burst_on
+                )
+                place.carry_step += 1  # type: ignore[attr-defined]
+                goal = place.goal + (
+                    geometry.prober_axis * args.script_speed if moving
+                    else np.zeros(3)
+                )
+            else:
+                goal = read_object()
+            place.goal = np.asarray(goal, dtype=np.float64)  # type: ignore[attr-defined]
+            bodies = place.goal[None, :]
+
         commanded.append(np.asarray(bodies[0], dtype=np.float64).tolist())
         aim = np.asarray(bodies[0], dtype=np.float64) - read_ee()
         reach = float(np.linalg.norm(aim))
@@ -301,6 +333,8 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     place.grasped = False  # type: ignore[attr-defined]
     place.grasp_step = None  # type: ignore[attr-defined]
     place.closest = float("inf")  # type: ignore[attr-defined]
+    place.goal = read_ee()  # type: ignore[attr-defined]
+    place.carry_step = 0  # type: ignore[attr-defined]
     place.closing_steps = 0  # type: ignore[attr-defined]
     place.grasp_separation = None  # type: ignore[attr-defined]
     place.gripper_series = []  # type: ignore[attr-defined]
@@ -360,7 +394,9 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     # and the same `target0`, so this reaches the true step-0 position rather
     # than an approximation of it.
     geometry = draw_geometry(args.seed, target0, encounter)
-    start = bodies_at(0, geometry, encounter)[0]
+    # Under `servo` the arm makes its own way to the object, so there is no
+    # start line to walk to and the pre-roll would only waste steps.
+    start = read_ee() if args.approach == "servo" else bodies_at(0, geometry, encounter)[0]
 
     # Over the block, across, and down - not straight there.
     #
