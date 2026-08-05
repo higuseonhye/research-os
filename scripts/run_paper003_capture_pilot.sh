@@ -45,8 +45,14 @@ else
 fi
 
 echo "[capture-pilot] interpreter : $ISAAC_PYTHON"
-echo "[capture-pilot] seeds $SEED..$((SEED + SEEDS - 1))  condition=$CONDITION"
-echo "[capture-pilot] -> $OUT_DIR"
+echo "[capture-pilot] defaults    : seeds $SEED..$((SEED + SEEDS - 1))  condition=$CONDITION  -> $OUT_DIR"
+if [ "$#" -gt 0 ]; then
+  # Anything passed on the command line reaches argparse *after* these, so it
+  # wins - and the line above would otherwise report settings that are not the
+  # ones about to run. Printed rather than hidden, because "it ran, but with
+  # the old settings" has already cost one debugging round today.
+  echo "[capture-pilot] overridden by: $*"
+fi
 echo "[capture-pilot] CALIBRATION ONLY - excluded from confirmatory estimates"
 
 # --grasp, --approach servo and --schedule burst are the capture pairing. The
