@@ -1,15 +1,29 @@
 # Paper 003 — capture calibration pilot runbook v0.1
 
-> **Never run.** Written 2026-08-04 on a machine with no GPU, so everything here
-> is verified only as far as CPU and a compile check reach. Expect iteration at
-> stage 1.
+> **Run 2026-08-05, and it ended the design.** Written 2026-08-04 on a machine
+> with no GPU; the iteration it warned about at stage 1 duly happened, and the
+> corrections are recorded in place below and in the linked results.
 >
-> **This is the run that could end the design**, and that is not a figure of
-> speech. Every Paper 003 result so far is arithmetic: the cell computes the
-> block's motion from a formula and writes it into the simulator's command.
-> Nothing yet shows that the lift scene produces a **capture** rather than a
-> collision. [Preregistration](paper003_prereg_v1.0.md), *What the calibration
-> pilot must produce*.
+> **What it returned.** The scene *does* produce a capture — 60 of 60 cells, so
+> the failure the header below anticipated is not the one that occurred. What
+> occurred instead: Paper 002's mode operator lands **0.957 to 1.000** of
+> physical cells against the relational arm's 0.174 to 0.583. The arm takes 22
+> steps at the median to come to rest and can hold the block for 54, so the
+> intermittency that makes a relation necessary does not fit inside a carry.
+> [Result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/physical_h2_v1.0/RESULTS.md)
+> · [Closure](paper003_prereg_v1.0.md#closure--what-the-pilot-returned-and-what-it-licenses)
+>
+> **The procedure below is still correct** and is kept runnable, since the design
+> reopens for any carrier that can stop inside the time it holds an object.
+>
+> ---
+>
+> **As written 2026-08-04, kept verbatim.** *This is the run that could end the
+> design*, and that is not a figure of speech. Every Paper 003 result so far is
+> arithmetic: the cell computes the block's motion from a formula and writes it
+> into the simulator's command. Nothing yet shows that the lift scene produces a
+> **capture** rather than a collision. [Preregistration](paper003_prereg_v1.0.md),
+> *What the calibration pilot must produce*.
 
 ## The mechanism, and where it came from
 

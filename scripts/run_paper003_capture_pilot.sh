@@ -14,7 +14,16 @@
 # and the single-entity arm has something to learn from. So: approach open,
 # close on arrival, carry.
 #
-# STATUS: never run. Excluded from confirmatory estimates - this is calibration.
+# STATUS: run 2026-08-05, and it closed the paper. Capture happens - 60 of 60
+# cells - and then Paper 002's mode operator lands 0.957 to 1.000 of them while
+# the relational arm lands 0.174 to 0.583. The arm cannot pause: 22 steps to come
+# to rest against 54 steps of grip, so the intermittency the relation needs does
+# not fit inside a carry.
+#   experiments/.../exp_surg_004_relation_expansion/results/physical_h2_v1.0/
+#
+# Still excluded from confirmatory estimates - this is calibration, and a
+# calibration result does not become confirmatory by turning out to be decisive.
+# Kept runnable for whoever brings a carrier that can stop.
 #
 # Usage:
 #   bash scripts/run_paper003_capture_pilot.sh                  # stage 1: one cell
@@ -91,7 +100,12 @@ echo "  3. engagement in SUMMARY.txt. This is the number the preregistration's"
 echo "     sizing rule reads, and it must come from here rather than from the"
 echo "     injected-coupling runs. docs/paper003/paper003_prereg_v1.0.md"
 echo
-echo "  4. normal_alignment in the JSON. It is 1.0 by construction on CPU. A"
-echo "     contact that pushes off-normal returns correct coefficients while"
-echo "     arm D aims the wrong way, and that is the dominant threat under"
-echo "     realistic contact."
+echo "  4. Arm C in SUMMARY.txt, which is what actually decides this. If a"
+echo "     constant-velocity model lands the cells, Paper 002's operator is"
+echo "     sufficient and no relation is needed - that is what happened on"
+echo "     2026-08-05, at 0.957 to 1.000 across three configurations."
+echo
+echo "     (normal_alignment used to be item 4. It is retired: it measures"
+echo "     displacement against the contact normal, which is the direction a"
+echo "     STRUCK target departs along. A carried target moves with its carrier"
+echo "     and the sign inverts, so the statistic does not apply to a capture.)"

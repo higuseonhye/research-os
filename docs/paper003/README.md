@@ -1,26 +1,37 @@
 # Paper 003 — Missing relation & capability expansion
 
-> **Status 2026-08-05 — H2 fails under real contact.** A constant-velocity model
-> lands **every** physical cell (arm C 1.000 against arm D's 0.200), because the
-> arm cannot pause: it takes 22 steps at the median to come to rest and can hold
-> the block for 54, so the intermittency that makes the relation necessary does
-> not fit inside a carry. The CPU result stands as what it always was — a
-> comparison under injected coupling, where the carrier is a scripted point that
-> stops on command.
+> ## Status 2026-08-05 — the design is CLOSED, and the result is negative
+>
+> **Paper 002's mode operator lands 0.957 to 1.000 of physical cells; the
+> relational arm lands 0.174 to 0.583 and never beats the single-entity arm.**
+> 107 cells, three configurations. The preregistration is
+> [closed](paper003_prereg_v1.0.md#closure--what-the-pilot-returned-and-what-it-licenses)
+> and no confirmatory run will follow, because the ordering is at ceiling and no
+> `n` reverses it.
+>
+> **Why.** The relation is made necessary by *intermittency*, and a real arm
+> cannot pause: 22 steps at the median to come to rest, against 54 steps of grip
+> on the block. Two candidate repairs were derived in advance and tried — a
+> better-held object (the needle, 68 steps) and a pause long enough to be real
+> (25 steps, from the measured settling time). Arm C moved **0.957 → 0.958**.
 > [The measurement](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/physical_h2_v1.0/RESULTS.md)
 >
-> **Status 2026-08-05.** Design stage. The main preregistration is still
-> unwritten and there is no confirmatory *physical* data — but H2's decisive
-> arm comparison **is** preregistered and settled: see
-> [the SELF arm rule](paper003_self_arm_prereg_v1.0.md) and
-> [its result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_v1.0/RESULTS.md).
-> The relation was **changed today** after measuring three candidates, and
-> several documents in this folder are superseded or carry corrections.
+> **The CPU result stands as what it always was** — a comparison of arms under
+> injected coupling, where the carrier is a scripted point that stops on command.
+> It remains true of scripted carriers. It does not transfer to this manipulator.
+>
+> **What is not claimed.** No confirmatory cell was ever run, so H2 was *not
+> rejected at α = 0.05*; H1 was never testable, because the variant set was never
+> constructed; H3 and H4 are **structurally CPU-only** — every control works by
+> overriding the target's motion, and under contact physics decides it.
+>
 > **Read this file first** — the folder is not safe to read in alphabetical
-> order.
+> order, and several documents carry corrections in place.
 >
 > **Program context:** builds on [Paper 002](../paper002/README.md) (missing
-> dynamic mode); this is the next taxonomy cell, a missing causal relation.
+> dynamic mode); this is the next taxonomy cell, a missing causal relation — and
+> the finding is that in this scene the cell is *empty*: the smallest sufficient
+> change remains a mode expansion.
 
 ---
 
@@ -72,7 +83,7 @@ without bound.
 | Document | What it settles |
 | --- | --- |
 | [`paper003_capture_design_v0.1.md`](paper003_capture_design_v0.1.md) | **The relation.** Why capture, and why carriage was recommended and then rejected |
-| [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md) | **The preregistration.** Locked in design, open in numbers until an Isaac calibration pilot for capture |
+| [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md) | **The preregistration, CLOSED.** Locked in design; the pilot ran and the design's precondition failed. Read its closure section for what may and may not be reported |
 | [`paper003_self_arm_prereg_v1.0.md`](paper003_self_arm_prereg_v1.0.md) | **H2's decisive comparison**, and its rule fixed before the arm existed |
 | [`paper003_onset_is_not_predictable_v0.1.md`](paper003_onset_is_not_predictable_v0.1.md) | **What the paper may not claim**, and why the three-step band is the right answer |
 | [`paper003_rendezvous_v0.1.md`](paper003_rendezvous_v0.1.md) | Why a grasp needs an arrival, not a fly-by |
@@ -166,8 +177,11 @@ without bound.
    a capturing approach and a non-capturing one are the same observation. An arm
    that declined there was correct.
    [Why](paper003_onset_is_not_predictable_v0.1.md)
-6. ~~Measure the single-entity arm under capture + burst.~~ **Done, and H2
-   stands.** Preregistered rule locked before the arm was implemented; 200
+6. ~~Measure the single-entity arm under capture + burst.~~ **Done. H2 stands on
+   CPU and fails under contact** — see the status block. Below is the CPU result
+   as recorded, unedited.
+
+   Preregistered rule locked before the arm was implemented; 200
    paired cells; **arm D 0.650, SELF 0.000**, 130 discordant pairs all in D's
    favour, one-sided exact McNemar p = 7.3 × 10⁻⁴⁰, margin +0.650. SELF acted
    on 0.675 of cells and was not broken — it holds a median of 4 steps of its
@@ -212,17 +226,38 @@ without bound.
 
    Three hypotheses died on the way, all of them explanations for an artefact:
    the environment was resetting mid-run and the teleport was being read as a
-   36 mm ejection. Engagement, `normal_alignment` and the observation noise are
-   still unmeasured, because no cell has yet produced a capture *through the
-   protocol*.
+   36 mm ejection. ~~Engagement, `normal_alignment` and the observation noise are
+   still unmeasured.~~
 
-   ~~Formality check.~~ Every result before this was arithmetic —
-   the cell computes the target's motion and writes it into the command.
-   Whether the lift scene produces a *capture* rather than a collision is
-   unmeasured. The pilot must also give the engagement rate under contact
-   jitter (which sets `n`), `normal_alignment` under real contact, and the
-   observation noise the gate's margin is stated against.
-10. **Then** the confirmatory sample. Not on this machine — GPU, on the pod.
+   **Completed 2026-08-05, through the protocol.** The capture radius above was
+   read off a sweep grid I had chosen — a measurement of my own settings — and is
+   corrected to **2.5 mm** by the rule "the largest separation at which capture
+   holds in a majority". Everything the pilot was asked for:
+
+   | Asked for | Returned |
+   | --- | --- |
+   | capture happens at all | **yes, 60/60** |
+   | engagement under contact | **0.27** → `n` ≈ 43 |
+   | `normal_alignment` | **retired** — it measures displacement against the contact normal, which a *carried* target does not move along |
+   | observation noise | **0.00 mm/step = no noise model**, not low noise |
+
+   And the derived scene parameters: capture radius **2.5 mm**, carry duration
+   **54 steps**, `dispense_latency` **9**, arm D when it acts **0.375** against
+   0.78 on CPU.
+10. ~~**Then** the confirmatory sample.~~ **Not run, and will not be.** The pilot
+    was not asked to score the arms; scoring them closed the paper. Arm C at
+    0.957–1.000 makes H2's `success(D) − success(C) > C_MARGIN` unreachable at
+    any `n`, and SELF above arm D makes the crossing condition unreachable too.
+    [Closure](paper003_prereg_v1.0.md#closure--what-the-pilot-returned-and-what-it-licenses)
+
+## What would reopen this
+
+Not a larger sample and not a threshold: **a carrier that can come to rest inside
+the time it holds the object.** Settling time 22 steps against a 54-step carry is
+the entire obstruction, and it is a property of the manipulator, not of this
+protocol. A different arm, a conveyor, or a second object driven directly would
+restore the intermittency the design needs, and the locked design would then
+apply unchanged.
 
 ## Not in this repository
 

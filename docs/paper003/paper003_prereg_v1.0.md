@@ -1,16 +1,46 @@
-# Paper 003 Capability-Crossing Preregistration — v1.0 (capture)
+# Paper 003 Capability-Crossing Preregistration — v1.0 (capture), CLOSED
 
+<!-- Still v1.0: the design was not revised. The 2026-08-05 amendment adds
+     outcomes and three corrections of fact, and changes no locked rule. -->
+
+> ## Status 2026-08-05 — CLOSED. No confirmatory run will follow.
+>
+> The Isaac calibration pilot required below has been run. It answered its first
+> question yes — **capture happens under real contact, in 60 of 60 cells** — and
+> then returned a result that stops the design: the **discriminating control
+> saturates**. Paper 002's mode operator lands **0.957 to 1.000** of physical
+> cells across three configurations and 107 cells, while the relational arm lands
+> 0.174 to 0.583 and never once beats the single-entity competitor.
+>
+> H1's crossing condition and H2's first clause are therefore **not merely
+> unlikely to pass — they cannot pass at any `n`**. The document is closed on
+> that ground and not amended to make them passable.
+>
+> **What may be reported, and what may not**, is written out in
+> [Closure](#closure--what-the-pilot-returned-and-what-it-licenses). In short:
+> the physical runs are calibration, this preregistration's own text excludes
+> calibration from confirmatory estimates, and no confirmatory cell was ever run.
+> So **"H2 was rejected at α = 0.05" is not a sentence this record supports.**
+> What it supports is that the design's precondition failed in calibration.
+>
+> Every locked section below is left **exactly as it was locked on 2026-08-04**.
+> Nothing in the design was rewritten after seeing a number. The additions are
+> the closure section, the outcome stamps inside H2 and the pilot checklist, and
+> three corrections of fact marked as such.
+>
+> ---
+>
 > **Supersedes [`paper003_prereg_draft_v0.1.md`](paper003_prereg_draft_v0.1.md)
 > entirely.** That draft assumes the **collision** coupling throughout, grades
 > variants by reference speed (measured non-functional), and its sample-size
 > section predates the change of relation. It is kept for provenance and must
 > not be cited for any design decision.
 >
-> **Status 2026-08-04.** The design is locked. The **physical** parameters are
-> not, and are marked `PENDING` — they come from an Isaac calibration pilot that
-> has not been run for capture. This document is frozen against everything a
-> result could tempt us to change, and open only where the world has not been
-> measured yet.
+> **Status 2026-08-04 — superseded by the block above, kept verbatim.** The
+> design is locked. The **physical** parameters are not, and are marked
+> `PENDING` — they come from an Isaac calibration pilot that has not been run for
+> capture. This document is frozen against everything a result could tempt us to
+> change, and open only where the world has not been measured yet.
 >
 > Everything reported below as measured is **CPU with injected coupling**, which
 > is a calibration device: the coupling is a formula, `normal_alignment` is 1.0
@@ -224,6 +254,14 @@ often it does.
 `n = PENDING`, to be filled from the pilot before any confirmatory cell is run,
 and recorded here with the pilot's engagement rate beside it.
 
+> **2026-08-05.** The rule was applied and it returned a number. Real-contact
+> engagement is **0.27** (block, 60 cells) rising to **0.50** with the derived
+> pause, so the rule reads **`n` ≈ 43** at 0.27 and **≈ 19–28** at the higher
+> rates — all of them smaller than the 0.23 column would have given, and all of
+> them moot. The sizing rule was never the binding constraint; the
+> [closure](#closure--what-the-pilot-returned-and-what-it-licenses) is. Recorded
+> because the rule was locked and it is owed its answer.
+
 ---
 
 ## Primary endpoint: capability threshold crossing
@@ -278,17 +316,32 @@ Two competitors, and **both** must be beaten in every variant counted under H1:
 - **Against the target's own trajectory.** A one-sided exact McNemar on the
   paired cells must reject at α = 0.05 with `success(D) − success(SELF)` ≥ 0.15.
 
-> **Status: passed on CPU, unrepeated physically.** Under a rule locked before
-> the arm was implemented — 200 paired cells, offsets [+4, +6] — arm D scored
-> **0.650 against SELF's 0.000**, 130 discordant pairs none of them SELF's,
-> p = 7.3 × 10⁻⁴⁰. The competitor was not broken: it acted on 0.675 of cells,
-> and its median miss when acting was 60.0 mm against 30.0 mm when it declined,
-> because it extrapolates through a pause it cannot see.
+> **Status on CPU: passed.** Under a rule locked before the arm was implemented
+> — 200 paired cells, offsets [+4, +6] — arm D scored **0.650 against SELF's
+> 0.000**, 130 discordant pairs none of them SELF's, p = 7.3 × 10⁻⁴⁰. The
+> competitor was not broken: it acted on 0.675 of cells, and its median miss when
+> acting was 60.0 mm against 30.0 mm when it declined, because it extrapolates
+> through a pause it cannot see.
 > [Rule](paper003_self_arm_prereg_v1.0.md) ·
 > [Result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_v1.0/RESULTS.md)
 >
 > This is a result about the arms, not about the world. It is restated here as a
 > confirmatory hypothesis because the physical run must be able to fail it.
+>
+> **Status under real contact, 2026-08-05: both clauses fail.** The sentence
+> above was written so that this could happen, and it did.
+>
+> | | arm C | arm D | SELF | cells |
+> | --- | ---: | ---: | ---: | ---: |
+> | block | **1.000** | 0.200 | 0.167 | 60 |
+> | needle, pause 4 | **0.957** | 0.174 | 0.348 | 23 |
+> | needle, pause 25 (derived) | **0.958** | 0.583 | 0.750 | 24 |
+>
+> `success(D) − success(C)` is **negative in every configuration**, so no
+> `C_MARGIN` above zero is reachable. And across the 47 needle cells **arm D wins
+> zero pairs that SELF loses**, while SELF wins four that D loses, in each
+> configuration — the McNemar clause fails in the direction of the competitor.
+> [Result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/physical_h2_v1.0/RESULTS.md)
 
 ### H3 — Gate specificity
 
@@ -321,6 +374,20 @@ preregistered equivalence margin `NO_REGRESS_MARGIN` (`PENDING`).
 This is the hypothesis that ruled out the strong form of the decoy design, which
 would have driven arm D to zero on `static` and `noise` in exchange for onset
 prediction.
+
+### H3 and H4 are CPU-only, and this is structural — noted 2026-08-05
+
+Both are defined against **control conditions**, and every control here works by
+overriding the target's motion: `static` holds it still, `drift` moves it
+independently, `noise` perturbs it. Under contact **physics decides the target's
+motion**, so the override has nothing to act on. Ten cells requested as `static`
+had the arm grasp the block and carry it 35 to 186 mm, on every step.
+
+The runner now **refuses** `--condition` other than `coupled` under contact
+rather than producing such a cell. So H3 and H4 hold as CPU results and are
+untested — not failed — physically, and any report of them must carry that
+label. Building a contact control means building a scene where a body approaches
+and does not capture, which is a different scene and was never built.
 
 ---
 
@@ -364,6 +431,12 @@ A reader is entitled to ask whether a three-step band is a capability opening or
 a curiosity. The answer must come from the confirmatory sample and from whether
 the band survives real contact — not from this document.
 
+> **2026-08-05: the band survives, and it is not enough.** Under contact the gate
+> still fires — engagement 0.27 to 0.50 — so the band is real rather than an
+> artefact of injected coupling. But arm C lands the same cells without it. The
+> question was well posed and the answer is the second one: in this scene the
+> band is a curiosity, because nothing needed it.
+
 ---
 
 ## The tuning that will not be done
@@ -395,6 +468,28 @@ Every one is `PENDING`, and none may be set from the injected-coupling runs:
 | Capture radius, approach speed, duty cycle | Physical properties of the scene |
 | Observation noise | **Never measured.** The gate's statistics were re-derived once already to stop depending on it being small |
 
+**Outcome 2026-08-05.** Four of these were measured, one is unmeasurable in this
+scene, one is inapplicable to this relation, and the rest never became meaningful
+because the design closed first.
+
+| Parameter | What the pilot returned |
+| --- | --- |
+| Capture radius | **2.5 mm** — 8 separations × 6 seeds, the largest at which capture holds in a majority |
+| Carry duration | **54 steps** median (block), **68** (needle) — bounded by the gripper dropping it |
+| `dispense_latency` | **9** — p10 of the L-step displacement clears the 20 mm tolerance |
+| Engagement | **0.27** block · 0.39 needle · **0.50** needle with the derived pause → `n` ≈ 28–43 |
+| Arm D when it acts | **0.375**, against 0.78 on CPU |
+| Observation noise | **0.00 mm/step, which means there is no noise model in this scene** — not that noise is small. It remains an unmeasured threat |
+| `normal_alignment` | **Inapplicable to a capture.** See the correction below |
+| Grading variable, thresholds, margins | Never chosen. `T` was never constructed, so H1 was never physically testable |
+
+**Correction — `normal_alignment` does not apply to this relation.** It measures
+displacement against the contact *normal*, the direction a **struck** target
+departs along. A carried target moves *with* its carrier and the sign inverts.
+It was listed below as "the dominant threat under realistic contact" on the
+strength of a CPU study of **collision**, and it did not survive the change of
+relation to capture. Pilot item 3 is retired rather than answered.
+
 ## What the calibration pilot must produce
 
 1. **That capture happens at all under real contact.** Everything about the
@@ -410,6 +505,15 @@ Every one is `PENDING`, and none may be set from the injected-coupling runs:
    while arm D aims the wrong way, and a CPU study found this to be the dominant
    threat under realistic contact laws.
 4. **Observation noise**, so the gate's margin against it can be stated.
+
+> **Answers, 2026-08-05.** (1) **Yes — 60 of 60.** The scene produces a capture,
+> and the item written as "the first thing that could end this design" did not
+> end it. (2) **0.27 to 0.50**, giving `n` ≈ 28–43. (3) **Retired**, not
+> answered: inapplicable to a capture. (4) **0.00 mm/step = no noise model**, so
+> the margin cannot be stated from this scene.
+>
+> The pilot was not asked to score the arms, and scoring them is what closed the
+> paper. That is the honest sequence and it is recorded in that order.
 
 ---
 
@@ -427,15 +531,91 @@ Every one is `PENDING`, and none may be set from the injected-coupling runs:
 
 ---
 
-## Before this can be frozen
+## Closure — what the pilot returned, and what it licenses
 
-1. The Isaac calibration pilot above, for capture.
-2. Every `PENDING` filled, each with the measurement it came from.
+**The three conditions for freezing this document were:**
+
+1. The Isaac calibration pilot above, for capture. — **Run.**
+2. Every `PENDING` filled, each with the measurement it came from. — **Partly.
+   Four measured, one unmeasurable here, one retired as inapplicable.**
 3. The grading variable for `T` chosen and justified without reference to which
-   arm it favours.
+   arm it favours. — **Never chosen.**
 
-Until then this document is **locked in design and open in numbers**, and no
-cell run against it counts as confirmatory.
+Condition 3 was never reached, because condition 1 returned a result that makes
+`T` pointless to grade. The document is therefore **closed, not frozen**, and no
+cell run against it counts as confirmatory — which was true before and stays
+true.
+
+### The precondition that failed
+
+The design rests on the mode operator being a *partial* explanation. In the
+prereg's own words: "Mode expansion partially helping is expected and
+acceptable; mode expansion **matching** the relation arm falsifies the
+contribution over Paper 002."
+
+Under real contact the mode operator does not match the relation arm. It
+**beats** it, at ceiling, in every configuration tried:
+
+| Configuration | arm C | arm D | SELF | cells |
+| --- | ---: | ---: | ---: | ---: |
+| block | **1.000** | 0.200 | 0.167 | 60 |
+| needle, `burst_off` 4 | **0.957** | 0.174 | 0.348 | 23 |
+| needle, `burst_off` 25 (derived) | **0.958** | 0.583 | 0.750 | 24 |
+
+**Why no `n` rescues this.** H1 counts variants where `success(D)` clears
+`ACHIEVABLE_THRESHOLD` while `success(SELF)` sits under `NEAR_ZERO_BAND`, and H2
+requires `success(D) − success(C)` to clear a positive `C_MARGIN`. Arm C is at
+0.957–1.000 and arm D is below it everywhere; SELF is at 0.167–0.750 and above
+arm D in two configurations of three. These are not underpowered estimates near a
+boundary — they are the wrong sign at ceiling. Sampling more cells narrows
+intervals around the same ordering.
+
+**Why the obvious repair was tried and failed.** The relation is made necessary
+by intermittency, and the arm's measured settling time (22 steps median, over 139
+goal-pauses) exceeded the `burst_off` of 4, so the pause never began. The rule
+for fixing it — *the pause must exceed the settling time plus `min_ride_steps`*
+— was written **before** the settling time was measured, and it gave 25 steps.
+Run at 25 on the needle, whose 68-step carry has room for it, arm C moved from
+**0.957 to 0.958**. The intermittency was restored and it changed nothing about
+whether a constant-velocity model suffices.
+[Measurement](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/physical_h2_v1.0/RESULTS.md)
+
+### What this record does and does not support
+
+**It does not support** — and no sentence in the paper may claim —
+
+- that H2 was *rejected at α = 0.05*. **No confirmatory cell was ever run.** The
+  physical runs are calibration, and this document excludes calibration from
+  confirmatory estimates in three separate places. A calibration result cannot
+  be promoted to a confirmatory one by turning out to be decisive;
+- that H1 was tested. `T` was never constructed;
+- that H3 or H4 failed physically. They are not testable in this scene at all;
+- that the CPU result was wrong. It was not. It was always labelled a comparison
+  of arms under injected coupling, and it remains true of scripted carriers.
+
+**It does support**
+
+- that the design's stated precondition — mode expansion helping only partially
+  — is **false in this scene**, measured on 107 physical cells across three
+  configurations, with the one candidate repair derived in advance and tried;
+- that where the carrier cannot stop, **the smallest sufficient change is a mode
+  expansion, not a relational one** — which is the program's own governing
+  principle returning an answer this paper did not want;
+- that the gap between injected coupling and real contact is **total on the
+  decisive comparison**: arm D won 146 discordant pairs to SELF's 8 with a
+  scripted carrier, and **0 to SELF's 4** under contact.
+
+### What would reopen it
+
+Not a larger `n`, and not a threshold. A scene where **the carrier can come to
+rest inside the time it holds the object**. That is a manipulator property, not a
+parameter of this protocol: settling time 22 steps median against a 54-step
+carry is the whole obstruction. A carrier that stops promptly — a different arm,
+a conveyor, a second object driven directly — restores the intermittency the
+design needs, and this document's design would then apply unchanged.
+
+Whoever reopens it should treat every number above as calibration and re-run the
+locked rule from the top.
 
 ---
 
@@ -449,9 +629,17 @@ cell run against it counts as confirmatory.
 - [Arm scores under each relation](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/capture_arms_v0.1/RESULTS.md)
 - [Where the advantage ends](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/self_arm_bound_v0.1/RESULTS.md)
 - [Superseded draft](paper003_prereg_draft_v0.1.md) — collision throughout; provenance only
+- [**The physical result that closed this**](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/physical_h2_v1.0/RESULTS.md)
 
 ## Version history
 
+- **Amendment, 2026-08-05 — CLOSED.** The calibration pilot ran. Adds the status
+  block, the [closure](#closure--what-the-pilot-returned-and-what-it-licenses),
+  outcome stamps in H2 and the pilot checklist, and three corrections of fact:
+  `normal_alignment` is inapplicable to a capture, H3/H4 are structurally
+  CPU-only, and observation noise 0.00 means *no noise model* rather than *low
+  noise*. **No locked rule was changed**, and none may be changed now — a rule
+  edited after this date is editing a rule that has already been tested.
 - **v1.0, 2026-08-04.** Rewritten for capture. Supersedes v0.1 entirely. Adds
   the SELF arm to the locked arms, the crossing condition and H2; replaces the
   commit policy with the arrival window; recomputes sample size for a structure
