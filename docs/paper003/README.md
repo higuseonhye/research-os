@@ -66,6 +66,8 @@ without bound.
 | [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md) | **The preregistration.** Locked in design, open in numbers until an Isaac calibration pilot for capture |
 | [`paper003_self_arm_prereg_v1.0.md`](paper003_self_arm_prereg_v1.0.md) | **H2's decisive comparison**, and its rule fixed before the arm existed |
 | [`paper003_onset_is_not_predictable_v0.1.md`](paper003_onset_is_not_predictable_v0.1.md) | **What the paper may not claim**, and why the three-step band is the right answer |
+| [`paper003_rendezvous_v0.1.md`](paper003_rendezvous_v0.1.md) | Why a grasp needs an arrival, not a fly-by |
+| [`paper003_capture_pilot_runbook_v0.1.md`](paper003_capture_pilot_runbook_v0.1.md) | How to run the Isaac calibration pilot, and what to read first |
 | [`paper003_displacement_ceiling_v0.1.md`](paper003_displacement_ceiling_v0.1.md) | Why collision cannot work |
 | [`paper003_branch_b_scene_v0.1.md`](paper003_branch_b_scene_v0.1.md) | The Isaac scene with a rigid object, and where 20 mm comes from |
 | [`paper003_related_work_v0.1.md`](paper003_related_work_v0.1.md) · [`paper003_lit_positioning_v0.1.md`](paper003_lit_positioning_v0.1.md) | Positioning |
@@ -184,10 +186,23 @@ without bound.
    commit window, the confirmatory test, the sizing *rule*, the scope limits,
    and a list of tuning that will not be done. **Open in numbers**, all marked
    `PENDING`, because none of them may be inherited from injected coupling.
-9. **An Isaac calibration pilot for capture.**
-   [Runbook](paper003_capture_pilot_runbook_v0.1.md) ·
-   `scripts/run_paper003_capture_pilot.sh`. The first thing that could end
-   this design, and it is not a formality: every result so far is arithmetic —
+9. **An Isaac calibration pilot for capture.** ~~The first thing that could end
+   this design.~~ **It does not: capture happens under real contact.** Servoed
+   onto the block, the gripper closes with 0.25 mm of disturbance and the object
+   then rides for **10 consecutive steps at 0.93 agreement** — against the gate's
+   own requirement of 3 steps at 0.80. **But the capture radius is under 1 mm**,
+   while the arm's steady-state error following a moving script is 7.3 mm, so
+   **a script-following encounter cannot produce a capture here**: it has to
+   servo to contact first, then carry.
+   [The measurement](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/capture_pilot_v0.1/RESULTS.md)
+
+   Three hypotheses died on the way, all of them explanations for an artefact:
+   the environment was resetting mid-run and the teleport was being read as a
+   36 mm ejection. Engagement, `normal_alignment` and the observation noise are
+   still unmeasured, because no cell has yet produced a capture *through the
+   protocol*.
+
+   ~~Formality check.~~ Every result before this was arithmetic —
    the cell computes the target's motion and writes it into the command.
    Whether the lift scene produces a *capture* rather than a collision is
    unmeasured. The pilot must also give the engagement rate under contact
@@ -220,6 +235,7 @@ encounter has changed since.
 | [`paper003_self_arm.py`](../../scripts/paper003_self_arm.py) | The preregistered SELF arm test, with no flag to relax the rule |
 | [`paper003_self_arm_bound.py`](../../scripts/paper003_self_arm_bound.py) | Off-protocol probe: where the single-entity arm catches up |
 | [`wm_expansion/capture_verdict.py`](../../scripts/wm_expansion/capture_verdict.py) | Was that trace a capture, a collision, or nothing |
+| [`orbit_lift_grasp_probe.py`](../../scripts/orbit_lift_grasp_probe.py) | What grasp the scene supports, and at what separation |
 
 232 tests, all CPU.
 
