@@ -49,6 +49,10 @@ echo "[capture-pilot] seeds $SEED..$((SEED + SEEDS - 1))  condition=$CONDITION"
 echo "[capture-pilot] -> $OUT_DIR"
 echo "[capture-pilot] CALIBRATION ONLY - excluded from confirmatory estimates"
 
+# --grasp, --approach servo and --schedule burst are the capture pairing. The
+# servo is what makes a grasp reachable at all: the measured capture radius is
+# under 1 mm and the arm's steady-state error while chasing a script is 7.3 mm.
+#
 # --grasp and --schedule burst are the capture pairing and are not optional
 # here. A body that arrives and carries the target off has no reason to
 # withdraw, and `probe` drags the captured block back, which breaks the
@@ -60,6 +64,7 @@ $ISAAC_PYTHON scripts/orbit_lift_relation_cell.py \
   --seeds "$SEEDS" \
   --condition "$CONDITION" \
   --grasp \
+  --approach servo \
   --schedule burst \
   --out-dir "$OUT_DIR" \
   "$@"
