@@ -80,7 +80,14 @@ parser.add_argument("--bodies", type=int, choices=[1, 2], default=1)
 parser.add_argument("--tolerance", type=float, default=0.020,
                     help="metres; the lift task's own object-placement threshold "
                          "from mdp/terminations.py, not a value chosen here")
-parser.add_argument("--dispense-latency", type=int, default=6)
+parser.add_argument("--dispense-latency", type=int, default=None,
+                    help="defaults to EpisodeSpec's value, which is derived from "
+                         "this scene: ceil(20 mm tolerance / 2.86 mm carried per "
+                         "step) = 8. It was hard-coded to 6 here, which silently "
+                         "measured a task the scene cannot pose - six steps leave "
+                         "the target inside tolerance and every arm is right. The "
+                         "default is resolved after the Isaac imports, since "
+                         "nothing from the project is importable before them")
 parser.add_argument("--interaction-radius", type=float, default=0.012,
                     help="metres; observed contact in this scene is 2-5 mm. The "
                          "50 mm of the injected design marks non-contact as "
@@ -443,7 +450,11 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         target0,
         EpisodeSpec(
             tolerance=args.tolerance,
-            dispense_latency=args.dispense_latency,
+            dispense_latency=(
+                EpisodeSpec().dispense_latency
+                if args.dispense_latency is None
+                else args.dispense_latency
+            ),
             interaction_radius=args.interaction_radius,
         ),
         encounter,
