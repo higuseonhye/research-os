@@ -77,6 +77,32 @@ screen's own definition already says as much: where the target will not move,
 The tenth rather than the first percentile because the first is a single draw
 at twenty seeds and would be reading noise.
 
+### Corrected 2026-08-05: measure the displacement, not a speed
+
+The quotient rule above is wrong, and arm B is what showed it. At the latency it
+derived, **arm B lands 0.58 of the time** — a comparator that aims where the
+target already is should be near zero if the task is posed at all.
+
+The arithmetic said otherwise: 2.946 mm/step × 7 steps = 20.6 mm against a 20 mm
+tolerance. But that "speed" is the block's travel divided by its **riding**
+steps, and a dispense window contains pauses as well. Under a burst schedule the
+target stands still for part of every window, so the displacement over a window
+is smaller than speed × latency, and the tolerance is not cleared.
+
+**The intermediate quantity was the mistake.** The eligibility screen asks how
+far the target moves over one window; a speed measured on riding steps alone
+cannot answer that, because it has divided the pauses out.
+
+So the displacement is measured directly:
+
+> `dispense_latency` is the smallest **L** for which the tenth percentile of the
+> target's **L-step displacement** exceeds the tolerance.
+
+The tolerance is inherited and fixed. The displacement is read from the traces.
+The tenth percentile is the statistic already fixed above, for the reason
+already given. And there is now **no speed in the derivation at all** — which is
+where the pauses were being lost.
+
 ## 2. `interaction_radius` — from where taking hold actually happens
 
 `contact_arrivals` anchors the commit window on a body crossing
