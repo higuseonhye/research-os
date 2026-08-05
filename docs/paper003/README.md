@@ -1,5 +1,14 @@
 # Paper 003 — Missing relation & capability expansion
 
+> **Status 2026-08-05 — H2 fails under real contact.** A constant-velocity model
+> lands **every** physical cell (arm C 1.000 against arm D's 0.200), because the
+> arm cannot pause: it takes 22 steps at the median to come to rest and can hold
+> the block for 54, so the intermittency that makes the relation necessary does
+> not fit inside a carry. The CPU result stands as what it always was — a
+> comparison under injected coupling, where the carrier is a scripted point that
+> stops on command.
+> [The measurement](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/physical_h2_v1.0/RESULTS.md)
+>
 > **Status 2026-08-05.** Design stage. The main preregistration is still
 > unwritten and there is no confirmatory *physical* data — but H2's decisive
 > arm comparison **is** preregistered and settled: see
@@ -69,6 +78,7 @@ without bound.
 | [`paper003_rendezvous_v0.1.md`](paper003_rendezvous_v0.1.md) | Why a grasp needs an arrival, not a fly-by |
 | [`paper003_capture_pilot_runbook_v0.1.md`](paper003_capture_pilot_runbook_v0.1.md) | How to run the Isaac calibration pilot, and what to read first |
 | [`paper003_derived_from_physics_v0.1.md`](paper003_derived_from_physics_v0.1.md) | The two numbers the scene decides, and the rule for reading them off it |
+| [`paper003_carry_is_not_slip_v0.1.md`](paper003_carry_is_not_slip_v0.1.md) | Three positions on what carrying is, and why only the gate's test was wrong |
 | [`paper003_cv_gain_horizon_v0.1.md`](paper003_cv_gain_horizon_v0.1.md) | The gate statistic was measuring the horizon as well as the motion |
 | [`paper003_where_collapse_is_defended_v0.1.md`](paper003_where_collapse_is_defended_v0.1.md) | Why the collapse threat belongs to H2 and not to the gate |
 | [`paper003_servo_encounter_v0.1.md`](paper003_servo_encounter_v0.1.md) · [`paper003_rendezvous_v0.1.md`](paper003_rendezvous_v0.1.md) | Why the encounter arrives before it carries |
