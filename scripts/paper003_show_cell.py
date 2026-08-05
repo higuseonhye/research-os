@@ -79,7 +79,28 @@ def show(path: Path) -> None:
           f"{record.get('d_estimated')}   self_estimated {record.get('self_estimated')}")
     if record.get("resolved"):
         print(f"   resolved {record['resolved']}")
-    print(f"   normal_alignment {record.get('normal_alignment')}")
+
+    # Why the gate did or did not fire. Its two clauses fail for opposite
+    # reasons and the fire rate alone cannot say which.
+    if observations:
+        last = observations[-1]
+        cvs = [o.get("constant_velocity_gain", 0.0) for o in observations]
+        over = sum(1 for c in cvs if c > 0.30)
+        print(f"   gate evidence {last.get('gate_evidence')}   carriage "
+              f"{last.get('carriage_agreement')} / run {last.get('carriage_run')}")
+        print(f"   cv_gain last {last.get('constant_velocity_gain')}   over 0.30 "
+              f"on {over}/{len(cvs)} steps   contrast {last.get('proximity_contrast')}")
+    print(f"   eligible_steps {record.get('eligible_steps')}")
+
+    alignment = record.get("normal_alignment")
+    note = ""
+    if alignment is not None and alignment < 0:
+        # Not a defect. The statistic measures displacement against the contact
+        # normal, which is the direction a *struck* target leaves along. A
+        # carried target moves with its carrier, so the sign inverts and the
+        # number says nothing about a capture cell.
+        note = "  (negative: meaningless under a carry, it measures being pushed away)"
+    print(f"   normal_alignment {alignment}{note}")
 
 
 def main() -> None:
