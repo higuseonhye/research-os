@@ -56,6 +56,27 @@ The value is then the quotient rounded up, with **no margin added** — a margin
 would be the one free parameter in the derivation and there is no ground for
 choosing its size.
 
+### Which carry speed, since it varies by cell
+
+An omission in the first draft of this rule, closed here **before the
+distribution was looked at**: "the achievable carry speed" is not one number,
+and the statistic chosen changes the answer.
+
+**The tenth percentile across at least twenty seeds.** Not the median.
+
+The eligibility screen exists to discard cells where the target never leaves
+tolerance and every arm is trivially right. A latency set from the median makes
+the task non-trivial in about half the cells and throws the rest away; set from
+a low percentile, nearly every cell poses the problem the design is about.
+
+This is not a thumb on the scale. **Whether a cell is posed at all is arm-blind**
+— it decides that a prediction problem exists, not who solves it — and the
+screen's own definition already says as much: where the target will not move,
+"every arm is trivially right and committing there measures nothing".
+
+The tenth rather than the first percentile because the first is a single draw
+at twenty seeds and would be reading noise.
+
 ## 2. `interaction_radius` — from where taking hold actually happens
 
 `contact_arrivals` anchors the commit window on a body crossing
