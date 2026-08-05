@@ -129,29 +129,40 @@ def capture_verdict(
     first_motion = int(moved[0]) if moved.size else len(steps)
     after = float(np.linalg.norm(targets[-1] - targets[first_motion]))
 
+    # How many steps the target actually rode, and whether it was still riding
+    # at the end. The episode may be far longer than the carry.
+    carried_steps = int(np.count_nonzero(steps[first_motion:] > floor))
     out.update(
+        carried_steps=carried_steps,
+        held_at_end=bool(estimate.held),
         onset=int(estimate.onset),
         first_motion=first_motion,
         still_steps=first_motion,
         carrier=int(estimate.body),
         capture_radius=float(estimate.capture_radius),
-        held_at_end=bool(estimate.held),
         travel_before_onset=float(np.linalg.norm(targets[first_motion] - targets[0])),
         travel_after_onset=after,
     )
 
     # Both properties capture was chosen for, checked separately so a failure
     # says which one failed.
-    if not estimate.held:
-        out.update(
-            verdict="collision",
-            reason=(
-                "it was taken hold of and then lost - the carrier drifted away "
-                "from it, or their motions came apart. A carry keeps its "
-                "distance, and agreeing step by step does not imply that"
-            ),
-        )
-    elif first_motion < min_still_steps:
+    # `held` is deliberately **not** a condition here, and was one for two
+    # commits. It reports whether the target is riding at the *last moving step
+    # of the episode*, which answers "is it held now" - arm D's question at the
+    # moment of commitment - and not "was this a capture", which is this
+    # function's.
+    #
+    # The difference is physical rather than pedantic. Traced step by step, the
+    # gripper carries the block cleanly for about fifty steps - separation
+    # stable near 2.5 mm, mismatch under a fifth of a millimetre - and then
+    # **drops it**: agreement breaks over five steps, the block stops moving
+    # entirely, and the arm goes on without it for another hundred steps. A
+    # capture happened. It ended. Requiring `held` at step 198 called that
+    # `collision` in 22 cells of 24.
+    #
+    # How long the carry lasts is reported instead, because it is a property of
+    # the scene the design has to fit itself to rather than a pass or fail.
+    if first_motion < min_still_steps:
         out.update(
             verdict="collision",
             reason=(
