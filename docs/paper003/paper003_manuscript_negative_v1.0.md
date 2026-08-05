@@ -1,9 +1,11 @@
 # What a Missing-Relation Cell Requires: Four Candidate Relations and a Negative Result Under Physical Contact
 
-> Paper 003 manuscript **v0.1 — draft**
+> Paper 003 manuscript **v1.0**
 >
-> Status: negative result, complete in evidence and incomplete in exposition.
-> Every number below is measured and linked; the prose is a first pass.
+> **Status: complete. The experimental line is closed and no further runs are
+> planned.** Every number is measured and linked, and what remains open is
+> recorded as a limitation rather than as pending work — see §7 and *Limitations
+> that will not be closed*.
 >
 > Design: [`paper003_prereg_v1.0.md`](paper003_prereg_v1.0.md), locked
 > 2026-08-04, [closed](paper003_prereg_v1.0.md#closure--what-the-pilot-returned-and-what-it-licenses)
@@ -197,15 +199,24 @@ bound. It carries a third property that R2 turns on: the carrier moves
 Under injected coupling, where the carrier is a scripted point that stops the
 instant its schedule says so, all three requirements hold:
 
-| | arm B | arm C | SELF | **arm D** |
-| --- | ---: | ---: | ---: | ---: |
-| CPU, 200 paired cells, offsets [+4, +6] | 0.00 | ≤ 0.07 | **0.000** | **0.650** |
-| CPU, amended band [+4, +8], fresh seeds | — | — | 0.045 | 0.735 |
+**R2, preregistered.** The rule was fixed in writing before the SELF arm was
+implemented. On 200 paired cells at offsets [+4, +6], arm D scored **0.650
+against SELF's 0.000** — 130 discordant pairs, **none of them the competitor's**,
+one-sided exact McNemar p = 7.3 × 10⁻⁴⁰. On the amended band [+4, +8] with fresh
+seeds, 0.735 against 0.045 and a discordant split of **146 to 8**.
 
-The R2 comparison was preregistered before the SELF arm was implemented, with
-its decision rule fixed in writing — 130 discordant pairs, **none of them the
-competitor's**, one-sided exact McNemar p = 7.3 × 10⁻⁴⁰, margin +0.650. On the
-amended band the discordant split is 146 to 8.
+**All four arms on one run**, which the two lines above deliberately are not — a
+preregistered pairwise comparison scores two arms, and reading a four-arm table
+off two runs with different seeds and different commit bands is how a figure in
+this project first went wrong:
+
+| CPU, injected, 60 cells | arm B | arm C | SELF | **arm D** |
+| --- | ---: | ---: | ---: | ---: |
+| | 0.000 | 0.133 | 0.083 | **0.417** |
+
+**R1 and R3 hold here.** Arm B lands nothing, so the effect exceeds the
+tolerance; arm C lands 0.133, so the mode operator helps only partially, which is
+exactly the "partial help" the design requires and does not get under contact.
 
 The competitor was not broken. It acted on 0.675 of cells, and its median miss
 *when acting* was 60.0 mm against 30.0 mm when it declined — it extrapolates
@@ -261,7 +272,7 @@ comparison ran 146 to 8 in arm D's favour.
 
 ---
 
-## 4. Why: the carrier cannot stop
+## 4. Why, as far as we can show it: the carrier cannot stop
 
 The relation is made necessary by **intermittency**. A target that rides
 continuously moves at constant velocity, and then Paper 002's operator suffices
@@ -277,15 +288,20 @@ A real arm does not stop when told. Measured over 139 goal-pauses in 20 cells:
 | --- | ---: | ---: | ---: |
 | | **22** | 59 | 85 |
 
-against a commanded pause of 4 steps. **The pause never begins.** The commanded
-intermittency is invisible in the object's trajectory, which is therefore a
-smooth ride — precisely the case Paper 002's operator was built for.
+against a commanded pause of 4 steps. **The pause never begins.** What reaches
+the object is not the commanded square wave but a heavily smoothed version of it
+— quantified in §4.3 as a velocity ripple of 0.174 against the commanded 1.000 —
+and a ride that smooth is precisely the case Paper 002's operator was built for.
+
+§4.3 measures how much of this account survives being tested, and §4.4 states the
+part of the physical result it does **not** reach.
 
 ### 4.1 Two repairs, derived in advance, both tried
 
 **A better-held object.** The PSM is a needle driver and the block is not what it
 was built to grip, so the needle is the favourable case: held 68 steps at the
-median against 52, with a tenth percentile of 56 against 16. Arm C: **0.957**.
+median against the block's 52 over the matched cells (54 over all 60), with a
+tenth percentile of 56 against 16. Arm C: **0.957**.
 The mode operator still lands everything, and on the needle the single-entity arm
 overtakes the relational one.
 
@@ -306,10 +322,13 @@ to rise to.
 
 This was written down as one of three possible readings **before** the run: *"C
 drops but B is also high → the task setup is broken and eligibility must exclude
-pause-window commits."* It is reported here as a limitation of that row rather
-than repaired, because repairing it means changing the preregistered commit
-policy to exclude dispense windows containing no target motion — a new design,
-not a fix to this one.
+pause-window commits."* **§4.4 confirms it on CPU** — the same signature
+reproduces under injected coupling, so this row's anomaly belongs to the commit
+policy and needs no explanation from the physics.
+
+It is reported as a limitation of that row rather than repaired, because
+repairing it means changing the preregistered commit policy to exclude dispense
+windows containing no target motion — a new design, not a fix to this one.
 
 **The conclusion therefore rests on the two configurations where arm B is at
 0.087 and 0.133**, cells genuinely hard for a zero-order model, and arm C is at
@@ -326,13 +345,15 @@ is an inference, not a result, so we tested it. Settling time is a property of
 the **carrier**, and under injected coupling the carrier is ours to specify: we
 added a settling parameter that smooths the commanded velocity so the body coasts
 for exactly that many steps past a stop, swept it over the configuration where
-the relation is known to be necessary, and fixed three numbered predictions in
+the relation is known to be necessary, and fixed four numbered predictions in
 writing before implementing any of it.
 [Rule](paper003_settling_sweep_prereg_v1.0.md) ·
 [Result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/settling_sweep_v1.0/RESULTS.md)
 
-**All three predictions failed.** What survives is better supported than what was
-asserted, and one claim is withdrawn outright.
+**All four predictions failed.** What survives is better supported than what was
+asserted, one claim is withdrawn outright, and one previously open question is
+closed. The predictions and the consequences declared for each failure are in the
+rule document, unedited.
 
 ![The settling sweep](figures/fig4_settling_sweep.png)
 
@@ -443,7 +464,7 @@ effector's, which is GPU work and is not done here.
 
 **The mode/relation boundary sits further out than the taxonomy assumes.** The
 coupling was designed specifically to lie outside Paper 002's operator, and under
-injected coupling it did — arm C at ≤ 0.07. Under physical contact the same
+injected coupling it did — arm C at 0.133 against arm D's 0.417. Under physical contact the same
 coupling, produced by real dynamics rather than arithmetic, is absorbed
 completely. What changed is not the relation but the *smoothness of the
 carrier*, and real actuators are smooth.
@@ -551,7 +572,24 @@ calibration and should be re-derived rather than inherited.
 | Why onset is not predictable | [`paper003_onset_is_not_predictable_v0.1.md`](paper003_onset_is_not_predictable_v0.1.md) |
 | Folder guide, including corrections | [`README.md`](README.md) |
 
-## Open in this draft
+## Limitations that will not be closed
+
+The experimental line is closed. These are stated as limitations of the paper,
+not as work in progress.
+
+1. **The second physical factor is unidentified**, and it is the largest one.
+   §4.4 names two specific unexplained results — the short-pause reversal against
+   SELF, and arm C landing 0.958 where the criterion and CPU both say 0.350 —
+   with four candidate causes and a named hypothesis about grip compliance.
+   Testing any of them needs GPU time on an instrumented scene, and a reviewer
+   will ask about this before anything else.
+2. **No confirmatory run, and none will be made.** §7.
+3. **`test_paper003_pilot_sizing.py` is slow enough not to have been re-run**
+   against the final tree. It exercises the sample-size arithmetic only, which
+   the closure made moot, and it shares no code with anything changed for §4.3.
+   Stated because "no reason to break" is not the same as "verified".
+
+## What was closed while drafting
 
 1. ~~**Related work.**~~ **Done** —
    [`paper003_related_work_v0.2.md`](paper003_related_work_v0.2.md) adds negative
@@ -566,9 +604,24 @@ calibration and should be re-derived rather than inherited.
    and CPU both say 0.350. Four candidates are named and none measured. This is
    the largest open item and a reviewer will ask about it before anything else.
    It needs GPU time, not more CPU.
-4. **Venue.** The requirement set and the injected-versus-physical gap may be the
-   more publishable half; the framing choice is open.
+4. **Venue.** Three framings are laid out in
+   [related work v0.2](paper003_related_work_v0.2.md), with a recommendation:
+   lead on the reality gap — *the property that made the relation necessary is an
+   artefact of an idealised actuator* — and carry the requirement set as the
+   constructive half. It pairs directly with the finding that modelling actuator
+   dynamics closes the sim-to-real gap for policies, where here it deletes the
+   phenomenon outright.
 
 ## Version history
 
+- **v1.0, 2026-08-05.** Read end to end for the first time and corrected. A table
+  in §3.3 pooled two runs — arm B and C from the by-offset sweep, SELF and D from
+  the preregistered comparison, different seeds and different commit bands — the
+  same defect already caught in figure 2 and missed here; it is replaced by the
+  preregistered pairwise result and a separate single-run four-arm row. §4.3 said
+  three predictions where there were four. §4's opening overstated the smoothing
+  as making intermittency "invisible" when §4.3 measures it at a ripple of 0.174.
+  §5 carried the pooled 0.07. The block's carry is given as 52 over the matched
+  cells and 54 over all 60, rather than silently as one or the other. Open items
+  are reframed as limitations: the experimental line is closed.
 - **v0.1, 2026-08-05.** First draft, written after the design closed.
