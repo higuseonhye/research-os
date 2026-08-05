@@ -1,0 +1,19 @@
+{
+  "version": "paper003-overleaf-v1.0",
+  "main": "paper003_manuscript_negative_v1.0.tex",
+  "bibliography": "paper003_references_v1.0.bib",
+  "content_source": "docs/paper003/paper003_manuscript_negative_v1.0.md",
+  "files": {
+    "paper003_manuscript_negative_v1.0.tex": "1289cf26a0cb949767ec68953e1c024b9cd12c0e68465db63c9322e928b3f83d",
+    "paper003_references_v1.0.bib": "54dfe8211615086f034f3ede554cba504c44f7e7842dccfb94dc8a49ee1faacf",
+    "figures/fig1_carrier_cannot_stop.png": "4a70abb1d0c04d2cd3c229a014e85fbb0b80fab3d301f7f8e9d1e348fd40ceba",
+    "figures/fig2_arm_scores.png": "d79303e2318d56fb6a366801965adbaa8a4020aa7ce2db68d5da539516589bc5",
+    "figures/fig3_discordant_pairs.png": "43863e75468ed2c20b37e91be77e1471ab8d4d4dd0954661c7638557e137d915",
+    "figures/fig4_settling_sweep.png": "d99760b00d2576eeb0f47186e0becdb34b913fa8cfaf8485acc980ec8279cf68"
+  },
+  "before_submission": [
+    "Verify every entry in the .bib against published records; volumes, pages and years are unchecked.",
+    "Two references named in the positioning document are deliberately absent - see the .bib header.",
+    "Set \\draftnotefalse in the .tex to remove the verification banner."
+  ]
+}
