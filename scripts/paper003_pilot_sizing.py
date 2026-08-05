@@ -119,12 +119,22 @@ def observation_noise(records: list[dict[str, Any]]) -> float | None:
 
     steps = []
     for record in records:
-        if record.get("condition") != "static":
-            continue
         targets = [o["target"] for o in record.get("observations", [])]
+        # Before the grasp, and nothing else.
+        #
+        # This filtered on `condition == "static"`, which cannot be run under
+        # real contact: the conditions override the target's motion and here
+        # physics decides it, so ten cells asked for as `static` had the arm
+        # grasp the block and carry it 35 to 186 mm, moving on all 119 steps.
+        # The median of that is not a noise floor.
+        #
+        # What is genuinely unforced is the block resting on the table while the
+        # arm is still on its way.
+        grasp = (record.get("grasp") or {}).get("closed_at")
+        limit = grasp if grasp is not None else len(targets) - 1
         steps.extend(
             math.dist(targets[index], targets[index + 1])
-            for index in range(len(targets) - 1)
+            for index in range(max(0, limit - 1))
         )
     return float(_median(steps)) if steps else None
 

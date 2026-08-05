@@ -377,6 +377,27 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
 
     target0 = settled
 
+    # The conditions govern *injected* target dynamics, and under real contact
+    # there is nothing to inject: `_advance_target` is reached only from
+    # `InjectedWorld`, and here the block follows physics. So `--condition
+    # static` produced a cell in which the arm grasped the block and carried it
+    # 35 to 186 mm - moving on all 119 steps - and labelled the record `static`.
+    #
+    # The H3 and H4 controls are therefore CPU-only, which is a property of what
+    # they are rather than a gap in this runner. Refused loudly instead of
+    # silently mislabelled: a control cell that is secretly a treatment cell is
+    # worse than no control at all.
+    if args.condition != "coupled":
+        return {
+            "failed": (
+                f"--condition {args.condition} has no effect under real contact. "
+                "The conditions override the target's motion; here the target is "
+                "read from physics. The H3 and H4 controls are CPU-only"
+            ),
+            "condition": args.condition,
+            "scene_inventory": inventory,
+        }
+
     encounter = EncounterSpec(
         interaction_radius=args.interaction_radius,
         reference_speed=args.script_speed,
