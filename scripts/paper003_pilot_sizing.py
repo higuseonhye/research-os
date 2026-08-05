@@ -26,12 +26,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from collections import Counter
 from math import comb
 from pathlib import Path
 from typing import Any
-
-import numpy as np
 
 #: Preregistered: one-sided paired sign test on discordant cells.
 ALPHA = 0.05
@@ -40,6 +39,21 @@ TARGET_POWER = 0.90
 #: pilot's own conditional rate replaces it when there are enough engaged cells
 #: to estimate one, which is the honest thing to size on.
 D_CONDITIONAL_FALLBACK = 0.78
+
+
+
+def _mean(values: list[float]) -> float:
+    return sum(values) / len(values) if values else 0.0
+
+
+def _median(values: list[float]) -> float:
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    if not ordered:
+        return 0.0
+    if len(ordered) % 2:
+        return ordered[middle]
+    return 0.5 * (ordered[middle - 1] + ordered[middle])
 
 
 def sign_test_power(cells: int, engagement: float, d_conditional: float,
@@ -107,12 +121,12 @@ def observation_noise(records: list[dict[str, Any]]) -> float | None:
     for record in records:
         if record.get("condition") != "static":
             continue
-        targets = np.asarray(
-            [o["target"] for o in record.get("observations", [])], dtype=np.float64
+        targets = [o["target"] for o in record.get("observations", [])]
+        steps.extend(
+            math.dist(targets[index], targets[index + 1])
+            for index in range(len(targets) - 1)
         )
-        if len(targets) > 1:
-            steps.extend(np.linalg.norm(np.diff(targets, axis=0), axis=1).tolist())
-    return float(np.median(steps)) if steps else None
+    return float(_median(steps)) if steps else None
 
 
 def main() -> None:
@@ -152,14 +166,16 @@ def main() -> None:
         return
 
     # 2. Engagement -> n.
-    engaged = np.array([bool(r["d_estimated"]) for r in scored])
-    engagement = float(engaged.mean())
-    landed = np.array([bool(r["resolved"]["D"]) for r in scored])
-    b_rate = float(np.mean([bool(r["resolved"]["B"]) for r in scored]))
+    engaged = [bool(r["d_estimated"]) for r in scored]
+    engagement = _mean([float(e) for e in engaged])
+    landed = [bool(r["resolved"]["D"]) for r in scored]
+    b_rate = _mean([float(bool(r["resolved"]["B"])) for r in scored])
     conditional = (
-        float(landed[engaged].mean()) if engaged.sum() >= 5 else D_CONDITIONAL_FALLBACK
+        _mean([float(l) for l, e in zip(landed, engaged) if e])
+        if sum(engaged) >= 5
+        else D_CONDITIONAL_FALLBACK
     )
-    source = "measured here" if engaged.sum() >= 5 else "CPU fallback 0.78"
+    source = "measured here" if sum(engaged) >= 5 else "CPU fallback 0.78"
 
     print(f"\n2. engagement       {engagement:.2f}  over {len(scored)} capture cells")
     print(f"   arm D | engaged  {conditional:.2f}  ({source})")
@@ -175,9 +191,9 @@ def main() -> None:
     alignments = [r["normal_alignment"] for r in scored
                   if r.get("normal_alignment") is not None]
     print("\n3. normal_alignment "
-          + (f"{np.median(alignments):.3f}  (median of {len(alignments)})"
+          + (f"{_median(alignments):.3f}  (median of {len(alignments)})"
              if alignments else "unavailable - no usable contact steps"))
-    if alignments and float(np.median(alignments)) < 0.9:
+    if alignments and float(_median(alignments)) < 0.9:
         print("   BELOW 0.9. A contact pushing off-normal returns correct")
         print("   coefficients while arm D aims the wrong way, and that is")
         print("   invisible in every other statistic here.")
