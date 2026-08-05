@@ -36,6 +36,7 @@ Recommended first-screen copy:
 | **Foundation documents** | D000-D006 define the formal objects, terminology, novelty audit, literature matrix, evaluation protocol, and roadmap |
 | **Research papers** | Paper 001-005 test different change operators |
 | **Research products** | Robot Diff and Mismatch Lab test the claims in rollout-comparison workflows |
+| **Builder Lab** | Public execution surface for small, reproducible Physical AI systems |
 
 ## Evidence Narrative
 
@@ -45,6 +46,7 @@ Recommended first-screen copy:
 | **Paper 002** | Provides the strongest current confirmatory evidence for repair-vs-expansion |
 | **Paper 003** | Shows the next design frontier: representation expansion as capability, not just lower error |
 | **Mismatch Lab** | Converts the research program into a public interface and benchmark direction |
+| **Builder Lab** | Quietly opens the build track; current status is Planning until EXP-001 runs |
 
 ## Links
 
@@ -56,8 +58,10 @@ Recommended first-screen copy:
 
 [Mismatch Lab demo](https://higuseonhye.github.io/research-os/mismatch_lab/diff_explorer_v0.1.html)
 
+[Builder Lab](https://github.com/higuseonhye/builder-lab)
+
 [Public boundary](https://github.com/higuseonhye/research-os/blob/master/docs/PUBLIC_BOUNDARY.md)
 
 ---
 
-*Updated 2026-08-04*
+*Updated 2026-08-05*

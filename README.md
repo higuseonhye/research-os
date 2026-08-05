@@ -37,6 +37,7 @@ That sentence is treated as a claim to audit, not a slogan to protect.
 | **Foundation documents** | Stable program constitution: definitions, audits, literature matrix, evaluation philosophy, and roadmap |
 | **Research papers** | Experiments that test pieces of the foundation |
 | **Research products** | Platforms that expose the program's hypotheses to real users, rollouts, and benchmarks |
+| **Builder Lab** | Public execution surface for small, reproducible Physical AI experiments |
 
 Start with the program charter: [`docs/program/after_the_spill_v2.md`](docs/program/after_the_spill_v2.md).
 
@@ -95,6 +96,7 @@ program's claims in actual workflows.
 | Program index | [`docs/program/README.md`](docs/program/README.md) |
 | GitHub Pages | [`docs/index.md`](docs/index.md) |
 | Mismatch Lab | [`docs/mismatch_lab/README.md`](docs/mismatch_lab/README.md) |
+| Builder Lab | [`../builder-lab/README.md`](../builder-lab/README.md) |
 | Paper 001 | [`docs/paper1/README.md`](docs/paper1/README.md) |
 | Paper 002 | [`docs/paper002/README.md`](docs/paper002/README.md) |
 | Paper 003 | [`docs/paper003/README.md`](docs/paper003/README.md) |

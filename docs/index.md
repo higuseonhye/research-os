@@ -11,6 +11,7 @@
     <a class="button primary" href="program/after_the_spill_v2.html">Program charter</a>
     <a class="button" href="paper002/project_page.html">Paper 002 evidence</a>
     <a class="button" href="mismatch_lab/">Mismatch Lab</a>
+    <a class="button" href="https://github.com/higuseonhye/builder-lab">Builder Lab</a>
   </p>
 </section>
 
@@ -51,6 +52,10 @@ audit:
     <h3>Products</h3>
     <p>Robot Diff and Mismatch Lab turn rollout comparison into evidence for model adequacy and recovery decisions.</p>
   </div>
+  <div>
+    <h3>Builder Lab</h3>
+    <p>Small, reproducible Physical AI experiments. Current status: Planning.</p>
+  </div>
 </div>
 
 ## Evidence So Far
@@ -61,6 +66,7 @@ audit:
 | **Paper 002: Model Adequacy** | Tests when parameter repair should give way to a prepared model-order expansion | Tier C complete |
 | **Paper 003: Representation Expansion** | Tests whether adding a missing relation can open capability repair cannot reach | Design/calibration |
 | **Mismatch Lab** | Public surface for diff, replay, explanation, and benchmark design | Spec/demo |
+| **Builder Lab** | Public execution surface for small Physical AI experiments | Planning |
 
 Selected proof points:
 
@@ -86,6 +92,7 @@ Selected proof points:
 | The document that tries to break the idea | [D001 Claim & Novelty Audit](program/D001_claim_novelty_audit.md) |
 | The strongest current evidence | [Paper 002 project page](paper002/project_page.html) |
 | The public product/lab surface | [Mismatch Lab](mismatch_lab/) |
+| The public execution lab | [Builder Lab](https://github.com/higuseonhye/builder-lab) |
 | The repository | [GitHub](https://github.com/higuseonhye/research-os) |
 
 ## Boundary
@@ -98,4 +105,4 @@ arbitrary causal discovery, or a complete theory of intelligence.
 Negative and design-stage results are kept in the record because a program gets
 stronger by rejecting weak claims early.
 
-*Updated 2026-08-04*
+*Updated 2026-08-05*
