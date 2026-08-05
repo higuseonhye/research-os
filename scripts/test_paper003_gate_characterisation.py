@@ -188,12 +188,24 @@ class SlidingGateTests(unittest.TestCase):
         self.assertGreater(row["median_first_fire"], COMMIT_WINDOW_END)
         self.assertEqual(row["coupled_in_time"], 0.0)
 
-    def test_the_configuration_is_the_episodes_and_it_matters(self) -> None:
-        """Pins why HORIZON is 6 rather than the module default of 10.
+    def test_the_constant_velocity_statistic_ignores_the_horizon(self) -> None:
+        """**This test asserted the opposite, and the opposite was the defect.**
 
-        CommitmentEpisode passes its dispense latency as the horizon. Evaluating
-        at the default moved the constant-velocity statistic enough to flip the
-        verdict during this analysis, so the value is not incidental.
+        It pinned that `cv_gain` moved with the horizon - "enough to flip the
+        verdict during this analysis" - and treated that as a property worth
+        keeping. It is not a property, it is two things measured at once: the
+        old statistic extrapolated a one-step velocity `horizon` steps, so on any
+        curving trajectory a longer extrapolation overshoots further and a
+        constant-velocity model looks worse the further ahead it is asked.
+
+        It stayed invisible while `dispense_latency` never moved. When physics
+        forced it from 6 to 8, the steadily-closing pusher - the control this
+        clause exists for - went from +0.406 to +0.219 and crossed the ceiling
+        while its motion was unchanged.
+
+        Asking one step ahead removes the horizon from the expression, so the
+        threshold means the same thing whatever the action's length. That is the
+        property, and this is now what pins it.
         """
         targets, references = slide_rollout(1.0, seed=0)
         at_six = evaluate_relation_gate(
@@ -204,7 +216,7 @@ class SlidingGateTests(unittest.TestCase):
             targets, references, RelationGateThresholds(),
             interaction_radius=RADIUS, horizon=10,
         ).constant_velocity_gain
-        self.assertNotAlmostEqual(at_six, at_ten, places=2)
+        self.assertAlmostEqual(at_six, at_ten, places=9)
 
 
 class RenderTests(unittest.TestCase):

@@ -19,7 +19,11 @@ from wm_expansion.commitment_episode import (
     project_reference_motion,
 )
 from wm_expansion.commitment_task import ReferencePatternEstimator
-from wm_expansion.relation_dynamics import CouplingSpec, coupling_displacement
+from wm_expansion.relation_dynamics import (
+    CouplingSpec,
+    RelationGateThresholds,
+    coupling_displacement,
+)
 
 
 # --------------------------------------------------------------------------
@@ -237,7 +241,17 @@ class EpisodeDriverTests(unittest.TestCase):
             episode.aims()
 
     def test_no_motion_expected_while_the_reference_is_far(self) -> None:
-        self.assertFalse(self._drive(3).motion_expected())
+        """How far is "far" scales with the action, and that is correct.
+
+        This asserted at step 3 while `dispense_latency` was 6. At 8 the same
+        body is admitted there - a longer dispense means a body further out can
+        still arrive before it completes - so the assertion moved to step 2 and
+        the *transition* is pinned alongside it, which is the part that carries
+        meaning.
+        """
+
+        self.assertFalse(self._drive(2).motion_expected())
+        self.assertTrue(self._drive(6).motion_expected())
 
     def test_eligibility_covers_both_approach_and_sustained_contact(self) -> None:
         approach = [self._drive(n).motion_expected() for n in range(4, 10)]
@@ -459,8 +473,14 @@ class TwoBodyTests(unittest.TestCase):
     def setUp(self) -> None:
         self.spec = EpisodeSpec(interaction_radius=self.RADIUS)
 
-    def _two_body(self, steps: int = 28) -> CommitmentEpisode:
-        """Prober strikes and withdraws; pusher closes steadily from the far side."""
+    def _two_body(self, steps: int = 32) -> CommitmentEpisode:
+        """Prober strikes and withdraws; pusher closes steadily from the far side.
+
+        The default was 28 while `dispense_latency` was 6. Projecting eight
+        steps needs more history than projecting six, and below 30 the
+        estimator declines - which is arm D behaving as designed, refusing to
+        act rather than guessing, and not a regression.
+        """
         episode = CommitmentEpisode(spec=self.spec)
         target = np.array([0.20, 0.0, 0.0])
         prober = np.array([0.20 - 1.9 * self.RADIUS, 0.0, 0.0])
@@ -487,7 +507,7 @@ class TwoBodyTests(unittest.TestCase):
         Rolling the prediction forward with it would predict a contact that is
         over, which is why the acting body is chosen by closing rate.
         """
-        episode = self._two_body(steps=30)
+        episode = self._two_body(steps=34)
         target = episode.targets[-1]
         separations = np.linalg.norm(episode.references[-1] - target, axis=1)
         acting = episode._acting_body()
@@ -508,17 +528,35 @@ class TwoBodyTests(unittest.TestCase):
     def test_the_gate_fires_on_a_relation_carried_by_two_bodies(self) -> None:
         self.assertTrue(self._two_body().gate_fired())
 
-    def test_a_pusher_that_never_stops_becomes_arm_c_s_case(self) -> None:
-        """Kept because it is a property of the design, not a defect.
+    def test_a_pusher_that_never_stops_is_arm_c_s_case_and_the_gate_lets_it_through(
+        self,
+    ) -> None:
+        """Still arm C's case. **No longer the gate's job to say so.**
 
-        If the second body pushes without pause, the target settles into a
-        steady drift, a constant-velocity model explains it, and the gate
-        declines - correctly. The commitment therefore has to precede the
-        sustained push, which is what the eligibility window arranges.
+        This asserted that the gate declines here, and that assertion was the
+        belt-and-braces the design has now given up deliberately. A body that
+        pushes without pause settles the target into a steady drift a
+        constant-velocity model explains - but a relation *is* present, contact
+        really does cause the motion, so refusing it is not gate specificity.
+
+        The clause that refused it cannot be kept in any case: a captured target
+        rides smoothly and is more constant-velocity than a pushed one, so no
+        ceiling admits capture and rejects this. The ceiling is now scoped to
+        the proximity path.
+
+        Where the collapse threat is defended instead is H2, on outcomes: arm D
+        must beat the mode operator by a margin, and where a constant-velocity
+        model suffices arm C succeeds and the margin vanishes. That does not
+        depend on a threshold being right.
+
+        See docs/paper003/paper003_where_collapse_is_defended_v0.1.md.
         """
+
         late = self._two_body(steps=40)
-        self.assertGreater(late.gate_decision().constant_velocity_gain, 0.30)
-        self.assertFalse(late.gate_fired())
+        # Arm C's case: a constant-velocity model explains this motion well.
+        self.assertGreater(late.gate_decision().constant_velocity_gain, 0.5)
+        # And the gate no longer refuses it, which is the deliberate change.
+        self.assertTrue(late.gate_fired())
 
     def test_the_coupling_is_fitted_across_both_bodies(self) -> None:
         coupling = self._two_body()._coupling()
@@ -528,7 +566,7 @@ class TwoBodyTests(unittest.TestCase):
 
     def test_arm_d_predicts_motion_the_other_arms_cannot(self) -> None:
         """At the commitment the target is still, so B and C both predict nothing."""
-        episode = self._two_body(steps=26)
+        episode = self._two_body(steps=32)
         aims = episode.aims()
         self.assertTrue(episode.can_estimate())
         self.assertFalse(np.allclose(aims["D"], aims["B"]))

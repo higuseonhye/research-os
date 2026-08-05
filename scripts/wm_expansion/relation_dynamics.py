@@ -368,7 +368,26 @@ class RelationGateThresholds:
     # own axis at its own speed, so its displacement agrees with that body's on
     # 0.71 of moving steps under a burst schedule - it would pass a carriage
     # test outright. Its cv_gain is 0.99, and this clause is what rejects it.
-    max_constant_velocity_gain: float = 0.30
+    max_constant_velocity_gain: float = 0.89
+    """Re-derived 2026-08-05 for the one-step statistic, and 0.30 did not transfer.
+
+    The old value belonged to an H-step `cv_gain` that decayed with the horizon,
+    so a threshold calibrated at `dispense_latency` 6 stopped rejecting the
+    steadily-closing pusher at 8 - the control the clause exists for - while the
+    motion was unchanged. Carrying the number across to a different statistic is
+    the mistake that document is about.
+
+    Derived the way `min_proximity_contrast` was, and by a rule fixed before the
+    measurement: the interval of thresholds separating treatment from every
+    control identically, then its midpoint. Measured over 40 seeds each,
+
+        highest admitted   0.796   (capture under burst)
+        lowest rejected    0.985   (post-contact slide)
+
+    so the plateau is [0.796, 0.985) and its midpoint is 0.89. Collision sits far
+    below at 0.060 and drift at 1.000, and the separation is identical at every
+    horizon from 4 to 12, which is the property the replacement was written for.
+    """
     # Second admissible form of positive evidence: the target's displacement is
     # a *body's* displacement. Required because the proximity contrast cannot
     # see a capture at all - a carrier that never leaves supplies no far field,
@@ -531,28 +550,40 @@ def _displacement_rate(points: np.ndarray, mask: np.ndarray, window: int = 3) ->
     return float(np.mean(rates)) if rates else None
 
 
-def _constant_velocity_gain(target_arr: np.ndarray, horizon: int) -> float:
-    """Fraction of zero-order H-step error that a constant-velocity model removes.
+def _constant_velocity_gain(target_arr: np.ndarray, horizon: int = 1) -> float:
+    """Fraction of zero-order **one-step** error a constant-velocity model removes.
 
     High for persistent drift (Paper 002's case, handled by arm C); near zero for
     proximity-driven bumps, whose direction reverses and whose quiet gaps a
     velocity extrapolation overshoots.
+
+    **`horizon` is accepted and ignored, deliberately.** The previous version
+    extrapolated the last one-step velocity `horizon` steps and compared H-step
+    errors, which made the statistic decay with the horizon on any curving
+    trajectory - a longer extrapolation overshoots further, so a
+    constant-velocity model looks worse the further ahead it is asked. On the
+    steadily-closing pusher, the control built for this clause, the same
+    unchanged motion gave +0.406 at horizon 6 and +0.219 at horizon 8, crossing
+    the 0.30 ceiling without moving.
+
+    That mattered because the physical scene forces `dispense_latency` to 8, so a
+    threshold calibrated at 6 silently stopped rejecting the case it exists to
+    reject. The horizon was being measured alongside the motion; asking one step
+    ahead removes it from the expression entirely.
+
+    See docs/paper003/paper003_cv_gain_horizon_v0.1.md. The parameter is kept in
+    the signature so existing callers need no change and so that the ignoring is
+    visible here rather than at every call site.
     """
 
-    if len(target_arr) <= horizon:
+    del horizon  # see above: measuring it was the defect
+    if len(target_arr) < 3:
         return 0.0
 
-    zero_errors = []
-    cv_errors = []
-    velocity = np.zeros(target_arr.shape[1], dtype=np.float64)
-    for index in range(len(target_arr) - horizon):
-        if index > 0:
-            velocity = target_arr[index] - target_arr[index - 1]
-        truth = target_arr[index + horizon]
-        zero_errors.append(float(np.linalg.norm(target_arr[index] - truth)))
-        cv_errors.append(float(np.linalg.norm(target_arr[index] + horizon * velocity - truth)))
-
-    zero_mean = float(np.mean(zero_errors))
+    steps = np.diff(target_arr, axis=0)
+    zero_errors = np.linalg.norm(steps[1:], axis=1)
+    cv_errors = np.linalg.norm(steps[1:] - steps[:-1], axis=1)
+    zero_mean = float(np.mean(zero_errors)) if zero_errors.size else 0.0
     if zero_mean <= 0.0:
         return 0.0
     return float((zero_mean - float(np.mean(cv_errors))) / zero_mean)
@@ -705,21 +736,32 @@ def evaluate_relation_gate(
         # rate; otherwise the contrast is comparing against a fabricated zero.
         and measurable
     )
-    carriage_agreement, carriage_run = carriage_evidence(target_arr, reference_arr)
+    carriage_agreement, carriage_run = carriage_evidence(
+        target_arr, reference_arr, interaction_radius=interaction_radius
+    )
     carriage = bool(
         carriage_agreement >= thresholds.min_carriage_agreement
         and carriage_run >= thresholds.min_carriage_run
     )
 
+    # Each form of positive evidence carries its own negative evidence, because
+    # one clause cannot serve both. The constant-velocity ceiling was derived
+    # where the treatment is episodic; a captured target rides smoothly and is
+    # *more* constant-velocity than a sustained push, so applying it to the
+    # carriage path admits nothing the design wants. Contact does that work
+    # there instead - see `carriage_evidence`.
+    #
+    # What this gives up is stated rather than hidden: the gate now fires on a
+    # sustained push, where a relation is present and the mode operator already
+    # suffices. That is H2's question - arm D must beat arm C by a margin - and
+    # H2 tests it on outcomes rather than on a threshold being right.
     fired = bool(
         n_deltas >= thresholds.min_deltas
         and mean_speed >= thresholds.speed_floor
-        # Negative evidence, and it applies to both forms. Without it here the
-        # `drift` control would enter through the carriage path: its target runs
-        # along a body's own axis at its own speed and agrees with it on 0.71 of
-        # moving steps.
-        and cv_gain <= thresholds.max_constant_velocity_gain
-        and (proximity_evidence or carriage)
+        and (
+            (proximity_evidence and cv_gain <= thresholds.max_constant_velocity_gain)
+            or carriage
+        )
     )
     return RelationGateDecision(
         fired=fired,
@@ -965,6 +1007,7 @@ def carriage_evidence(
     reference_positions: Iterable[ArrayLike],
     motion_floor_ratio: float = 0.25,
     agreement: float = 0.25,
+    interaction_radius: float | None = None,
 ) -> tuple[float, int]:
     """How much of the target's motion is a body's own motion, and for how long.
 
@@ -990,6 +1033,29 @@ def carriage_evidence(
         return 0.0, 0
     rides, moving = masked
 
+    # You cannot carry what you are not touching.
+    #
+    # `drift` runs its target along the first body's own axis at its own speed,
+    # so it agrees with that body on 0.71 of moving steps and passes a pure
+    # agreement test - while the body stays 183 mm away and never comes within
+    # the radius. The constant-velocity ceiling used to be what rejected it, and
+    # that ceiling cannot be kept here: a captured target rides smoothly and is
+    # *more* constant-velocity than a pushed one, so no ceiling admits capture
+    # and rejects a sustained push.
+    #
+    # Contact is the definition of carrying rather than a tuned threshold, and
+    # it separates the two outright.
+    # See docs/paper003/paper003_where_collapse_is_defended_v0.1.md.
+    if interaction_radius is not None:
+        if interaction_radius <= 0.0:
+            raise ValueError("interaction_radius must be > 0")
+        separations = np.linalg.norm(
+            references[:-1] - targets[:-1, None, :], axis=2
+        )
+        rides = rides & (separations < interaction_radius)
+
+    if not moving.any() or not rides.shape[1]:
+        return 0.0, 0
     fraction = float(np.mean(rides.any(axis=1)[moving]))
     longest = 0
     for body in range(rides.shape[1]):

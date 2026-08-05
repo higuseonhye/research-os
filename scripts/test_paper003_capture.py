@@ -354,28 +354,32 @@ class GateTests(unittest.TestCase):
             with self.subTest(onset=label):
                 self.assertLessEqual(float(np.mean(fired)), 0.10)
 
-    def test_drift_would_pass_a_carriage_test_and_is_rejected_anyway(self) -> None:
-        """The control the second evidence path is dangerous for.
+    def test_drift_would_pass_a_carriage_test_and_is_rejected_by_contact(self) -> None:
+        """The control the carriage path is dangerous for, and what now stops it.
 
-        `drift` runs the target along the first body's own axis at its own
-        speed, so its displacement genuinely *is* that body's displacement
-        whenever the body moves - 0.71 of moving steps under a burst schedule,
-        which clears any carriage threshold worth setting. It is not a relation:
-        nothing conditions the motion on the body, the agreement is a
-        coincidence of the control's construction, and it is precisely arm C's
-        case.
+        `drift` runs its target along the first body's own axis at its own
+        speed, so its displacement genuinely *is* that body's displacement and
+        it clears any agreement threshold worth setting. It is not a relation:
+        nothing conditions the motion on the body.
 
-        What rejects it is the constant-velocity ceiling, which applies to both
-        forms of positive evidence. This test exists so that a later change
-        scoping that clause to the proximity path alone fails here rather than
-        in a confirmatory run.
+        **The rejecting clause changed on 2026-08-05.** It used to be the
+        constant-velocity ceiling, and that ceiling had to be scoped to the
+        proximity path: a captured target rides smoothly and is *more*
+        constant-velocity than a sustained push, so no ceiling admits capture
+        while rejecting the collapse case. Contact does the work here instead -
+        the body `drift` agrees with never comes within the interaction radius,
+        and you cannot carry what you are not touching.
+
+        This test exists so that a later change removing the contact requirement
+        fails here rather than in a confirmatory run.
         """
 
         from wm_expansion.cell import CellSpec, run_cell
         from wm_expansion.commitment_episode import EpisodeSpec
         from wm_expansion.encounter import EncounterSpec
+        from wm_expansion.relation_dynamics import carriage_evidence
 
-        fired, agreements = [], []
+        fired, bare, gated, closest = [], [], [], []
         for seed in range(300, 320):
             record = run_cell(
                 np.array([0.20, 0.0, 0.40]),
@@ -384,18 +388,24 @@ class GateTests(unittest.TestCase):
                 CellSpec(condition="drift", seed=seed),
                 drive=lambda target: False,
             )
-            decision = evaluate_relation_gate(
-                [o["target"] for o in record["observations"]],
-                [o["references"] for o in record["observations"]],
-                RelationGateThresholds(),
-                interaction_radius=0.05,
-                horizon=6,
+            targets = [o["target"] for o in record["observations"]]
+            bodies = [o["references"] for o in record["observations"]]
+            bare.append(carriage_evidence(targets, bodies)[0])
+            gated.append(
+                carriage_evidence(targets, bodies, interaction_radius=0.05)[0]
             )
-            fired.append(decision.fired)
-            agreements.append(decision.carriage_agreement)
-            self.assertGreater(decision.constant_velocity_gain, 0.30)
+            closest.append(
+                min(
+                    float(np.linalg.norm(np.asarray(o["target"]) - np.asarray(b)))
+                    for o in record["observations"]
+                    for b in o["references"]
+                )
+            )
+            fired.append(record["gate_fire_rate"] > 0)
 
-        self.assertGreater(float(np.mean(agreements)), 0.5, "the hazard is not present")
+        self.assertGreater(float(np.mean(bare)), 0.5, "the hazard is not present")
+        self.assertGreater(float(np.min(closest)), 0.05, "the body was in contact")
+        self.assertEqual(float(np.mean(gated)), 0.0)
         self.assertEqual(float(np.mean(fired)), 0.0)
 
     def test_the_controls_are_observably_different_worlds(self) -> None:

@@ -29,6 +29,20 @@ class EncounterSpec:
     #: striking, which is what lets a completed contact be observed before the
     #: commitment; without it a struck target and a sliding one are the same
     #: history and the relation is not identifiable.
+    #:
+    #: `steady` advances every step and never pauses or withdraws. It exists for
+    #: a control the design has always cared about and could not previously
+    #: express: a body that pushes *without stopping*, which drives the target
+    #: into a steady drift that a constant-velocity model explains. That is the
+    #: case which would collapse Paper 003 into Paper 002, and it is distinct
+    #: from `slide` - there the target is struck once and coasts, here it is
+    #: driven every step - so the two threaten the same clause by different
+    #: mechanisms and both belong in the control set.
+    #:
+    #: It existed only as a hand-built trajectory inside one test, which meant
+    #: the constant-velocity ceiling could not be derived against it across
+    #: seeds. It sat between the treatment and the other controls when finally
+    #: measured, so the derivation that omitted it was incomplete.
     schedule: str = "probe"
     burst_on: int = 10
     burst_off: int = 4
@@ -67,8 +81,8 @@ class EncounterSpec:
             raise ValueError("interaction_radius must be > 0")
         if self.reference_speed <= 0.0 or self.pusher_speed <= 0.0:
             raise ValueError("speeds must be > 0")
-        if self.schedule not in ("burst", "probe"):
-            raise ValueError("schedule must be 'burst' or 'probe'")
+        if self.schedule not in ("burst", "probe", "steady"):
+            raise ValueError("schedule must be 'burst', 'probe' or 'steady'")
         if self.burst_on < 1 or self.burst_off < 1:
             raise ValueError("burst_on and burst_off must be >= 1")
         if self.probe_advance < 1 or self.probe_withdraw < 1 or self.probe_hold < 0:
@@ -115,6 +129,8 @@ class EncounterSpec:
 
     @property
     def period(self) -> int:
+        if self.schedule == "steady":
+            return 1
         if self.schedule == "burst":
             return self.burst_on + self.burst_off
         return self.probe_advance + self.probe_withdraw + self.probe_hold
@@ -159,6 +175,8 @@ def schedule_direction(step: int, spec: EncounterSpec) -> int:
 
     if spec.bodies == 2 and step >= spec.probe_advance + spec.probe_withdraw:
         return 0
+    if spec.schedule == "steady":
+        return 1  # never pauses, never withdraws
     cycle = step % spec.period
     if spec.schedule == "burst":
         return 1 if cycle < spec.burst_on else 0
@@ -201,7 +219,7 @@ def draw_geometry(seed: int, target: np.ndarray, spec: EncounterSpec) -> Encount
     # requirement is different and tighter: one *completed* contact - strike,
     # withdraw past the radius, and at least one observation afterwards - must
     # fit before the commit window.
-    if spec.schedule == "burst":
+    if spec.schedule in ("burst", "steady"):
         floor = spec.burst_on * spec.reference_speed + spec.interaction_radius
         approach = floor * float(rng.uniform(1.05, 1.6))
     else:
