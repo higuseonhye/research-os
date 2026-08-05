@@ -1006,19 +1006,63 @@ def _ride_mask(
     # The per-step test tolerates `agreement` of the target's own step, so a
     # target losing a fraction of a millimetre every step scores near-perfect
     # agreement while drifting arbitrarily far - measured in the Isaac pilot,
-    # objects "carried" at 0.98 over a run of 111 had reached median separations
-    # of 3, 50, 63, 55 and 178 mm from the arm holding them.
+    # objects "carried" at 0.98 over a run of 111 had reached separations of
+    # 50 to 209 mm from the arm supposedly holding them.
     #
-    # The bound belongs here rather than in one caller, so that the gate, the
-    # verdict and arm D cannot disagree about what a carry is. They did: the
-    # gate applied it, the verdict did not, and the verdict certified slips the
-    # gate was correctly refusing.
-    if interaction_radius is not None:
-        if interaction_radius <= 0.0:
-            raise ValueError("interaction_radius must be > 0")
-        separations = np.linalg.norm(references[:-1] - targets[:-1, None, :], axis=2)
-        rides = rides & (separations < interaction_radius)
+    # **Bounded, not small.** An earlier version required the separation to stay
+    # inside the interaction radius, and that rejected a cell holding at a
+    # perfectly constant 3.35 mm - `ee_frame` is a virtual point between the
+    # jaws, so an object genuinely held sits a few millimetres from it by
+    # construction. What distinguishes carrying is that the separation does not
+    # *grow*, whatever its value.
+    #
+    # So: the share of the carrier's motion the target failed to inherit,
+    # measured over each body's ride and bounded by `agreement` - the same
+    # quarter that is already declared acceptable per step, now applied to the
+    # run, which is where it was accumulating without limit. See
+    # docs/paper003/paper003_carry_is_not_slip_v0.1.md.
+    separations = np.linalg.norm(references - targets[:, None, :], axis=2)
+    for body in range(rides.shape[1]):
+        for start, stop in _runs(rides[:, body]):
+            window = separations[start : stop + 2, body]
+            closest = float(np.min(window))
+
+            # Carrying begins with taking hold, so a run must contain a moment
+            # of actual contact. This is what rejects `drift`, whose target
+            # tracks a body's own axis at its own speed - separation constant,
+            # slip zero, and the body 183 mm away throughout. Required once in
+            # the run rather than at every step: an object genuinely held sits a
+            # few millimetres from `ee_frame`, which is a virtual point between
+            # the jaws, and one cell holds at a constant 3.35 mm.
+            if interaction_radius is not None and closest >= interaction_radius:
+                rides[start : stop + 1, body] = False
+                continue
+
+            # No bound on how far it slips while riding, and that is not an
+            # oversight. The design names two properties of a capture - the
+            # target is still before the arrival, and the effect then
+            # accumulates without bound - and a target that inherits 85% of its
+            # carrier's motion has both. What a slip costs is *prediction*, and
+            # over one dispense window at this carry speed it costs 3.6 mm
+            # against a 20 mm tolerance, so arm D still lands. Whether it does
+            # is a question for the scoring, which measures it, rather than for
+            # a verdict that would decide it in advance.
     return rides, moving
+
+
+def _runs(flags: np.ndarray) -> list[tuple[int, int]]:
+    """Inclusive [start, stop] index pairs of each True run."""
+
+    spans, start = [], None
+    for index, flag in enumerate(flags):
+        if flag and start is None:
+            start = index
+        elif not flag and start is not None:
+            spans.append((start, index - 1))
+            start = None
+    if start is not None:
+        spans.append((start, len(flags) - 1))
+    return spans
 
 
 def carriage_evidence(
@@ -1202,9 +1246,9 @@ def estimate_capture(
     # not. Without this, a carry that slipped apart over sixty steps still
     # reported `held=True`, because every individual step's mismatch stayed
     # inside the tolerance that the drift was accumulating from.
-    if interaction_radius is not None:
-        separations = np.linalg.norm(references[:, body] - targets, axis=1)
-        diverged = diverged | (separations[1:] >= interaction_radius) & after
+    # No separate radius test here. `_ride_mask` now bounds the *growth* of the
+    # separation over each run, which is what "still held" means, and an
+    # absolute test here rejected a cell holding at a constant 3.35 mm.
     return CaptureEstimate(
         capture_radius=radius,
         held=not bool(diverged.any()),

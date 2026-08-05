@@ -87,13 +87,34 @@ if __name__ == "__main__":
 
 
 class SlipTests(unittest.TestCase):
-    """A carry keeps its distance. Agreeing step by step is not enough.
+    """What a slipping carry is, and what it is not.
 
-    `_ride_mask` tolerates a mismatch of 25% of the target's own step, so a
-    target that falls a little behind every step still scores near-perfect
-    agreement while drifting arbitrarily far. Measured in the Isaac pilot,
-    objects verdicted as carried had reached median separations of 3, 50, 63,
-    55 and 178 mm from the arm holding them, at 0.98 agreement over runs of 111.
+    Three positions were held here in one afternoon, and the middle one was
+    wrong in both directions, so the reasoning is recorded rather than the
+    conclusion alone.
+
+    A target that inherits most but not all of its carrier's motion drifts
+    steadily behind it - measured in the Isaac pilot, out to 68-209 mm over a
+    carry of 178 steps. It was first certified as a capture, then rejected as a
+    slip, and is now certified again, for a reason neither earlier position had.
+
+    **It is a capture by the design's own definition.** Capture names two
+    properties: the target is perfectly still before the arrival, and the effect
+    then accumulates without bound. A target inheriting 85% of its carrier's
+    motion has both.
+
+    What a slip costs is *prediction*, and that is a different question from
+    what the relation is. Over one dispense window at this carry speed it costs
+    about 3.6 mm against a 20 mm tolerance, so arm D still lands - and whether
+    it does is measured by the scoring rather than decided in advance by a
+    verdict.
+
+    What does disqualify a trace is never having taken hold at all, which is
+    `drift`: separation constant, slip zero, and the body 183 mm away
+    throughout. That is what the contact requirement rejects, and it is required
+    once in a run rather than at every step, because an object genuinely held
+    sits a few millimetres from `ee_frame` - one cell holds at a constant
+    3.35 mm.
     """
 
     def _slipping(self, per_step: float) -> dict:
@@ -115,25 +136,55 @@ class SlipTests(unittest.TestCase):
                 ).tolist()
         return record
 
-    def test_a_slipping_carry_is_not_a_capture(self) -> None:
-        # 2 mm of drift per step against a 15 mm/step carry: inside the 25%
-        # per-step tolerance and therefore invisible to the agreement test,
-        # while accumulating past the radius within a few dozen steps. That gap
-        # between what a step permits and what a run accumulates is the defect.
-        radius = 0.05
-        record = self._slipping(0.002)
+    def test_a_carry_that_slips_is_still_a_capture(self) -> None:
+        """Deliberately, and this test asserted the opposite for one commit."""
 
-        # It passes the per-step test comfortably - that is the whole problem.
-        loose = capture_verdict(record)
-        self.assertGreater(loose["carriage_agreement"], 0.80)
+        verdict = capture_verdict(self._slipping(0.002), interaction_radius=0.05)
+        self.assertEqual(verdict["verdict"], "capture", verdict.get("reason"))
 
-        # And fails once the separation has to stay inside the radius.
-        strict = capture_verdict(record, interaction_radius=radius)
-        self.assertNotEqual(strict["verdict"], "capture", strict.get("reason"))
+    def test_a_body_that_never_took_hold_is_not_carrying(self) -> None:
+        """`drift` agrees with its body step for step and never touches it."""
 
-    def test_a_true_carry_still_passes_with_the_radius(self) -> None:
-        """The check must not reject the thing it exists to admit."""
+        for seed in range(300, 310):
+            verdict = capture_verdict(
+                cell(condition="drift", schedule="burst", seed=seed),
+                interaction_radius=0.05,
+            )
+            with self.subTest(seed=seed):
+                self.assertNotEqual(verdict["verdict"], "capture", verdict.get("reason"))
 
+    def test_contact_is_required_once_in_a_run_not_at_every_step(self) -> None:
+        """An object held at a constant separation wider than the radius.
+
+        `ee_frame` is a virtual point between the jaws, so this is what a real
+        grasp looks like, and requiring contact at every step rejected it.
+        """
+
+        record = cell()
+        targets = [np.asarray(o["target"]) for o in record["observations"]]
+        moved = [
+            index
+            for index in range(1, len(targets))
+            if float(np.linalg.norm(targets[index] - targets[index - 1])) > 1e-9
+        ]
+        onset = moved[0] if moved else len(targets)
+        # Contact at the onset, then settling wider and staying there - which is
+        # what a real grasp looks like, since `ee_frame` sits between the jaws.
+        # An earlier version of this fixture offset the target from the first
+        # step of the ride, which is a body that never touched at all, and the
+        # contact requirement rejected it correctly.
+        settle = np.array([0.0, 0.020, 0.0])  # 20 mm, past a 50 mm radius once added
+        for index, observation in enumerate(record["observations"]):
+            if index > onset:
+                fraction = min(1.0, (index - onset) / 3.0)
+                observation["target"] = (
+                    np.asarray(observation["target"]) + fraction * settle
+                ).tolist()
+
+        verdict = capture_verdict(record, interaction_radius=0.05)
+        self.assertEqual(verdict["verdict"], "capture", verdict.get("reason"))
+
+    def test_a_true_carry_still_passes(self) -> None:
         for seed in range(300, 310):
             verdict = capture_verdict(cell(seed=seed), interaction_radius=0.05)
             with self.subTest(seed=seed):

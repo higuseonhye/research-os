@@ -145,6 +145,62 @@ statistic is not independent of them however carefully it was derived from
 principle. **It is validated on fresh seeds**, and if it disagrees there, the
 disagreement is the result.
 
+## Third position, and the one that holds: three questions were being conflated
+
+The statistic above does not survive its own first test, and the reason is that
+the whole line of reasoning was answering the wrong question.
+
+A synthetic slip of 2 mm per step against a 15 mm/step carry is 13% — inside the
+`agreement` bound the statistic proposed. Tightening the bound until it fails
+would have caught it, and would also have caught real Isaac cells slipping at
+14%, which is where the question should have been asked instead: **is a cell
+that slips 14% unusable?**
+
+It is not. Arm D predicts the target by rolling the carrier forward. A target
+inheriting 86% of its carrier's motion is mispredicted by 14% of what the
+carrier travels over one dispense window — about **3.6 mm against a 20 mm
+tolerance**. Arm D still lands.
+
+Three questions had been collapsed into one:
+
+| | answered by |
+| --- | --- |
+| Is this trace a capture — still, then riding, effect accumulating? | the **verdict** |
+| Can arm D predict it? | the **scoring** |
+| Should the gate let arm D act? | the **gate** |
+
+The verdict was built for the first. The contact bound was added while thinking
+about the third. The slip discussion was really about the second — and the
+second is *measured*, not asserted in advance.
+
+**By the design's own definition a slipping carry is a capture.** Capture names
+two properties: the target is perfectly still before the arrival, and the effect
+then accumulates without bound. A target inheriting 86% of its carrier's motion
+has both, and travels 157 mm doing it.
+
+### So what was actually wrong
+
+Only one thing, and it was in the gate: the contact requirement was applied **at
+every step**. An object genuinely held sits a few millimetres from `ee_frame`,
+which is a virtual point between the jaws, so per-step contact rejects real
+carries — including the one cell holding at a constant 3.35 mm.
+
+Required **once in a run**, it does the job it was added for: `drift` agrees
+with its body step for step, has zero slip, and never comes within 183 mm of
+it, so it has no moment of contact anywhere in the run.
+
+Measured after the change, on CPU: treatment 1.00, `drift`, `static` and `noise`
+0.00, `slide` 0.05 — still under H3's ceiling. And the earlier "24 of 24
+captures" stands after all.
+
+### What this episode cost, recorded
+
+Three positions in one afternoon on the same question, and the middle one was
+wrong in both directions — it rejected real carries while being too loose to
+catch the synthetic slip it was written for. The tests hold all three, because
+each looked right at the time and the next person will reach for them in the
+same order.
+
 ## Where things stood
 
 Everything else is committed and green: 244 tests, the arms and gate re-derived
