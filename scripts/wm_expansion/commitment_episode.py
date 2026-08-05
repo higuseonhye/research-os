@@ -69,7 +69,7 @@ class EpisodeSpec:
     precisely the move preregistration exists to prevent, so the number is
     taken from prior work instead, and would stand even if it excluded D.
     """
-    dispense_latency: int = 6
+    dispense_latency: int = 8
     interaction_radius: float = 0.05
     coupling_gain: float = 0.5
     min_history: int = 8
