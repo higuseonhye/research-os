@@ -50,6 +50,55 @@ block.
 So the intermittency cannot be restored. Not by tuning: by the arm's own
 dynamics against the grasp's own duration.
 
+## It is the manipulator, and restoring the pause does not help
+
+Two follow-ups, both of which could have narrowed the result and neither of
+which did.
+
+**A different object.** The PSM is a needle driver, and the block is not what it
+was built to hold, so the needle should be the favourable case. It is held
+longer and far more reliably — 68 steps at the median against 52, and a tenth
+percentile of 56 against 16:
+
+| | B | C | SELF | **D** |
+| --- | ---: | ---: | ---: | ---: |
+| block | 0.133 | **1.000** | 0.167 | 0.200 |
+| needle | 0.087 | **0.957** | 0.348 | 0.174 |
+
+The mode operator still lands everything. And on the needle the *single-entity*
+arm beats the relational one, 0.348 to 0.174.
+
+**Restoring the intermittency.** The settling time gave `burst_off` = 25, and
+the needle's 68-step carry has room for it where the block's 52 did not. Run
+with pauses long enough for the arm to actually stop:
+
+| needle | B | C | SELF | **D** |
+| --- | ---: | ---: | ---: | ---: |
+| `burst_off` 4 | 0.087 | 0.957 | 0.348 | 0.174 |
+| `burst_off` 25 | 0.625 | **0.958** | 0.750 | 0.583 |
+
+**Arm C does not move: 0.957 to 0.958.** The pause the whole argument turned on
+changes nothing about whether a constant-velocity model suffices.
+
+### The number that ends it
+
+Across both needle configurations, 47 physical cells:
+
+> **Arm D wins zero cells that the single-entity arm loses.** Not one. SELF wins
+> four that arm D loses, in each configuration.
+
+On CPU, under injected coupling, arm D won 146 discordant pairs to SELF's 8.
+
+| | arm D | SELF | discordant D : SELF |
+| --- | ---: | ---: | ---: |
+| CPU, scripted carrier | 0.735 | 0.045 | **146 : 8** |
+| physical, needle, pause 4 | 0.174 | 0.348 | **0 : 4** |
+| physical, needle, pause 25 | 0.583 | 0.750 | **0 : 4** |
+
+H2 requires the relation to beat *both* competitors. Under real contact it beats
+neither, in any configuration tried, with or without the intermittency the design
+rests on.
+
 ## What this does and does not overturn
 
 **It does not touch the CPU result.** The preregistered SELF comparison passed
