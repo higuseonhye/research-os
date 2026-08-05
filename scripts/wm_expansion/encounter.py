@@ -50,6 +50,25 @@ class EncounterSpec:
     probe_withdraw: int = 5
     probe_hold: int = 2
 
+    scripted_approach: bool = True
+    """Does a body reach the target by following a scripted path.
+
+    True for `probe` and `burst` under a fly-by, where the speed-against-radius
+    check below protects a real failure: a body advancing further per step than
+    the radius steps over the contact zone between observations, and the
+    encounter then contains no contact to observe.
+
+    **False when the arm servos to the object**, and then that check does not
+    apply. There is no crossing to miss: the approach decelerates as it closes,
+    and the grasp fires on the *observed* separation rather than on the
+    schedule. Once held, the object travels with the body at whatever speed the
+    body travels - the measured capture radius is 2.5 mm and the carry runs at
+    3 mm/step, which the check would refuse for a reason that belongs to
+    collisions.
+
+    See docs/paper003/paper003_servo_encounter_v0.1.md.
+    """
+
     lateral_offset_scale: float = 0.5
     """How far off-centre the approach may be drawn, as a fraction of the radius.
 
@@ -112,8 +131,12 @@ class EncounterSpec:
         # command is a goal, not a teleport, and the arm's achievable speed is
         # what belongs here - measured at roughly a sixth of the commanded
         # value in the lift scene.
-        for name, speed in (("reference_speed", self.reference_speed),
-                            ("pusher_speed", self.pusher_speed)):
+        for name, speed in (
+            (("reference_speed", self.reference_speed),
+             ("pusher_speed", self.pusher_speed))
+            if self.scripted_approach
+            else ()
+        ):
             if speed >= self.interaction_radius:
                 raise ValueError(
                     f"{name} ({speed}) must stay below the interaction radius "

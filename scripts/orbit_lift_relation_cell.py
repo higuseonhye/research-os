@@ -88,10 +88,14 @@ parser.add_argument("--dispense-latency", type=int, default=None,
                          "the target inside tolerance and every arm is right. The "
                          "default is resolved after the Isaac imports, since "
                          "nothing from the project is importable before them")
-parser.add_argument("--interaction-radius", type=float, default=0.012,
-                    help="metres; observed contact in this scene is 2-5 mm. The "
-                         "50 mm of the injected design marks non-contact as "
-                         "contact here")
+parser.add_argument("--interaction-radius", type=float, default=0.0025,
+                    help="metres, and MEASURED rather than guessed: the largest "
+                         "separation at which a grasp still takes hold in a "
+                         "majority of cells. Swept over 8 values at 6 seeds each "
+                         "- 6/6 at 0.8 mm, 4/6 at 2.5, 2/6 at 3.0, 0/6 from 3.5. "
+                         "The previous 0.012 was a guess about contact distance, "
+                         "and it fired the commit window's anchor seventeen steps "
+                         "before the grasp it is supposed to anchor")
 parser.add_argument("--approach-speed", type=float, default=0.04,
                     help="metres per step the arm is COMMANDED toward the "
                          "scripted point. Raising it does NOT make the arm "
@@ -383,6 +387,9 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         # A grasp has to meet the block, not pass beside it. See
         # docs/paper003/paper003_rendezvous_v0.1.md.
         lateral_offset_scale=0.0 if args.grasp else 0.5,
+        # A servo has no scripted crossing to miss, so the
+        # speed-against-radius check does not apply to it.
+        scripted_approach=args.approach != "servo",
         probe_advance=args.probe_advance,
         probe_withdraw=args.probe_withdraw,
         probe_hold=args.probe_hold,

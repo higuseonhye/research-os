@@ -99,6 +99,45 @@ a value that may be moved to bring the anchor and the arrival closer together.
 The servo note left this open and said it would be settled by measurement rather
 than by choice. This is that settlement.
 
+### Which separation, since capture degrades rather than stopping
+
+The same omission as the carry speed's, closed the same way and **before the gap
+was measured**: capture does not fail at a sharp boundary, so "the separation at
+which it takes hold" needs a statistic.
+
+**The largest separation at which capture still holds in a majority of cells**,
+six seeds each. Not the value with a perfect record - that is 0.8 mm, which is
+where the grasp is *best*, not where the relation ends - and not the largest
+tested, which would measure the sweep grid rather than the scene.
+
+Measured:
+
+| separation | 0.8 | 1.2 | 1.6 | 2.0 | **2.5** | 3.0 | 3.5 | 4.0 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| held and carried | 6/6 | 4/6 | 4/6 | 5/6 | **4/6** | 2/6 | 0/6 | 0/6 |
+
+So **`interaction_radius` = 2.5 mm**, replacing a guessed 12 mm whose comment
+said "observed contact in this scene is 2-5 mm" and which fired the commit
+window's anchor seventeen steps before the grasp it anchors.
+
+A first attempt took the ninetieth percentile of the separations at which held
+cells had closed. That was circular - those separations are the sweep's own grid
+- and it is recorded because the number it produced, 1.84 mm, looked perfectly
+reasonable.
+
+### One check does not survive the change
+
+`EncounterSpec.validate` refuses a body advancing further per step than the
+radius, because a scripted fly-by would then step over its own contact zone
+between observations. The carry runs at 3 mm/step against a 2.5 mm radius, so it
+would be refused.
+
+**That check belongs to collisions.** A servo has no crossing to miss: it
+decelerates as it closes, and the grasp fires on the observed separation rather
+than on the schedule. Once held, the object travels with the body at whatever
+speed the body travels. The check is now scoped to scripted approaches, and a
+scripted encounter is still refused exactly as before.
+
 ## What follows, and what it costs
 
 Both values feed the commit window, which is one dispense-length either side of
