@@ -302,13 +302,39 @@ def contact_arrivals(
     # target in 0.68 of cells, and the second arrival - the one the two-body
     # encounter exists for - was invisible.
     inside = np.linalg.norm(bodies - targets[:, None, :], axis=2) < radius
-    steps = {
+    crossings = {
         step
         for body in range(inside.shape[1])
         for step in range(len(inside))
         if inside[step, body] and not (step and inside[step - 1, body])
     }
-    return sorted(steps)
+
+    # The arrival is where the relation **takes effect**, not where a body
+    # crosses a distance.
+    #
+    # Under collision those are the same step: contact pushes, immediately.
+    # Under capture they are not, and the gap is not small. Measured, the end
+    # effector crosses 2.5 mm at step 17, closes on the block at 24, and the
+    # block first moves at 26 - so a window of one dispense-length around the
+    # crossing closes *before the carry begins*, and only 5 cells in 24
+    # committed inside it. At a 12 mm radius the same gap was seventeen steps,
+    # so shrinking the radius narrowed it without removing it. What remains is
+    # the arm decelerating as it closes and the block accelerating from rest
+    # once held, and no radius removes that.
+    #
+    # "The target first moves after a body has come into range" covers both
+    # relations, is settled by observation alone, and no arm appears in it.
+    motion = np.linalg.norm(np.diff(targets, axis=0), axis=1)
+    floor = 0.25 * float(np.max(motion)) if motion.size else 0.0
+
+    arrivals, armed = [], False
+    for step in range(len(inside)):
+        if step in crossings:
+            armed = True
+        if armed and step < len(motion) and motion[step] > floor:
+            arrivals.append(step)
+            armed = False
+    return arrivals
 
 
 def run_cell(

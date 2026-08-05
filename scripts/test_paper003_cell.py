@@ -193,13 +193,32 @@ class ArrivalTests(unittest.TestCase):
         for - was invisible to the window.
         """
 
-        for coupling in ("collision", "capture"):
-            found = [
-                len(cell("coupled", seed=seed, bodies=2, coupling=coupling)["arrivals"])
-                for seed in range(300, 320)
-            ]
-            with self.subTest(coupling=coupling):
-                self.assertGreaterEqual(float(np.median(found)), 2.0)
+        found = [
+            len(cell("coupled", seed=seed, bodies=2, coupling="collision")["arrivals"])
+            for seed in range(300, 320)
+        ]
+        self.assertGreaterEqual(float(np.median(found)), 2.0)
+
+    def test_under_capture_the_second_body_produces_no_arrival(self) -> None:
+        """Not a regression - it is the retirement reason, made visible.
+
+        An arrival is where the relation *takes effect*, so a body that arrives
+        and changes nothing does not produce one. Under capture the prober takes
+        hold of the target and then stops, by the two-body schedule's own rule,
+        and the target stops with it. The pusher then crosses into range at
+        step 31 and **nothing happens**: the target is already held by a body
+        that is no longer moving.
+
+        That is the structural incoherence the two-body encounter was retired
+        for under this relation - the first body to arrive consumes the target -
+        and the anchor now shows it directly rather than counting a crossing
+        that has no consequence.
+        """
+
+        for seed in range(300, 310):
+            record = cell("coupled", seed=seed, bodies=2, coupling="capture")
+            with self.subTest(seed=seed):
+                self.assertEqual(len(record["arrivals"]), 1)
 
     def test_one_body_is_unaffected(self) -> None:
         """The confirmatory population is single-body, so it must not move."""
