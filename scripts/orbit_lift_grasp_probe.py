@@ -118,17 +118,35 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     def ee() -> np.ndarray:
         return scene["ee_frame"].data.target_pos_w[0, 0].detach().cpu().numpy().astype(np.float64)
 
-    def step(delta: np.ndarray | None, gripper: float) -> None:
+    events: list[dict[str, Any]] = []
+
+    def step(delta: np.ndarray | None, gripper: float, phase: str = "") -> None:
+        """One env step, and **record whether the environment ended it**.
+
+        These flags were being thrown away, and that is what every "ejection"
+        actually was. `ManagerBasedRLEnv` auto-resets on termination, which
+        teleports the object to a fresh spawn pose - one step, tens of
+        millimetres, no physics involved. It reproduced identically for a block
+        and a needle, with the gripper open and closed, because none of those
+        things had anything to do with it.
+        """
+
         action = torch.zeros((args.num_envs, action_dim), device=device)
         if delta is not None:
             action[0, :3] = torch.as_tensor(delta, device=device, dtype=action.dtype)
         if action_dim >= 4:
             action[0, -1] = float(gripper)
         with torch.no_grad():
-            env.step(action)
+            _, _, terminated, truncated, _ = env.step(action)
+        if bool(terminated[0]) or bool(truncated[0]):
+            events.append({
+                "phase": phase,
+                "terminated": bool(terminated[0]),
+                "truncated": bool(truncated[0]),
+            })
 
     for _ in range(args.settle):
-        step(None, args.gripper_open)
+        step(None, args.gripper_open, "settle")
     block0 = block()
 
     # 1. How close can it get, with nothing else happening.
@@ -150,7 +168,7 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
                 break
         reach = separation
         move = gap if reach <= args.approach_speed else gap / reach * args.approach_speed
-        step(move, args.gripper_open)
+        step(move, args.gripper_open, "servo")
     if closed_at is None:
         closed_at = float(np.linalg.norm(block() - ee()))
 
@@ -168,7 +186,7 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
             grip = args.gripper_open + fraction * (target_grip - args.gripper_open)
         else:
             grip = target_grip
-        step(None, grip)
+        step(None, grip, "hold")
         hold_positions.append(block().tolist())
     after_hold = block()
     hold_travel = float(np.linalg.norm(after_hold - before_close))
@@ -180,13 +198,19 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     targets, bodies = [], []
     for index in range(args.carry):
         moving = (index % (args.burst_on + args.burst_off)) < args.burst_on
-        step(args.carry_speed * axis if moving else None, args.gripper_close)
+        step(args.carry_speed * axis if moving else None, args.gripper_close, "carry")
         targets.append(block().tolist())
         bodies.append([ee().tolist()])
     agreement, run_length = carriage_evidence(targets, bodies)
     carried = float(np.linalg.norm(np.asarray(targets[-1]) - after_hold))
 
-    if hold_max_step > 0.010:
+    if events:
+        verdict = "episode_ended"
+        reason = (
+            f"the environment terminated during {events[0]['phase']} and reset - "
+            "the object was teleported, not moved. Nothing here measures contact"
+        )
+    elif hold_max_step > 0.010:
         verdict = "ejected"
         reason = f"the block left at {1000 * hold_max_step:.1f} mm in one step on closing"
     elif run_length >= 3 and agreement >= 0.80:
@@ -216,6 +240,8 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "carry_travel": carried,
         "carriage_agreement": float(agreement),
         "carriage_run": int(run_length),
+        # If this is non-empty, nothing above means what it appears to.
+        "episode_events": events,
         "verdict": verdict,
         "reason": reason,
     }
