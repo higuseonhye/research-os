@@ -101,6 +101,50 @@ Three attempts, and the first two moved numbers without moving the verdict:
 
 The first two are recorded because each looked like the fix and neither was.
 
+## Second attempt: the bound was the wrong kind
+
+The first fix bounded the separation by the capture radius, and that is wrong in
+a way the data showed immediately. A carry means the separation is **bounded**,
+not that it is **small**. Measured over eight cells, one held at a perfectly
+constant 3.35 mm — drift +0.004 mm/step, flat to three decimals — and the 2.5 mm
+radius rejected it. `ee_frame` is a virtual point between the jaws, so an object
+genuinely held sits a few millimetres from it by construction.
+
+The other seven drifted at 0.44 to 1.23 mm/step, out to 68–209 mm. Those are
+slips and the first fix was right about them. **Both kinds are present**, and a
+test that cannot tell a constant 3.35 mm from a growing one is not measuring
+carrying.
+
+### The statistic, from the principle rather than from those eight cells
+
+A carried object inherits its carrier's displacement. Inherit all of it and the
+separation is constant; inherit a fraction and the rest becomes separation. So
+the quantity is **the share of the carrier's motion the target failed to
+inherit**, over the run:
+
+```text
+slip = (separation at the end − smallest separation in the run)
+       / (distance the carrier travelled over the run)
+```
+
+Dimensionless and free of scale: 0 is a perfect carry, 1 is an object left
+where it was. The baseline is the run's own minimum rather than its first step,
+which skips the settling just after a grasp without introducing a number for how
+many steps that takes.
+
+**The bound is `agreement`, which already exists.** It declares that a mismatch
+of up to a quarter of the target's step still counts as riding. The defect was
+never that quarter — it was that a *per-step* allowance accumulated without
+limit. The same quarter applied to the *run* is a bound, and no parameter is
+added.
+
+### This has to be confirmed on cells I have not seen
+
+The eight cells above were examined before the statistic was written, so the
+statistic is not independent of them however carefully it was derived from
+principle. **It is validated on fresh seeds**, and if it disagrees there, the
+disagreement is the result.
+
 ## Where things stood
 
 Everything else is committed and green: 244 tests, the arms and gate re-derived
