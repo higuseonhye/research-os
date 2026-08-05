@@ -224,8 +224,18 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         verdict = "held_and_carried"
         reason = f"rode the arm for {run_length} consecutive steps"
     elif hold_travel <= 0.002:
-        verdict = "held_not_carried"
-        reason = "stayed put on closing, but did not follow the arm"
+        # Untouched, not held. This said "held_not_carried" until the radius
+        # sweep made the reading absurd: at 9.65 mm the jaws closed on nothing,
+        # and an object that neither moves on closing nor follows afterwards was
+        # never taken hold of. Without a contact force, riding is the *only*
+        # evidence of holding, so a label that claims holding without it invents
+        # its own premise - and points at fixing the carry when the grasp is
+        # what missed.
+        verdict = "missed"
+        reason = (
+            "the jaws closed without taking hold: the object neither moved on "
+            "closing nor followed afterwards"
+        )
     else:
         verdict = "nudged"
         reason = f"moved {1000 * hold_travel:.1f} mm without riding"
