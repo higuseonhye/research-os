@@ -53,12 +53,24 @@ def displacements(record: dict, horizon: int) -> list[float]:
     if largest <= 0.0:
         return []
     floor = 0.25 * largest
-    first = next((i for i, s in enumerate(steps) if s > floor), None)
-    if first is None:
+    moving = [i for i, s in enumerate(steps) if s > floor]
+    if not moving:
         return []
+
+    # Windows must lie **inside the carry**, and the carry ends when the
+    # gripper drops the block - after which the target is motionless for the
+    # rest of the episode.
+    #
+    # Taking windows to the end of the trace instead put the tenth percentile at
+    # exactly 0.00 mm for every horizon from 1 to 24, because more than a tenth
+    # of the windows sat entirely in that dead time. It reads as "the scene
+    # cannot pose the task" and means "the sample was contaminated": the median
+    # over the same windows rises steadily to 20.66 mm at L = 20, so the task is
+    # posed, in the part of the episode where the relation exists.
+    first, last = moving[0], moving[-1]
     return [
         math.dist(targets[i], targets[i + horizon])
-        for i in range(first, len(targets) - horizon)
+        for i in range(first, last + 1 - horizon)
     ]
 
 
