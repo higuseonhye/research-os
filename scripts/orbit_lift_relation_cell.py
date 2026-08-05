@@ -119,6 +119,12 @@ parser.add_argument("--grasp", action="store_true",
                          "information and the single-entity arm has something "
                          "to learn from. Closing then takes hold, and the block "
                          "rides. Nothing before, everything after")
+parser.add_argument("--grasp-closing-steps", type=int, default=4,
+                    help="consecutive steps of genuine approach required "
+                         "before a halt counts as an arrival. Without it "
+                         "the gripper closed on step 1, because the first "
+                         "separation always improves on an infinite "
+                         "initial best and the second barely moved")
 parser.add_argument("--grasp-epsilon", type=float, default=0.0002,
                     help="metres of decrease that still counts as approaching. "
                          "Below this the separation is treated as no longer "
@@ -261,10 +267,24 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
                 closing = separation < place.closest - args.grasp_epsilon
                 if closing:
                     place.closest = separation  # type: ignore[attr-defined]
-                elif place.closest < args.grasp_radius:
+                    place.closing_steps += 1  # type: ignore[attr-defined]
+                # "Stopped decreasing" is only an arrival if an approach
+                # happened first. Without the run requirement this fired on
+                # **step 1**: `closest` starts at infinity, so the first
+                # separation is always an improvement, and the second step -
+                # with the arm still on the start line and the burst barely
+                # under way - moved less than epsilon and was read as arrival.
+                # It closed the gripper at 20.5 mm, nowhere near the 10.3 mm it
+                # would reach at step 18.
+                elif (
+                    place.closing_steps >= args.grasp_closing_steps
+                    and place.closest < args.grasp_radius
+                ):
                     place.grasped = True  # type: ignore[attr-defined]
                     place.grasp_step = len(commanded) - 1  # type: ignore[attr-defined]
                     place.grasp_separation = separation  # type: ignore[attr-defined]
+                else:
+                    place.closing_steps = 0  # type: ignore[attr-defined]
             gripper = args.gripper_close if place.grasped else args.gripper_open
         if gripper != 0.0 and action_dim >= 4:
             action[0, -1] = float(gripper)
@@ -274,6 +294,7 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
     place.grasped = False  # type: ignore[attr-defined]
     place.grasp_step = None  # type: ignore[attr-defined]
     place.closest = float("inf")  # type: ignore[attr-defined]
+    place.closing_steps = 0  # type: ignore[attr-defined]
     place.grasp_separation = None  # type: ignore[attr-defined]
     place.gripper_series = []  # type: ignore[attr-defined]
 
@@ -423,6 +444,7 @@ def run(env: Any, args: argparse.Namespace) -> dict[str, Any]:
         "closed_at": place.grasp_step,
         "closed_at_separation": place.grasp_separation,
         "closest_seen": None if place.closest == float("inf") else place.closest,
+        "closing_steps_at_close": place.closing_steps,
         "gripper_series": place.gripper_series,
     }
     record["schedule"] = args.schedule
