@@ -39,17 +39,19 @@ Under **physical contact** in Isaac Sim it fails the third. Across 107 cells and
 three configurations of a surgical needle driver, Paper 002's constant-velocity
 mode operator lands **0.957 to 1.000** of cells while the relational arm lands
 0.174 to 0.583 and **never wins a paired cell that the single-entity arm loses**
-(0 against 4, twice). The mechanism is measured and is a property of the
-manipulator rather than of the protocol: the relation is made necessary by
-*intermittency*, and the arm requires a median of 22 steps to come to rest after
-its goal stops — against 54 steps of grip on the object. The pause never begins.
-Restoring it at the derived duration on a better-held object left the mode
-operator at 0.958.
+(0 against 4, twice). The relation is made necessary by *intermittency*, and the
+arm requires a median of 22 steps to come to rest after its goal stops, against a
+commanded pause of 4 and 54 steps of grip on the object: **the pause never
+begins**. Restoring it at the derived duration, on a better-held object with room
+for it, left the mode operator at 0.958.
 
 The contribution is the requirement set, the measurement that each candidate
-fails, and a physical criterion — the carrier's settling time must be short
-relative to the action's commitment latency — that a missing-relation task family
-must satisfy and this one cannot.
+fails, and a physical criterion recovered by sweeping the carrier's settling time
+under injected coupling: the mode operator returns once settling reaches the
+carrier's duty-cycle period, 0.133 to 0.917 across that threshold. The same sweep
+refutes the tidier account we started with — arm D does **not** collapse under a
+smoothed carrier, so settling explains the mode operator's return and not the
+relational arm's physical failure, which remains open.
 
 **Keywords:** world models, structural adaptation, relational models, negative
 results, preregistration, embodied control, surgical simulation
@@ -87,8 +89,10 @@ Three reasons, in ascending order of importance.
 2. The mode/relation boundary is not where the taxonomy places it. Paper 002's
    constant-velocity operator absorbed a coupling designed specifically to be
    outside it. That is a finding about the taxonomy, not about this scene.
-3. The failure is *quantitative and locatable*: settling time against grip
-   duration, 22 steps against 54. It says what a future scene must supply.
+3. The failure is *quantitative and locatable*: the mode operator returns as the
+   carrier's settling time crosses its duty-cycle period, measured by sweeping
+   that one parameter. It says what a future scene must supply — and the same
+   sweep bounds how much of the result it explains.
 
 ---
 
@@ -230,6 +234,8 @@ The scene produces the relation. **60 of 60 cells were captures** by the
 preregistered verdict, so the outcome the pilot was written to catch — "the scene
 does not produce a capture at all" — did not occur.
 
+![Arm scores](figures/fig2_arm_scores.png)
+
 | Configuration | A | B | **C** | SELF | **D** | D\* | cells |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | block | 0.000 | 0.133 | **1.000** | 0.167 | **0.200** | 1.000 | 60 |
@@ -244,6 +250,8 @@ in all three configurations, by between 0.37 and 0.80.
 **arm D wins zero paired cells that SELF loses**, while SELF wins four that arm D
 loses — in each configuration separately. Under injected coupling the same
 comparison ran 146 to 8 in arm D's favour.
+
+![Discordant pairs](figures/fig3_discordant_pairs.png)
 
 | | arm D | SELF | discordant D : SELF |
 | --- | ---: | ---: | ---: |
@@ -262,6 +270,8 @@ can represent. On CPU the carrier is a scripted point and the intermittency is
 exact.
 
 A real arm does not stop when told. Measured over 139 goal-pauses in 20 cells:
+
+![The carrier cannot stop](figures/fig1_carrier_cannot_stop.png)
 
 | Steps until the arm reads as stopped, after its goal stands still | median | p90 | max |
 | --- | ---: | ---: | ---: |
@@ -308,28 +318,124 @@ having: the derived pause was applied, the intermittency was physically present,
 and a configuration that made the task easier for every other arm left the mode
 operator exactly where it was.
 
-### 4.3 The physical requirement, stated
+### 4.3 The physical requirement, measured rather than asserted
 
-Intermittency that a model can exploit requires the carrier to **come to rest,
-observably, inside the time it holds the target**. Writing `s` for the settling
-time, `r` for the minimum stillness a gate can certify, and `h` for the grip
-duration, a single exploitable pause needs `h ≳ s + r` and a *usable* one needs
-several cycles inside `h`.
+An earlier draft of this section stated a criterion and derived it from two
+physical measurements taken separately — settling 22 steps, grip 54 steps. That
+is an inference, not a result, so we tested it. Settling time is a property of
+the **carrier**, and under injected coupling the carrier is ours to specify: we
+added a settling parameter that smooths the commanded velocity so the body coasts
+for exactly that many steps past a stop, swept it over the configuration where
+the relation is known to be necessary, and fixed three numbered predictions in
+writing before implementing any of it.
+[Rule](paper003_settling_sweep_prereg_v1.0.md) ·
+[Result](../../experiments/surgical_intelligence/exp_surg_004_relation_expansion/results/settling_sweep_v1.0/RESULTS.md)
 
-| | this manipulator |
-| --- | --- |
-| settling time `s` | 22 steps (median), 59 (p90) |
-| minimum certifiable stillness `r` | 3 steps |
-| grip duration `h` | 54 steps (block), 68 (needle) |
-| cycles available inside a carry | **≈ 2 at the median, < 1 at p90** |
+**All three predictions failed.** What survives is better supported than what was
+asserted, and one claim is withdrawn outright.
 
-Against the action's own commitment latency of **9 steps**, derived from the
-tolerance and the carry speed, the arm is slower to stop than the action is to
-complete. Over the horizon the agent must predict across, the carrier is
-indistinguishable from a constant-velocity body.
+![The settling sweep](figures/fig4_settling_sweep.png)
 
-This is the criterion a future scene must satisfy, and it is a property of the
-manipulator rather than of the protocol.
+| settling | B | C | SELF | D | D : SELF discordant |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 — the scripted point every other CPU result uses | 0.000 | 0.133 | 0.083 | 0.417 | 21 : 1 |
+| 4 — the commanded pause | 0.000 | 0.100 | 0.017 | 0.367 | 21 : 0 |
+| 9 — the commitment latency | 0.000 | 0.350 | 0.033 | 0.883 | 51 : 0 |
+| **14 — the schedule's period** | 0.000 | **0.917** | 0.017 | 0.733 | 43 : 0 |
+| 22 — the arm's measured settling | 0.000 | **0.800** | 0.000 | 0.450 | 27 : 0 |
+
+**The scale is the carrier's duty-cycle period, not its commanded pause.** Arm C
+does not move until settling reaches 9 and reaches 0.917 at **14**, which is
+`burst_on + burst_off`. Smoothing does not eat the pause from one end; it
+low-pass filters the whole waveform, and the intermittency survives as a
+**ripple** in the carrier's velocity whose size falls as the window approaches
+the period.
+
+**The variable is that ripple, and arm C tracks it at r = −0.940.**
+
+| settling | 0 | 4 | 6 | 9 | 14 | 22 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| velocity ripple, as a fraction of the commanded speed | 1.000 | 0.800 | 0.571 | 0.400 | 0.067 | 0.174 |
+| arm C | 0.133 | 0.100 | 0.283 | 0.350 | **0.917** | **0.800** |
+
+The ripple is not monotone in settling — a boxcar cancels a periodic signal
+exactly only when its width is an integer multiple of the period — and arm C is
+not monotone either, scoring lower at settling 22 than at 14 for exactly that
+reason. This was found by a unit test failing on a stronger claim, and it is why
+we state the criterion on the ripple rather than on a threshold in settling.
+
+**The criterion evaluated at matched ripple**, which is the comparison that
+matters because it puts CPU and physical configurations on the same axis:
+
+| | period | settling | ripple | arm C |
+| --- | ---: | ---: | ---: | ---: |
+| CPU, scripted point | 14 | 0 | 1.000 | 0.133 |
+| CPU | 14 | 22 | 0.174 | 0.800 |
+| **physical, block** | 14 | 22 | 0.174 | **1.000** |
+| CPU | 35 | 22 | 0.435 | 0.350 |
+| **physical, needle, `burst_off` 25** | 35 | 22 | 0.435 | **0.958** |
+
+The block configuration is accounted for: 1.000 against a predicted 0.800. **The
+long-pause configuration is not — 0.958 against 0.350 at the same ripple**, a gap
+of about 0.61. We report the model as accounting for one physical configuration
+and not the other, rather than as the explanation of both.
+
+### 4.4 What settling time does not explain
+
+**Arm D does not collapse under a smoothed carrier.** At the arm's own measured
+settling of 22, on CPU, arm D scores 0.450 against arm B's 0.000, engages on 0.52
+of cells, and beats the single-entity arm on **27 discordant pairs to 0**.
+Physically, at the same settling time, it scored 0.200 and lost that comparison
+**0 to 4**.
+
+So settling time accounts for arm C's recovery and accounts for **neither** arm
+D's physical score **nor** the reversal against SELF. A second factor is present
+in the physical scene and is not identified here. Candidates, none of them
+measured: contact jitter entering the estimator's inputs; a carry that lasts 54
+steps rather than a full episode; the grasp releasing mid-carry; the servo
+approach replacing the scripted one.
+
+We state this rather than leave the simpler account standing. "A real arm cannot
+pause, therefore the relation dies" was one sentence that appeared to explain
+everything; it explains arm C, and the rest is open. The paper's finding is
+unaffected — **arm C at ceiling is the result**, and it now has a measured
+mechanism behind it instead of an inferred one.
+
+**One of the two open items closed on the second sweep.** Running the same
+configuration with the derived pause applied — `burst_off = settling + 3` — on
+CPU reproduces the physical `burst_off` 25 row's signature: arm B rises from
+0.000 to 0.333, SELF rises to meet arm D, and the discordant count stops being
+one-sided (27 : 0 becomes 9 : 7, and 7 : 10 at settling 14). §4.2's demotion of
+that row is therefore not a hedge — the anomaly is the **commit policy**, and no
+Isaac-side explanation is required for it.
+
+The predicted threshold for that sweep was `B ≥ 0.40` and the measured value was
+0.333, so the prediction is recorded as **failed**. The claim it tested is
+confirmed by the direction and by three further statistics; the number was set
+too high.
+
+What remains open is narrower and worth naming precisely:
+
+1. **The short-pause reversal.** Physically at `burst_off` 4, SELF beat arm D
+   0.348 to 0.174 and won the discordant comparison 4 to 0. On CPU at settling
+   22 with the same short pause, SELF scores 0.000 and loses 27 to 0.
+2. **Arm C where the criterion says it should not be.** At settling 22 against a
+   period of 35 the corrected criterion predicts partial intermittency, and CPU
+   agrees — arm C sits at 0.350. Physically, at the same two numbers, it landed
+   0.958.
+
+Both point one way: the physical scene makes the target's motion *more*
+constant-velocity, and the single-entity arm *more* effective, than a smoothed
+carrier alone accounts for. That is a real gap in the account and we do not paper
+over it.
+
+One nameable and untested hypothesis for its direction: the smoothing models the
+**arm** tracking its goal, not the **object** tracking the arm. A grasped object
+is filtered a second time by the compliance of the grip, so the target's velocity
+in the physical scene should be smoother than this model makes it — which is the
+direction the discrepancy runs, at both the 0.61 gap in arm C and the reversal in
+SELF. Testing it means instrumenting the object's velocity against the end
+effector's, which is GPU work and is not done here.
 
 ---
 
@@ -408,7 +514,10 @@ came out of the second — *trace one trajectory end to end before changing a ru
   scripted carriers.
 - **One scene, one manipulator, one relation.** The requirement set generalises
   as a checklist; the failure does not generalise beyond manipulators whose
-  settling time is long relative to their grip duration.
+  settling time exceeds their carrier's duty-cycle period.
+- **The mechanism is partial.** §4.4: the sweep accounts for the mode operator's
+  recovery and not for the relational arm's physical collapse. We do not claim to
+  have explained the whole result.
 - **Observation noise is 0.00 mm/step**, which means this scene has no noise
   model rather than that noise is small. The gate's margin against noise is
   unmeasured.
@@ -444,16 +553,19 @@ calibration and should be re-derived rather than inherited.
 
 ## Open in this draft
 
-1. **Related work.** [`paper003_related_work_v0.1.md`](paper003_related_work_v0.1.md)
-   and [`paper003_lit_positioning_v0.1.md`](paper003_lit_positioning_v0.1.md)
-   were written for the positive framing and need repositioning against the
-   negative-results and benchmark-design literatures.
-2. **Figures.** Three would carry the paper: the settling-time distribution
-   against the grip duration; the arm-score table as a bar chart across the three
-   configurations; the discordant-pair count, CPU against physical.
-3. **§4.3 is stated but only partly measured.** The cycle-count criterion follows
-   from the settling and grip measurements; it has not been varied and confirmed
-   on a manipulator that satisfies it.
+1. ~~**Related work.**~~ **Done** —
+   [`paper003_related_work_v0.2.md`](paper003_related_work_v0.2.md) adds negative
+   results, benchmark design and shortcut learning, and the reality gap with
+   actuator dynamics. Its citations are marked `✓` or `?` and the `?` ones must
+   be verified against the actual papers before any bibliography is built.
+2. ~~**Figures.**~~ **Done** — four, in [`figures/`](figures/), regenerated by
+   `scripts/plot_paper003_negative.py`. Physical constants in them are
+   transcribed and `--check` verifies each against its source line.
+3. **The second physical factor is unidentified.** §4.4, items 1 and 2: the
+   short-pause reversal against SELF, and arm C landing 0.958 where the criterion
+   and CPU both say 0.350. Four candidates are named and none measured. This is
+   the largest open item and a reviewer will ask about it before anything else.
+   It needs GPU time, not more CPU.
 4. **Venue.** The requirement set and the injected-versus-physical gap may be the
    more publishable half; the framing choice is open.
 

@@ -50,6 +50,28 @@ class EncounterSpec:
     probe_withdraw: int = 5
     probe_hold: int = 2
 
+    settling_steps: int = 0
+    """How many steps the body keeps moving after its command says stop.
+
+    0 is a scripted point that stops the instant its schedule says so, which is
+    every CPU result in this paper and is **not** how an arm behaves. Measured on
+    the PSM over 139 goal-pauses: 22 steps at the median, 59 at p90, 85 at worst.
+
+    This matters because the relation is made necessary by *intermittency*. A
+    commanded pause of `burst_off` steps survives into the target's trajectory
+    only as roughly `burst_off - settling_steps`, and not at all when the
+    settling exceeds the pause - at which point the carry is a smooth ride and
+    Paper 002's constant-velocity operator is sufficient by construction.
+
+    Implemented as a boxcar of width `settling_steps + 1` over the commanded
+    velocity, rather than an exponential lag, so that after the command stops the
+    body moves for exactly `settling_steps` further steps. That makes this
+    parameter *be* the measured quantity - "steps until the arm reads as
+    stopped" - with no time-constant conversion in between.
+
+    See docs/paper003/paper003_settling_sweep_prereg_v1.0.md.
+    """
+
     scripted_approach: bool = True
     """Does a body reach the target by following a scripted path.
 
@@ -147,6 +169,8 @@ class EncounterSpec:
             raise ValueError("lateral_offset_scale must be in [0, 1]")
         if self.bodies not in (1, 2):
             raise ValueError("bodies must be 1 or 2")
+        if self.settling_steps < 0:
+            raise ValueError("settling_steps must be >= 0")
         if self.pusher_start_step < 0:
             raise ValueError("pusher_start_step must be >= 0")
 
@@ -211,11 +235,29 @@ def schedule_direction(step: int, spec: EncounterSpec) -> int:
 
 
 def reference_offset(step: int, spec: EncounterSpec) -> float:
-    """Cumulative displacement of the first body along its approach axis."""
+    """Cumulative displacement of the first body along its approach axis.
 
-    return spec.reference_speed * sum(
-        schedule_direction(s, spec) for s in range(step + 1)
-    )
+    With `settling_steps` at its default of 0 this is the plain integral of the
+    schedule: the body advances exactly when commanded and stops exactly when
+    told. Above 0 the commanded velocity is smoothed first, so the body coasts
+    for that many steps past a stop - see `EncounterSpec.settling_steps`.
+    """
+
+    width = spec.settling_steps + 1
+    if width == 1:
+        return spec.reference_speed * sum(
+            schedule_direction(s, spec) for s in range(step + 1)
+        )
+
+    # Boxcar over the commanded velocity. Steps before 0 are counted as
+    # commanded-still, so a body that starts advancing also ramps up - a real
+    # actuator does both, and making only the stop lag would be modelling the
+    # half of the effect that suits the argument.
+    total = 0.0
+    for s in range(step + 1):
+        window = (schedule_direction(t, spec) for t in range(s - width + 1, s + 1) if t >= 0)
+        total += sum(window) / width
+    return spec.reference_speed * total
 
 
 def draw_geometry(seed: int, target: np.ndarray, spec: EncounterSpec) -> EncounterGeometry:

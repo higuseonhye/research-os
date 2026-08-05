@@ -23,6 +23,76 @@ from wm_expansion.encounter import (
 TARGET = np.array([0.20, 0.0, 0.0])
 
 
+class SettlingTests(unittest.TestCase):
+    """`settling_steps` is the one carrier property the physical result turns on.
+
+    A scripted point stops the instant its schedule says so; a real arm needs 22
+    steps at the median. The parameter exists so that difference can be swept
+    rather than argued about, and these tests pin what it means.
+    """
+
+    def _velocity(self, settling: int, steps: int = 24) -> list[float]:
+        spec = EncounterSpec(schedule="burst", burst_on=10, burst_off=4,
+                             settling_steps=settling, reference_speed=1.0)
+        offsets = [reference_offset(step, spec) for step in range(steps + 1)]
+        return [round(offsets[i + 1] - offsets[i], 9) for i in range(steps)]
+
+    def test_zero_settling_reproduces_the_scripted_point_exactly(self) -> None:
+        """The default must not perturb a single earlier CPU result."""
+        spec = EncounterSpec(schedule="burst")
+        default = EncounterSpec(schedule="burst", settling_steps=0)
+        for step in range(60):
+            self.assertEqual(reference_offset(step, spec),
+                             reference_offset(step, default))
+
+    def test_the_body_coasts_for_exactly_settling_steps_past_a_stop(self) -> None:
+        """The parameter *is* the measured quantity - steps until it reads as
+        stopped - so that a sweep's x-axis is comparable to the arm's 22."""
+        velocity = self._velocity(3)
+        # burst_on 10, so the command stops entering at step 9; the body must
+        # still be moving on 9, 10, 11 and at rest on 12.
+        self.assertGreater(velocity[11], 0.0)
+        self.assertEqual(velocity[12], 0.0)
+
+    def test_settling_beyond_the_pause_leaves_no_rest_at_all(self) -> None:
+        """The physical case: 22 steps of settling against a commanded pause of
+        4, where the pause never begins and the carry is a smooth ride."""
+        self.assertTrue(all(v > 0.0 for v in self._velocity(22)))
+
+    def test_the_schedule_survives_as_a_ripple_and_vanishes_only_on_a_multiple(self) -> None:
+        """The scale is the period, not the pause - and the erasure is not total.
+
+        This test failed on its first, stronger form, which asserted the velocity
+        goes exactly constant at settling = period. It does not: a boxcar of
+        width `period + 1` over a period-`p` square wave leaves a ripple of about
+        1/width. Exact cancellation happens only when the width is an integer
+        multiple of the period, at settling = k*period - 1.
+
+        The distinction matters because arm C's score tracks the *ripple*, at
+        r = -0.94 across the sweep - which is why arm C is not monotone in
+        settling, scoring 0.917 at settling 14 and 0.800 at 22.
+        """
+
+        spec = EncounterSpec(schedule="burst", burst_on=10, burst_off=4)
+        tail = slice(2 * spec.period, None)
+
+        unsmoothed = self._velocity(0, steps=4 * spec.period)[tail]
+        self.assertAlmostEqual(max(unsmoothed) - min(unsmoothed), 1.0)
+
+        # Width = period: exact cancellation.
+        exact = self._velocity(spec.period - 1, steps=4 * spec.period)[tail]
+        self.assertLess(max(exact) - min(exact), 1e-9)
+
+        # Width = period + 1: a ripple, small but real.
+        ripple = self._velocity(spec.period, steps=4 * spec.period)[tail]
+        self.assertGreater(max(ripple) - min(ripple), 1e-9)
+        self.assertLess(max(ripple) - min(ripple), 0.10)
+
+    def test_a_negative_settling_is_refused(self) -> None:
+        with self.assertRaises(ValueError):
+            EncounterSpec(settling_steps=-1).validate()
+
+
 class ScheduleTests(unittest.TestCase):
     def test_burst_only_ever_advances_or_holds(self) -> None:
         spec = EncounterSpec(schedule="burst")
