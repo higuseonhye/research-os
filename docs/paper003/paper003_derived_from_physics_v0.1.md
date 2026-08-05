@@ -164,6 +164,39 @@ than on the schedule. Once held, the object travels with the body at whatever
 speed the body travels. The check is now scoped to scripted approaches, and a
 scripted encounter is still refused exactly as before.
 
+## The derived latency is 9, and it narrows the design to one body
+
+Measured over 24 physical capture cells, windows taken inside the carry:
+
+| L | 6 | 7 | 8 | **9** | 10 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| p10 displacement | 12.79 | 15.40 | 17.92 | **20.79** | 23.50 mm |
+
+Nine is the smallest that clears the 20 mm tolerance, and the curve is smooth
+with no sign of the contaminated-population flatness that two earlier attempts
+produced.
+
+A window of ±9 is 18 steps, and the carry runs 54 steps at the median, so for
+the first time **the commit window fits inside the relation**.
+
+### What it costs: the two-body encounter
+
+At this latency two-body cells stop resolving — `static` at 0.00 and `coupled`
+at 0.33, while every one-body condition stays at 1.00.
+
+It is not a new breakage. Measured at latency 8, `static` with two bodies had
+**one** eligible step in eighty, and a cell with a single eligible step is
+degenerate anyway: the commit policy has nothing to choose between. The two-body
+encounter has no real overlap between the steps where the pattern estimator can
+project and the steps where the target will move, and the rising latency only
+made that visible.
+
+**So the design is one-body.** Nothing the paper runs depends on the two-body
+encounter: it is separately retired for capture, where the first body to arrive
+consumes the target, and its transfer claim — applying the relation to a body it
+was not learned on — was already given up with onset prediction. Collision keeps
+it, and collision is not the paper's relation.
+
 ## What follows, and what it costs
 
 Both values feed the commit window, which is one dispense-length either side of

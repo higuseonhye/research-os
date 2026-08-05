@@ -44,39 +44,45 @@ def separations(record: dict) -> np.ndarray:
 
 class RecordTests(unittest.TestCase):
     def test_every_condition_produces_valid_scored_cells(self) -> None:
-        """Asserted over seeds rather than on one, and the exception is named.
+        """One body only, which is what the design now runs.
 
-        This checked seed 300 alone, as a proxy for "the cell resolves". The
-        proxy broke when `dispense_latency` was derived from the physical carry
-        speed and rose from 6 to 8: at the longer horizon the pattern estimator
-        needs more history before it can project, and in the two-body encounter
-        the acting body switches to the pusher partway through its approach.
+        Asserted over seeds rather than on one: a population drop is a
+        regression that a single-seed check could miss entirely.
 
-        Measured over 30 seeds, only that one combination is affected -
-        `coupled` with two bodies falls from 1.00 to 0.83, and the other nine
-        stay at 1.00. It is recorded rather than tuned away, because the
-        two-body encounter is **retired for capture** and survives only under
-        collision, which is no longer the paper's relation.
+        **Two bodies are excluded, and not because they are inconvenient.** At
+        the derived `dispense_latency` the two-body encounter has no overlap
+        between the steps where the pattern estimator can project and the steps
+        where the target will move - measured, `static` with two bodies had
+        exactly *one* eligible step at latency 8 and none at 9, and a cell with
+        one eligible step is degenerate anyway, since the commit policy has
+        nothing to choose between. It was never healthy; the rising latency only
+        made that visible.
 
-        Pinning the rate is also a stronger test than pinning one seed: a drop
-        below it is a regression a single-seed check could miss entirely.
+        The encounter is separately retired for capture, where the first body to
+        arrive consumes the target, so nothing the paper runs depends on it.
+        `TwoBodyTests` still exercises the machinery under collision.
         """
 
         for condition in CONDITIONS:
-            for bodies in (1, 2):
-                records = [
-                    cell(condition, seed=seed, bodies=bodies)
-                    for seed in range(300, 320)
-                ]
-                rate = float(np.mean([r["valid"] for r in records]))
-                floor = 0.75 if (condition == "coupled" and bodies == 2) else 1.0
-                with self.subTest(condition=condition, bodies=bodies):
-                    self.assertGreaterEqual(rate, floor, "cells stopped resolving")
-                    resolved = next(r for r in records if r["resolved"])
-                    self.assertEqual(
-                        set(resolved["resolved"]),
-                        {"A", "B", "C", "D", "SELF", "D_oracle"},
-                    )
+            records = [
+                cell(condition, seed=seed, bodies=1) for seed in range(300, 320)
+            ]
+            rate = float(np.mean([r["valid"] for r in records]))
+            with self.subTest(condition=condition):
+                self.assertEqual(rate, 1.0, "cells stopped resolving")
+                resolved = next(r for r in records if r["resolved"])
+                self.assertEqual(
+                    set(resolved["resolved"]),
+                    {"A", "B", "C", "D", "SELF", "D_oracle"},
+                )
+
+    def test_two_bodies_do_not_resolve_at_the_derived_latency(self) -> None:
+        """Recorded rather than tuned away, so a later change cannot hide it."""
+
+        rate = float(np.mean([
+            cell("static", seed=seed, bodies=2)["valid"] for seed in range(300, 320)
+        ]))
+        self.assertLess(rate, 0.5)
 
     def test_the_oracle_always_lands(self) -> None:
         for condition in CONDITIONS:

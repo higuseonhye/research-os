@@ -241,17 +241,26 @@ class EpisodeDriverTests(unittest.TestCase):
             episode.aims()
 
     def test_no_motion_expected_while_the_reference_is_far(self) -> None:
-        """How far is "far" scales with the action, and that is correct.
+        """How far is "far" scales with the action, so the fixture has to too.
 
-        This asserted at step 3 while `dispense_latency` was 6. At 8 the same
-        body is admitted there - a longer dispense means a body further out can
-        still arrive before it completes - so the assertion moved to step 2 and
-        the *transition* is pinned alongside it, which is the part that carries
-        meaning.
+        This asserted at step 3 while `dispense_latency` was 6, then at step 2
+        at 8, and at 9 the fake world's body is within reach at every step there
+        is. That is the screen behaving correctly - a longer dispense means a
+        body further out still arrives before it completes - and chasing it down
+        the fixture was measuring the fixture.
+
+        So the body here is genuinely far: a metre away, closing at a millimetre
+        a step, which no dispense length in this design brings into contact.
         """
 
-        self.assertFalse(self._drive(2).motion_expected())
-        self.assertTrue(self._drive(6).motion_expected())
+        episode = CommitmentEpisode(spec=self.spec)
+        target = np.array([0.0, 0.0, 0.0])
+        for step in range(12):
+            episode.observe(target, np.array([1.0 - 0.001 * step, 0.0, 0.0]))
+        self.assertFalse(episode.motion_expected())
+
+        # And the transition is what carries the meaning, so it is pinned too.
+        self.assertTrue(self._drive(12).motion_expected())
 
     def test_eligibility_covers_both_approach_and_sustained_contact(self) -> None:
         approach = [self._drive(n).motion_expected() for n in range(4, 10)]
