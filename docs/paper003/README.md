@@ -1,6 +1,6 @@
 # Paper 003 — Missing relation & capability expansion
 
-> **Status 2026-08-04.** Design stage. The main preregistration is still
+> **Status 2026-08-05.** Design stage. The main preregistration is still
 > unwritten and there is no confirmatory *physical* data — but H2's decisive
 > arm comparison **is** preregistered and settled: see
 > [the SELF arm rule](paper003_self_arm_prereg_v1.0.md) and
@@ -68,6 +68,10 @@ without bound.
 | [`paper003_onset_is_not_predictable_v0.1.md`](paper003_onset_is_not_predictable_v0.1.md) | **What the paper may not claim**, and why the three-step band is the right answer |
 | [`paper003_rendezvous_v0.1.md`](paper003_rendezvous_v0.1.md) | Why a grasp needs an arrival, not a fly-by |
 | [`paper003_capture_pilot_runbook_v0.1.md`](paper003_capture_pilot_runbook_v0.1.md) | How to run the Isaac calibration pilot, and what to read first |
+| [`paper003_derived_from_physics_v0.1.md`](paper003_derived_from_physics_v0.1.md) | The two numbers the scene decides, and the rule for reading them off it |
+| [`paper003_cv_gain_horizon_v0.1.md`](paper003_cv_gain_horizon_v0.1.md) | The gate statistic was measuring the horizon as well as the motion |
+| [`paper003_where_collapse_is_defended_v0.1.md`](paper003_where_collapse_is_defended_v0.1.md) | Why the collapse threat belongs to H2 and not to the gate |
+| [`paper003_servo_encounter_v0.1.md`](paper003_servo_encounter_v0.1.md) · [`paper003_rendezvous_v0.1.md`](paper003_rendezvous_v0.1.md) | Why the encounter arrives before it carries |
 | [`paper003_displacement_ceiling_v0.1.md`](paper003_displacement_ceiling_v0.1.md) | Why collision cannot work |
 | [`paper003_branch_b_scene_v0.1.md`](paper003_branch_b_scene_v0.1.md) | The Isaac scene with a rigid object, and where 20 mm comes from |
 | [`paper003_related_work_v0.1.md`](paper003_related_work_v0.1.md) · [`paper003_lit_positioning_v0.1.md`](paper003_lit_positioning_v0.1.md) | Positioning |

@@ -193,6 +193,28 @@ cannot simply be carried forward.
 not evidence for the amended design. The re-run may fail, and if it does, that is
 the result.
 
+### Outcome of the re-run, recorded 2026-08-05
+
+**Case A again.** 200 paired cells from 401 seeds, band [+4, +8], seeds from 3000.
+
+| | |
+| --- | ---: |
+| `p_D` | 0.735 |
+| `p_SELF` | 0.045 |
+| arm C | 0.145 |
+| arm B | 0.000 |
+| Discordant: D only / SELF only | 146 / 8 |
+| One-sided exact McNemar | p = 3.0e-34 |
+| Margin | +0.690 |
+
+Both conditions passed, and nothing in the rule was changed to reach them.
+
+**This is better evidence than the first Case A, not merely a repeat.** There the
+competitor scored 0.000 and won no discordant pair, which required a separate
+check that it was not simply broken. Here it scores 0.045 and takes 8 pairs, so
+it demonstrably can win and still loses by 146 to 8. The suspicion the first
+result had to answer does not arise.
+
 ## Not permitted after the run
 
 - Changing α, the margin, n, the offset band, or the test.

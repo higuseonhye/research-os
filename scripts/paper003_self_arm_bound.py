@@ -46,7 +46,7 @@ from wm_expansion.encounter import EncounterSpec
 
 TARGET = np.array([0.20, 0.0, 0.40])
 
-FIRST_SEED = 1000
+FIRST_SEED = 4000
 OFFSETS = range(-6, 41)
 MIN_BIN = 50
 ALPHA = 0.05
