@@ -46,7 +46,7 @@ Recommended first-screen copy:
 | **Paper 002** | Provides the strongest current confirmatory evidence for repair-vs-expansion |
 | **Paper 003** | Records a negative real-contact result: the prepared relation operator did not beat the smaller mode operator |
 | **Mismatch Lab** | Converts the research program into a public interface and benchmark direction |
-| **Builder Lab** | Quietly opens the build track; current status is Planning until EXP-001 runs. Direction is set — machines that already exist, used without modification — and hardware selection is gated on a written justification rather than on price |
+| **Builder Lab** | Quietly opens the build track; current status is Planning until EXP-001 runs. Working constraint recorded — machines that already exist, built for a human operator, used without modification — with no hardware selected or purchased |
 
 ## Links
 

@@ -83,11 +83,11 @@ Builder Lab is the physical execution surface for the same program. It starts in
 Planning state and does not claim hardware evidence until EXP-001 produces a
 reproducible run.
 
-Its direction is now set: **machines that already exist, built for a human
-operator, used without modification.** Controls made for human hands carry slop
-and no specification, which makes them a source of mismatch that purpose-built
-platforms do not reproduce. Hardware selection is gated on a written
-justification rather than on price, and no hardware has been purchased.
+Its working constraint is now recorded: **machines that already exist, built for
+a human operator, used without modification.** Controls made for human hands
+carry slop and no specification, which makes them a source of mismatch that
+purpose-built platforms do not reproduce. No candidate has been checked against
+the rule yet, and no hardware has been purchased.
 
 ## Operating rules
 

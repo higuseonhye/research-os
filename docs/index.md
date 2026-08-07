@@ -66,7 +66,7 @@ audit:
 | **Paper 002: Model Adequacy** | Tests when parameter repair should give way to a prepared model-order expansion | Tier C complete |
 | **Paper 003: Representation Expansion** | Tests whether adding a missing relation can open capability repair cannot reach | Negative under real contact; written up |
 | **Mismatch Lab** | Public surface for diff, replay, explanation, and benchmark design | Spec/demo |
-| **Builder Lab** | Public execution surface for small Physical AI experiments | Planning; direction set, hardware gated |
+| **Builder Lab** | Public execution surface for small Physical AI experiments | Planning; selection rule recorded, no hardware |
 
 Selected proof points:
 
@@ -104,7 +104,7 @@ arbitrary causal discovery, or a complete theory of intelligence.
 
 Negative and design-stage results are kept in the record because a program gets
 stronger by rejecting weak claims early. The same applies to directions: the
-physical track carries an explicit exclusion rule, and what it rejected is
-recorded alongside what it kept.
+physical track carries an explicit exclusion rule for hardware selection, and
+what it rejected is recorded alongside what it kept.
 
 *Updated 2026-08-07*
